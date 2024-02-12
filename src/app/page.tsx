@@ -28,7 +28,7 @@ export default function Home() {
         </div>
       </div>
 
-      <h1>Test page</h1>
+      <h1>Main Application </h1>
       <div className={styles.center}>
         <Image
           className={styles.logo}
