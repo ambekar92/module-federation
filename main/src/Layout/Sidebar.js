@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
+import { Outlet, Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
@@ -8,13 +9,13 @@ const Sidebar = () => {
         <div id="sidebar-wrapper">
           <ul class="sidebar-nav">
             <li>
-              <a href="#">Shortcuts</a>
+              <Link to="/home">Home</Link>
             </li>
             <li>
-              <a href="#">Overview</a>
+              <Link to="/sample1">Sample1</Link>
             </li>
             <li>
-              <a href="#">Events</a>
+              <Link to="/sample2">Sample2</Link>
             </li>
             <li>
               <a href="#">About</a>
@@ -28,6 +29,8 @@ const Sidebar = () => {
           </ul>
         </div>
       </div>
+
+      <Outlet />
     </>
   );
 };
