@@ -1,9 +1,9 @@
 // client-auth.tsx
-import { signIn, signOut, useSession } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-export default function ClientSideAuth() {
+export default function ClientSideAuth(){
   const { data: session, status } = useSession();
   const router = useRouter();
 

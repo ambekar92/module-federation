@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import Link from 'next/link';
 
-export default function Navbar() {
+export default function Navbar(){
   const { data: session, status } = useSession();
   const router = useRouter();
 

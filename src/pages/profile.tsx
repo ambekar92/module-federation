@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import Navbar from './navbar'
 
-export default function Profile() {
+export default function Profile(){
   const { data: session, status } = useSession();
   const router = useRouter();
 
