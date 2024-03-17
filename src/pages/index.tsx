@@ -1,31 +1,27 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // pages/index.js
+import { type GetSessionParams, getSession } from 'next-auth/react'
 
-import { getSession } from 'next-auth/react';
+export async function getServerSideProps(context: GetSessionParams | undefined) {
+   const session = await getSession(context)
 
-export async function getServerSideProps(context:any) {
-  const session = await getSession(context);
+   if (session === null || session === undefined) {
+      return {
+         redirect: {
+            destination: '/home',
+            permanent: false
+         }
+      }
+   }
 
-  if (!session) {
-    return {
+   return {
       redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }else{
-    return {
-      redirect: {
-        destination: '/home',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: { session },
-  };
+         destination: '/login',
+         permanent: false
+      }
+   }
 }
 
-export default function Home() {
-  return <div>Welcome to the homepage</div>;
+export default function Home(): JSX.Element {
+   return <div>Welcome to the homepage</div>
 }

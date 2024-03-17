@@ -1,0 +1,163 @@
+@use 'abstracts';
+@use 'components';
+/* styles/globals.css */
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+    --reds-surface-darker: $red-600;
+    --reds-surface-default: $red-500;
+    --reds-surface-lighter: $red-200;
+    --reds-surface-subtle: $red-50;
+    --reds-border-darker: $red-600;
+    --reds-border-default: $red-500;
+    --reds-border-lighter: $red-300;
+    --reds-border-subtle: $red-100;
+    --reds-text-icon-icon-dark: $red-700;
+    --reds-text-icon-icon-light: $red-500;
+    --reds-text-icon-label: $red-700;
+    --yellows-surface-darker: $yellow-700;
+    --yellows-surface-default: $yellow-500;
+    --yellows-surface-lighter: $yellow-200;
+    --yellows-surface-subtle: $yellow-50;
+    --yellows-border-darker: $yellow-700;
+    --yellows-border-default: $yellow-500;
+    --yellows-border-lighter: $yellow-200;
+    --yellows-border-subtle: $yellow-100;
+    --yellows-text-icon: $yellow-900;
+    --blues-border-darker: $blue-700;
+    --blues-border-default: $blue-500;
+    --blues-border-lighter: $blue-200;
+    --blues-border-subtle: $blue-100;
+    --blues-surface-darker: $blue-600;
+    --blues-surface-dark: $blue-500;
+    --blues-surface-default: $blue-400;
+    --blues-surface-lighter: $blue-100;
+    --blues-surface-subtle: $blue-50;
+    --blues-text-icons: $blue-500;
+    --greens-border-darker: $green-600;
+    --greens-border-default: $green-500;
+    --greens-border-lighter: $green-200;
+    --greens-border-subtle: $green-100;
+    --greens-surface-darker: $green-600;
+    --greens-surface-default: $green-500;
+    --greens-surface-lighter: $green-200;
+    --greens-surface-subtle: $green-50;
+    --greens-text-icons-icon-dark: $green-600;
+    --greens-text-icons-icon-light: $green-400;
+    --greens-text-icons-label: $green-700;
+    --grays-text-icons-inverse: $gray-0;
+    --grays-text-icons-disabled: $gray-400;
+    --grays-text-icons-caption: $gray-700;
+    --grays-text-icons-subtitle: $gray-800;
+    --grays-text-icons-body: $gray-950;
+    --grays-text-icons-title: $gray-950;
+    --grays-border-darker: $gray-700;
+    --grays-border-disabled: $gray-300;
+    --grays-border-subtle: $gray-100;
+    --grays-border-default: $gray-500;
+    --grays-surface-disabled: $gray-300;
+    --grays-surface-default: $gray-100;
+    --grays-surface-subtle: $gray-50;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--blues-surface-subtle: $blue-600;
+		--blues-border-lighter: $blue-500;
+		--grays-text-icons-body: $gray-0;
+    	--grays-text-icons-title: $gray-0;
+		--blues-surface-darker: $blue-100;
+		--grays-surface-subtle: $gray-950;
+	}
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--grays-surface-subtle);
+    color: var(--grays-text-icons-body);
+}
+
+nav {
+    background-color: #340067;
+}
+
+.main {
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    padding-top: 18%;
+}
+
+.card {
+    background: var(--grays-text-icons-body);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border-color 0.3s ease-in-out;
+    outline: none;
+    color: #333;
+}
+
+input:focus {
+    border-color: #555;
+}
+
+button {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.dropdown-menu {
+    animation: 0.5s slideup;
+}
+
+@keyframes slideup {
+    from {
+        transform: translateY(10%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu {
+    animation: 0.5s slideup;
+}
+
+.usa-card {
+    list-style: none;
+}

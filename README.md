@@ -1,40 +1,106 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<p align="center">
+    <img src="https://www.sba.gov/brand/assets/sba/img/pages/logo/variations-horizontal-one-color-reversed.svg" height="130">
+</p>
+<p align="center">
+    <a href="https://nextjs.org/" alt="NextJS">
+        <img src="https://img.shields.io/badge/next%20js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" /></a>
+    <a href="https://react.dev/" alt="ReactJS">
+        <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" /></a>
+</p>
+
+# UCMS Frontend App
 
 ## Getting Started
+- [UX/UI Guide](https://github.com/USSBA/ucms-developers/tree/UX-UI-CX)
+- [Microservices Prototype Learning Path](https://github.com/USSBA/ucms-developers/tree/learning-paths/ms_prototype)
 
-First, run the development server:
+## Stacks
+
+### backend
+
+- FastAGI
+
+### frontend
+
+- [Next.js]
+- [React.js]
+
+## Quickstart
+First, install dependencies
 
 ```bash
-npm run dev
-# or
+yarn
+```
+Last, run the common Next.js script to start
+
+```bash
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment with Docker
+You must have [docker] and [docker-compose] tools installed to work with the material in this section. The just run:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+docker-compose up -d app
+```
 
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+**Other Repositories**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<div id="user-content-toc">
+  <ul>
+    <li><a href="#1-for-the-developer">Repositories</a>
+      <ul>
+        <li><a href="https://github.com/USSBA/ucms-backend-app">Django Microservices</a></li>
+        <li><a href="https://github.com/USSBA/ucms-wfe-app">ReactJS and NextJS Frontend Application</a></li>
+        <li><a href="https://github.com/USSBA/ucms-internal-api">FastAPI Internal API</a></li>
+        <li><a href="https://github.com/USSBA/ucms-external-api">Flask External API</a></li>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+---
+
+<!--  Create .env.local file for Okta Authentication - valid for 30 days
+
+// .env.local
+OKTA_OAUTH2_CLIENT_ID=
+OKTA_OAUTH2_CLIENT_SECRET=
+OKTA_OAUTH2_ISSUER=
+NEXTAUTH_URL=http://localhost:8080
+SECRET=
+
+--------------------------------------------------
+ > Setps to Create a Okta .env File 
+ 
+okta apps create
+
+Create your app with okta apps create
+1.Take the default app name or rename if you would like
+2.Choose the Web option for the Type of Application
+3.Choose Other for the Framework of Application
+4.Redirect URI: http://localhost:8080/api/auth/callback/okta
+5.Logout Redirect URI: http://localhost:8080
+
+Reference:
+https://thetombomb.com/posts/nextjs-nextauth-okta
+
+-->
+
+
+
+<!-- 
+
+   ---------------- react-toastify  -------------------
+   Demo: https://fkhadra.github.io/react-toastify/introduction
+
+ -->

@@ -1,0 +1,18 @@
+@import '../../../styles/abstracts/colors';
+
+
+.grey {
+    .usa-alert--info {
+        .usa-alert__body {
+            background-color: $gray-500;
+        }
+    }
+}
+
+.blue {
+    .usa-alert--info {
+        .usa-alert__body {
+            background-color: $blue-500;
+        }
+    }
+}
