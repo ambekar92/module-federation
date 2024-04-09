@@ -1,0 +1,12 @@
+@import '@trussworks/react-uswds/lib/uswds.css';
+@import '@trussworks/react-uswds/lib/index.css';
+@import '../styles';
+
+.dark {
+  $blues-surface-subtle: var($blue-600);
+  $blues-border-lighter: var($blue-500);
+  $grays-text-icons-body: var($gray-0);
+  $grays-text-icons-title: var($gray-0);
+  $blues-surface-darker: var($blue-100);
+  $grays-surface-subtle: var($gray-950);
+}

@@ -1,0 +1,55 @@
+{
+   "name": "nextjs-app",
+   "version": "0.1.0",
+   "private": true,
+   "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+   },
+   "dependencies": {
+      "@emotion/react": "^11.11.4",
+      "@emotion/styled": "^11.11.5",
+      "@hookform/resolvers": "^3.3.4",
+      "@mui/icons-material": "^5.15.14",
+      "@mui/material": "^5.15.15",
+      "@trussworks/react-uswds": "^7.0.0",
+      "@uswds/uswds": "3.7.1",
+      "accept-language": "^3.0.18",
+      "faker": "^5.5.3",
+      "i18next": "^23.10.1",
+      "i18next-browser-languagedetector": "^7.2.1",
+      "i18next-resources-to-backend": "^1.2.0",
+      "kafkajs": "^2.2.4",
+      "next": "14.1.4",
+      "next-auth": "^4.24.6",
+      "react": "^18",
+      "react-cookie": "^7.1.4",
+      "react-dom": "^18",
+      "react-helmet": "^6.1.0",
+      "react-hook-form": "^7.51.1",
+      "react-i18next": "^14.1.0",
+      "react-toastify": "^10.0.5",
+      "sass": "^1.74.1",
+      "zod": "^3.22.4"
+   },
+   "devDependencies": {
+      "@types/node": "^20",
+      "@types/react": "^18",
+      "@types/react-dom": "^18",
+      "eslint": "^8",
+      "eslint-config-next": "14.1.4",
+      "husky": "^9.0.11",
+      "lint-staged": "^15.2.2",
+      "typescript": "^5"
+   },
+   "husky": {
+      "hooks": {
+         "pre-commit": "lint-staged"
+      }
+   },
+   "lint-staged": {
+      "*.{js,ts,tsx,jsx}": "eslint --fix --quiet"
+   }
+}

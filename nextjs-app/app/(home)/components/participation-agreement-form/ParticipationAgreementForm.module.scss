@@ -1,0 +1,66 @@
+.agreements-form {
+  width: 100%;
+  padding: 0 25px;
+  margin-bottom: 75px;
+
+  h1 {
+    font-family: Source Sans 3;
+    font-size: 32px;
+    color: #101828;
+  }
+
+  .top-form-divider {
+    border-top: 1px solid var(--gray-100);
+    width: 100%;
+  }
+
+  .bottom-form-divider {
+    border-top: 1px solid var(--gray-100);
+    width: 100%;
+  }
+
+  .agreements-list {
+    font-size: 20px;
+    font-family: Source Sans Pro Web;
+    list-style-position: inside;
+    font-weight: 400;
+    color: #344054;
+    padding: 10px 10px 10px 0;
+  }
+
+  .agreements-list ol {
+    padding-left: 0;
+  }
+
+  .agreements-list > li {
+    font-weight: 600;
+    padding-bottom: 15px;
+  }
+
+  .agreements-inner-alpha {
+    list-style-type: lower-alpha;
+  }
+
+  .agreements-inner-roman {
+    list-style-type: lower-roman;
+  }
+
+  .agreements-inner-content p,
+  .agreements-inner-content li {
+    margin: 0;
+    padding-bottom: 15px;
+  }
+  .bottom-group {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .default-btn {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .bottom-group .usa-button-group__item .usa-button {
+    margin-top: 0;
+  }
+}

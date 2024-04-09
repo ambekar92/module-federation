@@ -1,0 +1,115 @@
+@import '../index.scss';
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+nav {
+  background-color: var(--blues-surface-dark, $blue-500);
+}
+
+footer {
+  background-color: var(--blues-surface-dark, $blue-500);
+  padding: 5px;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+h2 {
+  text-align: center;
+  color: $gray-800;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 641px;
+}
+
+input {
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid $gray-100;
+  border-radius: 4px;
+  transition: border-color 0.3s ease-in-out;
+  outline: none;
+  color: $gray-800;
+}
+
+input:focus {
+  border-color: $gray-600;
+}
+
+button {
+  background-color: $blue-200;
+  color: $gray-0;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: $blue-200;
+}
+
+.dropdown-menu {
+  animation: 0.5s slideup;
+}
+
+@keyframes slideup {
+  from {
+    transform: translateY(10%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.dropdown-menu {
+  animation: 0.5s slideup;
+}
+
+.usa-card {
+  list-style: none;
+}
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $grays-surface-subtle;
+  color: $grays-text-icons-body;
+}
+
+.main {
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;
+  padding-top: 18%;
+}
+
+.card {
+  background: $grays-text-icons-body;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

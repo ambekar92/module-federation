@@ -1,0 +1,19 @@
+// _tables.scss
+
+.default-table {
+  .usa-table {
+    border-top: 0;
+    max-width: 641px;
+    width: 100%;
+    margin: 0;
+  }
+
+  .usa-table th,
+  .usa-table td {
+    border-bottom: 1px solid lightgray;
+  }
+  .usa-table tbody tr:last-child th,
+  .usa-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}

@@ -1,0 +1,38 @@
+@use 'colors' as *;
+
+
+.documents-list {
+  margin: 15px;
+
+  .card {
+    border: 1px solid #d9d2d2 !important;
+
+    .card-headerText {
+      span {
+        font-size: 17px !important;
+      }
+
+    }
+  }
+
+  .documents-header {
+    margin-bottom: 68px;
+    li{
+      margin: 0px !important;
+    }
+    input {
+      display: flex !important;
+      height: 45px !important;
+      padding: 3px 6px !important;
+      align-items: center !important;
+      align-self: stretch !important;
+      border-radius: 2px !important;
+      outline: 1px solid white !important;
+      border: 2px solid #000 !important;
+      width: 100% !important;
+      margin-right: -3px !important;
+    }
+  }
+
+
+}
