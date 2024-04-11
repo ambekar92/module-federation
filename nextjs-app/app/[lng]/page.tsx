@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { Trans } from 'react-i18next/TransWithoutContext'
-import { languages, fallbackLng } from '../i18n/settings'
+import { notFound } from 'next/navigation'
 import { useTranslation } from '../i18n'
-import { Header } from './components/Header'
+import { languages } from '../i18n/settings'
 import { Footer } from './components/Footer'
+import { Header } from './components/Header'
 import './global.css'
 
 export default async function Page({
@@ -13,7 +13,9 @@ export default async function Page({
     lng: string
   }
 }) {
-  if (languages.indexOf(lng) < 0) {lng = fallbackLng}
+  if (languages.indexOf(lng) < 0) {
+    notFound()
+  }
   const { t } = await useTranslation(lng)
 
   return (

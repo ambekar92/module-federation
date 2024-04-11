@@ -1,15 +1,22 @@
 @use 'colors' as *;
+@use 'constants' as *;
 
-// Header
-.headerMargin {
-  position: relative;
+//Footer
+.layoutFooter {
+  position: fixed;
   z-index: 1250;
-}
+  width: 100%;
+  bottom: 0;
 
-//Body
-.layoutMain {
-  margin-left: 90px;
-  margin-bottom: 100px;
+  li {
+    a {
+      text-decoration: none;
+    }
+  }
+
+  .usa-footer__primary-container {
+    margin-left: 0px;
+  }
 }
 
 // Sidebar
@@ -52,20 +59,13 @@
   }
 }
 
-///Footer
-.layoutFooter {
+// Navbar
+.nav {
   position: fixed;
-  z-index: 1250;
-  width: 100%;
-  bottom: 0;
+  background-color: $blue-500;
+  height: $navbar-height;
 
-  li {
-    a {
-      text-decoration: none;
-    }
-  }
-
-  .usa-footer__primary-container {
-    margin-left: 0px;
+  .businessName {
+    background-color: $blue-500;
   }
 }

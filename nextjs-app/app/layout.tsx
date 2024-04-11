@@ -16,7 +16,7 @@ export default function RootLayout({
       <body>
         <div className={`${theme.palette.mode} layout`}>
           <Navbar />
-          {children}
+          <main className="main-children-wrapper">{children}</main>
           <Footer />
         </div>
       </body>

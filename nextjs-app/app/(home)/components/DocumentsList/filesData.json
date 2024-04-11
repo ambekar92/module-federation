@@ -6,7 +6,9 @@
         "author": "Name",
         "created": "mm/dd/yyyy",
         "program": "Name",
-        "modified": "mm/dd/yyyy"
+        "modified": "mm/dd/yyyy",
+        "firstName":"First",
+        "lastName":"Last Name"
       },
       {
         "id": 2,
@@ -14,7 +16,9 @@
         "author": "Name",
         "created": "mm/dd/yyyy",
         "program": "Name",
-        "modified": "mm/dd/yyyy"
+        "modified": "mm/dd/yyyy",
+        "firstName":"First",
+        "lastName":"Last Name"
       },
       {
         "id": 3,
@@ -22,7 +26,9 @@
         "author": "Name",
         "created": "mm/dd/yyyy",
         "program": "Name",
-        "modified": "mm/dd/yyyy"
+        "modified": "mm/dd/yyyy",
+        "firstName":"First",
+        "lastName":"Last Name"
       },
       {
         "id": 4,
@@ -30,7 +36,9 @@
         "author": "Name",
         "created": "mm/dd/yyyy",
         "program": "Name",
-        "modified": "mm/dd/yyyy"
+        "modified": "mm/dd/yyyy",
+        "firstName":"First",
+        "lastName":"Last Name"
       },
       {
         "id": 5,
@@ -38,7 +46,9 @@
         "author": "Name",
         "created": "mm/dd/yyyy",
         "program": "Name",
-        "modified": "mm/dd/yyyy"
+        "modified": "mm/dd/yyyy",
+        "firstName":"First",
+        "lastName":"Last Name"
       }
     ]
 }

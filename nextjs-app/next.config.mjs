@@ -13,6 +13,17 @@ const nextConfig = {
       path.join(__dirname, 'styles', 'base'),
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store' },
+          { key: 'Pragma', value: 'no-cache' },
+        ],
+      },
+    ]
+  },
 }
 
 export default nextConfig
