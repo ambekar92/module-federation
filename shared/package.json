@@ -1,0 +1,12 @@
+{
+   "name": "ucms-shared-v13",
+   "version": "1.0.0",
+   "module": "./index.js",
+   "types": "./index.d.ts",
+   "dependencies": {
+      "feather-route-matcher": "4.0.0"
+   },
+   "devDependencies": {
+      "@types/feather-route-matcher": "^4.0.2"
+   }
+}

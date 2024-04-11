@@ -1,0 +1,41 @@
+// @import '../../styles/abstracts/colors';
+.header {
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    p {
+        margin-top: .5rem
+    }
+}
+
+.mainContent {
+    margin: 2rem 3rem;
+
+}
+
+.note {
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    p {
+        margin-top: .5rem
+    }
+}
+
+.actionButtons {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0 2rem 0;
+    button {
+        width: 14rem;
+    }
+}
+
+.container {
+    background-color: var(--grays-surface-subtle);
+    display: flex;
+    flex-direction: column;
+}
+

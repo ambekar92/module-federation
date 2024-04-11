@@ -1,0 +1,139 @@
+.default-btn {
+   /* Default button styles */
+   .usa-button.usa-button {
+      display: flex;
+      max-width: 350px;
+      min-width: 125px;
+      height: 44px;
+      padding: 12px 20px;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      border-radius: 8px;
+      background: var(--blues-surface-default, #004fbd);
+      color: var(--gray-text-icons-inverse, #fff);
+      text-align: center;
+      font-family: Source Sans Pro Web;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+   }
+
+   .usa-button:active {
+      background-color: var(--blues-surface-dark, #002e6d);
+   }
+
+   .usa-button:not([disabled]):hover {
+      background-color: var(--blues-surface-darker, #002457);
+   }
+
+   .usa-button:not([disabled]):focus {
+      display: inline-flex;
+      justify-content: center;
+      align-content: center;
+      gap: 8px;
+      border-radius: 10px;
+      outline: 4px solid var(--blues-surface-default, #004fbd);
+   }
+
+   .usa-button:disabled,
+   .usa-button:disabled:hover {
+      background-color: var(--grays-surface-disabled, #d6d6d6);
+      color: var(--gray-text-icons-inverse, #fff);
+   }
+
+   /* Style for button with icon */
+   .usa-button:has(.usa-icon) {
+      padding: 12px 16px;
+   }
+
+   /* Styles for icon in default button */
+   .usa-button .usa-icon {
+      display: flex;
+      width: var(--size, 18px);
+      height: var(--size, 18px);
+      justify-content: center;
+      align-content: center;
+      fill: var(--gray-text-icons-inverse, #fff);
+   }
+
+   /* Outline button styles */
+   .usa-button.usa-button--outline {
+      background-color: var(--gray-text-icons-inverse, #fff);
+      color: var(--blues-surface-default, #004fbd);
+      border: 2px solid var(--blues-surface-default, #004fbd);
+      box-shadow: none;
+      transition: all 0.3s ease-in-out;
+   }
+
+   .usa-button--outline:active {
+      background-color: var(--blues-surface-dark, #002e6d);
+      color: var(--gray-text-icons-inverse, #fff);
+      border: 2px solid var(--blues-surface-dark, #002e6d);
+      box-shadow: none;
+   }
+
+   .usa-button--outline:not([disabled]):hover {
+      background-color: var(--gray-text-icons-inverse, #fff);
+      color: var(--blues-surface-darker, #002457);
+      border: 2px solid var(--blues-surface-darker, #002457);
+      box-shadow: none;
+   }
+
+   .usa-button--outline:not([disabled]):focus {
+      display: inline-flex;
+      justify-content: center;
+      align-content: center;
+      gap: 8px;
+      border-radius: 10px;
+      outline: 4px solid var(--blues-surface-default, #004fbd);
+      transition: none;
+   }
+
+   .usa-button--outline:disabled,
+   .usa-button--outline:disabled:hover {
+      color: var(--grays-surface-disabled, #d6d6d6);
+      background-color: var(--gray-text-icons-inverse, #fff);
+      box-shadow: none;
+      border: 2px solid var(--grays-surface-disabled, #d6d6d6);
+   }
+
+   /* Styles for icon in outline button */
+   .usa-button--outline .usa-icon {
+      display: flex;
+      width: var(--size, 18px);
+      height: var(--size, 18px);
+      justify-content: center;
+      align-content: center;
+      fill: var(--blues-surface-default, #004fbd);
+      transition: all 0.3s ease-in-out;
+   }
+
+   .usa-button--outline:active .usa-icon {
+      fill: var(--gray-text-icons-inverse, #fff);
+   }
+
+   .usa-button--outline:not([disabled]):hover .usa-icon {
+      fill: var(--blues-surface-darker, #002457);
+   }
+
+   .usa-button--outline:not([disabled]):focus .usa-icon {
+      fill: var(--blues-surface-default, #004fbd);
+   }
+
+   .usa-button--outline:disabled .usa-icon,
+   .usa-button--outline:disabled:hover .usa-icon {
+      width: var(--size, 18px);
+      height: var(--size, 18px);
+      fill: var(--grays-surface-disabled, #d6d6d6);
+   }
+
+   .usa-button-group-container {
+      max-width: 641px;
+
+      .usa-button-group {
+         float: right;
+      }
+   }
+}

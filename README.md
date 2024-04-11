@@ -80,7 +80,7 @@ NEXTAUTH_URL=http://localhost:8080
 SECRET=
 
 --------------------------------------------------
- > Setps to Create a Okta .env File 
+ > Steps to Create a Okta .env File 
  
 okta apps create
 
@@ -95,12 +95,3 @@ Reference:
 https://thetombomb.com/posts/nextjs-nextauth-okta
 
 -->
-
-
-
-<!-- 
-
-   ---------------- react-toastify  -------------------
-   Demo: https://fkhadra.github.io/react-toastify/introduction
-
- -->
