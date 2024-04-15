@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styles from './DocumentsList.module.scss'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
@@ -22,11 +22,16 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
-function DocumentsListFiles() {
+interface Props {
+  selectedCardId: (value: number) => void;
+}
+
+function DocumentsListFiles({ selectedCardId }: Props) {
+
+  const [selectedId, setSelectedId] = useState(Number);
 
   const LoadCard = () => {
     const [getMenu, setMenu] = useState(null);
-    const [selectedId, setSelectedId] = useState(Number);
 
     // Menu
     const open = Boolean(getMenu);
@@ -112,6 +117,10 @@ function DocumentsListFiles() {
       )
     })
   }
+
+  useEffect(() => {
+    selectedCardId(selectedId);
+  }, [selectedId])
 
   return (
     <div className={styles['documents-list-files']}>

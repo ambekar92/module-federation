@@ -5,6 +5,21 @@
   margin-left: 6px;
 }
 
+.mainMenu{
+  margin: 18px 14px;
+  .mainMenuButton{
+    border-radius: 32px;
+    width: 100%;
+    padding: 0px 62px;
+    p{
+      margin: 12px 0px 12px 8px;
+    }
+  }
+  .mainMenuButton:hover{
+    background-color: rgb(114 179 233);
+  }
+}
+
 
 .documents-list {
   margin: 15px;
