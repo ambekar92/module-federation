@@ -1,0 +1,220 @@
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[3]!../node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[11].oneOf[9].use[4]!../node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[11].oneOf[9].use[5]!./app/(home)/components/should-i-apply/ShoudIApplyForm.module.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.ShoudIApplyForm_container__UDjNq {
+  margin-top: 56px;
+  line-height: 24px;
+}
+@media screen and (min-width: 600px) {
+  .ShoudIApplyForm_container__UDjNq {
+    margin-top: 64px;
+  }
+}
+.ShoudIApplyForm_container__UDjNq div, .ShoudIApplyForm_container__UDjNq section, .ShoudIApplyForm_container__UDjNq p, .ShoudIApplyForm_container__UDjNq h1, .ShoudIApplyForm_container__UDjNq h2, .ShoudIApplyForm_container__UDjNq h3 {
+  box-sizing: border-box;
+}
+.ShoudIApplyForm_container__UDjNq h1, .ShoudIApplyForm_container__UDjNq h2, .ShoudIApplyForm_container__UDjNq h3 {
+  margin: 0;
+  padding: 0;
+}
+.ShoudIApplyForm_container__UDjNq p {
+  margin: 20px 0 0;
+}
+.ShoudIApplyForm_container__UDjNq ol {
+  padding: 0 20px;
+}
+.ShoudIApplyForm_container__UDjNq h2 {
+  font-size: 1.5rem;
+}
+.ShoudIApplyForm_container__UDjNq h2.ShoudIApplyForm_header_2__Peq47 {
+  font-size: 1.938rem;
+}
+.ShoudIApplyForm_container_end___ly4h {
+  margin: 18px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 20px;
+}
+.ShoudIApplyForm_container_hubzone__wZxai {
+  display: flex;
+  column-gap: 8px;
+  width: max-content;
+}
+.ShoudIApplyForm_container_hubzone__wZxai svg {
+  align-self: center;
+}
+.ShoudIApplyForm_container_hubzone__wZxai a {
+  align-self: end;
+}
+.ShoudIApplyForm_container_business__location__wzFnz {
+  display: flex;
+  gap: 8px;
+}
+.ShoudIApplyForm_container_business__location__wzFnz input {
+  flex-grow: 1;
+}
+@media screen and (max-width: 800px) {
+  .ShoudIApplyForm_container_business__location__wzFnz {
+    flex-wrap: wrap;
+  }
+}
+
+.ShoudIApplyForm_banner__pZybE {
+  background-color: #f4f5f5;
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+.ShoudIApplyForm_banner__pZybE img {
+  width: 14px;
+}
+.ShoudIApplyForm_banner__pZybE div {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8px;
+}
+.ShoudIApplyForm_banner__pZybE a {
+  font-size: 0.875rem;
+}
+.ShoudIApplyForm_banner__pZybE svg {
+  transform: rotate(180deg);
+  height: 6.4px;
+}
+
+.ShoudIApplyForm_header___CKG9 {
+  border-bottom: 1px solid black;
+}
+
+.ShoudIApplyForm_logo__cQiZf {
+  height: 60px;
+  margin: 7px 25px;
+}
+
+.ShoudIApplyForm_section__CFTdi {
+  margin: 0 30px 70px;
+  max-width: 100%;
+}
+.ShoudIApplyForm_section_readiness__GOHSe, .ShoudIApplyForm_section_eligible__I2gPg {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  grid-column-gap: 16px;
+  column-gap: 16px;
+}
+@media screen and (min-width: 56.25rem) {
+  .ShoudIApplyForm_section_readiness__GOHSe, .ShoudIApplyForm_section_eligible__I2gPg {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media screen and (min-width: 120rem) {
+  .ShoudIApplyForm_section_readiness__GOHSe, .ShoudIApplyForm_section_eligible__I2gPg {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.ShoudIApplyForm_section_ownerinfo__wJZ_T {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 110px;
+}
+.ShoudIApplyForm_section__CFTdi.ShoudIApplyForm_programs__fwt5_ p {
+  margin-bottom: 18px;
+}
+
+.ShoudIApplyForm_title__nx15v {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 27px 30px 27px;
+}
+.ShoudIApplyForm_title__nx15v h1 {
+  font-size: 3rem;
+  line-height: 16px;
+}
+
+.ShoudIApplyForm_title_form__uk8_z {
+  margin: 37px 30px 40px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+.ShoudIApplyForm_title_form__uk8_z h1 {
+  font-size: 3.375rem;
+}
+
+.ShoudIApplyForm_line__828nh.ShoudIApplyForm_gray__pmaNL {
+  height: 1px;
+  border: none;
+  background-color: #BBBCBF;
+}
+
+.ShoudIApplyForm_input_container__di7yw {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+}
+.ShoudIApplyForm_input_text__MYWjY {
+  width: 564px;
+  max-width: 100%;
+  border-color: #bfbfbf;
+}
+.ShoudIApplyForm_input_text__MYWjY::placeholder {
+  color: #ababab;
+}
+.ShoudIApplyForm_input_text__MYWjY.ShoudIApplyForm_width_fit__VSlQH {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.ShoudIApplyForm_input_radio__4_Bsx {
+  width: 130px;
+  max-width: 50%;
+}
+
+.ShoudIApplyForm_grid_col__2__Uxa3W {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 8px;
+  gap: 8px;
+}
+.ShoudIApplyForm_grid_fit__YOQYs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  align-items: flex-start;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(260px, 1fr);
+}
+
+.ShoudIApplyForm_flex__1L_FA {
+  display: flex;
+  column-gap: 8px;
+}
+.ShoudIApplyForm_flex_wrap__evt_p {
+  display: flex;
+  column-gap: 110px;
+  flex-wrap: wrap;
+}
+
+.ShoudIApplyForm_alert__AtJcs {
+  max-width: 100%;
+  width: 900px;
+  flex-grow: 1;
+}
+.ShoudIApplyForm_alert_question__hgVmz {
+  width: 100%;
+}
+
+.ShoudIApplyForm_italic__SOYrV {
+  font-style: italic;
+}
+
+.ShoudIApplyForm_link_clear__3ETD2 {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ShoudIApplyForm_error_text__TfJhw {
+  margin-top: 8px;
+  color: #cc0000;
+}

@@ -1,0 +1,88 @@
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[11].oneOf[9].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[11].oneOf[9].use[5]!./app/(user)/components/UsersList.module.scss ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.UsersList_user-management-title__6egJG {
+  font-size: 54px;
+}
+
+.UsersList_user-management-h2__UZErY {
+  font-size: 37px;
+}
+
+.UsersList_v-align-middle-float-right__s5pIS {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.UsersList_usa-search__8YSa_ .UsersList_usa-input__pnL6D {
+  gap: 8px;
+  height: 40px;
+  width: 379px;
+  flex: 1 0;
+  border-radius: 0px 0px 0px 0px;
+  border-top: 1px solid var(--Grays-Border-default, #969696);
+  border-bottom: 1px solid var(--Grays-Border-default, #969696);
+  border-left: 1px solid var(--Grays-Border-default, #969696);
+}
+
+.UsersList_usa-search-blue-button__P16Rp {
+  width: 56px;
+  height: 56px;
+  border: none;
+  background: var(--blues-border-lighter, #61a3ff);
+  background-position: center;
+}
+
+.UsersList_img__FeHwM .UsersList_usa-search-icon__TUZB7 {
+  width: 20px;
+  height: 20px;
+}
+
+.UsersList_usa-table__o_kHh {
+  border-radius: 25px 25px 25px 25px;
+  border: 1px solid #e7e8e9;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 1rem;
+  margin-left: 5%;
+  font-family: "Source Sans 3", sans-serif;
+}
+
+.UsersList_usa-table__o_kHh th {
+  border-color: #bfbfbf;
+}
+
+.UsersList_usa-table__o_kHh th:first-child {
+  border-top-left-radius: 1rem;
+}
+
+.UsersList_usa-table__o_kHh th:last-child {
+  border-top-right-radius: 1rem;
+}
+
+.UsersList_usa-table-header__F42qh {
+  height: 67px;
+  font-weight: 600;
+  font-size: 24px;
+  background-color: #e7e8e9; /* Light gray background for headers */
+  color: rgb(15, 15, 15);
+  padding: 16px 24px 16px 24px;
+  text-align: center;
+  font-family: "Source Sans 3", sans-serif;
+}
+
+.UsersList_usa-table__o_kHh tbody tr td {
+  border-color: #e7e8e9;
+  width: 284px;
+  font-family: "Source Sans 3", sans-serif;
+}
+
+.UsersList_usa-table__o_kHh tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 1rem;
+}
+
+.UsersList_usa-table__o_kHh tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 1rem;
+}

@@ -1,0 +1,11 @@
+{
+  "/(home)/documents/page": "app/(home)/documents/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/[lng]/page": "app/[lng]/page.js",
+  "/(home)/home/page": "app/(home)/home/page.js",
+  "/(user)/user/page": "app/(user)/user/page.js",
+  "/(home)/participation-agreement/page": "app/(home)/participation-agreement/page.js",
+  "/(home)/claim-your-business/page": "app/(home)/claim-your-business/page.js",
+  "/(home)/should-i-apply-2/page": "app/(home)/should-i-apply-2/page.js",
+  "/(home)/should-i-apply/page": "app/(home)/should-i-apply/page.js"
+}

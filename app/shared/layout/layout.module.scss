@@ -1,0 +1,71 @@
+@use 'colors' as *;
+@use 'constants' as *;
+
+//Footer
+.layoutFooter {
+  position: relative;
+  width: 100%;
+  bottom: 0;
+
+  li {
+    a {
+      text-decoration: none;
+    }
+  }
+
+  .usa-footer__primary-container {
+    margin-left: 0px;
+  }
+}
+
+// Sidebar
+.layoutSidebar {
+  .MuiListItemButton-root {
+    flex-direction: column;
+    padding: 0px;
+    margin-bottom: 14px;
+
+    .MuiListItemIcon-root {
+      min-width: 0px;
+    }
+
+    .MuiSvgIcon-root {
+      width: 30px;
+      height: 25px;
+      color: $gray-0;
+    }
+
+    .MuiListItemText-root {
+      .MuiTypography-root {
+        font-size: 12px !important;
+        color: $gray-0;
+      }
+    }
+  }
+
+  .MuiListItemButton-root:hover {
+    background-color: $gray-0;
+
+    .MuiSvgIcon-root {
+      color: $blue-500;
+    }
+
+    .MuiListItemText-root {
+      .MuiTypography-root {
+        color: $blue-500;
+      }
+    }
+  }
+}
+
+// Navbar
+.nav {
+  position: sticky;
+  top: 0;
+  background-color: $blue-500;
+  height: $navbar-height;
+
+  .businessName {
+    background-color: $blue-500;
+  }
+}

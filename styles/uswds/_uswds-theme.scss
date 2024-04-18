@@ -5,8 +5,8 @@
     In case we to use USWDS SCSS (mixins, functions, variables, etc.)
     This needs to be done even if we aren't going to use them
 ***********************************************************************/
-@use 'uswds-core' with (
-    $theme-image-path: '@uswds/uswds/img',
-    $theme-font-path: '@uswds/uswds/fonts',
-    $theme-hero-image: '@uswds/uswds/img/hero.jpg'
-);
+// @use 'uswds-core' with (
+// $theme-image-path: '@uswds/uswds/img',
+// $theme-font-path: '@uswds/uswds/fonts',
+// $theme-hero-image: '@uswds/uswds/img/hero.jpg'
+// );

@@ -1,0 +1,188 @@
+@use '../../../../styles/helpers/colors' as *;
+
+$line-height-base-px: 1.62;
+$line-height-tight-px: 1.5;
+
+.container {
+	
+	line-height: $line-height-base-px;
+	div, section, p, h1, h2, h3 {
+		box-sizing: border-box;
+	}
+	h1, h2, h3 {
+		margin: 0;
+		padding: 0;
+	}
+	p {
+		margin: 20px 0 0;
+	}
+
+	h2 {
+		font-size: 1.5rem; // 24px
+		&.header_2 {
+			font-size: 1.938rem; // 31px
+		}
+	}
+
+	&_end {
+		margin: 18px 0;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 20px;
+	}
+
+	&_hubzone {
+		display: flex;
+		column-gap: 8px;
+		width: max-content;
+		svg {
+			align-self: center;
+		}
+		a {
+			align-self: end;
+		}
+		
+	}
+
+	&_business__location {
+		display: flex;
+		gap: 8px;
+
+		input {
+			flex-grow: 1;
+		}
+		@media screen and (max-width: 800px) {
+			flex-wrap: wrap;
+		}
+	}
+}
+
+.header {
+	border-bottom: 1px solid black;
+}
+
+.section {
+	&_readiness, &_eligible {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr);
+		column-gap: 16px;
+
+		@media screen and (min-width: 56.25rem) { 
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	&_ownerinfo {
+		display: flex;
+		flex-wrap: wrap;
+		column-gap: 110px;
+	}
+	
+	&.programs {
+		p {
+			margin-bottom: 18px;
+		}
+	}
+}
+
+.title_form {
+	margin: 37px 30px 40px;
+	max-width: 100%;
+	display: flex;
+	flex-direction: column;
+	row-gap: 20px;
+	h1 {
+		font-size: 3.375rem; // 54px
+	}
+}
+
+.line {
+	&.gray {
+		height: 1px;
+		border: none;
+		background-color: #BBBCBF;
+	}
+}
+
+.input {
+	&_container {
+		margin-top: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 28px;
+	}
+	&_text {
+		width: 564px;
+		max-width: 100%;
+		border-color: $grays-border-disabled;
+
+		&::placeholder {
+			color: $grays-text-icons-disabled;
+		}
+
+		&.width_fit {
+			width: fit-content;
+		}
+	}
+}
+
+.grid {
+	&_col {
+		&__2 {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+			gap: 8px;
+		}
+	}
+
+	&_fit {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		align-items: flex-start;
+		grid-auto-flow: column;
+		grid-auto-columns: minmax(260px, 1fr);
+	}
+}
+
+.flex {
+	display: flex;
+	column-gap: 8px;
+
+	&_wrap {
+		display: flex;
+		column-gap: 110px;
+		flex-wrap: wrap;
+	}
+}
+
+.alert {
+	max-width: 100%;
+	width: 900px;
+	flex-grow: 1;
+
+	&_question {
+		width: 100%;
+	}
+}
+
+.italic {
+	font-style: italic;
+}
+
+
+.link {
+	&_clear {
+		color: inherit;
+		text-decoration: none;
+	}
+}
+
+.error_text {
+	margin-top: 8px;
+	color: $reds-text-icon-icon-light;
+}
+
+.column_gap {
+	column-gap: 28px;
+}

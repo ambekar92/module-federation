@@ -1,0 +1,111 @@
+@use '../helpers/colors' as *;
+.disadvantage-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+
+	@media screen and (max-width: 800px) {
+		grid-template-columns: repeat(1, 1fr);
+	}
+}
+.disadvantage-card {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 16px;
+	background-color: $grays-surface-subtle;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	border: 1px solid $grays-border-default;
+	transition: 0.25s ease background-color;
+
+
+	h2 {
+		background-color: transparent;
+		margin: 0;
+		color: $grays-surface-subtle;
+	}
+
+	&.blue-bg {
+		background-color: $blues-surface-darker;
+		color: $grays-surface-subtle;
+	}
+
+	.card-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background-color: $blues-surface-darker;
+		padding: 14px 24px;
+	}
+
+	.card-content {
+		padding: 16px 24px;
+		margin: 0;
+	}
+
+	.custom-checkbox {
+		-webkit-appearance: none;
+		appearance: none;
+		margin: 0;
+		cursor: pointer;
+		width: 20px;
+		height: 20px;
+		border: 1px solid $grays-surface-subtle;
+		border-radius: 50%;
+		vertical-align: middle;
+		position: relative;
+
+		&:checked {
+			background-color: $grays-surface-subtle;
+			border-color: $grays-surface-subtle;
+		}
+
+		&:checked::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 10px;
+			height: 10px;
+			background: $grays-surface-subtle;
+			border-radius: 50%;
+		}
+	}
+}
+
+.should-i-apply {
+	.usa-table {
+		border-collapse: collapse;
+		border-spacing: 0;
+		border-radius: 1rem;
+		max-width: 100%;
+	}
+
+	.usa-table--borderless.usa-table {
+		min-width: 100%;
+		border: 1px solid $grays-border-disabled;
+		overflow-clip-margin: hidden;
+
+		svg {
+			height: 24px;
+		}
+
+		thead {
+			background-color: $blues-surface-subtle;
+			border-radius: 2rem;
+
+			th {
+				padding: 1rem;
+				font-size: 1.5rem;
+				border-bottom: none;
+			}
+		}
+
+		td {
+			vertical-align: middle;
+			border-top: 1px solid $grays-surface-default;
+			border-bottom: none;
+		}
+	}
+}

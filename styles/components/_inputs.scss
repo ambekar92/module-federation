@@ -1,47 +1,55 @@
+@use 'colors' as *;
+
 .usa-input {
-   max-width: 641px;
-   width: 100%;
+  max-width: 641px;
+  width: 100%;
 }
 
 input.usa-input {
-   display: flex;
-   min-height: 56px;
-   padding: 8px 16px;
-   align-items: center;
-   gap: 8px;
-   align-self: stretch;
-   border-radius: 8px;
-   outline: thin solid --grays-border-disabled;
+  display: flex;
+  min-height: 56px;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+  border-radius: 8px;
+  outline: thin solid --grays-border-disabled;
 }
 
 input.usa-input.icon {
-   background: url('../../public/visibility.svg') no-repeat center right 10px;
-   background-color: #ffffff;
+  background: url('../../public/visibility.svg') no-repeat center right 10px;
+  background-color: $gray-0;
 }
 
 input:not([disabled]):focus {
-   outline: thin solid #2491ff;
-   outline-offset: 0rem;
+  outline: thin solid $bright-blue;
+  outline-offset: 0rem;
 }
 
 input.usa-input.usa-input--error,
 input.usa-input.usa-input--success {
-   border-width: thin;
+  border-width: thin;
 }
 
 input.usa-input.usa-input--error.icon {
-   background: url('../../public/error.svg') no-repeat center right 10px;
-   background-color: #ffffff;
+  background: url('../../public/error.svg') no-repeat center right 10px;
+  background-color: $gray-0;
 }
 
-input.usa-input.usa-input--success.icon {
-   background: url('../../public/check_circle.svg') no-repeat center right 10px;
-   background-color: #ffffff;
+input.usa-input.usa-input--success.icon,
+input.usa-input.usa-input--success.icon:-internal-autofill-selected {
+  background: url('../../public/check_circle.svg') no-repeat center right 10px !important;
+  background-color: $gray-0 !important;
 }
 
 .usa-input-helper-text {
-   max-width: 641px;
-   width: 100%;
-   color: var(--reds-text-icon-icon-light);
-   font-style: italic;
+  max-width: 641px;
+  width: 100%;
+  // color: var(--reds-text-icon-icon-light);
+  color: $gray-600;
+  font-style: italic;
+
+  .error-message {
+    color: var(--reds-text-icon-icon-light);
+  }
 }

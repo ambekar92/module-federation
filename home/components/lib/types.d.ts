@@ -1,3 +1,0 @@
-interface IChildren {
-   children: ReactNode
-}
