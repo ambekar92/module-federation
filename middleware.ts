@@ -26,6 +26,7 @@ export const config = {
     // '/users',
     // '/',
     // '/documents',
+    // '/notifications',
   ],
 }
 
