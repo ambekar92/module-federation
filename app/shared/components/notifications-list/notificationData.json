@@ -1,25 +1,60 @@
 {
-    "data": [
-      {
-        "id": 1,
-        "title": "Notification",
-        "description": "Notification preview text",
-        "created_at": "3 min ago",
-        "userIcon": "JD"
-      },
-      {
-        "id": 2,
-        "title": "Notification",
-        "description": "Notification preview text",
-        "created_at": "3 min ago",
-        "userIcon": "SA"
-      },
-      {
-        "id": 3,
-        "title": "Notification",
-        "description": "Notification preview text",
-        "created_at": "3 min ago",
-        "userIcon": "NA"
-      }      
-    ]
+  "data": [
+    {
+      "id": 1,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "JD"
+    },
+    {
+      "id": 2,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "SA"
+    },
+    {
+      "id": 3,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "NA"
+    },
+    {
+      "id": 4,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "NA"
+    },
+    {
+      "id": 5,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "NA"
+    },
+    {
+      "id": 6,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "NA"
+    },
+    {
+      "id": 7,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "NA"
+    },
+    {
+      "id": 8,
+      "title": "Notification",
+      "description": "Notification preview text",
+      "created_at": "3 min ago",
+      "userIcon": "NA"
+    }
+  ]
 }

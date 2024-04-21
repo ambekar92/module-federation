@@ -50,7 +50,7 @@ function NotificationHeader() {
   };
 
   return (
-    <div className={styles['documents-header']}>
+    <div className={styles['notification-header']}>
       <Grid container spacing={2}>
         <Grid item xs={11} md={11} lg={11}>
           <h1>Notifications</h1>
@@ -62,7 +62,7 @@ function NotificationHeader() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
             onClick={handleClick} 
-            className='margin-top-205'
+            className={styles['notification-mainMenu']}
             >            
             <MoreVertIcon />
           </IconButton>
