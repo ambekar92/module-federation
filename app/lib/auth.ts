@@ -1,6 +1,5 @@
 import { NextAuthOptions, getServerSession } from 'next-auth'
 import OktaProvider from 'next-auth/providers/okta'
-import { redirect } from 'next/navigation'
 import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken'
 
 export const authConfig: NextAuthOptions = {
@@ -30,9 +29,5 @@ export const authConfig: NextAuthOptions = {
 
 export async function getSessionServer() {
   const session = await getServerSession(authConfig)
-  console.log(session)
-  if (!session) {
-    console.log('no session')
-    return redirect('/login')
-  }
+  return session;
 }

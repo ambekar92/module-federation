@@ -1,20 +1,14 @@
 @use 'colors' as *;
 
-#participation-modal {
-  .usa-modal.usa-modal--lg {
-    border-radius: 0;
-    max-width: 900px;
-  }
-
-  .usa-modal--lg .usa-modal__main {
-    max-width: none;
-    padding: 0;
-  }
+.participation-modal {
+  border-radius: 0;
+  max-width: 900px;
+  padding: 0;
 
   .participation-modal-heading {
     padding: 0 2rem;
 
-    #participation-modal-heading1 {
+    .participation-modal-heading1 {
       font-size: 18px;
       font-family: 'Source Sans 3';
       font-weight: 600;
@@ -23,7 +17,7 @@
       text-align: left;
     }
 
-    #participation-modal-heading2 {
+    .participation-modal-heading2 {
       font-size: 24px;
       font-family: 'Source Sans 3';
       font-weight: 400;
@@ -58,16 +52,15 @@
 
   .bottom-divider {
     border-top: 1px solid $pale-blue;
-    width: 95%;
+    width: 100%;
   }
 
   .usa-modal__footer {
     margin: 1.5rem 0;
   }
 
-  .usa-modal .usa-button-group.default-btn {
+  .btn-styles {
     display: flex;
     justify-content: flex-end;
-    padding: 0 2rem;
   }
 }

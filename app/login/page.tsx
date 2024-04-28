@@ -1,10 +1,15 @@
-import { Card } from '@trussworks/react-uswds'
-import React from 'react'
-import styles from './Login.module.scss'
-import LoginButton from './LoginButton'
-import UCMSAlert from '@/app/shared/components/UCMSAlert/UCMSAlert'
+import UCMSAlert from '@/app/shared/components/UCMSAlert/UCMSAlert';
+import { Card } from '@trussworks/react-uswds';
+import { getSessionServer } from '../lib/auth';
+import styles from './Login.module.scss';
+import LoginButton from './LoginButton';
+import { redirect } from 'next/navigation';
 
-export default async function Login() {
+export default async function Login({searchParams}: {searchParams: {next: string}}) {
+  const session = await getSessionServer();
+  if(session) {
+    redirect(`${searchParams.next || '/home'}`)
+  }
   return (
     <>
       <Card
@@ -57,3 +62,4 @@ export default async function Login() {
     </>
   )
 }
+

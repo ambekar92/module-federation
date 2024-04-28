@@ -1,24 +1,37 @@
 @use 'constants' as *;
+@use '../styles' as *;
 @import '@trussworks/react-uswds/lib/uswds.css';
 @import '@trussworks/react-uswds/lib/index.css';
-@import '../styles';
 
 .dark {
-  $blues-surface-subtle: var($blue-600);
-  $blues-border-lighter: var($blue-500);
-  $grays-text-icons-body: var($gray-0);
-  $grays-text-icons-title: var($gray-0);
-  $blues-surface-darker: var($blue-100);
-  $grays-surface-subtle: var($gray-950);
+  $blues-surface-subtle: $blue-600;
+  $blues-border-lighter: $blue-500;
+  $grays-text-icons-body: $gray-0;
+  $grays-text-icons-title: $gray-0;
+  $blues-surface-darker: $blue-100;
+  $grays-surface-subtle: $gray-950;
 }
 
 $line-height-base-px: 1.5;
 $line-height-tight-px: 1.35;
 
+.layout {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 24px); // Accounts for usa banner
+
+	// The main element will fill remaining space to ensure full page height
+	.grid-container-widescreen {
+		flex-grow: 1;
+		width: 100%;
+	}
+}
+
 .line-height {
 	&-base {line-height: $line-height-base-px;}
 	&-tight {line-height: $line-height-tight-px;}
 }
+
 @mixin logo_sm {
   width: 10.5rem;
   max-width: 25%;
@@ -139,4 +152,8 @@ input:not([disabled]):focus, select:not([disabled]):focus, textarea:not([disable
 iframe:focus, [href]:focus, [tabindex]:focus, [contentEditable=true]:focus {
   outline: 0px solid #2491ff !important;
   outline-offset: 0rem;
+}
+
+.usa-input-group {
+  height: fit-content !important;
 }

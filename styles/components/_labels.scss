@@ -1,5 +1,7 @@
+@use 'colors' as *;
+
 .usa-label {
-    color: var(--grays-text-icons-body);
+    color: $grays-text-icons-body;
     font-size: 20px;
     font-style: normal;
     font-weight: 600;

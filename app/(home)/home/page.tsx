@@ -1,11 +1,33 @@
-import { GridContainer } from '@trussworks/react-uswds'
+'use client'
+import { Button } from '@trussworks/react-uswds'
 import Link from 'next/link'
-import {
-  Grid
-} from '@trussworks/react-uswds'
-import React from 'react'
+import { Grid } from '@trussworks/react-uswds'
+import React, { useState } from 'react'
+import ParticipationAgreementModal from '../components/participation-agreement-modal/ParticipationAgreementModal'
+import UserSessionModal from '@/app/shared/components/user-session-management-modal/UserSessionModal'
+
+const modalBody = (
+  <ul className="participation-modal-body">
+    <li>
+      To complete your <span>Participation Agreement</span>, carefully read
+      through each section and check the box at the bottom of the section
+      indicating your understanding and agreement to the terms.{' '}
+    </li>
+    <li>
+      A signed copy of your <span>Participation Agreement</span> will be made
+      available under the ‘Documents’ section of your dashboard.
+    </li>
+  </ul>
+)
 
 const HomePage = () => {
+  const [open, setOpen] = useState<boolean>(false)
+  const UserSessionModalDemo = () => {
+    // eslint-disable-next-line no-console
+    console.log('clicked!')
+    setOpen(!open)
+  }
+
   return (
     <Grid row>
       <div className="tablet:grid-col-4 margin-top-4 tablet:margin-bottom-0">
@@ -15,9 +37,6 @@ const HomePage = () => {
               <Link href="/user">User Management</Link>
             </li>
             <li className="usa-sidenav__item">
-              <Link href="/participation-agreement">Participation Agreement</Link>
-            </li>
-            <li className="usa-sidenav__item">
               <Link href="/claim-your-business">Claim Your Business</Link>
             </li>
             <li className="usa-sidenav__item">
@@ -25,6 +44,21 @@ const HomePage = () => {
             </li>
             <li className="usa-sidenav__item">
               <Link href="/documents">Documents</Link>
+            </li>
+            <li className="usa-sidenav__item">
+              <ParticipationAgreementModal
+                modalTitle={
+                  'U.S. Small Business Administration 8(a) Business Development Program'
+                }
+                subModalTitle={'Participation Agreement'}
+                modalBody={modalBody}
+              />
+            </li>
+            <li className="usa-sidenav__item">
+              <Button type="button" onClick={UserSessionModalDemo}>
+                Display User Session Modal
+              </Button>
+              {open && <UserSessionModal openDemo={open} />}
             </li>
           </ul>
         </nav>

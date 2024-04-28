@@ -1,5 +1,5 @@
 import React from 'react';
-import Ownership from '../components/should-i-apply/Ownership';
+import Ownership from '../should-i-apply/components/Ownership';
 
 const OwnershipPage = () => {
   return (

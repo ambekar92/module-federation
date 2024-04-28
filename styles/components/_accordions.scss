@@ -77,7 +77,7 @@ button:not(:disabled).custom-usa-accordion__button[aria-expanded='true']:hover {
   padding: 1rem 1.25rem 0.75rem 1.25rem;
 
   flex: 1 0 0;
-  color: var(--grays-text-icons-body, $gray-950);
+  color: $grays-text-icons-body;
 
   /* Body */
   font-size: 16px;

@@ -1,13 +1,257 @@
-@use '../helpers/colors' as *;
-.disadvantage-grid {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 16px;
+@use 'colors' as *;
 
-	@media screen and (max-width: 800px) {
-		grid-template-columns: repeat(1, 1fr);
+.ownership {
+	.usa-table {
+		border-collapse: separate;
+		border-spacing: 0;
+		border-radius: 1rem;
+	}
+	
+	.usa-table th:first-child {
+		border-top-left-radius: 1rem;
+		border-top-right-radius: 1rem;
+	}
+	.usa-table td:first-child {
+		border-bottom-left-radius: 1rem;
+	}
+	
+	.usa-table td:last-child {
+		border-bottom-right-radius: 1rem;
+	}	
+
+	&-table {
+		max-width: 100%;
+		overflow: scroll;
+
+		.usa-table--borderless.usa-table {
+			min-width: 100%;
+			border: 1px solid $grays-border-disabled;
+			overflow-clip-margin: hidden;
+
+			svg {
+				height: 24px;
+			}
+
+			thead {
+				background-color: $blues-surface-subtle;
+				border-radius: 2rem;
+
+				th {
+					padding: 1rem;
+					font-size: 1.5rem;
+					border-bottom: none;
+				}
+			}
+
+			td {
+				vertical-align: middle;
+				border-top: 1px solid $grays-surface-default;
+				border-bottom: none;
+			}
+
+			button, [type=button], [type=reset], [type=submit] {
+				background-color: transparent;
+				border: none;
+				cursor: pointer;
+			}
+			
+			.icons {
+				background-color: transparent;
+				height: fit-content;
+				width: fit-content;
+				color: $grays-text-icons-caption;
+				user-select: none;
+
+				&:focus {
+					outline: none;
+					border: none;
+				}
+
+				&:hover>svg {
+					color: $grays-text-icons-subtitle;
+				}
+			}
+		}
 	}
 }
+
+.ownership-form>*,
+.ownership-form {
+	.usa-select {
+		border-radius: 8px;
+	}
+
+	.bold {
+		font-weight: 600;
+	}
+
+	.table-container {
+		overflow-x: auto;
+		margin: auto;
+		width: 100%;
+
+		table {
+			border-collapse: collapse;
+			width: 100%;
+			min-width: 600px;
+
+			th,
+			td {
+				border-top: 1px solid $grays-surface-default;
+				text-align: left;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				max-width: 150px;
+			}
+
+			thead {
+				background-color: $grays-surface-subtle;
+			}
+		}
+	}
+
+	.disadvantage-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 16px;
+		
+	}
+
+	.italics {
+		font-style: italic;
+	}
+
+	.flex {
+		display: flex;
+
+		.usa-button:last-child {
+			margin-right: 0;
+		}
+
+		&-end {
+			justify-content: end;
+			align-items: end;
+
+			.usa-input-helper-text {
+				width: fit-content;
+				margin-top: 0.75rem;
+			}
+		}
+
+		&-col {
+			display: flex;
+			flex-direction: column;
+
+			label {
+				display: inline;
+				padding: 0.3rem 0 0.2rem;
+			}
+
+			input,
+			select {
+				width: 100%;
+				max-width: 641px;
+			}
+
+			&.gap-med {
+				row-gap: 1.5rem;
+			}
+		}
+	}
+
+	.container-buttons {
+		margin-top: 2rem;
+		width: 100%;
+		display: flex;
+		justify-content: end;
+		column-gap: 1rem;
+
+		.usa-button:last-child {
+			margin-right: 0;
+		}
+	}
+
+	.container-button-add {
+		.usa-button {
+			margin-right: 0;
+		}
+		.top-button {
+			margin-bottom: 0.5rem;
+		}
+	}
+
+	.container-controller {
+		margin-bottom: 1rem;
+
+		@media screen and (max-width: 700px) {
+			flex-direction: column;
+		}
+
+		.flex-col {
+			width: 25%;
+
+			@media screen and (max-width: 700px) {
+				width: 100%;
+			}
+
+			&:not(:last-child) {
+				margin-right: 1rem;
+			}
+		}
+	}
+
+	.container-documentation {
+		h3 {
+			background-color: transparent;
+			font-size: 1.5rem;
+			padding-left: 0;
+		}
+
+		p {
+			margin-top: 0;
+			font-style: italic;
+			color: $grays-text-icons-disabled;
+			;
+		}
+
+		.wrapper {
+			border-top: 1px solid $grays-border-default;
+			padding-top: 16px;
+			display: flex;
+			flex-direction: column;
+			row-gap: 12px;
+		}
+	}
+
+	.container-input-file {
+		border: 1px solid $grays-border-default;
+		border-radius: 0.5rem;
+		overflow: hidden;
+
+		input {
+			padding: 0rem;
+			margin: 0;
+			width: 100%;
+			cursor: pointer;
+		}
+
+		input::file-selector-button {
+			background-color: $grays-surface-subtle;
+			border: none;
+			padding: 0.5rem;
+			border-right: 1px solid $grays-surface-default;
+			margin-right: 0.75rem;
+			cursor: pointer;
+			text-overflow: ellipsis;
+		}
+
+		&:hover input::file-selector-button {
+			background-color: $grays-surface-disabled;
+		}
+	}
+}
+
 .disadvantage-card {
 	display: flex;
 	flex-direction: column;
@@ -28,6 +272,10 @@
 	&.blue-bg {
 		background-color: $blues-surface-darker;
 		color: $grays-surface-subtle;
+
+		a {
+			color: $grays-border-default;
+		}
 	}
 
 	.card-header {
@@ -35,12 +283,11 @@
 		align-items: center;
 		justify-content: space-between;
 		background-color: $blues-surface-darker;
-		padding: 14px 24px;
+		padding: 0.5rem 1rem;
 	}
 
 	.card-content {
-		padding: 16px 24px;
-		margin: 0;
+		padding: 0.5rem 1rem;
 	}
 
 	.custom-checkbox {
@@ -70,42 +317,6 @@
 			height: 10px;
 			background: $grays-surface-subtle;
 			border-radius: 50%;
-		}
-	}
-}
-
-.should-i-apply {
-	.usa-table {
-		border-collapse: collapse;
-		border-spacing: 0;
-		border-radius: 1rem;
-		max-width: 100%;
-	}
-
-	.usa-table--borderless.usa-table {
-		min-width: 100%;
-		border: 1px solid $grays-border-disabled;
-		overflow-clip-margin: hidden;
-
-		svg {
-			height: 24px;
-		}
-
-		thead {
-			background-color: $blues-surface-subtle;
-			border-radius: 2rem;
-
-			th {
-				padding: 1rem;
-				font-size: 1.5rem;
-				border-bottom: none;
-			}
-		}
-
-		td {
-			vertical-align: middle;
-			border-top: 1px solid $grays-surface-default;
-			border-bottom: none;
 		}
 	}
 }

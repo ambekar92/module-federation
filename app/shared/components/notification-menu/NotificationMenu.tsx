@@ -56,7 +56,6 @@ const NotificationMenu = () => {
         <Divider />
 
         {tempNotifications.map((notification, index) => (
-          <>
             <MenuItem key={index}>
               <div className={styles.menuItem}>
                 <AccountCircle className={styles.profileImg} />
@@ -75,9 +74,8 @@ const NotificationMenu = () => {
                 </p>
                 <p className={styles.timeDuration}> {notification.time}</p>
               </div>
-            </MenuItem>
             <Divider />
-          </>
+            </MenuItem>
         ))}
       </Menu>
     </div>

@@ -14,10 +14,14 @@ import styles from './UserSessionModal.module.scss'
 const timeout = 30 * 60_000
 const promptBeforeIdle = 5 * 60_000
 
-const UserSessionModal = () => {
+interface UserSessionProps {
+  openDemo?: boolean
+}
+
+const UserSessionModal: React.FC<UserSessionProps> = ({ openDemo }) => {
   const [, setState] = useState<string>('Active')
   const [remaining, setRemaining] = useState<number>(0)
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(openDemo !== undefined ? true : false)
 
   const onIdle = () => {
     setState('Idle')

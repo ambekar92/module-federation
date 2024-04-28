@@ -49,7 +49,7 @@ input.usa-input.usa-input--success.icon:-internal-autofill-selected {
   color: $gray-600;
   font-style: italic;
 
-  .error-message {
-    color: var(--reds-text-icon-icon-light);
+  &.error-message {
+    color: $reds-text-icon-icon-light;
   }
 }

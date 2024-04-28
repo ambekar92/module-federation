@@ -1,5 +1,5 @@
 import React from 'react'
-import ClaimBusiness from '../components/claim-my-business/ClaimMyBusiness'
+import ClaimBusiness from './components/ClaimMyBusiness'
 
 export default function ClaimYourBusiness(): JSX.Element {
 

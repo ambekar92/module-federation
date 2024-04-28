@@ -1,8 +1,8 @@
-import ShoudIApplyForm from '../components/should-i-apply/ShoudIApplyForm'
+import ShouldIApplyForm from './components/ShouldIApplyForm'
 
 const ShouldIApplyPage = () => {
   return (
-    <ShoudIApplyForm />
+    <ShouldIApplyForm />
   )
 }
 export default ShouldIApplyPage

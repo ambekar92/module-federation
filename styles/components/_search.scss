@@ -17,9 +17,9 @@
   flex: 1 0 0;
   align-self: stretch;
   border-radius: 8px 0px 0px 8px;
-  border-top: 1px solid var(--Grays-Border-default, $gray-500);
-  border-bottom: 1px solid var(--Grays-Border-default, $gray-500);
-  border-left: 1px solid var(--Grays-Border-default, $gray-500);
+  border-top: 1px solid $grays-border-default;
+  border-bottom: 1px solid $grays-border-default;
+  border-left: 1px solid $grays-border-default;
 }
 
 .usa-search--small .usa-button {
@@ -30,15 +30,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--blues-border-lighter, $blue-200);
+  background: $blues-border-lighter;
 }
 
 .usa-search--small .usa-button .usa-icon {
   display: flex;
-  width: var(--Size, 24px);
-  height: var(--Size, 24px);
+  width: 24px;
+  height: 24px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  fill: var(--grays-text-icons-inverse, $gray-0);
+  fill: $grays-text-icons-inverse;
 }

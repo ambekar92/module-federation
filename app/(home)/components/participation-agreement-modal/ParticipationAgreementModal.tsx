@@ -27,28 +27,28 @@ const ParticipationAgreementModal: React.FC<ModalProps> = ({
   const router = useRouter()
 
   const handleClick = () => {
-    router.push('/participation-agreement')
+    router.push('/participation-agreement/')
   }
 
   return (
     <>
       <ModalToggleButton modalRef={modalRef} opener type="button">
-        Open persistent modal
+        Participation Agreement Modal
       </ModalToggleButton>
       <Modal
         ref={modalRef}
         forceAction
         aria-labelledby="modal-heading"
         aria-describedby="modal-description"
-        isLarge
         isInitiallyOpen={false} // set to false for the moment, until feature is fully built out so that it is persistent
         id="participation-modal"
+        className={styles['participation-modal']}
       >
         <div className={styles['participation-modal-heading']}>
-          <ModalHeading id="participation-modal-heading1">
+          <ModalHeading className={styles['participation-modal-heading1']}>
             {modalTitle}
           </ModalHeading>
-          <ModalHeading id="participation-modal-heading2">
+          <ModalHeading className={styles['participation-modal-heading2']}>
             {subModalTitle}
           </ModalHeading>
         </div>
@@ -56,7 +56,7 @@ const ParticipationAgreementModal: React.FC<ModalProps> = ({
         <div className={styles['usa-prose']}>{modalBody}</div>
         <hr className={styles['bottom-divider']} />
         <ModalFooter>
-          <ButtonGroup className="default-btn">
+          <ButtonGroup className={styles['btn-styles'] + ' default-btn'}>
             <ModalToggleButton modalRef={modalRef} outline type="button">
               Download copy
             </ModalToggleButton>

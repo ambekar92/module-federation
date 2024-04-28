@@ -12,11 +12,11 @@ body {
 }
 
 nav {
-  background-color: var(--blues-surface-dark, $blue-500);
+  background-color: $blues-surface-dark;
 }
 
 footer {
-  background-color: var(--blues-surface-dark, $blue-500);
+  background-color: $blues-surface-dark;
   padding: 5px;
 }
 

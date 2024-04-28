@@ -30,7 +30,7 @@
     aspect-ratio: 1.29/1;
   }
   .status {
-    color: var(--blues-surface-darker);
+    color: $blues-surface-darker;
     font-size: 128px;
     font-weight: 600;
     text-align: center;
@@ -59,9 +59,9 @@
     z-index: -1;
     filter: grayscale(100%) invert(100%) opacity(20%);
   }
-  .button {
+  .button { 
     text-decoration: none;
-    color: var(--greens-text, $forest-green);
+    color: $forest-green;
     margin-top: 30px;
     border-radius: 4px;
     height: fit-content;
