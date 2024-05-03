@@ -1,1 +1,1 @@
-export const API_HOST = 'https://ucms-internal-api.demo.sba-one.net/api/v1'
+export const API_ROUTE = process.env.NEXT_PUBLIC_API_URL

@@ -18,5 +18,11 @@ export async function POST(req: Request, res: Response): Promise<void> {
     topic: topic,
     messages: [{ value: JSON.stringify(message) }],
   })
-  return new Response('Message sent to Kafka successfully')
+  return new Response(
+    {},
+    {
+      status: 200,
+      statusText: 'Message sent to Kafka successfully',
+    },
+  )
 }

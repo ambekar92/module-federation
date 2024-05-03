@@ -81,10 +81,6 @@ function DocumentsListFolders() {
             </MenuItem>
             <Divider />
             <MenuItem onClick={handleClose}>
-              <ShortcutIcon fontSize='small' />
-              <span className={styles['menuText']}>Share</span>
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
               <DriveFileMoveIcon fontSize='small' />
               <span className={styles['menuText']}>Move</span>
             </MenuItem>

@@ -34,7 +34,22 @@ const HomePage = () => {
         <nav aria-label="Side navigation,">
           <ul className="usa-sidenav">
             <li className="usa-sidenav__item">
-              <Link href="/user">User Management</Link>
+              <Link href="/notifications">Notifications</Link>
+            </li>
+            <li className="usa-sidenav__item">
+              <Link href="/user/dashboard">Supervisor and Analysis Dashboard</Link>
+            </li>
+            <li className="usa-sidenav__item">
+              <Link href="/admin/document-types">Document Types</Link>
+            </li>
+            <li className="usa-sidenav__item">
+              <Link href="/ownership">Ownership and Control</Link>
+            </li>
+            <li className="usa-sidenav__item">
+              <Link href="/user/list">User Management</Link>
+            </li>
+            <li className="usa-sidenav__item">
+              <Link href="/user/1">User</Link>
             </li>
             <li className="usa-sidenav__item">
               <Link href="/claim-your-business">Claim Your Business</Link>

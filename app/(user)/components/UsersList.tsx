@@ -9,8 +9,8 @@ import {
 } from '@trussworks/react-uswds'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { RECORDS_PER_PAGE, data } from '../constants'
-import { ColValues, ColumnNames, User, mapDisplayNameToUserKey } from '../types'
+import { RECORDS_PER_PAGE, data } from '../user/list/constants'
+import { ColValues, ColumnNames, User, mapDisplayNameToUserKey } from '../user/list/types'
 import { SearchBar } from './SearchBar'
 import styles from './UsersList.module.scss'
 

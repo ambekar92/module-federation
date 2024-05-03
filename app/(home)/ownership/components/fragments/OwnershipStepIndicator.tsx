@@ -10,7 +10,6 @@ const OwnershipStepIndicator = () => {
     <StepIndicator
       headingLevel='h4'
     >
-
       <StepIndicatorStep
         label={formSteps[0].name}
         aria-label='progress'

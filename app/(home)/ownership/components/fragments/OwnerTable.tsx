@@ -80,18 +80,19 @@ const OwnerTable: React.FC<OwnershipTableProps> = ({ isDisplay, setValue, reset 
               <td>
                 {owner.socialDisadvantages.length === 0
                   ? 'N/A'
-                  : owner.socialDisadvantages
-                    .map((disadvantage) =>
-                      disadvantage === 'not_claiming'
-                        ? 'Not Claiming Social Disadvantage'
-                        : disadvantage === 'disabledVeteran'
+                  : owner.socialDisadvantages.includes('not_claiming') && owner.socialDisadvantages.length === 1
+                    ? 'Not Claiming Social Disadvantage'
+                    : owner.socialDisadvantages
+                      .filter(disadvantage => disadvantage !== 'not_claiming') // Remove 'not_claiming' if there are other disadvantages
+                      .map(disadvantage =>
+                        disadvantage === 'disabledVeteran'
                           ? 'Disabled Veteran'
                           : disadvantage
                             .split('_')
-                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                             .join(' ')
-                    )
-                    .join(', ')}
+                      )
+                      .join(', ')}
               </td>
 
               <td>{owner.ownershipPercentage}%</td>

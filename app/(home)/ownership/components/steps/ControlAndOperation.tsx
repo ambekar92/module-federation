@@ -6,6 +6,7 @@ import { addOrUpdateEmployee, selectForm, setDisplayAddEmployeeWarning, setEditi
 import { useFormDispatch, useFormSelector } from '../store/hooks';
 import { EmployeeType, OwnershipInputsType } from '../utils/types';
 
+const principalLabel = {textOverflow: 'ellipsis', overflow: 'hidden'}
 interface Props {
 	control: Control<OwnershipInputsType>;
 	setValue: UseFormSetValue<OwnershipInputsType>;
@@ -75,70 +76,98 @@ const ControlAndOperation = ({ control, setValue, reset, trigger, getValues }: P
           </p>
           <Grid row gap='md' className='margin-bottom-4'>
             <Grid desktop={{ col: 3 }} tablet={{ col: 6 }} mobile={{ col: 12 }}>
-              <Label htmlFor="name" requiredMarker>
+              <Label className='text-bold' htmlFor="name" requiredMarker>
                 Name
               </Label>
               <Controller
                 control={control}
                 name="name"
-                render={({ field: { ref, ...field } }) => (
-                  <TextInput className='width-full maxw-full' type="text" id="name" inputRef={ref} {...field} value={field.value} />
+                render={({ field: { ...field }, fieldState: { error } }) => (
+                  <>
+                  	<TextInput className={`width-full maxw-full ${error && 'border-secondary-vivid'}`} type="text" id="name" {...field} value={field.value} />
+                    {error && (
+                      <div className='margin-top-1 usa-input-helper-text'>
+                        <span className="text-secondary-vivid">Required Field</span>
+                      </div>
+                    )}
+                  </>
                 )}
               />
             </Grid>
 
             <Grid desktop={{ col: 3 }} tablet={{ col: 6 }} mobile={{ col: 12 }}>
-              <Label htmlFor="role" requiredMarker>
+              <Label htmlFor="role" className='text-no-wrap text-bold' style={principalLabel} requiredMarker>
 								Principal Type (Officer, Director, Member)
               </Label>
               <Controller
                 control={control}
                 name="role"
-                render={({ field: { ...field } }) => (
-                  <Select style={{ height: '56px' }} className='width-full maxw-full' id="role" {...field}>
-                    <option selected={field.value === undefined || field.value === ''} disabled>
+                render={({ field: { ...field }, fieldState: { error } }) => (
+                  <>
+                    <Select style={{ height: '56px' }} className={`width-full maxw-full ${error && 'border-secondary-vivid'}`} id="role" {...field}>
+                      <option selected={field.value === undefined || field.value === ''} disabled>
                       - Select -
-                    </option>
-                    <option value="principal">Principal</option>
-                    <option value="partner">Partner</option>
-                    <option value="member">Member</option>
-                    <option value="officer">Officer</option>
-                    <option value='board_member'>Board Member</option>
-                    <option value="board_director">Board Director</option>
-                    <option value="other">Other</option>
-                  </Select>
+                      </option>
+                      <option value="principal">Principal</option>
+                      <option value="partner">Partner</option>
+                      <option value="member">Member</option>
+                      <option value="officer">Officer</option>
+                      <option value='board_member'>Board Member</option>
+                      <option value="board_director">Board Director</option>
+                      <option value="other">Other</option>
+                    </Select>
+                    {error && (
+                      <div className='margin-top-1 usa-input-helper-text'>
+                        <span className="text-secondary-vivid">Required Field</span>
+                      </div>
+                    )}
+                  </>
                 )}
               />
             </Grid>
 
             <Grid desktop={{ col: 3 }} tablet={{ col: 6 }} mobile={{ col: 12 }}>
-              <Label htmlFor="position" requiredMarker>
+              <Label className='text-bold' htmlFor="position" requiredMarker>
                 Position
               </Label>
               <Controller
                 control={control}
                 name="position"
-                render={({ field: { ref, ...field } }) => (
-                  <TextInput className='width-full maxw-full' type="text" id="position" inputRef={ref} {...field} value={field.value} />
+                render={({ field: { ...field }, fieldState: { error } }) => (
+                  <>
+                    <TextInput className={`width-full maxw-full ${error && 'border-secondary-vivid'}`} type="text" id="position" {...field} value={field.value} />
+                    {error && (
+                      <div className='margin-top-1 usa-input-helper-text'>
+                        <span className="text-secondary-vivid">Required Field</span>
+                      </div>
+                    )}
+                  </>
                 )}
               />
             </Grid>
 
             <Grid desktop={{ col: 3 }} tablet={{ col: 6 }} mobile={{ col: 12 }}>
-              <Label htmlFor="licenseHolder" requiredMarker>
+              <Label className='text-bold' htmlFor="licenseHolder" requiredMarker>
                 License Holder
               </Label>
               <Controller
                 control={control}
                 name="licenseHolder"
-                render={({ field: { ...field } }) => (
-                  <Select style={{ height: '56px' }} className='width-full maxw-full' id="licenseHolder" {...field}>
-                    <option selected={field.value === undefined} disabled>
+                render={({ field: { ...field }, fieldState: { error } }) => (
+                  <>
+                    <Select style={{ height: '56px' }} className={`width-full maxw-full ${error && 'border-secondary-vivid'}`} id="licenseHolder" {...field}>
+                      <option selected={field.value === undefined} disabled>
                       - Select -
-                    </option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </Select>
+                      </option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </Select>
+                    {error && (
+                      <div className='margin-top-1 usa-input-helper-text'>
+                        <span className="text-secondary-vivid">Required Field</span>
+                      </div>
+                    )}
+                  </>
                 )}
               />
             </Grid>
@@ -150,7 +179,7 @@ const ControlAndOperation = ({ control, setValue, reset, trigger, getValues }: P
 
             {displayAddEmployeeWarning && (
               <div className="usa-input-helper-text">
-                <span className="error-message">One Employee Required*</span>
+                <span className="text-secondary-vivid">One Employee Required*</span>
               </div>
             )}
           </div>

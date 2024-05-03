@@ -1,8 +1,13 @@
-import axios from 'axios'
-import { API_HOST } from '../constants/routes'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import axios from 'axios';
+
+interface ApiResponse {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;  // Can vary based on structure
+}
 
 export const axiosInstance = axios.create({
-  baseURL: API_HOST,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 30 * 60_000, // 30 minutes
   headers: {
     Accept: 'application/json, text/plain, */*',
@@ -11,48 +16,65 @@ export const axiosInstance = axios.create({
 })
 
 // API Response Error Handling
-const handleResponseError = async (response: any) => {
-  throw new Error("HTTP error, status = " + response.status);
+const handleResponseError = (error: any) => {
+  if (axios.isAxiosError(error)) {
+    const responseError = error.response;
+    if (responseError) {
+      throw new Error(`HTTP error, status = ${responseError.status}`);
+    }
+  }
+  throw new Error(`An unexpected error occurred: ${error}`);
 }
 
-// Common GET METHOD
-const fetcherGET = async (url: string) => {
-  return axiosInstance.get(url)
-    .then(response => {
-      if (response?.status !== 200) {
-        handleResponseError(response);
-      }
-      return response;
-    })
-    .catch(error => {
-      // Handle the error
-      console.log(">> API Error >>", error);
-    });
+// GET METHOD
+export const fetcherGET = async (url: string): Promise<ApiResponse> => {
+  try {
+    const response = await axiosInstance.get<ApiResponse>(url);
+
+    if (response.status < 200 || response.status >= 300) {
+      handleResponseError(response);
+    }
+
+    return response.data;  // Valid response data returned here
+  } catch (error) {
+    handleResponseError(error);
+  }
+
+  throw new Error('fetcherGET reached an unexpected location in code.');
 }
 
-// Common POST METHOD
-// const fetcherPOST = async (url: any, param: any) => {
-//   return axiosInstance.post(url, param)
-//     .then(response => {
-//       if (response?.status !== 200) {
-//         handleResponseError(response);
-//       }
-//       return response;
-//     })
-//     .catch(error => {
-//       // Handle the error
-//       console.log(">> API Error >>", error);
-//     });
-// }
+// POST METHOD
+export const fetcherPOST = async (url: string, param: any): Promise<ApiResponse> => {
+  try {
+    const response = await axiosInstance.post<ApiResponse>(url, param);
 
-async function getNotifications(param: any) { // This method calling from Redux
-  let api_url = "/notifications?user_id=" + param;
+    if (response.status < 200 || response.status >= 300) {
+      handleResponseError(response);
+    }
+
+    return response.data;  // Valid response data returned here
+  } catch (error) {
+    handleResponseError(error);
+  }
+
+  throw new Error('fetcherPOST reached an unexpected location in code.');
+}
+
+// API to get notifications list
+async function getNotifications(user_id: string | number): Promise<ApiResponse> {
+  const api_url = '/notifications?user_id=' + user_id;
   return fetcherGET(api_url);
 }
 
-
-const prototype = {
-  getNotifications
+// API to get getDocuments list
+async function getDocuments(user_id: string | number): Promise<ApiResponse> {
+  const api_url = '/documents?user_id=' + user_id;
+  return fetcherGET(api_url);
 }
 
-export default prototype
+const prototype = {
+  getNotifications,
+  getDocuments
+}
+
+export default prototype;

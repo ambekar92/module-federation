@@ -37,6 +37,21 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
     if(totalUsedPercentage === 100) {
       dispatch(setStep(currentStep + 1));
       dispatch(setDisplayPercentWarning(false));
+      reset({
+        firstName: '',
+        middleInitial: '',
+        lastName: '',
+        gender: undefined,
+        usCitizen: undefined,
+        veteran: undefined,
+        disabledVeteran: undefined,
+        ownershipPercentage: undefined,
+        socialDisadvantages: []
+      });
+      dispatch(setSelectedOptions([]));
+      dispatch(setEditingOwner(null));
+      dispatch(setDisplayDisadvantageError(false))
+      dispatch(updateInputKey());
     } else {
       dispatch(setDisplayPercentWarning(true))
     }
@@ -62,12 +77,22 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
     ], { shouldFocus: true });
     const data = getValues();
 
-    if(data.socialDisadvantages.length === 0 || selectedOptions.length === 0) {
+    // Initialize updatedDisadvantages with selected options or "not_claiming" if none
+    let updatedDisadvantages = selectedOptions.length > 0
+      ? selectedOptions.map(option => option.value)
+      : ['not_claiming'];
+
+    // Ensure "not_claiming" is not combined with other disadvantages
+    if (updatedDisadvantages.length > 1) {
+      updatedDisadvantages = updatedDisadvantages.filter(d => d !== 'not_claiming');
+    }
+
+    // If there are no disadvantages, including "not_claiming", set the error
+    if(updatedDisadvantages.length === 0 || selectedOptions.length === 0) {
       return dispatch(setDisplayDisadvantageError(true))
     } else {
       dispatch(setDisplayDisadvantageError(false))
     }
-
     if (isValid) {
 
       let updatedDisadvantages = data.usCitizen === 'Yes'
@@ -87,7 +112,6 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
       manageDisadvantage(data.disabledVeteran === 'Yes' && data.veteran === 'Yes', 'disabledVeteran');
 
       setValue('socialDisadvantages', updatedDisadvantages, { shouldValidate: true });
-      dispatch(setSelectedOptions([]));
 
       // Dispatch the thunk to update owners and calculate new eligible programs
       dispatch(addOrUpdateOwner({ ...data, socialDisadvantages: updatedDisadvantages })).then(() => {
@@ -105,6 +129,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
         ownershipPercentage: undefined,
         socialDisadvantages: []
       });
+      dispatch(setSelectedOptions([]));
       dispatch(setEditingOwner(null));
       dispatch(updateInputKey());
     }
@@ -162,13 +187,13 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
                             {...field}
                             id={`input-${key}`}
                             type="text"
-                            className={`icon width-full maxw-full ${key === 'middleInitial' && ''}`}
+                            className={`icon width-full maxw-full ${error && key !== 'middleInitial' && 'border-secondary-vivid'}`}
                             maxLength={firmOwnershipTextInputs[key].maxlength}
                             value={field.value}
                           />
-                          {error && (
+                          {error && key !== 'middleInitial' && (
                             <div className='margin-top-1 usa-input-helper-text'>
-                              <span className="error-message">Required Field</span>
+                              <span className="text-secondary-vivid">Required Field</span>
                             </div>
                           )}
                         </>
@@ -212,7 +237,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
                           </Grid>
                           {error && (
                             <div className='margin-top-1 usa-input-helper-text'>
-                              <span className="error-message">Required Field</span>
+                              <span className="text-secondary-vivid">Required Field</span>
                             </div>
                           )}
                         </>
@@ -222,7 +247,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
                 )
               ))}
 
-              {/* {isVeteran === 'Yes' && (
+              {isVeteran === 'Yes' && (
                 <Grid col={12}>
                   <Label htmlFor="disabledVeteran" requiredMarker>
                     <span className='text-bold'>
@@ -258,20 +283,20 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
                               onChange={() => field.onChange('No')}
                             />
                             <Label className={`${Styles.usa_radio__label} usa-radio__label`} htmlFor="disabled-veteran-no">
-                      			No
+                      				No
                             </Label>
                           </div>
                         </Grid>
                         {error && (
                           <div className='margin-top-1 usa-input-helper-text'>
-                            <span className="error-message">Required Field</span>
+                            <span className="text-secondary-vivid">Required Field</span>
                           </div>
                         )}
                       </>
                     )}
                   />
                 </Grid>
-              )} */}
+              )}
             </Grid>
 
             <div>
@@ -289,11 +314,11 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
                       borderRadius: '8px',
                       minHeight: '2.45rem',
                       height: '56px',
-                      borderColor: '#565c65',
-                      outline: state.isFocused ? '3px solid #0f73ff' : ''
+                      borderColor: displayDisadvantageError ? '#e41d3d' : '#565c65',
+                      outline: state.isFocused ? '3px solid #0f73ff' : '',
+                      cursor: 'pointer'
                     })
                   }}
-                  classNamePrefix="ownership-info-disadvantages"
                   options={disadvantageOptions}
                   isMulti={true}
                   onChange={handleSelectChange}
@@ -309,7 +334,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
 
                 {displayDisadvantageError && (
                   <div className='margin-top-1 usa-input-helper-text'>
-                    <span className="error-message">Required Field</span>
+                    <span className="text-secondary-vivid">Required Field</span>
                   </div>
                 )}
               </div>
@@ -318,7 +343,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
             <Grid offset={8} className="margin-top-4 display-flex flex-align-end flex-column">
               <Label htmlFor="ownershipPercentage" requiredMarker>
                 <span className='text-bold'>
-								Ownership Percentage
+									Ownership Percentage
                 </span>
               </Label>
               <Controller
@@ -331,7 +356,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
                       id='ownership-percentage'
                       style={{ height: '56px' }}
                       type="number"
-                      className={'width-auto margin-left-auto maxw-full'}
+                      className={`width-auto margin-left-auto maxw-full ${error && 'border-secondary-vivid'}`}
                       key={inputKey}
                       {...field}
                       onChange={(e) => {
@@ -351,7 +376,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
                     />
                     {error && (
                       <div className='margin-top-1 width-auto usa-input-helper-text'>
-                        <span className="error-message">Required Field</span>
+                        <span className="text-secondary-vivid">Required Field</span>
                       </div>
                     )}
                   </>
@@ -372,7 +397,7 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
               </ButtonGroup>
               {displayRequiredFieldsWarning && (
                 <div className="usa-input-helper-text">
-                  <span className="error-message">All Fields Required*</span>
+                  <span className="text-secondary-vivid">All Fields Required*</span>
                 </div>
               )}
             </div>
@@ -385,13 +410,13 @@ const FirmOwnershipInfo = ({ control, setValue, getValues, trigger, reset, watch
           <div className='width-full display-flex flex-column flex-align-end flex-justify-end'>
             <NavigationButtons handleNextStep={handleNextStep} handlePrevStep={handlePreviousStep} />
             {displayPercentWarning && (
-              <div className="usa-input-helper-text margin-top-1">
-                <span className="error-message float-right">100% Ownership Required*</span>
+              <div className="usa-input-helper-text margin-top-1 text-secondary-vivid">
+                <span className="text-secondary-vivid float-right">100% Ownership Required*</span>
               </div>
             )}
             {displayAddOwnerWarning && (
               <div className="usa-input-helper-text">
-                <span className="error-message">One Owner Required*</span>
+                <span className="text-secondary-vivid">One Owner Required*</span>
               </div>
             )}
           </div>

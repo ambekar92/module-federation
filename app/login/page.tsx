@@ -1,4 +1,5 @@
-import UCMSAlert from '@/app/shared/components/UCMSAlert/UCMSAlert';
+import React from 'react';
+import UCMSAlert from '../shared/components/UCMSAlert/UCMSAlert';
 import { Card } from '@trussworks/react-uswds';
 import { getSessionServer } from '../lib/auth';
 import styles from './Login.module.scss';
@@ -62,4 +63,3 @@ export default async function Login({searchParams}: {searchParams: {next: string
     </>
   )
 }
-

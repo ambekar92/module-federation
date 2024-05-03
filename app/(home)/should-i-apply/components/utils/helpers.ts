@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf'
 import { stateAbbreviations, SIAFormData } from './types';
-import { SBA_LOGO_ONE_BASE64 as sbaLogoBase64 } from '../../../../constants/image';
+import { SBA_LOGO_ONE_BASE64 as sbaLogoBase64 } from '@/app/constants/image';
 export const checkIfUSAddress = (address: string): boolean => {
   // Check for ZIP code pattern
   const zipCodeRegex = /\b\d{5}(-\d{4})?\b/;

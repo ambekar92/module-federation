@@ -8,10 +8,15 @@ locals {
     UCMS_ENV                             = local.env.ucms_env
     UCMS_LOG_TO_STDOUT                   = "true"
     UCMS_HOST                            = "${local.service_fqdn}-wfe"
-    UCMS_ADMIN_ENV                      = "${local.env.ucms_env}_admin"
+    UCMS_ADMIN_ENV                       = "${local.env.ucms_env}_admin"
+    OKTA_OAUTH2_ISSUER                   = "https://dev-91055511.okta.com/oauth2/default"
+    NEXTAUTH_URL                         = "https://ucms.demo.sba-one.net"
+    NEXT_PRIVATE_LOCAL_WEBPACK           = "true" 
   }
   container_secrets_parameterstore = {
-    
+    OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_ID"
+    OKTA_OAUTH2_CLIENT_SECRET = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_SECRET"
+    NEXTAUTH_SECRET           = "${terraform.workspace}/ucms/NEXTAUTH_SECRET"
   }
 }
 

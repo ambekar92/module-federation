@@ -1,11 +1,13 @@
+import React from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import QAFormExample from '../sandbox/QAFormExample'
 
 export default async function Home() {
   return (
-    <main>
-      <h1>App</h1>
+    <>
+      <QAFormExample />
       <ToastContainer />
-    </main>
+    </>
   )
 }

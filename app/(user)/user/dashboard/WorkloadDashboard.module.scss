@@ -1,0 +1,55 @@
+@use 'colors' as *;
+
+.content {
+    display: flex;
+    gap: 3rem;
+}
+
+.firmInfo {
+    display: flex;
+    flex-direction: column;
+
+    svg {
+        cursor: pointer;
+        margin-left: .5rem
+    }
+}
+
+.copiedContainer {
+    position: relative;
+}
+.copiedText {
+    position: absolute;
+    background-color: rgba(0,0,0,0.3);
+    color: $gray-0;
+    top: -1.5rem;
+    left: 2rem;
+    border-radius: 4px;
+    padding: .1rem;
+}
+
+.cardContainer {
+    display: grid;
+    grid-template-columns:  1fr 1fr;
+    gap: 2rem;
+}
+
+.card {
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+
+    .count {
+        font-size: 2rem;
+        color: $gray-400
+    }
+}
+
+.cardText {
+    font-size: .8rem;
+}
+
+.helpText {
+    font-size: .7rem;
+}

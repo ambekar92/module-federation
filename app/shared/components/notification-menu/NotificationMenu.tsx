@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styles from './NotificationMenu.module.scss'
+import { Icon, Button, Card } from '@trussworks/react-uswds'
 import { Badge, Divider, IconButton } from '@mui/material'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import Menu from '@mui/material/Menu'
@@ -10,6 +11,7 @@ import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined'
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
 
 const NotificationMenu = () => {
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const handleNotificationMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -56,26 +58,26 @@ const NotificationMenu = () => {
         <Divider />
 
         {tempNotifications.map((notification, index) => (
-            <MenuItem key={index}>
-              <div className={styles.menuItem}>
-                <AccountCircle className={styles.profileImg} />
-              </div>
-              <div>
-                <div className={styles.title}>
-                  <span className={styles.name}> {notification.name} </span>
-                  <div className={styles.actionIcons}>
-                    <MailOutlineOutlinedIcon />
-                    <DeleteOutlineOutlinedIcon />
-                  </div>
+          <MenuItem key={index}>
+            <div className={styles.menuItem}>
+              <AccountCircle className={styles.profileImg} />
+            </div>
+            <div>
+              <div className={styles.title}>
+                <span className={styles.name}> {notification.name} </span>
+                <div className={styles.actionIcons}>
+                  <MailOutlineOutlinedIcon />
+                  <DeleteOutlineOutlinedIcon />
                 </div>
-                <p className={styles.description}>{notification.message}</p>
-                <p className={styles.description}>
-                  <a href="#">Link</a>: {notification.linkMessage}
-                </p>
-                <p className={styles.timeDuration}> {notification.time}</p>
               </div>
+              <p className={styles.description}>{notification.message}</p>
+              <p className={styles.description}>
+                <a href="#">Link</a>: {notification.linkMessage}
+              </p>
+              <p className={styles.timeDuration}> {notification.time}</p>
+            </div>
             <Divider />
-            </MenuItem>
+          </MenuItem>
         ))}
       </Menu>
     </div>

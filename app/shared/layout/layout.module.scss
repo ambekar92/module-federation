@@ -18,54 +18,36 @@
   }
 }
 
-// Sidebar
-.layoutSidebar {
-  .MuiListItemButton-root {
-    flex-direction: column;
-    padding: 0px;
-    margin-bottom: 14px;
-
-    .MuiListItemIcon-root {
-      min-width: 0px;
-    }
-
-    .MuiSvgIcon-root {
-      width: 30px;
-      height: 25px;
-      color: $gray-0;
-    }
-
-    .MuiListItemText-root {
-      .MuiTypography-root {
-        font-size: 12px !important;
-        color: $gray-0;
-      }
-    }
-  }
-
-  .MuiListItemButton-root:hover {
-    background-color: $gray-0;
-
-    .MuiSvgIcon-root {
-      color: $blue-500;
-    }
-
-    .MuiListItemText-root {
-      .MuiTypography-root {
-        color: $blue-500;
-      }
-    }
+//navbar
+.names-container ul{
+  padding-bottom: 29px;
+  padding-left:20px;
+  cursor: pointer; 
+  list-style-type: none;
+  li{
+    float: left;
+    justify-content: center;
+    padding-right: 30px;
   }
 }
+.names-container.selected {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-bottom: 0px;
+  border-bottom: 5px solid $blue-100;
+  text-decoration: none;
+}
 
-// Navbar
-.nav {
-  position: sticky;
-  top: 0;
-  background-color: $blue-500;
-  height: $navbar-height;
+.usa-selection {
+  position: relative; 
+  padding-top:2px;
+}
 
-  .businessName {
-    background-color: $blue-500;
-  }
+.usa-arrow {
+  position: absolute; 
+  padding-top:2px;
+}
+
+.icon-size {
+  font-size: 28px;
 }

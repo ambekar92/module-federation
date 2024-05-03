@@ -1,6 +1,6 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod';
-import { GridContainer, StepIndicator } from '@trussworks/react-uswds';
+import { GridContainer } from '@trussworks/react-uswds';
 import { useForm } from 'react-hook-form';
 import { Provider } from 'react-redux';
 import { z } from 'zod';
@@ -23,9 +23,10 @@ function OwnershipControlForm() {
     watch,
     setValue,
     trigger,
-    getValues,
+    getValues
   } = useForm<Inputs>({
     resolver: zodResolver(OwnershipFormDataSchema),
+    mode: 'onBlur',
     defaultValues: {
       socialDisadvantages: [],
       ownershipPercentage: undefined,

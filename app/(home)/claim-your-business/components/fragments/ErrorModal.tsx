@@ -1,11 +1,12 @@
-import { Box } from '@mui/material';
-import { Alert, Button } from '@trussworks/react-uswds';
-import Modal from '@mui/material/Modal';
+import { Box } from '@mui/material'
+import { Alert, Button } from '@trussworks/react-uswds'
+import Modal from '@mui/material/Modal'
+import React from 'react'
 
 interface ErrorModalProps {
-	open: boolean;
-	handleClose: () => void;
-	error?: string;
+  open: boolean
+  handleClose: () => void
+  error?: string
 }
 
 // Only way to style the box component
@@ -17,13 +18,26 @@ const boxStyles = {
   maxWidth: '100%',
   maxHeight: '100%',
   overflow: 'auto',
-  borderRadius: 3
+  borderRadius: 3,
 }
 
-const ErrorModal: React.FC<ErrorModalProps> = ({ open, handleClose, error }) => {
+const ErrorModal: React.FC<ErrorModalProps> = ({
+  open,
+  handleClose,
+  error,
+}) => {
   if (typeof window === 'undefined') {
     // Avoids rendering modals on the server
-    return null;
+    return null
+  }
+  let headingMsg
+
+  if (error === 'already claimed') {
+    headingMsg = 'This business has already been claimed.'
+  } else if (error === 'not found') {
+    headingMsg = 'The information you entered does not match SAM.gov.'
+  } else {
+    headingMsg = 'There has been a unexpected error, please try again later.'
   }
 
   return (
@@ -35,23 +49,29 @@ const ErrorModal: React.FC<ErrorModalProps> = ({ open, handleClose, error }) => 
               role="alert"
               className="wide"
               type="error"
-              heading={error === 'already claimed' ? 'This business has already been claimed.' : 'The information you entered does not match SAM.gov.'}
+              heading={headingMsg}
               headingLevel="h4"
             >
               <ul>
                 <li>
-									If you claimed the business using another email account, please log in using that
-									account.
+                  If you claimed the business using another email account,
+                  please log in using that account.
                 </li>
                 <li>
-									If your business has other qualified owners, please ensure that they have not already
-									claimed the business. Each business can only be claimed once.
+                  If your business has other qualified owners, please ensure
+                  that they have not already claimed the business. Each business
+                  can only be claimed once.
                 </li>
                 <li>
-                  If none of the above are true, you should contact UCP support for further assistance.
+                  If none of the above are true, you should contact UCP support
+                  for further assistance.
                 </li>
               </ul>
-              <Button type='button' className="float-right" onClick={handleClose}>
+              <Button
+                type="button"
+                className="float-right"
+                onClick={handleClose}
+              >
                 Close
               </Button>
             </Alert>
@@ -59,7 +79,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({ open, handleClose, error }) => 
         )}
       </Box>
     </Modal>
-  );
-};
+  )
+}
 
-export default ErrorModal;
+export default ErrorModal

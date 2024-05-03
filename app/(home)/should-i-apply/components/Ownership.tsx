@@ -9,7 +9,7 @@ import Select, { MultiValue } from 'react-select'
 import { z } from 'zod'
 import {
   SBA_LOGO_ONE_URL
-} from '../../../constants/image'
+} from '@/app/constants/image'
 import Styles from './ShoudIApplyForm.module.scss'
 import { checkIfUSAddress } from './utils/helpers'
 import { OwnershipSchema } from './utils/schema'

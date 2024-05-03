@@ -150,148 +150,6 @@ button:not(:disabled).custom-usa-accordion__button[aria-expanded=true]:hover {
   background-color: #7a0000;
 }
 
-/* Default button styles */
-.usa-button.usa-button {
-  display: flex;
-  max-width: 350px;
-  min-width: 125px;
-  height: 44px;
-  padding: 12px 20px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  border-radius: 8px;
-  background: #004fbd;
-  color: #ffffff;
-  text-align: center;
-  font-family: Source Sans Pro Web;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  border: none;
-}
-
-.usa-button:active {
-  background-color: #002e6d;
-}
-
-.usa-button:not([disabled]):hover {
-  background-color: #002457;
-}
-
-/* Adjusted focused state */
-.usa-button:not([disabled]):focus {
-  display: inline-flex;
-  padding: 8px 16px; /* Reduced padding to make up for thicker border */
-  justify-content: center;
-  align-content: center;
-  gap: 8px;
-  border-radius: 8px;
-  border: 4px solid #004fbd; /* Thicker border on focus */
-}
-
-.usa-button:disabled,
-.usa-button:disabled:hover {
-  background-color: #bfbfbf;
-  color: #ffffff;
-}
-
-/* Style for button with icon */
-.usa-button:has(.usa-icon) {
-  padding: 12px 16px;
-}
-
-/* Styles for icon in default button */
-.usa-button .usa-icon {
-  display: flex;
-  width: 18px;
-  height: 18px;
-  justify-content: center;
-  align-content: center;
-  fill: #ffffff;
-}
-
-/* Outline button styles */
-.usa-button.usa-button--outline {
-  background-color: #ffffff;
-  color: #004fbd;
-  padding: 10px 18px;
-  border: 2px solid #004fbd;
-  box-shadow: none;
-  transition: all 0.2s ease-in-out;
-}
-
-.usa-button--outline:active {
-  background-color: #002e6d;
-  color: #ffffff;
-  border: 2px solid #002e6d;
-  box-shadow: none;
-}
-
-.usa-button--outline:not([disabled]):hover {
-  background-color: #ffffff;
-  color: #002457;
-  border: 2px solid #002457;
-  box-shadow: none;
-}
-
-.usa-button--outline:not([disabled]):focus {
-  display: inline-flex;
-  padding: 8px 16px;
-  justify-content: center;
-  align-content: center;
-  gap: 8px;
-  border-radius: 8px; /* Adjusted radius */
-  border: 4px solid #004fbd;
-}
-
-.usa-button--outline:disabled,
-.usa-button--outline:disabled:hover {
-  color: #bfbfbf;
-  background-color: #ffffff;
-  box-shadow: none;
-  padding: 10px 18px; /* Reduced padding to make up for thicker border */
-  border: 2px solid #bfbfbf;
-}
-
-/* Styles for icon in outline button */
-.usa-button--outline .usa-icon {
-  display: flex;
-  width: 18px;
-  height: 18px;
-  justify-content: center;
-  align-content: center;
-  fill: #004fbd;
-  transition: all 0.2s ease-in-out;
-}
-
-.usa-button--outline:active .usa-icon {
-  fill: #ffffff;
-}
-
-.usa-button--outline:not([disabled]):hover .usa-icon {
-  fill: #002457;
-}
-
-.usa-button--outline:not([disabled]):focus .usa-icon {
-  fill: #004fbd;
-}
-
-.usa-button--outline:disabled .usa-icon,
-.usa-button--outline:disabled:hover .usa-icon {
-  width: 18px;
-  height: 18px;
-  fill: #bfbfbf;
-}
-
-.usa-button-group-container {
-  max-width: 641px;
-}
-.usa-button-group-container .usa-button-group {
-  float: right;
-}
-
 .error-boundary {
   display: flex;
   height: 100vh;
@@ -1001,39 +859,9 @@ iframe:focus, [href]:focus, [tabindex]:focus, [contentEditable=true]:focus {
   height: -moz-fit-content !important;
   height: fit-content !important;
 }
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[11].oneOf[9].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[11].oneOf[9].use[5]!./app/shared/components/notification-menu/NotificationMenu.module.scss ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-.NotificationMenu_title__FnFqd {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
 
-.NotificationMenu_actionIcons__StWxf * {
-  font-size: 2rem;
-}
-
-.NotificationMenu_profileImg__rnyxt {
-  width: 4.5rem;
-  height: 4.5rem;
-  margin-right: 8px;
-}
-
-.NotificationMenu_discription__AwJd5 {
-  margin: 0px;
-  font-size: 12px;
-}
-.NotificationMenu_discription__AwJd5 a {
-  text-decoration: none;
-}
-
-.NotificationMenu_timeDuration__siUHk {
-  margin: 0px;
-  font-size: 10px;
-  color: #888585;
+li.usa-card {
+  list-style: none;
 }
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[9].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[11].oneOf[9].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[11].oneOf[9].use[5]!./app/shared/layout/layout.module.scss ***!
@@ -1050,42 +878,38 @@ iframe:focus, [href]:focus, [tabindex]:focus, [contentEditable=true]:focus {
   margin-left: 0px;
 }
 
-.layout_layoutSidebar__OGWiR .layout_MuiListItemButton-root__SRyMx {
-  flex-direction: column;
-  padding: 0px;
-  margin-bottom: 14px;
+.layout_names-container__47LZU ul {
+  padding-bottom: 29px;
+  padding-left: 20px;
+  cursor: pointer;
+  list-style-type: none;
 }
-.layout_layoutSidebar__OGWiR .layout_MuiListItemButton-root__SRyMx .layout_MuiListItemIcon-root__neku7 {
-  min-width: 0px;
-}
-.layout_layoutSidebar__OGWiR .layout_MuiListItemButton-root__SRyMx .layout_MuiSvgIcon-root__TtlPi {
-  width: 30px;
-  height: 25px;
-  color: #ffffff;
-}
-.layout_layoutSidebar__OGWiR .layout_MuiListItemButton-root__SRyMx .layout_MuiListItemText-root__RtqSE .layout_MuiTypography-root__KbS_s {
-  font-size: 12px !important;
-  color: #ffffff;
-}
-.layout_layoutSidebar__OGWiR .layout_MuiListItemButton-root__SRyMx:hover {
-  background-color: #ffffff;
-}
-.layout_layoutSidebar__OGWiR .layout_MuiListItemButton-root__SRyMx:hover .layout_MuiSvgIcon-root__TtlPi {
-  color: #002e6d;
-}
-.layout_layoutSidebar__OGWiR .layout_MuiListItemButton-root__SRyMx:hover .layout_MuiListItemText-root__RtqSE .layout_MuiTypography-root__KbS_s {
-  color: #002e6d;
+.layout_names-container__47LZU ul li {
+  float: left;
+  justify-content: center;
+  padding-right: 30px;
 }
 
-.layout_nav__RK6yy {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  background-color: #002e6d;
-  height: 4rem;
+.layout_names-container__47LZU.layout_selected__uEyoz {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-bottom: 0px;
+  border-bottom: 5px solid #adcfff;
+  text-decoration: none;
 }
-.layout_nav__RK6yy .layout_businessName__jHZaJ {
-  background-color: #002e6d;
+
+.layout_usa-selection__LXYyG {
+  position: relative;
+  padding-top: 2px;
+}
+
+.layout_usa-arrow__gIQfC {
+  position: absolute;
+  padding-top: 2px;
+}
+
+.layout_icon-size__BotZY {
+  font-size: 28px;
 }
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[13].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[13].use[3]!./node_modules/next/dist/build/webpack/loaders/resolve-url-loader/index.js??ruleSet[1].rules[11].oneOf[13].use[4]!./node_modules/next/dist/compiled/sass-loader/cjs.js??ruleSet[1].rules[11].oneOf[13].use[5]!./node_modules/@trussworks/react-uswds/lib/uswds.css ***!

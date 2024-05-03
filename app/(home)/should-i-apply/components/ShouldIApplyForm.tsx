@@ -1,7 +1,7 @@
 import { GridContainer } from '@trussworks/react-uswds'
 import {
   SBA_LOGO_ONE_URL
-} from '../../../constants/image'
+} from '@/app/constants/image'
 import NaicsSearch from './NaicsSearch'
 import SIAQuestionSections from './SIAQuestionSections'
 import Styles from './ShoudIApplyForm.module.scss'
