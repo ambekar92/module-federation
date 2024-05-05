@@ -6,6 +6,7 @@ import {
   Grid,
   Icon,
 } from '@trussworks/react-uswds'
+import { useRouter } from 'next/navigation'
 
 interface headerNames {
   id: string
@@ -20,11 +21,16 @@ const headerNames = [
 ]
 
 const Navbar: React.FC = () => {
+  const router = useRouter()
   const [selectedNameId, setSelectedNameId] = useState('')
 
-  const handleClick = (id) => {
+  const handleClick = (id:any) => {
     setSelectedNameId(selectedNameId === id ? null : id)
     console.log(selectedNameId)
+  }
+
+  const handleUserProfile=()=>{
+    router.push('/user/profile-settings/1')
   }
 
   return (
@@ -58,7 +64,7 @@ const Navbar: React.FC = () => {
               </a>
             </Grid>
             <Grid className="desktop:flex-1 mobile-lg:flex-1  padding-top-6 float-right margin-right-2">
-              <div className={styles['usa-nav_name']}>
+              <div className={styles['userProfile']} onClick={handleUserProfile}>
                 User Profile <Icon.ExpandMore />
               </div>
             </Grid>

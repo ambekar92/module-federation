@@ -1,6 +1,11 @@
 {
-  "/login/page": "app/login/page.js",
-  "/(home)/notifications/page": "app/(home)/notifications/page.js",
-  "/[lng]/page": "app/[lng]/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
+  "/(user)/user/profile-settings/[userId]/page": "app/(user)/user/profile-settings/[userId]/page.js",
+  "/(admin)/admin/document-types/page": "app/(admin)/admin/document-types/page.js",
+  "/(home)/ownership/page": "app/(home)/ownership/page.js",
+  "/(home)/home/page": "app/(home)/home/page.js",
+  "/page": "app/page.js",
+  "/api/auth/csrf": "app/api/auth/csrf.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/not-found": "app/not-found.js",
+  "/[lng]/page": "app/[lng]/page.js"
 }

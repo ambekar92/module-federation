@@ -1,0 +1,30 @@
+@use 'colors' as *;
+
+.formSection {
+  border: 1px solid #ececec;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  padding: 12px 14px;
+}
+
+.changePassword {
+  margin-left: 20px;
+  font-size: 16px;
+  text-decoration: underline;
+  color: #7979bd;
+  cursor: pointer;
+  margin-top: 14px;
+}
+
+.displayEmailId {
+  font-size: 15px;
+  margin-top: 36px;
+  font-style: italic;
+  color: #ababab;
+}
+
+.userEmailAddress {
+  margin-left: 20px;
+  font-size: 16px;
+  margin-top: 14px;
+}

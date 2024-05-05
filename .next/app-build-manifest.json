@@ -1,16 +1,5 @@
 {
   "pages": {
-    "/error": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/error.js"
-    ],
-    "/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
-    ],
     "/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -21,11 +10,22 @@
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/login/page": [
+    "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/login/page.css",
-      "static/chunks/app/login/page.js"
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/error": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/error.js"
+    ],
+    "/(user)/user/profile-settings/[userId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(user)/user/profile-settings/[userId]/page.css",
+      "static/chunks/app/(user)/user/profile-settings/[userId]/page.js"
     ],
     "/[lng]/page": [
       "static/chunks/webpack.js",
@@ -33,11 +33,76 @@
       "static/css/app/[lng]/page.css",
       "static/chunks/app/[lng]/page.js"
     ],
+    "/(user)/user/[userId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(user)/user/[userId]/page.js"
+    ],
+    "/(home)/documents/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(home)/documents/page.css",
+      "static/chunks/app/(home)/documents/page.js"
+    ],
+    "/(home)/participation-agreement/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(home)/participation-agreement/page.css",
+      "static/chunks/app/(home)/participation-agreement/page.js"
+    ],
+    "/(home)/home/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(home)/home/page.css",
+      "static/chunks/app/(home)/home/page.js"
+    ],
     "/(home)/notifications/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/(home)/notifications/page.css",
       "static/chunks/app/(home)/notifications/page.js"
+    ],
+    "/(user)/user/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(user)/user/dashboard/page.css",
+      "static/chunks/app/(user)/user/dashboard/page.js"
+    ],
+    "/(admin)/admin/document-types/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(admin)/admin/document-types/page.css",
+      "static/chunks/app/(admin)/admin/document-types/page.js"
+    ],
+    "/(home)/ownership/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(home)/ownership/page.css",
+      "static/chunks/app/(home)/ownership/page.js"
+    ],
+    "/(user)/user/list/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(user)/user/list/page.css",
+      "static/chunks/app/(user)/user/list/page.js"
+    ],
+    "/(home)/claim-your-business/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(home)/claim-your-business/page.css",
+      "static/chunks/app/(home)/claim-your-business/page.js"
+    ],
+    "/(home)/should-i-apply/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(home)/should-i-apply/page.css",
+      "static/chunks/app/(home)/should-i-apply/page.js"
+    ],
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/page.css",
+      "static/chunks/app/page.js"
     ]
   }
 }

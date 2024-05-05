@@ -72,9 +72,16 @@ async function getDocuments(user_id: string | number): Promise<ApiResponse> {
   return fetcherGET(api_url);
 }
 
+// API to get user profile details
+async function getUserProfileInfo(user_id: string | number): Promise<ApiResponse> {
+  const api_url = '/user?user_id=' + user_id;
+  return fetcherGET(api_url);
+}
+
 const prototype = {
   getNotifications,
-  getDocuments
+  getDocuments,
+  getUserProfileInfo
 }
 
 export default prototype;
