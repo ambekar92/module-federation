@@ -1,0 +1,17 @@
+.mb {
+	&_default {
+		margin-bottom: 1.25rem;
+	}
+}
+
+.mt {
+	&_small {
+		margin-top: 8px;
+	}
+}
+
+.form {
+	input[type='text'] {
+		max-width: 100%;
+	}
+}

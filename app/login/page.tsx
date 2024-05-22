@@ -9,7 +9,8 @@ import { redirect } from 'next/navigation';
 export default async function Login({searchParams}: {searchParams: {next: string}}) {
   const session = await getSessionServer();
   if(session) {
-    redirect(`${searchParams.next || '/home'}`)
+    // Leave this for now until the "check user" api is up so that only new users are redirected to CYB -KJ
+    redirect(`${'/claim-your-business' || searchParams.next || '/home'}`)
   }
   return (
     <>

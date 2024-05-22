@@ -24,8 +24,8 @@ export default function RootLayout({children, session}: RootLayoutProps) {
           <div className={`${theme.palette.mode} layout`}>
             <Navbar />
             <UserSessionModal />
-            <div className="grid-container-widescreen">
-              <main className="margin-y-205">{children}</main>
+            <div className="grid-container-widescreen display-flex">
+              <main className="margin-y-205 flex-fill display-flex flex-column">{children}</main>
             </div>
             <Footer />
           </div>

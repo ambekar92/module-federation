@@ -96,21 +96,19 @@ const QAFormExample = () => {
       <CustomHeader title='Application'>
         <ButtonGroup>
           <Button className='padding-1 display-flex flex-align-center' outline type='button'>
-            <SaveIcon fontSize='medium' className='margin-right-05' /> Save
+            <CloseIcon fontSize='medium' /> Close
           </Button>
           <Button className='padding-1 display-flex flex-align-center' outline type='button'>
-            <CloseIcon fontSize='medium' /> Close
+            <SaveIcon fontSize='medium' className='margin-right-05' /> Save
           </Button>
         </ButtonGroup>
       </CustomHeader>
 
-      <StepsIndicator
-        currentStep={currentStep}
-        steps={steps}
-        headingLevel="h4"
-      />
+      <div>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi excepturi ad, dolores fuga temporibus dolorem iure recusandae autem amet necessitatibus, dolor corrupti reiciendis repellendus suscipit illum ullam deleniti, commodi numquam.</p>
+      </div>
 
-      <QAWrapper sidebar={sidebarContent}  mainContent={mainContent} />
+      <QAWrapper mainContent={mainContent} />
 
       <ButtonGroup className='display-flex flex-justify flex-fill border-top padding-y-2'>
         <Button type='button' onClick={handlePrevious} disabled={currentStep === 0}>

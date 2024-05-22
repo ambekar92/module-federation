@@ -14,24 +14,6 @@ export default function ClaimBusiness(): JSX.Element {
 
   return (
     <div className={Styles.mb_default} >
-      <GridContainer containerSize="widescreen">
-        <Grid row>
-          <Grid col={12}>
-            <p>
-							Welcome to UCMS. The first step to submitting an application is
-							claiming your business.
-
-              <span>This process must be completed by a <b>Qualifying Owner of the business</b>. </span>
-
-              <span>
-								The Qualifying Owner is also responsible for attesting to the
-          			legally-required verification of information during the application
-          			process.
-              </span>
-            </p>
-          </Grid>
-        </Grid>
-      </GridContainer>
       {readyToValidate ? <ValidateBusinessForm /> : <ClaimBusinessForm claimFormComplete={claimFormComplete} />}
     </div>
   )

@@ -12,11 +12,14 @@ locals {
     OKTA_OAUTH2_ISSUER                   = "https://dev-91055511.okta.com/oauth2/default"
     NEXTAUTH_URL                         = "https://ucms.demo.sba-one.net"
     NEXT_PRIVATE_LOCAL_WEBPACK           = "true" 
+    NEXT_PUBLIC_API_URL                  = "https://ucms-internal-api.demo.sba-one.net/api/v1"
+    UCP_ATLASSIAN_USERNAME               = "management@certify.sba.gov"
   }
   container_secrets_parameterstore = {
     OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_ID"
     OKTA_OAUTH2_CLIENT_SECRET = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_SECRET"
     NEXTAUTH_SECRET           = "${terraform.workspace}/ucms/NEXTAUTH_SECRET"
+    UCP_ATLASSIAN_API_KEY     = "${terraform.workspace}/ucms/UCP_ATLASSIAN_API_KEY"
   }
 }
 

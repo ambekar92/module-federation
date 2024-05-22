@@ -10,6 +10,7 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+		"types": ["@testing-library/jest-dom", "jest", "next-auth"],
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
@@ -21,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "getPages.js"],
+  "exclude": ["node_modules", "app/api/**/**/*"]
 }

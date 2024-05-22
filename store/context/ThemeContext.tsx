@@ -1,7 +1,7 @@
 // context/ThemeContext.tsx
 import React, { createContext, useContext, ReactNode } from 'react'
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles'
-import usePreferredTheme from '@/hooks/usePreferredTheme'
+import usePreferredTheme from '@/app/shared/hooks/usePreferredTheme'
 
 interface ThemeContextType {
   toggleTheme: () => void

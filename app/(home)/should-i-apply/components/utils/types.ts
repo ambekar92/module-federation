@@ -59,9 +59,9 @@ export type ProgramOption = {
 }
 
 export interface NaicsCodeType {
-  code: string;
-  title: string;
-	awarded: number;
+  naics_code: string;
+  description: string;
+	award_amount: string;
 }
 
 export interface SIAFormData {

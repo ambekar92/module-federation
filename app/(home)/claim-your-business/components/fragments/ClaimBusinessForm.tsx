@@ -14,6 +14,7 @@ import ErrorModal from './ErrorModal';
 import { ClaimBusinessSchema } from '../utils/schemas';
 import { ClaimBusinessInputs } from '../utils/types';
 import Styles from '../ClaimMyBusiness.module.scss';
+import React from 'react';
 
 interface claimBusinessFormProps {
   claimFormComplete: () => void
@@ -63,11 +64,26 @@ function ClaimBusinessForm({ claimFormComplete = () => {} }: claimBusinessFormPr
               <p>SBA uses the business information from your <Link href="https://sam.gov/content/home" target="_blank" title="Open SAM.gov">SAM.gov</Link> account to verify your identity.</p>
               <p>Before you begin:</p>
               <ul>
-                <li>We recommend confirming your UEI, TIN, CAGE (if applicable), and bank account number in SAM.gov <Link href="https://sam.gov/content/entity-registration" target="_blank" title="Get Started with Registration and the Unique Entity ID">https://sam.gov/content/entity-registration</Link>.</li>
                 <li>Ensure your SAM.gov account is current and active. <Link href="https://sam.gov/content/status-tracker" target="_blank" title="Check Entity Status">https://sam.gov/content/status-tracker</Link></li>
+                <li>If you already have a SAM.gov account, we recommend confirming your UEI, TIN, CAGE (if applicable), and bank account number in SAM.gov <Link href="https://sam.gov/content/entity-registration" target="_blank" title="Get Started with Registration and the Unique Entity ID">https://sam.gov/content/entity-registration</Link>.</li>
                 <li className="text-bold">Note that if you make changes to your SAM.gov account, it will not be available in UCP until after it has been reviewed and ACTIVATED by SAM.gov.</li>
               </ul>
-              <p role="note" className="text-bold">IMPORTANT NOTE: SBA will only accept submissions from Qualified Owners (primary, majority business owners).</p>
+              <p role="note" className="text-bold">IMPORTANT NOTE: SBA will only accept submissions from Qualifying Owners (primary, majority business owners).</p>
+            </SummaryBoxContent>
+          </SummaryBox>
+          <SummaryBox className={Styles.mb_default}>
+            <SummaryBoxHeading headingLevel="h3">
+              For sole proprietorships
+            </SummaryBoxHeading>
+            <SummaryBoxContent>
+              <p>You can use your Social Security Number (SSN)
+                for business purposes. However, it is highly recommended that businesses
+                obtain an Employer Identification Number (EIN). Applying for an EIN is
+                simple and using your SSN for business can pose security and privacy risks.
+                Please visit
+              <Link href="https://irs.gov" target="_blank" title="Open irs.gov">
+                  IRS.gov
+              </Link> to apply for an EIN.</p>
             </SummaryBoxContent>
           </SummaryBox>
         </Grid>

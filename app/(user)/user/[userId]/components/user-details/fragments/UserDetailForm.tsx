@@ -2,15 +2,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Grid,
   GridContainer,
-  Label,
   Icon,
-  Button,
+  Label
 } from '@trussworks/react-uswds'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import FormInputs from './FormInputs'
 import { FormSchema } from '../utils/schemas'
 import { UserFormInputs, UserProfileType } from '../utils/types'
+import FormInputs from './FormInputs'
 
 interface userDetailFormProps {
   userProfileData: UserProfileType

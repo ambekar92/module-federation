@@ -11,11 +11,11 @@ const QAWrapper: React.FC<QAWrapperProps> = ({ sidebar, mainContent }) => {
   return (
     <Grid row gap='lg' className='border-top'>
       {sidebar && (
-        <Grid col={4} className={`border-right ${Styles['hidden-mobile']}`}>
+        <Grid col={4} className={`border-right padding-bottom-3 ${Styles['hidden-mobile']}`}>
           {sidebar}
         </Grid>
       )}
-      <Grid col={8} className='padding-bottom-3'>
+      <Grid mobile={{col: 12}} tablet={{col: 8}} className='padding-bottom-3'>
         {mainContent}
       </Grid>
     </Grid>

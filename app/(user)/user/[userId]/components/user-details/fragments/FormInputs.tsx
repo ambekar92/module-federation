@@ -1,32 +1,31 @@
-import React from 'react'
 import {
   Button,
   ButtonGroup,
   Grid,
   Label,
-  TextInput,
   Select,
+  TextInput,
 } from '@trussworks/react-uswds'
 import {
   Control,
-  UseFormHandleSubmit,
+  Controller,
   FieldErrors,
   SubmitHandler,
-  Controller,
-  UseFormStateReturn,
-  UseFormGetValues,
+  UseFormHandleSubmit,
+  UseFormStateReturn
 } from 'react-hook-form'
-import { userInputDetails, filterText } from '../utils/helpers'
-import { UserFormInputs, FormData } from '../utils/types'
-import { roleOptions, statusOptions, stateOptions } from './FormOptions'
+import { KAFKA_ROUTE } from '../../../../../../constants/routes'
+import { filterText, userInputDetails } from '../utils/helpers'
+import { FormData, UserFormInputs } from '../utils/types'
+import { roleOptions, stateOptions, statusOptions } from './FormOptions'
 
 interface FormInputInterface {
+  // eslint-disable-next-line no-unused-vars
   setUserData: (data: FormData) => void
   handleCloseEdit: () => void
   control: Control<UserFormInputs>
   errors: FieldErrors<UserFormInputs>
   handleSubmit: UseFormHandleSubmit<UserFormInputs>
-  getValues: UseFormGetValues<UserFormInputs>
   isValid: boolean
   touchedFields: UseFormStateReturn<UserFormInputs>['touchedFields']
 }
@@ -50,13 +49,12 @@ const FormInputs = ({
   errors,
   handleSubmit,
   isValid,
-  touchedFields,
-  getValues,
+  touchedFields
 }: FormInputInterface) => {
   const onSubmit: SubmitHandler<UserFormInputs> = async (data) => {
     try {
       //send POST to Kafka
-      const response = await fetch('/api/kafka/produce', {
+      const response = await fetch(KAFKA_ROUTE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

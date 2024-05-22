@@ -29,6 +29,7 @@ export enum ColumnNames {
   Approved = 'Approved By',
   CreatedDate = 'Created',
   LastLogin = 'Last Login',
+	RoleTitle = ''
 }
 
 export const mapDisplayNameToUserKey = (value: ColumnNames): ColValues => {

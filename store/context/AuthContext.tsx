@@ -7,9 +7,13 @@ interface AuthContextType {
   session: Session | null
 }
 
+interface AuthProps {
+	children: React.ReactNode
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider = ({ children }: IChildren) => {
+export const AuthProvider = ({ children }: AuthProps) => {
   const { data: session, status } = useSession()
 
   const isAuthenticated = !!session

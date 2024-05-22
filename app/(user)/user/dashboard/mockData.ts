@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { Task } from "./types";
 
 function generateRandomFirmName(): string {
@@ -31,10 +32,11 @@ function generateRandomStatus(): string {
     return statuses[Math.floor(Math.random() * statuses.length)];
 }
 
-export function getDashboardData(taskCnt: number): Task[] {
+export function getUserDashboardData(taskCnt: number): Task[] {
 const tasks: Task[] = [];
 for (let i = 0; i < taskCnt; i++) {
     const task: Task = {
+        type: 'user',
         firmName: generateRandomFirmName(),
         uei: generateRandomUEI(),
         certification: generateRandomCertification(),
@@ -48,5 +50,29 @@ for (let i = 0; i < taskCnt; i++) {
     tasks.push(task);
 }
 return tasks;
+}
+export function getSupervisorDashboardData(taskCnt: number): Task[] {
+const tasks: Task[] = [];
+for (let i = 0; i < taskCnt; i++) {
+    const task: Task = {
+        type: 'supervisor',
+        takeAction: 'Re-Assign',
+        firmName: generateRandomFirmName(),
+        uei: generateRandomUEI(),
+        certification: generateRandomCertification(),
+        applicationType: generateRandomApplicationType(),
+        dueOn: generateRandomDate(),
+        daysInQueue: Math.floor(Math.random() * 30).toString(),
+        status: generateRandomStatus(),
+        assignedTo: faker.person.firstName(),
+        id: i.toString()
+    };
+    tasks.push(task);
+}
+return tasks;
+}
+
+export function getReports() {
+    return Array(3).fill({}).map(el => ({name: faker.company.buzzNoun(), id: Math.random()}))
 }
 

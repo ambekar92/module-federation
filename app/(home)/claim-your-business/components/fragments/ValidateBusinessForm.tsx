@@ -265,19 +265,21 @@ function ValidateBusinessForm() {
           ))}
         </Grid>
         <Grid row>
-          <Grid col={1} offset={11}>
-            <div className="default-btn">
-              <div className="usa-button-group-container">
-                <ButtonGroup type="default">
-                  <Link
-                    href="/claim-your-business"
-                    className="usa-button usa-button--outline right-"
-                  >
+          <Grid col={12}>
+            <ButtonGroup className='display-flex flex-justify-end width-full padding-y-2' type="default">
+              <Link
+                href="/claim-your-business"
+                className="usa-button usa-button--outline"
+              >
                     Back
-                  </Link>
-                </ButtonGroup>
-              </div>
-            </div>
+              </Link>
+              <Link
+                href="/add-delegate"
+                className="usa-button usa-button"
+              >
+                    Next
+              </Link>
+            </ButtonGroup>
           </Grid>
         </Grid>
       </GridContainer>

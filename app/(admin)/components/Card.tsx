@@ -34,7 +34,6 @@ export const CardLayout: FC<CardLayoutProps> = ({
               <Link
                 href={'#'}
                 variant="unstyled"
-                allowSpacebarActivation
                 className="usa-button"
               >
                 {buttonName}

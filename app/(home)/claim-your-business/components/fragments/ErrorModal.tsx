@@ -58,7 +58,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
                   please log in using that account.
                 </li>
                 <li>
-                  If your business has other qualified owners, please ensure
+                  If your business has other qualifying owners, please ensure
                   that they have not already claimed the business. Each business
                   can only be claimed once.
                 </li>

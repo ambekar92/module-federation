@@ -9,13 +9,13 @@ function onMessageReceived(message: { key: string; value: string }) {
   )
 }
 
-export async function GET(req: Request, res: Response) {
-  console.log('Received request to consume message from Kafka')
-  if (req.method !== 'GET') {
-    return
-  }
-  const config = readConfig('client.properties')
-  await createConsumer(config, UCMS_TOPIC, onMessageReceived)
+// export async function GET(req: Request, res: Response) {
+//   console.log('Received request to consume message from Kafka')
+//   if (req.method !== 'GET') {
+//     return
+//   }
+//   const config = readConfig('client.properties')
+//   await createConsumer(config, UCMS_TOPIC, onMessageReceived)
 
-  return new Response('Message consumed from Kafka successfully')
-}
+//   return new Response('Message consumed from Kafka successfully')
+// }

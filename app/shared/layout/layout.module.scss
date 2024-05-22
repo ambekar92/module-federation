@@ -30,6 +30,25 @@
     padding-right: 30px;
   }
 }
+
+.image-logo {
+  position:absolute;
+  top:-21px;
+  left:-425px;
+
+  @media (max-width: 768px) {
+    position:absolute;
+    top:20px;
+    left:5px;
+  }
+}
+.left-NavContainer {
+  position:absolute;
+  top:-5px;
+  left:430px;
+}
+
+
 .names-container.selected {
   text-align: center;
   padding-bottom: 20px;
@@ -52,6 +71,9 @@
   font-size: 28px;
 }
 
-.userProfile{
-  cursor: pointer;
+@media screen and (max-width: 1024px) {
+	.mobile-border--none {
+		border-color: transparent !important;
+		border-bottom: 0px solid !important;
+	}
 }

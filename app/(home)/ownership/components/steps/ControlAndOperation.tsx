@@ -108,7 +108,6 @@ const ControlAndOperation = ({ control, setValue, reset, trigger, getValues }: P
                       <option selected={field.value === undefined || field.value === ''} disabled>
                       - Select -
                       </option>
-                      <option value="principal">Principal</option>
                       <option value="partner">Partner</option>
                       <option value="member">Member</option>
                       <option value="officer">Officer</option>

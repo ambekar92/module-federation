@@ -1,0 +1,76 @@
+@use 'colors' as *;
+
+@media (max-width: 768px) {
+  .hidden-mobile {
+    display: none;
+    .mobile-grid-container {
+      display: grid;
+      grid-template-columns: auto auto auto auto auto;
+      padding: 5px;
+      padding-left: 0px;
+      padding-top: 60px;
+      font-size: 35px;
+      width: 768px;
+    }
+  }
+}
+
+.display-emails {
+  margin: 20px 0px 20px 20px;
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+}
+
+.email-icon {
+  padding: 20px 0px 0px 0px;
+  grid-row: 2 / 5;
+  font-size: 40px;
+  font-family: 'Source Sans 3';
+  font-style: italic;
+  color: $gray-500;
+}
+.hr {
+  width: 80%;
+  height: 3px;
+  border: none;
+  background-color: $gray-600;
+}
+
+.name-from {
+  grid-column: 2/ 5;
+  text-align: left;
+  padding: 18px 0px 10px 5px;
+  font-size: 18px;
+  font-family: 'Source Sans 3';
+  color: $gray-500;
+}
+.name-read {
+  display: block;
+  padding: 15px 0px 0px 10px;
+  font-size: 16px;
+  color: $gray-500;
+  grid-column: 3 / 4;
+}
+.usa-nav__primary button {
+  grid-column: 4 / 5;
+  font-size: 16px;
+  color: $gray-500;
+}
+
+.name-body {
+  grid-column: 2 / 5;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Source Sans 3';
+  font-style: italic;
+  color: $gray-500;
+}
+
+.notification-time {
+  grid-column: 2 / 5;
+  font-size: 9px;
+  font-weight: 400;
+  font-family: 'Source Sans 3';
+  padding-top: 10px;
+  color: $gray-500;
+}

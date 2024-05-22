@@ -1,113 +1,155 @@
-import React, { useState } from 'react'
-import styles from './layout.module.scss'
 import {
   Header,
-  Title,
-  Grid,
   Icon,
-} from '@trussworks/react-uswds'
-import { useRouter } from 'next/navigation'
+  Menu,
+  NavDropDownButton,
+  NavMenuButton,
+  PrimaryNav,
+  Title
+} from '@trussworks/react-uswds';
+import { signOut, useSession } from 'next-auth/react';
+import React, { useState } from 'react';
+import { Notification } from './components/navbarNotification';
+import styles from './layout.module.scss';
+import Link from 'next/link';
 
-interface headerNames {
-  id: string
-  name: string
-}
-const headerNames = [
-  { id: '1', name: 'Home' },
-  { id: '2', name: 'Messages' },
-  { id: '3', name: 'Documents' },
-  { id: '4', name: 'Saved' },
-  { id: '5', name: 'Support' },
-]
-
-const Navbar: React.FC = () => {
-  const router = useRouter()
+const Navigation = () => {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [navDropdownOpen, setNavDropdownOpen] = useState([false, false])
   const [selectedNameId, setSelectedNameId] = useState('')
+  const { status } = useSession()
 
-  const handleClick = (id:any) => {
-    setSelectedNameId(selectedNameId === id ? null : id)
-    console.log(selectedNameId)
+  const toggleMobileNav = (): void => {
+    setMobileNavOpen((prevOpen) => !prevOpen)
   }
 
-  const handleUserProfile=()=>{
-    router.push('/user/profile-settings/1')
+  const handleToggleNavDropdown = (index: number): void => {
+    setNavDropdownOpen((prevNavDropdownOpen) => {
+      const newOpenState = Array(prevNavDropdownOpen.length).fill(false)
+      newOpenState[index] = !prevNavDropdownOpen[index]
+      return newOpenState
+    })
   }
+  const handleClick = (id: string) => {
+    setSelectedNameId(selectedNameId === id ? '' : id)
+  }
+  const profileDropdown = [
+    <Link
+      key="one"
+      href="/user/1"
+    >
+      Profile
+    </Link>,
+    <Link
+      key="two"
+      onClick={() => {
+        signOut({ callbackUrl: '/home' })
+      }}
+      href=""
+    >
+      Log Out
+    </Link>,
+  ]
+  const primaryNavItems = [
+    <React.Fragment key="primaryNav_0">
+      <NavDropDownButton
+        menuId="extended-nav-section-one"
+        isOpen={navDropdownOpen[0]}
+        label={'Notifications'}
+        onToggle={(): void => {
+          handleToggleNavDropdown(0)
+        }}
+        isCurrent
+      />
+      <Menu
+        id="extended-nav-section-one"
+        items={new Array(1).fill(<Notification />)}
+        isOpen={navDropdownOpen[0]}
+      />
+    </React.Fragment>,
 
-  return (
-    <Grid>
-      <div>
-        <Header className="shadow-2">
-          <Grid row >
-            <Grid
-              className={` margin-bottom-0 margin-top-1 margin-left-1 flex-wrap flex-11 
-              `}
-            >
+    <a key="primaryNav_2" className="usa-nav__link" href="#">
+      Account
+    </a>,
+
+    <React.Fragment key="primaryNav_1">
+      <NavDropDownButton
+        menuId="extended-nav-section-two"
+        isOpen={navDropdownOpen[1]}
+        label={'User Profile'}
+        onToggle={(): void => {
+          handleToggleNavDropdown(1)
+        }}
+      />
+      <Menu
+        id="extended-nav-section-two"
+        items={profileDropdown}
+        isOpen={navDropdownOpen[1]}
+      />
+    </React.Fragment>,
+  ]
+
+  if (status === 'authenticated') {
+    return (
+      <>
+        <Header className={`border-bottom-1px border-base-light ${styles['mobile-border--none']}`} basic showMobileOverlay={mobileNavOpen}>
+          <div className={'usa-nav-container display-flex flex-justify-between maxw-full'}>
+            <div className={`usa-navbar ${styles['mobile-border--none']} width-full`}>
               <Title id="extended-logo">
                 <img
                   src="/SBA-Logo-Horizontal.png"
                   alt="logo"
-                  width="10%"
+                  height={50}
                 />
               </Title>
-            </Grid>
-
-            <Grid className="desktop:flex-1  mobile-lg:flex-1 ">
-              <a
-                className={`${styles['icon-size']} padding-top-5 float-right margin-right-2`}
-              >
-                <Icon.AccountCircle />
-              </a>
-              <a
-                className={`${styles['icon-size']} padding-top-5 float-right margin-right-2`}
-              >
-                <Icon.Notifications />
-              </a>
-            </Grid>
-            <Grid className="desktop:flex-1 mobile-lg:flex-1  padding-top-6 float-right margin-right-2">
-              <div className={styles['userProfile']} onClick={handleUserProfile}>
-                User Profile <Icon.ExpandMore />
-              </div>
-            </Grid>
-          </Grid>
+              <NavMenuButton
+                label="Menu"
+                onClick={toggleMobileNav}
+                className="usa-menu-btn margin-left-auto"
+              />
+            </div>
+            <PrimaryNav
+              aria-label="Primary navigation"
+              items={primaryNavItems}
+              onToggleMobileNav={toggleMobileNav}
+              mobileExpanded={mobileNavOpen}
+            ></PrimaryNav>
+          </div>
         </Header>
-      </div>
+        <Header className={`border-bottom-1px border-base-lighter padding-x-4 ${styles['mobile-border--none']}`}>
+          <div className="usa-nav float-left">
+            <ul className="usa-nav__primary float-left usa-accordion">
+              <li className="usa-nav__primary-item">
+                <a className="usa-nav__link" href="/">Home</a>
+              </li>
 
-      <Grid>
-        <Header className="shadow-2">
-          {' '}
-          <Grid row>
-            <Grid className={`${styles['names-container']} flex-8`}>
-              <ul>
-                {headerNames.map((name) => (
-                  <li
-                    key={name.id}
-                    onClick={() => handleClick(name.id)}
-                    className={`${styles['names-container']} ${
-                      selectedNameId === name.id ? styles.selected : ''
-                    } `}
-                  >
-                    {name.name}
-                    {selectedNameId === name.id && (
-                      <span className={`${styles['usa-arrow']}`}>
-                        <Icon.ExpandMore />
-                      </span>
-                    )}
-                    {/*  */}
-                  </li>
-                ))}
-              </ul>
-            </Grid>
-            <Grid className={`${styles['usa-nav_name']}`}>
-              <div className="float-right margin-top-3 margin-right-2 flex-1">
-                    Business Name
-                <Icon.ExpandMore />
-              </div>
+              <li className="usa-nav__primary-item">
+                <a className="usa-nav__link" href="/messages">Messages</a>
+              </li>
 
-            </Grid>
-          </Grid>
+              <li className="usa-nav__primary-item">
+                <a className="usa-nav__link" href="/documents">Documents</a>
+              </li>
+
+              <li className="usa-nav__primary-item">
+                <a className="usa-nav__link" href="/">Saved</a>
+              </li>
+
+              <li className="usa-nav__primary-item">
+                <a className="usa-nav__link" href="/">Support</a>
+              </li>
+            </ul>
+          </div>
+          <div className="usa-nav float-right">
+            <ul className='usa-nav__primary usa-accordion'>
+              <li className='usa-nav__primary-item'>
+                <a aria-disabled={true} tabIndex={-1} href="">Business Name <Icon.ExpandMore /></a>
+              </li>
+            </ul>
+          </div>
         </Header>
-      </Grid>
-    </Grid>
-  )
+      </>
+    );
+  }
 }
-export default Navbar
+export default Navigation

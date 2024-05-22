@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import React, { useState, useEffect, useRef } from 'react'
 import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined'
 import ViewListIcon from '@mui/icons-material/ViewList'
 import Divider from '@mui/material/Divider'
@@ -10,6 +9,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { Button } from '@trussworks/react-uswds'
 import Image from 'next/image'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './DocumentsList.module.scss'
 
 //Icons
@@ -29,7 +29,6 @@ import DocumentsListFoldersCard from './DocumentsListFoldersCard'
 // Table View
 import { IconButton } from '@mui/material'
 import DocumentsListFilesTable from './DocumentsListFilesTable'
-import DocumentsListFoldersTable from './DocumentsListFoldersTable'
 
 //API
 import Service from '../../../services/fetcher'
@@ -38,7 +37,7 @@ function DocumentHeader() {
   const dataFetchedRef = useRef(false)
   const [setDocumentsData] = useState<any>([])
   const [errorInfo, setErrorInfo] = useState<any>('')
-  const [view, setView] = useState('card')
+  const [view, setView] = useState('table')
   const [menu, setMenu] = useState<HTMLElement | null>(null)
   const [mainMenu, setMainMenu] = useState(0)
   const getClass = 'usa-button--outline'
@@ -85,7 +84,7 @@ function DocumentHeader() {
   return (
     <div className={styles['documents-header']}>
       <Grid container spacing={2}>
-        <Grid item xs={6} md={2} lg={2}>
+        <Grid item xs={12} md={5} lg={5}>
           <div>
             <Button
               type={'button'}
@@ -124,28 +123,6 @@ function DocumentHeader() {
               </MenuItem>
             </Menu>
           </div>
-        </Grid>
-        <Grid item xs={6} md={3} lg={3}>
-          <ul className="usa-button-group usa-button-group--segmented">
-            <li className="usa-button-group__item">
-              <button
-                type="button"
-                onClick={() => handleViewChange('table')}
-                className={`usa-button ${view === 'table' ? '' : getClass}`}
-              >
-                <ViewListIcon fontSize="small" />
-              </button>
-            </li>
-            <li className="usa-button-group__item">
-              <button
-                type="button"
-                onClick={() => handleViewChange('card')}
-                className={`usa-button ${view === 'card' ? '' : getClass}`}
-              >
-                <GridViewOutlinedIcon fontSize="small" />
-              </button>
-            </li>
-          </ul>
         </Grid>
         <Grid item xs={12} md={7} lg={7}>
           <section aria-label="Small search component">
@@ -271,7 +248,6 @@ function DocumentHeader() {
       )}
       {view === 'table' && (
         <div>
-          <DocumentsListFoldersTable />
           <DocumentsListFilesTable />
         </div>
       )}

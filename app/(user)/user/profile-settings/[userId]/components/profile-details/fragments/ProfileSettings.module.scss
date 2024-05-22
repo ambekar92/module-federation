@@ -1,7 +1,7 @@
-@use 'colors' as *;
+@use 'colors'as *;
 
 .formSection {
-  border: 1px solid #ececec;
+  border: 1px solid #d3d1d1;
   border-radius: 4px;
   margin-bottom: 24px;
   padding: 12px 14px;
@@ -16,7 +16,14 @@
   margin-top: 14px;
 }
 
-.displayEmailId {
+.displayUserName {
+  font-size: 15px;
+  font-style: italic;
+  color: #ababab;
+  margin-left: 10px;
+}
+
+.displayEmailId{
   font-size: 15px;
   margin-top: 36px;
   font-style: italic;
