@@ -2,7 +2,7 @@ import { QUESTIONNAIRE_ROUTE } from './routes'
 
 // Individual Questions
 export const CORE_FEDERAL_RELATIONSHIPS = QUESTIONNAIRE_ROUTE + '/68/core-federal-relationships';
-export const PROGRAM_ELIGIBILITY = QUESTIONNAIRE_ROUTE + '/53/certification-program-eligibility';
+export const PROGRAM_ELIGIBILITY = QUESTIONNAIRE_ROUTE + '/110/core-program-eligibility';
 export const BUSINESS_INFORMATION = QUESTIONNAIRE_ROUTE + '/54/core-business-information';
 export const CONTACT_INFORMATION = QUESTIONNAIRE_ROUTE + '/55/identifying-and-contact-information';
 export const BUSINESS_RELATIONSHIPS = QUESTIONNAIRE_ROUTE + '/57/business-relationships';

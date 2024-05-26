@@ -1,5 +1,15 @@
 {
   "pages": {
+    "/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/loading.js"
+    ],
+    "/not-found": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/not-found.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -11,44 +21,16 @@
       "static/chunks/main-app.js",
       "static/chunks/app/error.js"
     ],
-    "/loading": [
+    "/(evaluation)/evaluation/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/loading.js"
-    ],
-    "/not-found": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/not-found.js"
-    ],
-    "/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/login/page.css",
-      "static/chunks/app/login/page.js"
+      "static/chunks/app/(evaluation)/evaluation/page.js"
     ],
     "/[lng]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/[lng]/page.css",
       "static/chunks/app/[lng]/page.js"
-    ],
-    "/(home)/documents/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(home)/documents/page.css",
-      "static/chunks/app/(home)/documents/page.js"
-    ],
-    "/(home)/notifications/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(home)/notifications/page.css",
-      "static/chunks/app/(home)/notifications/page.js"
-    ],
-    "/(evaluation)/evaluation/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(evaluation)/evaluation/page.js"
     ]
   }
 }

@@ -20,11 +20,7 @@ const Metrics = () => {
                 <Productivity isSupervisor={supervisor?.isSupervisor ?? false} />
             </Show.When>
         </Show>
-        <Show>
-            <Show.When isTrue={supervisor?.isSupervisor}>
-                <Reporting />
-            </Show.When>
-        </Show>
+        
     </>
 
     )

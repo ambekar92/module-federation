@@ -24,7 +24,7 @@ function Programs() {
       <h1>Select Intended Program for Application</h1>
       <Grid row gap>
         {sbaProgramOptions.map((program, index) => (
-          <Grid key={index} className='margin-bottom-2' desktop={{ col: 4 }} tablet={{ col: 6 }}  mobile={{ col: 12 }}>
+          <Grid key={index} className='margin-bottom-2' desktop={{ col: 6 }} tablet={{ col: 12 }}  mobile={{ col: 12 }}>
             <ProgramCard
               className={`height-full ${selectedPrograms.find(p => p.name === program.name) ? 'blue-bg' : ''}`}
               program={program.name}
@@ -52,7 +52,7 @@ function Programs() {
 							Next
             </Button>
           ) : (
-            <Link href='/ownership' className='usa-button'>
+            <Link href='/application/ownership' className='usa-button'>
 							Next
         		</Link>
           )}

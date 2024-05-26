@@ -13,7 +13,7 @@ export const config = {
     // '/admin',
     // '/add-delegate',
     // '/entities',
-    // // '/evaluation',
+    // '/evaluation',
     // '/field-operation',
     // '/helpdesk',
     // '/claim-your-business',
@@ -24,6 +24,8 @@ export const config = {
     // '/profile-settings',
     // '/messages',
     // '/additional-information',
+    // '/application',
+    // '/application(.*)' // all sub-routes
   ],
 }
 

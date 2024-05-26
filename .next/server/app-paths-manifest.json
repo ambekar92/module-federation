@@ -1,8 +1,6 @@
 {
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/(home)/documents/page": "app/(home)/documents/page.js",
-  "/(home)/notifications/page": "app/(home)/notifications/page.js",
+  "/api/auth/csrf": "app/api/auth/csrf.js",
   "/(evaluation)/evaluation/page": "app/(evaluation)/evaluation/page.js",
-  "/login/page": "app/login/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/[lng]/page": "app/[lng]/page.js"
 }

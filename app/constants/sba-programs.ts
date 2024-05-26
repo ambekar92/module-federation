@@ -8,7 +8,7 @@ export type ProgramOption = {
 
 export const sbaProgramOptions: ProgramOption[] = [
   {
-    name: '8(a)',
+    name: '8(a) Business Development',
     description: `The 8(a) Business Development Program is a robust nine-year program to assist socially and
 		economically disadvantaged entrepreneurs. Participants receive the following benefits:
 		Business development assistance, mentorship, and access to government contracts.`,
@@ -25,7 +25,7 @@ export const sbaProgramOptions: ProgramOption[] = [
     registration: 'eightA'
   },
   {
-    name: 'WOSB',
+    name: 'Woman-Owned',
     description: `Woman Owned Small Business (WOSB) Program: The WOSB Program aims to empower and foster the
 		growth of women owned businesses. It offers opportunities for female entrepreneurs to
 		compete for federal contracts and receive support to enhance their business capabilities.`,
@@ -34,7 +34,7 @@ export const sbaProgramOptions: ProgramOption[] = [
     registration: 'wosb'
   },
   {
-    name: 'EDWOSB',
+    name: 'Economically Disadvantaged Women-Owned',
     description: `Economically Disadvantaged Women Owned Small Business (EDWOSB) Program: The EDWOSB Program
 		is a subset of the WOSB Program focused specifically on economically disadvantaged women
 		entrepreneurs. Benefits include additional contracting opportunities and resources to
@@ -64,17 +64,17 @@ export const sbaProgramOptions: ProgramOption[] = [
     registration: 'hubzone'
   },
   {
-    name: 'VOSB',
+    name: 'Veteran-Owned',
     description: `Veteran Owned Small Business (VOSB) Program: The VOSB Program supports and encourages
 		businesses owned by America’s Veterans. This program encourages Veterans to continue
 		contributing to the nation through economic means. VOSB participants benefit from SBA
 		resources, training, and access to government contracts.`,
-    disadvantages: ['veteran'],
+    disadvantages: ['veteran', 'disabledVeteran'],
     details: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/veteran-contracting-assistance-programs',
     registration: 'vosb'
   },
   {
-    name: 'SDVOSB',
+    name: 'Service-Disabled Veteran-Owned',
     description: `Service-Disabled Veteran Owned Small Business (SDVOSB) Program: The SDVOSB Program is an
 		extension of the VOSB Program and offers additional benefits to veterans with
 		service-connected disabilities.`,

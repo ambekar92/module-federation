@@ -160,15 +160,22 @@ function AddDelegateForm() {
       )}
       <Grid row gap="lg" className="margin-top-2" col={12}>
         <ButtonGroup className="display-flex flex-justify flex-fill border-top padding-y-2">
-          <Button
-            type="button"
-            onClick={handlePrevious}
-            disabled={currentStep === 0}
-          >
+          {currentStep === 0 ? (
+            <Link className='usa-button usa-button--outline' href='/claim-your-business'>
+						Previous
+            </Link>
+          ): (
+            <Button
+              type="button"
+              onClick={handlePrevious}
+              disabled={currentStep === 0}
+              outline
+            >
     				Previous
-          </Button>
+            </Button>
+          )}
           {option === 'no' ? (
-            <Link className='usa-button' href='/select-intended-programs'>
+            <Link className='usa-button usa-button--outline' href='/select-intended-programs'>
 				      Next
             </Link>
           ):(

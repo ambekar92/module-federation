@@ -8,7 +8,9 @@ export function redirectAdditionalInfo(request: NextRequest) {
   if (pathname === '/additional-information') {
     url.pathname = '/additional-information/eighta';
     return NextResponse.redirect(url);
+  } else if (pathname === '/application') {
+    url.pathname = '/application/ownership';
+    return NextResponse.redirect(url);
   }
-
   return NextResponse.next();
 }

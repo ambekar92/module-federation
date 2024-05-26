@@ -68,7 +68,7 @@ const DelegateFormInputs = ({
   touchedFields,
 }: FormInputInterface) => {
   const dispatch = useFormDispatch()
-  const { delegates, editingDelegate } = useFormSelector(selectForm)
+  const { editingDelegate } = useFormSelector(selectForm)
 
   const onSubmit: SubmitHandler<DelegateFormInputType> = async (data) => {
     //Need to update with POST Kafka Message when API endpoint is established
@@ -127,7 +127,7 @@ const DelegateFormInputs = ({
         handleCancel={handleCancel}
       />
       <form onSubmit={handleSubmit(onSubmit)} className="width-full">
-        <Grid row gap="lg" className="width-full" col={12}>
+        <Grid row className="width-full" col={12}>
           {fieldKeys.map((key) => (
             <Grid
               key={key}
@@ -199,7 +199,7 @@ const DelegateFormInputs = ({
             </div>
           </Grid>
         </Grid>
-        <Grid row gap="lg" className="margin-right-2 width-full">
+        <Grid row className="margin-right-2 width-full">
           <DelegateTable setValue={setValue} reset={reset} />
         </Grid>
       </form>

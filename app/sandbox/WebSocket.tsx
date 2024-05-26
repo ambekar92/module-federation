@@ -1,82 +1,128 @@
 'use client'
-import { Button } from '@trussworks/react-uswds'
+
 import React, { useState, useEffect } from 'react'
-import { toast } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Button } from '@trussworks/react-uswds'
+import { WS_LIVE_NOTIFICATIONS } from '../constants/routes'
+
+interface Message {
+  message: string
+}
 
 export default function WebSocketComponent(): JSX.Element {
-  const [message, setMessage] = useState('')
+  const [messageInput, setMessageInput] = useState('')
   const [ws, setWs] = useState<WebSocket | null>(null)
-  const [getValue, setValue] = useState('')
+  const [messages, setMessages] = useState<Message[]>([])
+
+  //socket environment variable URL
+  const socket = new WebSocket(`${WS_LIVE_NOTIFICATIONS}`)
+
+  //check for web browser notification enabled
+  if (
+    typeof Notification !== 'undefined' &&
+    Notification.permission !== 'granted'
+  ) {
+    void Notification.requestPermission((permission) => {
+      if (permission === 'granted') {
+        sendNotification()
+      }
+    })
+  } else if (
+    typeof Notification !== 'undefined' &&
+    Notification.permission === 'granted'
+  ) {
+    sendNotification()
+  }
 
   useEffect(() => {
-    // Establish WebSocket connection to the echo server
-    const socket = new WebSocket('wss://echo.websocket.org')
-
-    // Set up event listeners
-    socket.onopen = () => {
-      console.log('WebSocket connected')
-      toast.success('WebSocket connected', {
-        theme: 'colored',
-      })
+    //socket
+    socket.onopen = (event) => {
+      toast.success('WebSocket connected')
     }
 
     socket.onmessage = (event) => {
-      console.log('>> event', event)
-
-      setMessage(event.data)
-      toast.success('Message Received: ' + event.data, {
+      const receivedMessage = JSON.parse(event.data)
+      setMessages(receivedMessage)
+      toast.success(`Message Received: ${receivedMessage.message}`, {
         theme: 'colored',
       })
     }
 
-    socket.onclose = () => {
-      console.log('WebSocket disconnected')
-    }
-
-    // Save WebSocket instance to state
     setWs(socket)
-
     // Clean up function
     return () => {
       if (socket) {
         socket.close()
       }
     }
-  }, []) // Empty dependency array ensures useEffect runs only once on component mount
+  }, [])
 
   const sendMessage = () => {
     if (ws && ws.readyState === WebSocket.OPEN) {
-      // Check if WebSocket connection is open before sending message
+      const payload = { message: messageInput }
+      socket.send(JSON.stringify(payload))
+      setMessages([...messages, payload])
+      setMessageInput('')
       toast.info('Message Sent', {
         theme: 'colored',
       })
-
-      ws.send(getValue)
     } else {
       console.error('WebSocket connection not available')
     }
   }
 
+  function sendNotification() {
+    const browserString = JSON.stringify(messages)
+    const browserObject = JSON.parse(browserString)
+
+    socket.onopen = (event) => {
+      console.log('websocket is connected')
+    }
+
+    const title = 'SBA Message'
+    const icon = 'https://cdn-icons-png.flaticon.com/512/733/733585.png'
+    const body =
+      new Date().toISOString().replace(/T/, ' ').substr(0, 10) +
+      ' ' +
+      browserObject.message
+    const notification = new Notification('Title', { body, icon })
+    notification.addEventListener('click', () => {
+      window.open(
+        'https://www.javascripttutorial.net/web-apis/javascript-notification/',
+        '_blank',
+      )
+    })
+
+    // close the notification after 10 seconds
+    setTimeout(() => {
+      notification.close()
+    }, 10 * 1000)
+
+    // navigate to a URL
+  }
+  const handleInputFinished = (event: React.FocusEvent<HTMLInputElement>) => {
+    setMessageInput(event.target.value)
+    event.preventDefault()
+  }
+
   return (
     <div>
-      <hr />
       <h4>WebSocket Component</h4>
       <input
         type="text"
-        value={getValue}
-        onChange={(event) => setValue(event.target.value)}
+        value={messageInput}
+        onChange={handleInputFinished}
         placeholder="Enter your Message"
       />
       <Button
         type="button"
         onClick={sendMessage}
         style={{ marginLeft: '30px' }}
-        disabled={getValue === ''}
       >
         Send Message
       </Button>
-
-      {/* <p><b>Received message:</b> {message}</p> */}
+      <ToastContainer />
     </div>
   )
 }

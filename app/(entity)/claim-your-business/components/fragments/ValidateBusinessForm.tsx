@@ -255,7 +255,7 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
                 Back
               </Link>
               <Link
-                href="/add-delegate"
+                href="/select-intended-programs"
                 className="usa-button usa-button"
               >
                 Next
