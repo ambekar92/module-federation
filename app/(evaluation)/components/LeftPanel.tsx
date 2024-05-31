@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import MenuData from './utils/menuData.json'
 import { Link } from '@trussworks/react-uswds'
 
-function LeftPanel() {
+function LeftPanel(props) {
   return (
     <>
       <div className="grid-container margin-top-2">
@@ -40,9 +40,16 @@ function LeftPanel() {
                 return (
                   <div key={index}>
                     <li className="usa-sidenav__item">
-                      <Link className="usa-current">
+                      {
+                        item.name === props.status ?
+                        <Link className="usa-current">
                         {item.name}
-                      </Link>
+                        </Link>
+                        : 
+                        <Link>
+                        {item.name}
+                        </Link>
+                      }
                       <ul className="usa-sidenav__sublist">
                         {item.child.map((childItem, index1) => {
                           return (
@@ -63,7 +70,16 @@ function LeftPanel() {
                 return (
                   <div key={index}>
                     <li className="usa-sidenav__item">
-                      <Link>{item.name}</Link>
+                      {
+                        item.name === props.status ?
+                        <Link className="usa-current">
+                        {item.name}
+                        </Link>
+                        : 
+                        <Link>
+                        {item.name}
+                        </Link>
+                      }
                     </li>
                   </div>
                 )

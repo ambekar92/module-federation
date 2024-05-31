@@ -1,7 +1,5 @@
-export type SocialDisadvantageOption = {
-	label: string
-	value: string
-}
+import { SocialDisadvantageOption } from "./shared/types";
+
 
 export const socialDisadvantages: SocialDisadvantageOption[] = [
   { label: 'Not Claiming Social Disadvantage', value: 'not_claiming' },
@@ -21,17 +19,15 @@ export const socialDisadvantages: SocialDisadvantageOption[] = [
   }
 ]
 
-export const disadvantageOptions: SocialDisadvantageOption[] = socialDisadvantages.map((disadvantage) => ({
-  value: disadvantage.value,
-  label: disadvantage.label
-}))
-
 export const capitalizeAndSplit = (text: string) => {
+  if(text === 'service_disabled_veteran') {
+    return 'Service-Disabled Veteran'
+  }
   return text.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 };
 
 export const formatPhoneNumber = (phoneNumber: string) => {
-  const cleaned = phoneNumber.replace(/\D/g, '');
+  const cleaned = phoneNumber.replace(/\D/g, '').slice(0, 10); // Restrict to 10 digits
   const length = cleaned.length;
 
   if (length < 4) {
@@ -44,6 +40,7 @@ export const formatPhoneNumber = (phoneNumber: string) => {
 };
 
 export const formatSSN = (ssn: string) => {
+  if (!ssn) return ssn;
   const cleaned = ssn.replace(/\D/g, ''); // Remove all non-digits
   const length = cleaned.length;
 

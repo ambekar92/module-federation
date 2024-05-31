@@ -8,12 +8,13 @@ import QuestionContent from '../components/questionnaire/QuestionContent';
 import AttestationJSON from '../utils/form-data.json';
 import { useApplicationDispatch } from '../redux/hooks';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
+import { applicationSteps } from '../utils/constants';
 
 const SignPage = () => {
   const dispatch = useApplicationDispatch();
 
   useEffect(() => {
-    dispatch(setStep(5));
+    dispatch(setStep(applicationSteps.sign.stepIndex));
     dispatch(setDisplayStepNavigation(false));
   }, []);
 
@@ -37,7 +38,7 @@ const SignPage = () => {
       />
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        <Link className='usa-button' href='/application/document-upload'>
+        <Link className='usa-button' href={applicationSteps.contributorInvitation.link}>
           Previous
         </Link>
         <Button type='button' onClick={handleModalToggle}>Submit</Button>

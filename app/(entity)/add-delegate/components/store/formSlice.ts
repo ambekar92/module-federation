@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { DelegateType } from '../utils/types'
 import { RootState } from './store'
 
-interface FormState {
+export interface FormState {
   delegates: DelegateType[]
   editingDelegate: DelegateType | null
   displayRequiredFieldsWarning: boolean
@@ -67,7 +67,7 @@ const formSlice = createSlice({
       state.delegates = action.payload
     },
     addDelegate(state, action: PayloadAction<DelegateType>) {
-      state.delegates.push(action.payload)
+      state.delegates = [...state.delegates, action.payload]
     },
     setEditingDelegate(state, action: PayloadAction<DelegateType | null>) {
       state.editingDelegate = action.payload

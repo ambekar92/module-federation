@@ -1,7 +1,0 @@
-{
-  "h1": "Un semplice esempio di traduzione del contenuto locale.",
-  "title": "Casa",
-  "to-client-page": "Alla pagina client",
-  "to-second-page": "Alla seconda pagina",
-  "welcome": "Benvenuti a Next.js 13/14 <1>con le nuove funzionalità di app directory</1> e i18next"
-}

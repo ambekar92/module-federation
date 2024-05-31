@@ -19,9 +19,13 @@ function Programs() {
     });
   };
 
+  const handleCardClick = (program: ProgramOption) => {
+    handleCheckboxChange(program);
+  };
+
   return (
     <>
-      <h1>Select Intended Program for Application</h1>
+      <h1>Select Intended Program(s) for Application</h1>
       <Grid row gap>
         {sbaProgramOptions.map((program, index) => (
           <Grid key={index} className='margin-bottom-2' desktop={{ col: 6 }} tablet={{ col: 12 }}  mobile={{ col: 12 }}>
@@ -35,9 +39,13 @@ function Programs() {
                   className="custom-checkbox"
                   type="checkbox"
                   checked={selectedPrograms.some(p => p.name === program.name)}
-                  onChange={() => handleCheckboxChange(program)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    handleCheckboxChange(program);
+                  }}
                 />
               }
+              onClick={() => handleCardClick(program)}
             />
           </Grid>
         ))}

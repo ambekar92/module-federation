@@ -104,32 +104,6 @@ const FirmUserDashboard = () => {
       </div>
 
       <div>
-        <div className="display-flex flex-row flex-justify flex-align-self-center">
-          <h2>News</h2>
-          <Link href="#">Open</Link>
-        </div>
-        <CardGroup>
-          {news?.map((n) => (
-            <Card headerFirst key={n.id} gridLayout={{ desktop: { col: 4 } }}>
-              <CardHeader>
-                <h3 className="usa-card__heading">{n.title}</h3>
-                <p className="font-sans-6 text-primary margin-top-1"></p>
-              </CardHeader>
-
-              <CardBody>
-                <p>{n.description}</p>
-              </CardBody>
-              <CardFooter>
-                <Button type="button" outline className="usa-button">
-                  Read More
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </CardGroup>
-      </div>
-
-      <div>
         <h2>Applications</h2>
         <Collection>
           {applications?.map((a) => (

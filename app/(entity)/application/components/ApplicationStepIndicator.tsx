@@ -2,7 +2,7 @@ import StepsIndicator from '@/app/shared/components/forms/StepsIndicator';
 interface ApplicationStepIndicatorProps {
 	stepNumber: number
 }
-const steps =  ['Ownership', 'Eligible Programs', 'Control & Operations', 'Application Questionnaire', 'Document Upload', 'Sign'];
+const steps =  ['Ownership', 'Control & Operations', 'Program Selection', 'Individual Questionnaire', 'Document Upload', 'Contributor Invitation', 'Sign'];
 function ApplicationStepIndicator({stepNumber = 0}: ApplicationStepIndicatorProps) {
 
   return (

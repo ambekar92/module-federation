@@ -1,7 +1,8 @@
 import { Button } from '@trussworks/react-uswds';
 import React, { useEffect } from 'react';
-import { setOwnerTypeSelected, setStep } from '../../redux/applicationSlice';
+import { setIsAddingOperator, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../redux/hooks';
+import { applicationSteps } from '../../utils/constants';
 
 type ControlAndOperationsProps = {
   children: React.ReactNode;
@@ -11,11 +12,11 @@ function ControlAndOperations({children}: ControlAndOperationsProps) {
   const dispatch = useApplicationDispatch();
 
   const handleAddNew =() => {
-    dispatch(setOwnerTypeSelected(true))
+    dispatch(setIsAddingOperator(true))
   }
 
   useEffect(() => {
-    dispatch(setStep(1))
+    dispatch(setStep(applicationSteps.controlAndOwnership.stepIndex))
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -36,7 +37,6 @@ function ControlAndOperations({children}: ControlAndOperationsProps) {
       </div>
 
       {children}
-      <div className='flex-fill'></div>
     </>
   )
 }

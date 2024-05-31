@@ -1,24 +1,22 @@
 'use client'
 import CustomHeader from '@/app/shared/components/forms/CustomHeader';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
-import StepsIndicator from '@/app/shared/components/forms/StepsIndicator';
-import CloseIcon from '@mui/icons-material/Close';
-import SaveIcon from '@mui/icons-material/Save';
 import { Button, ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import Questionnaire from '../components/questionnaire/Questionnaire';
-import Sidebar from '../components/questionnaire/Sidebar';
-import { setStep } from '../redux/applicationSlice';
-import { useApplicationDispatch } from '../redux/hooks';
 import { sections } from '../components/questionnaire/utils/helpers';
 import { MultiStepQuestionsProps } from '../components/questionnaire/utils/types';
+import { setStep } from '../redux/applicationSlice';
+import { useApplicationDispatch } from '../redux/hooks';
+import { applicationSteps } from '../utils/constants';
 
 const EightaQuestions = ({ step = 0 }: MultiStepQuestionsProps) => {
   const dispatch = useApplicationDispatch();
 
   useEffect(() => {
-    dispatch(setStep(3));
+    dispatch(setStep(applicationSteps.questionnaire.stepIndex));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const eightaSteps = sections.find(section => section.sectionName === '8(a) Business Development')?.questions || [];
@@ -35,32 +33,18 @@ const EightaQuestions = ({ step = 0 }: MultiStepQuestionsProps) => {
     }
   };
 
-  const handleStep = (index: number) => {
-    setCurrentStep(index);
-  };
-
   return (
     <>
-      <CustomHeader title='Application Questionnaire'>
-        <ButtonGroup>
-          <Button className='padding-1 display-flex flex-align-center' outline type='button'>
-            <CloseIcon fontSize='medium' /> Close
-          </Button>
-          <Button className='padding-1 display-flex flex-align-center' outline type='button'>
-            <SaveIcon fontSize='medium' className='margin-right-05' /> Save
-          </Button>
-        </ButtonGroup>
-      </CustomHeader>
+      {/* <CustomHeader title='Application Questionnaire' /> */}
 
-      <StepsIndicator
+      {/* <StepsIndicator
         currentStep={1}
         steps={sections.map(section => section.sectionName)}
         headingLevel="h4"
-      />
+      /> */}
 
       <QAWrapper
         fill
-        sidebar={<Sidebar sections={sections} handleStep={handleStep} />}
         mainContent={<Questionnaire url={eightaSteps[currentStep].url} title={eightaSteps[currentStep].title} />}
       />
 
@@ -75,7 +59,7 @@ const EightaQuestions = ({ step = 0 }: MultiStepQuestionsProps) => {
           </Button>
         )}
         {currentStep === eightaSteps.length - 1 ? (
-          <Link className='usa-button' href='/application/document-upload'>
+          <Link className='usa-button' href='/application/questionnaire-program-specific'>
             Next
           </Link>
         ) : (

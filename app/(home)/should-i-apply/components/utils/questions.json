@@ -55,7 +55,7 @@
 		"yesId": "financialLimits-yes",
 		"noId": "financialLimits-no",
 		"options": ["Yes", "No"],
-		"noAlert": "You must be economically disadvantaged to participate in the 8(a) Business Development Program",
+		"noAlert": "You must be economically-disadvantaged to participate in the 8(a) Business Development Program",
 		"questionSection": "eligibility",
 		"listItems": ["Annual personal income: $400,000 per year", "Net worth: $850,000 <i>(Value of everything you own minus the value of everything you owe: $850,000 not including the value of your home, company, or retirement accounts)</i>", "Total assets: $6.5 million <i>(Not including retirement accounts)</i>"]
 	},

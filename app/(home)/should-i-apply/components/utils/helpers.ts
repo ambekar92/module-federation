@@ -180,7 +180,7 @@ export const exportPDF = (formData: SIAFormData) => {
     {
       question: 'Are you under the financial limits?',
       answer: formData.financialLimitsResponse,
-      noAlert: 'You must be economically disadvantaged to participate in the 8(a) Business Development Program'
+      noAlert: 'You must be economically-disadvantaged to participate in the 8(a) Business Development Program'
     },
     {
       question: 'Can you provide reliable annual financial statements (Balance Sheet and Income Statement)?',

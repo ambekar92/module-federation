@@ -11,6 +11,9 @@ import ApplicationLayout from '../components/ApplicationLayout';
 import DocumentUpload from '../sections/DocumentUpload';
 import ControlAndOwnership from '../sections/ControlAndOperations';
 import EligiblePrograms from '../sections/EligiblePrograms';
+import Questionnaires from '../components/questionnaire/Questionnaires';
+import ContributorInvitation from '../sections/ContributorInvitation';
+import ProgramSpecificQuestions from '../sections/ProgramSpecificQuestions';
 
 // Import the Attestation component dynamically and disable SSR
 // NOTE: This is really just to allow the build to work will need to be fixed once API is up -KJ
@@ -40,14 +43,23 @@ const ApplicationPage: React.FC<AdditionalInfoPageProps> = ({ params: { section 
     case 'control-and-operations':
       content = <ControlAndOwnership />;
       break;
+    case 'questionnaires':
+      content = <Questionnaires />
+      break;
     case 'questionnaire-individual':
       content = <IndividualQuestions step={step} />;
       break;
     case 'questionnaire-eight-a':
       content = <EightaQuestions step={step} />;
       break;
+    case 'questionnaire-program-specific':
+      content = <ProgramSpecificQuestions step={step} />;
+      break;
     case 'document-upload':
       content = <DocumentUpload />;
+      break;
+    case 'contributor-invite':
+      content = <ContributorInvitation />
       break;
     case 'sign':
       content = <SignPage />

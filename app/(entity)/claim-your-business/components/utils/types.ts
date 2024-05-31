@@ -1,21 +1,31 @@
 import { z } from 'zod'
-import { ClaimBusinessSchema } from './schemas'
+import { ClaimBusinessSchema, InvitationCodeFormSchema } from './schemas'
 
 // ClaimBusinessFormTypes.ts
 export type ClaimBusinessType = {
-	uei: string
-	cageCode: string
-	bankAccountNumber: string
-	tin: string
-	serverError: () => void
+  uei: string
+  cageCode: string
+  bankAccountNumber: string
+  tin: string
+  serverError: () => void
 }
 
 export type ValidateFormData = {
-   businessType: string
-   entityOwned: boolean
+  businessType: string
+  entityOwned: boolean
 }
 
-export type ValidFieldNames = 'uei' | 'cageCode' | 'bankAccountNumber' | 'tin' | 'businessType' | 'entityOwned'
+export type ValidFieldNames =
+  | 'uei'
+  | 'cageCode'
+  | 'bankAccountNumber'
+  | 'tin'
+  | 'businessType'
+  | 'entityOwned'
+
+export type InvitationCodeFormData = {
+  invitationCode: string
+}
 
 export interface IBusinessProfile {
   dba_name: string
@@ -33,16 +43,18 @@ export interface IBusinessProfile {
   claimed: boolean
 }
 export type BusinessProfileType = {
-	[key: string]: IBusinessProfile
+  [key: string]: IBusinessProfile
 }
 
 export interface IAccordionItem {
-  title: React.ReactNode;
-  content: React.ReactNode;
-  expanded: boolean;
-  id: string;
-  className: string;
-  headingLevel: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  title: React.ReactNode
+  content: React.ReactNode
+  expanded: boolean
+  id: string
+  className: string
+  headingLevel: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 }
 
-export type ClaimBusinessInputs = z.infer<typeof ClaimBusinessSchema>;
+export type ClaimBusinessInputs = z.infer<typeof ClaimBusinessSchema>
+
+export type InvitationCodeInputType = z.infer<typeof InvitationCodeFormSchema>

@@ -11,6 +11,13 @@ const GridQuestion = ({ question }: { question: Question }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [currentRow, setCurrentRow] = useState<GridRow>({});
 
+  // const truncateText = (text: string, maxLength: number) => {
+  //   if (text.length > maxLength) {
+  //     return `${text.substring(0, maxLength)}...`;
+  //   }
+  //   return text;
+  // };
+
   const handleAddOrUpdateRow = () => {
     if (editingIndex !== null) {
       setGridRows(prevRows => {
@@ -39,8 +46,8 @@ const GridQuestion = ({ question }: { question: Question }) => {
       <div>
         {question.grid_questions?.map(gridQuestion => (
           <div key={gridQuestion.id}>
-            <Label requiredMarker={gridQuestion.answer_required_flag} htmlFor={`input-${gridQuestion.id}`}>
-              <span className='text-bold'>{gridQuestion.title}</span>
+            <Label className='maxw-tablet' requiredMarker={gridQuestion.answer_required_flag} htmlFor={`input-${gridQuestion.id}`}>
+              <span>{gridQuestion.title}</span>
             </Label>
             <TextInput
               type='text'

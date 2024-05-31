@@ -130,7 +130,7 @@ function ParticipationAgreement() {
                   an individual upon whom eligibility was based, to maintain
                   ownership, full-time day-to-day management, and control by the
                   person(s) who has (have)been determined to be socially and
-                  economically disadvantaged.
+                  economically-disadvantaged.
                 </li>
               </ol>
             </div>

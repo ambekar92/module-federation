@@ -1,3 +1,11 @@
 .usa-step-indicator__heading {
 	display: none;
 }
+
+@media (max-width: 850px) {
+	.step-indicator__application {
+		.usa-step-indicator__segment-label {
+			display: none;
+		}
+	}
+}

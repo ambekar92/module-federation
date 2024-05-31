@@ -19,28 +19,28 @@ const QuestionContent = ({ currentSection, sectionName, children }: MainContentP
             case 'text':
               return (
                 <div key={inputId}>
-                  <Label htmlFor={inputId}><span className='text-bold'>{question.label}</span></Label>
+                  <Label className='maxw-desktop width-full' htmlFor={inputId}>{question.label}</Label>
                   <TextInput type='text' id={inputId} name={question.input.name} />
                 </div>
               );
             case 'email':
               return (
                 <div key={inputId}>
-                  <Label htmlFor={inputId}><span className='text-bold'>{question.label}</span></Label>
+                  <Label className='maxw-desktop width-full' htmlFor={inputId}>{question.label}</Label>
                   <TextInput type='email' id={inputId} name={question.input.name} />
                 </div>
               );
             case 'number':
               return (
                 <div key={inputId}>
-                  <Label htmlFor={inputId}><span className='text-bold'>{question.label}</span></Label>
+                  <Label className='maxw-desktop width-full' htmlFor={inputId}>{question.label}</Label>
                   <TextInput type='number' id={inputId} name={question.input.name} />
                 </div>
               );
             case 'textarea':
               return (
                 <div key={inputId}>
-                  <Label htmlFor={inputId}><span className='text-bold'>{question.label}</span></Label>
+                  <Label className='maxw-desktop width-full' htmlFor={inputId}>{question.label}</Label>
                   <span id={`${inputId}-hint`} className="usa-hint">
 									This is a textarea with a character counter.
                   </span>
@@ -52,7 +52,7 @@ const QuestionContent = ({ currentSection, sectionName, children }: MainContentP
               const selectQuestion = question as SelectQuestion;
               return (
                 <div key={inputId}>
-                  <Label htmlFor={inputId}><span className='text-bold'>{question.label}</span></Label>
+                  <Label className='maxw-desktop width-full' htmlFor={inputId}>{question.label}</Label>
                   <Select id={inputId} name={selectQuestion.input.name}>
                     <option>- Select -</option>
                     {selectQuestion.options.map((option, idx) => (
@@ -64,7 +64,7 @@ const QuestionContent = ({ currentSection, sectionName, children }: MainContentP
             case 'phone':
               return (
                 <div key={inputId}>
-                  <Label htmlFor={inputId}><span className='text-bold'>{question.label}</span></Label>
+                  <Label className='maxw-desktop width-full' htmlFor={inputId}>{question.label}</Label>
                   <span className="usa-hint">
 									Provide a primary contact number
                   </span>
@@ -74,7 +74,7 @@ const QuestionContent = ({ currentSection, sectionName, children }: MainContentP
             case 'file':
               return (
                 <div key={inputId}>
-                  <Label htmlFor={inputId}><span className='text-bold'>{question.label}</span></Label>
+                  <Label className='maxw-desktop width-full' htmlFor={inputId}>{question.label}</Label>
                   <span className="usa-hint" id={`${inputId}-hint`}>
 									Only .pdf and .txt file formats are accepted
                   </span>

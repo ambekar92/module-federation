@@ -8,7 +8,7 @@ const EvaluationPage = () => {
     <>
       <div className='grid-row bg-gray-5'>
         <div className="grid-col-3 bg-white">
-          <LeftPanel />
+          <LeftPanel status="Application"/>
         </div>
 
         <div className="grid-col-9">

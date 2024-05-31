@@ -23,8 +23,8 @@ export const sections = [
     questions: [
       { title: '8(a) Specific', stepIs: 0, route: '/additional-information/eighta', url: EIGHTA_SPECIFIC_ROUTE },
       { title: '8(a) Character', stepIs: 1, route: '/additional-information/eighta?step=1', url: EIGHTA_CHARACTER_ROUTE },
-      { title: '8(a) Social Disadvantages', stepIs: 2, route: '/additional-information/eighta?step=2', url: EIGHTA_SOCIAL_DISADVANTAGE_ROUTE },
-      { title: '8(a) Economic Disadvantages', stepIs: 3, route: '/additional-information/eighta?step=3', url: EIGHTA_ECONOMIC_DISADVANTAGE_ROUTE },
+      { title: '8(a) Social Disadvantage', stepIs: 2, route: '/additional-information/eighta?step=2', url: EIGHTA_SOCIAL_DISADVANTAGE_ROUTE },
+      { title: '8(a) Economic Disadvantage', stepIs: 3, route: '/additional-information/eighta?step=3', url: EIGHTA_ECONOMIC_DISADVANTAGE_ROUTE },
       { title: '8(a) Prior Involvement', stepIs: 4, route: '/additional-information/eighta?step=4', url: EIGHTA_PRIOR_INVOLVEMENT_ROUTE }
     ]
   },

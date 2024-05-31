@@ -16,7 +16,7 @@ const QAWrapper: React.FC<QAWrapperProps> = ({ sidebar, mainContent, fill }) => 
           {sidebar}
         </Grid>
       )}
-      <Grid mobile={{col: 12}} tablet={{col: 8}} className='padding-bottom-3'>
+      <Grid mobile={{col: 12}} tablet={sidebar ? {col: 8}: {col: 12}} className='padding-bottom-3'>
         {mainContent}
       </Grid>
     </Grid>

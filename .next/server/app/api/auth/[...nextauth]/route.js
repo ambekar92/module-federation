@@ -93,6 +93,16 @@ module.exports = require("events");
 
 /***/ }),
 
+/***/ "fs":
+/*!*********************!*\
+  !*** external "fs" ***!
+  \*********************/
+/***/ ((module) => {
+
+module.exports = require("fs");
+
+/***/ }),
+
 /***/ "http":
 /*!***********************!*\
   !*** external "http" ***!
@@ -113,6 +123,26 @@ module.exports = require("https");
 
 /***/ }),
 
+/***/ "os":
+/*!*********************!*\
+  !*** external "os" ***!
+  \*********************/
+/***/ ((module) => {
+
+module.exports = require("os");
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/***/ ((module) => {
+
+module.exports = require("path");
+
+/***/ }),
+
 /***/ "querystring":
 /*!******************************!*\
   !*** external "querystring" ***!
@@ -120,6 +150,26 @@ module.exports = require("https");
 /***/ ((module) => {
 
 module.exports = require("querystring");
+
+/***/ }),
+
+/***/ "stream":
+/*!*************************!*\
+  !*** external "stream" ***!
+  \*************************/
+/***/ ((module) => {
+
+module.exports = require("stream");
+
+/***/ }),
+
+/***/ "tty":
+/*!**********************!*\
+  !*** external "tty" ***!
+  \**********************/
+/***/ ((module) => {
+
+module.exports = require("tty");
 
 /***/ }),
 
@@ -189,7 +239,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   authConfig: () => (/* binding */ authConfig),\n/* harmony export */   getSessionServer: () => (/* binding */ getSessionServer)\n/* harmony export */ });\n/* harmony import */ var next_auth__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! next-auth */ \"(rsc)/./node_modules/next-auth/index.js\");\n/* harmony import */ var next_auth__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(next_auth__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var next_auth_providers_okta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! next-auth/providers/okta */ \"(rsc)/./node_modules/next-auth/providers/okta.js\");\n/* harmony import */ var _api_auth_utils_generateCsrfToken__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../api/auth/utils/generateCsrfToken */ \"(rsc)/./app/api/auth/utils/generateCsrfToken.ts\");\n\n\n\nconst authConfig = {\n    providers: [\n        (0,next_auth_providers_okta__WEBPACK_IMPORTED_MODULE_1__[\"default\"])({\n            clientId: process.env.OKTA_OAUTH2_CLIENT_ID,\n            clientSecret: process.env.OKTA_OAUTH2_CLIENT_SECRET,\n            issuer: process.env.OKTA_OAUTH2_ISSUER\n        })\n    ],\n    callbacks: {\n        jwt: async ({ token })=>{\n            if (token.csrfToken !== null) {\n                token.csrfToken = (0,_api_auth_utils_generateCsrfToken__WEBPACK_IMPORTED_MODULE_2__.generateCsrfToken)();\n            }\n            return token;\n        },\n        session: async ({ session, token })=>{\n            if (typeof token.csrfToken === \"string\") {\n                session.csrfToken = token.csrfToken // CSRF token is now part of the token object and persisted through JWT.\n                ;\n            }\n            return session;\n        }\n    }\n};\nasync function getSessionServer() {\n    const session = await (0,next_auth__WEBPACK_IMPORTED_MODULE_0__.getServerSession)(authConfig);\n    return session;\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHJzYykvLi9hcHAvbGliL2F1dGgudHMiLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7O0FBQTZEO0FBQ1Y7QUFDb0I7QUFFaEUsTUFBTUcsYUFBOEI7SUFDekNDLFdBQVc7UUFDVEgsb0VBQVlBLENBQUM7WUFDWEksVUFBVUMsUUFBUUMsR0FBRyxDQUFDQyxxQkFBcUI7WUFDM0NDLGNBQWNILFFBQVFDLEdBQUcsQ0FBQ0cseUJBQXlCO1lBQ25EQyxRQUFRTCxRQUFRQyxHQUFHLENBQUNLLGtCQUFrQjtRQUN4QztLQUNEO0lBQ0RDLFdBQVc7UUFDVEMsS0FBSyxPQUFPLEVBQUVDLEtBQUssRUFBRTtZQUNuQixJQUFJQSxNQUFNQyxTQUFTLEtBQUssTUFBTTtnQkFDNUJELE1BQU1DLFNBQVMsR0FBR2Qsb0ZBQWlCQTtZQUNyQztZQUNBLE9BQU9hO1FBQ1Q7UUFDQUUsU0FBUyxPQUFPLEVBQUVBLE9BQU8sRUFBRUYsS0FBSyxFQUFFO1lBQ2hDLElBQUksT0FBT0EsTUFBTUMsU0FBUyxLQUFLLFVBQVU7Z0JBQ3ZDQyxRQUFRRCxTQUFTLEdBQUdELE1BQU1DLFNBQVMsQ0FBQyx3RUFBd0U7O1lBQzlHO1lBRUEsT0FBT0M7UUFDVDtJQUNGO0FBQ0YsRUFBQztBQUVNLGVBQWVDO0lBQ3BCLE1BQU1ELFVBQVUsTUFBTWpCLDJEQUFnQkEsQ0FBQ0c7SUFDdkMsT0FBT2M7QUFDVCIsInNvdXJjZXMiOlsid2VicGFjazovL25leHRqcy1hcHAvLi9hcHAvbGliL2F1dGgudHM/NmJmYyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBOZXh0QXV0aE9wdGlvbnMsIGdldFNlcnZlclNlc3Npb24gfSBmcm9tICduZXh0LWF1dGgnXG5pbXBvcnQgT2t0YVByb3ZpZGVyIGZyb20gJ25leHQtYXV0aC9wcm92aWRlcnMvb2t0YSdcbmltcG9ydCB7IGdlbmVyYXRlQ3NyZlRva2VuIH0gZnJvbSAnLi4vYXBpL2F1dGgvdXRpbHMvZ2VuZXJhdGVDc3JmVG9rZW4nXG5cbmV4cG9ydCBjb25zdCBhdXRoQ29uZmlnOiBOZXh0QXV0aE9wdGlvbnMgPSB7XG4gIHByb3ZpZGVyczogW1xuICAgIE9rdGFQcm92aWRlcih7XG4gICAgICBjbGllbnRJZDogcHJvY2Vzcy5lbnYuT0tUQV9PQVVUSDJfQ0xJRU5UX0lEISxcbiAgICAgIGNsaWVudFNlY3JldDogcHJvY2Vzcy5lbnYuT0tUQV9PQVVUSDJfQ0xJRU5UX1NFQ1JFVCEsXG4gICAgICBpc3N1ZXI6IHByb2Nlc3MuZW52Lk9LVEFfT0FVVEgyX0lTU1VFUiEsXG4gICAgfSksXG4gIF0sXG4gIGNhbGxiYWNrczoge1xuICAgIGp3dDogYXN5bmMgKHsgdG9rZW4gfSkgPT4ge1xuICAgICAgaWYgKHRva2VuLmNzcmZUb2tlbiAhPT0gbnVsbCkge1xuICAgICAgICB0b2tlbi5jc3JmVG9rZW4gPSBnZW5lcmF0ZUNzcmZUb2tlbigpXG4gICAgICB9XG4gICAgICByZXR1cm4gdG9rZW5cbiAgICB9LFxuICAgIHNlc3Npb246IGFzeW5jICh7IHNlc3Npb24sIHRva2VuIH0pID0+IHtcbiAgICAgIGlmICh0eXBlb2YgdG9rZW4uY3NyZlRva2VuID09PSAnc3RyaW5nJykge1xuICAgICAgICBzZXNzaW9uLmNzcmZUb2tlbiA9IHRva2VuLmNzcmZUb2tlbiAvLyBDU1JGIHRva2VuIGlzIG5vdyBwYXJ0IG9mIHRoZSB0b2tlbiBvYmplY3QgYW5kIHBlcnNpc3RlZCB0aHJvdWdoIEpXVC5cbiAgICAgIH1cblxuICAgICAgcmV0dXJuIHNlc3Npb25cbiAgICB9LFxuICB9LFxufVxuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2V0U2Vzc2lvblNlcnZlcigpIHtcbiAgY29uc3Qgc2Vzc2lvbiA9IGF3YWl0IGdldFNlcnZlclNlc3Npb24oYXV0aENvbmZpZylcbiAgcmV0dXJuIHNlc3Npb247XG59XG4iXSwibmFtZXMiOlsiZ2V0U2VydmVyU2Vzc2lvbiIsIk9rdGFQcm92aWRlciIsImdlbmVyYXRlQ3NyZlRva2VuIiwiYXV0aENvbmZpZyIsInByb3ZpZGVycyIsImNsaWVudElkIiwicHJvY2VzcyIsImVudiIsIk9LVEFfT0FVVEgyX0NMSUVOVF9JRCIsImNsaWVudFNlY3JldCIsIk9LVEFfT0FVVEgyX0NMSUVOVF9TRUNSRVQiLCJpc3N1ZXIiLCJPS1RBX09BVVRIMl9JU1NVRVIiLCJjYWxsYmFja3MiLCJqd3QiLCJ0b2tlbiIsImNzcmZUb2tlbiIsInNlc3Npb24iLCJnZXRTZXNzaW9uU2VydmVyIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///(rsc)/./app/lib/auth.ts\n");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   authConfig: () => (/* binding */ authConfig),\n/* harmony export */   getSessionServer: () => (/* binding */ getSessionServer)\n/* harmony export */ });\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! axios */ \"(rsc)/./node_modules/axios/lib/axios.js\");\n/* harmony import */ var next_auth__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! next-auth */ \"(rsc)/./node_modules/next-auth/index.js\");\n/* harmony import */ var next_auth__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(next_auth__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var next_auth_providers_okta__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! next-auth/providers/okta */ \"(rsc)/./node_modules/next-auth/providers/okta.js\");\n/* harmony import */ var _api_auth_utils_generateCsrfToken__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../api/auth/utils/generateCsrfToken */ \"(rsc)/./app/api/auth/utils/generateCsrfToken.ts\");\n\n\n\n\nconst authConfig = {\n    providers: [\n        (0,next_auth_providers_okta__WEBPACK_IMPORTED_MODULE_1__[\"default\"])({\n            clientId: process.env.OKTA_OAUTH2_CLIENT_ID,\n            clientSecret: process.env.OKTA_OAUTH2_CLIENT_SECRET,\n            issuer: process.env.OKTA_OAUTH2_ISSUER\n        })\n    ],\n    callbacks: {\n        jwt: async ({ token })=>{\n            if (token.csrfToken !== null) {\n                token.csrfToken = (0,_api_auth_utils_generateCsrfToken__WEBPACK_IMPORTED_MODULE_2__.generateCsrfToken)();\n            }\n            return token;\n        },\n        session: async ({ session, token })=>{\n            if (typeof token.csrfToken === \"string\") {\n                session.csrfToken = token.csrfToken // CSRF token is now part of the token object and persisted through JWT.\n                ;\n            }\n            try {\n                await axios__WEBPACK_IMPORTED_MODULE_3__[\"default\"].post(`https://ucms-internal-api.demo.sba-one.net/api/v1/okta-post-login`, {\n                    ...session\n                });\n            } catch (error) {\n                console.error(\"Error making POST request:\", error);\n            }\n            return session;\n        }\n    }\n};\nasync function getSessionServer() {\n    const session = await (0,next_auth__WEBPACK_IMPORTED_MODULE_0__.getServerSession)(authConfig);\n    return session;\n}\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHJzYykvLi9hcHAvbGliL2F1dGgudHMiLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7OztBQUF5QjtBQUNvQztBQUNWO0FBQ29CO0FBRWhFLE1BQU1JLGFBQThCO0lBQ3pDQyxXQUFXO1FBQ1RILG9FQUFZQSxDQUFDO1lBQ1hJLFVBQVVDLFFBQVFDLEdBQUcsQ0FBQ0MscUJBQXFCO1lBQzNDQyxjQUFjSCxRQUFRQyxHQUFHLENBQUNHLHlCQUF5QjtZQUNuREMsUUFBUUwsUUFBUUMsR0FBRyxDQUFDSyxrQkFBa0I7UUFDeEM7S0FDRDtJQUNEQyxXQUFXO1FBQ1RDLEtBQUssT0FBTyxFQUFFQyxLQUFLLEVBQUU7WUFDbkIsSUFBSUEsTUFBTUMsU0FBUyxLQUFLLE1BQU07Z0JBQzVCRCxNQUFNQyxTQUFTLEdBQUdkLG9GQUFpQkE7WUFDckM7WUFDQSxPQUFPYTtRQUNUO1FBQ0FFLFNBQVMsT0FBTyxFQUFFQSxPQUFPLEVBQUVGLEtBQUssRUFBRTtZQUNoQyxJQUFJLE9BQU9BLE1BQU1DLFNBQVMsS0FBSyxVQUFVO2dCQUN2Q0MsUUFBUUQsU0FBUyxHQUFHRCxNQUFNQyxTQUFTLENBQUMsd0VBQXdFOztZQUM5RztZQUNBLElBQUk7Z0JBQ0YsTUFBTWpCLDZDQUFLQSxDQUFDbUIsSUFBSSxDQUFDLENBQUMsaUVBQWlFLENBQUMsRUFBRTtvQkFDbkYsR0FBR0QsT0FBTztnQkFDYjtZQUNGLEVBQUUsT0FBT0UsT0FBTztnQkFDZEMsUUFBUUQsS0FBSyxDQUFDLDhCQUE4QkE7WUFDOUM7WUFDQSxPQUFPRjtRQUNUO0lBRUY7QUFDRixFQUFDO0FBQ00sZUFBZUk7SUFDcEIsTUFBTUosVUFBVSxNQUFNakIsMkRBQWdCQSxDQUFDRztJQUN2QyxPQUFPYztBQUNUIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vbmV4dGpzLWFwcC8uL2FwcC9saWIvYXV0aC50cz82YmZjIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBheGlvcyBmcm9tICdheGlvcydcbmltcG9ydCB7IE5leHRBdXRoT3B0aW9ucywgZ2V0U2VydmVyU2Vzc2lvbiB9IGZyb20gJ25leHQtYXV0aCdcbmltcG9ydCBPa3RhUHJvdmlkZXIgZnJvbSAnbmV4dC1hdXRoL3Byb3ZpZGVycy9va3RhJ1xuaW1wb3J0IHsgZ2VuZXJhdGVDc3JmVG9rZW4gfSBmcm9tICcuLi9hcGkvYXV0aC91dGlscy9nZW5lcmF0ZUNzcmZUb2tlbidcblxuZXhwb3J0IGNvbnN0IGF1dGhDb25maWc6IE5leHRBdXRoT3B0aW9ucyA9IHtcbiAgcHJvdmlkZXJzOiBbXG4gICAgT2t0YVByb3ZpZGVyKHtcbiAgICAgIGNsaWVudElkOiBwcm9jZXNzLmVudi5PS1RBX09BVVRIMl9DTElFTlRfSUQhLFxuICAgICAgY2xpZW50U2VjcmV0OiBwcm9jZXNzLmVudi5PS1RBX09BVVRIMl9DTElFTlRfU0VDUkVUISxcbiAgICAgIGlzc3VlcjogcHJvY2Vzcy5lbnYuT0tUQV9PQVVUSDJfSVNTVUVSISxcbiAgICB9KSxcbiAgXSxcbiAgY2FsbGJhY2tzOiB7XG4gICAgand0OiBhc3luYyAoeyB0b2tlbiB9KSA9PiB7XG4gICAgICBpZiAodG9rZW4uY3NyZlRva2VuICE9PSBudWxsKSB7XG4gICAgICAgIHRva2VuLmNzcmZUb2tlbiA9IGdlbmVyYXRlQ3NyZlRva2VuKClcbiAgICAgIH1cbiAgICAgIHJldHVybiB0b2tlblxuICAgIH0sXG4gICAgc2Vzc2lvbjogYXN5bmMgKHsgc2Vzc2lvbiwgdG9rZW4gfSkgPT4ge1xuICAgICAgaWYgKHR5cGVvZiB0b2tlbi5jc3JmVG9rZW4gPT09ICdzdHJpbmcnKSB7XG4gICAgICAgIHNlc3Npb24uY3NyZlRva2VuID0gdG9rZW4uY3NyZlRva2VuIC8vIENTUkYgdG9rZW4gaXMgbm93IHBhcnQgb2YgdGhlIHRva2VuIG9iamVjdCBhbmQgcGVyc2lzdGVkIHRocm91Z2ggSldULlxuICAgICAgfVxuICAgICAgdHJ5IHtcbiAgICAgICAgYXdhaXQgYXhpb3MucG9zdChgaHR0cHM6Ly91Y21zLWludGVybmFsLWFwaS5kZW1vLnNiYS1vbmUubmV0L2FwaS92MS9va3RhLXBvc3QtbG9naW5gLCB7XG4gICAgICAgICAgIC4uLnNlc3Npb25cbiAgICAgICAgfSk7XG4gICAgICB9IGNhdGNoIChlcnJvcikge1xuICAgICAgICBjb25zb2xlLmVycm9yKCdFcnJvciBtYWtpbmcgUE9TVCByZXF1ZXN0OicsIGVycm9yKTtcbiAgICAgIH1cbiAgICAgIHJldHVybiBzZXNzaW9uXG4gICAgfSxcbiAgICBcbiAgfSxcbn1cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBnZXRTZXNzaW9uU2VydmVyKCkge1xuICBjb25zdCBzZXNzaW9uID0gYXdhaXQgZ2V0U2VydmVyU2Vzc2lvbihhdXRoQ29uZmlnKVxuICByZXR1cm4gc2Vzc2lvbjtcbn1cbiJdLCJuYW1lcyI6WyJheGlvcyIsImdldFNlcnZlclNlc3Npb24iLCJPa3RhUHJvdmlkZXIiLCJnZW5lcmF0ZUNzcmZUb2tlbiIsImF1dGhDb25maWciLCJwcm92aWRlcnMiLCJjbGllbnRJZCIsInByb2Nlc3MiLCJlbnYiLCJPS1RBX09BVVRIMl9DTElFTlRfSUQiLCJjbGllbnRTZWNyZXQiLCJPS1RBX09BVVRIMl9DTElFTlRfU0VDUkVUIiwiaXNzdWVyIiwiT0tUQV9PQVVUSDJfSVNTVUVSIiwiY2FsbGJhY2tzIiwiand0IiwidG9rZW4iLCJjc3JmVG9rZW4iLCJzZXNzaW9uIiwicG9zdCIsImVycm9yIiwiY29uc29sZSIsImdldFNlc3Npb25TZXJ2ZXIiXSwic291cmNlUm9vdCI6IiJ9\n//# sourceURL=webpack-internal:///(rsc)/./app/lib/auth.ts\n");
 
 /***/ })
 
@@ -200,7 +250,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 var __webpack_require__ = require("../../../../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/next-auth","vendor-chunks/@babel","vendor-chunks/jose","vendor-chunks/openid-client","vendor-chunks/uuid","vendor-chunks/oauth","vendor-chunks/@panva","vendor-chunks/yallist","vendor-chunks/preact-render-to-string","vendor-chunks/oidc-token-hash","vendor-chunks/preact","vendor-chunks/object-hash","vendor-chunks/lru-cache","vendor-chunks/cookie"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&page=%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute.ts&appDir=C%3A%5CSANTHOSH%5CNadire%5Cmodule-federation%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CSANTHOSH%5CNadire%5Cmodule-federation&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
+var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/next-auth","vendor-chunks/@babel","vendor-chunks/jose","vendor-chunks/axios","vendor-chunks/openid-client","vendor-chunks/uuid","vendor-chunks/asynckit","vendor-chunks/oauth","vendor-chunks/debug","vendor-chunks/@panva","vendor-chunks/yallist","vendor-chunks/preact-render-to-string","vendor-chunks/oidc-token-hash","vendor-chunks/mime-db","vendor-chunks/form-data","vendor-chunks/follow-redirects","vendor-chunks/supports-color","vendor-chunks/proxy-from-env","vendor-chunks/preact","vendor-chunks/object-hash","vendor-chunks/ms","vendor-chunks/mime-types","vendor-chunks/lru-cache","vendor-chunks/has-flag","vendor-chunks/delayed-stream","vendor-chunks/cookie","vendor-chunks/combined-stream"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&page=%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fauth%2F%5B...nextauth%5D%2Froute.ts&appDir=C%3A%5CSANTHOSH%5CNadire%5Cmodule-federation%5Capp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=C%3A%5CSANTHOSH%5CNadire%5Cmodule-federation&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
 module.exports = __webpack_exports__;
 
 })();

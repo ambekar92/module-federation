@@ -9,23 +9,24 @@ import { redirectAdditionalInfo } from './middlewares/redirect'
 const middlewares: { [key: string]: any } = {}
 export const config = {
   matcher: [
-    // '/home',
-    // '/admin',
-    // '/add-delegate',
-    // '/entities',
-    // '/evaluation',
-    // '/field-operation',
-    // '/helpdesk',
-    // '/claim-your-business',
-    // '/participation-agreement',
-    // '/users',
-    // '/documents',
-    // '/notifications',
-    // '/profile-settings',
-    // '/messages',
-    // '/additional-information',
-    // '/application',
-    // '/application(.*)' // all sub-routes
+    '/home',
+    '/admin',
+    '/add-delegate',
+    '/entities',
+    '/evaluation',
+    '/field-operation',
+    '/helpdesk',
+    '/claim-your-business',
+    '/participation-agreement',
+    '/users',
+    '/documents',
+    '/notifications',
+    '/profile-settings',
+    '/messages',
+    '/additional-information',
+    '/application',
+    '/application(.*)', // all sub-routes
+    '/reviews'
   ],
 }
 

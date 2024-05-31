@@ -33,7 +33,7 @@ function AddDelegateForm() {
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
-      if(steps[currentStep] === 'Add Delegate') {
+      if (steps[currentStep] === 'Add Delegate') {
         setShowModal(true)
       } else {
         setCurrentStep(currentStep + 1)
@@ -70,7 +70,10 @@ function AddDelegateForm() {
   }
 
   return (
-    <GridContainer className='height-full display-flex flex-column' containerSize="widescreen">
+    <GridContainer
+      className="height-full display-flex flex-column"
+      containerSize="widescreen"
+    >
       <Grid row col={12}>
         <Grid col={12}>
           <CustomHeader title="Assign a Delegate">
@@ -111,8 +114,8 @@ function AddDelegateForm() {
               heading="Note"
               slim
             >
-            	The delegate must use the email address you are providing below to
-            	access your application
+              The delegate must use the email address you are providing below to
+              access your application
             </Alert>
           )}
         </Grid>
@@ -138,7 +141,7 @@ function AddDelegateForm() {
       ) : (
         steps[currentStep] === 'Assign Option' && (
           <>
-            <Grid className='flex-fill' col={12}>
+            <Grid className="flex-fill" col={12}>
               <Label className="text-bold" htmlFor="input-radio-question">
                 Are You Assigning A Delegate For This Application?
               </Label>
@@ -160,35 +163,29 @@ function AddDelegateForm() {
       )}
       <Grid row gap="lg" className="margin-top-2" col={12}>
         <ButtonGroup className="display-flex flex-justify flex-fill border-top padding-y-2">
-          {currentStep === 0 ? (
-            <Link className='usa-button usa-button--outline' href='/claim-your-business'>
-						Previous
-            </Link>
-          ): (
-            <Button
-              type="button"
-              onClick={handlePrevious}
-              disabled={currentStep === 0}
-              outline
-            >
-    				Previous
-            </Button>
-          )}
+          <Button
+            className={currentStep === 0 ? 'display-none' : ''}
+            type="button"
+            onClick={handlePrevious}
+            disabled={currentStep === 0}
+          >
+            Previous
+          </Button>
           {option === 'no' ? (
-            <Link className='usa-button usa-button--outline' href='/select-intended-programs'>
-				      Next
+            <Link className="usa-button" href="/select-intended-programs">
+              Next
             </Link>
-          ):(
+          ) : (
             <Button
               type="button"
               onClick={handleNext}
               disabled={
                 (currentStep === 0 && option !== 'yes') ||
-								currentStep === steps.length - 1 ||
-								(currentStep === 1 && delegates.length === 0)
+                currentStep === steps.length - 1 ||
+                (currentStep === 1 && delegates.length === 0)
               }
             >
-      				Next
+              Next
             </Button>
           )}
         </ButtonGroup>

@@ -1,5 +1,13 @@
-import  Ucp  from '../components/admin-ucp/Ucp'
 
+import Ucp from '../components/admin-ucp/Ucp'
+
+import styles from './Card.module.scss'
 export default function AdminUcp() {
-  return  <Ucp />
+
+  return (
+    <div>
+
+      <Ucp />
+    </div>
+  )
 }

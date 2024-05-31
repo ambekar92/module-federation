@@ -15,12 +15,14 @@ type DelegateTableProps = {
   isDisplay?: boolean
   setValue: UseFormSetValue<DelegateFormInputType>
   reset: UseFormReset<DelegateFormInputType>
+  displayForm: () => void
 }
 
 const DelegateTable: React.FC<DelegateTableProps> = ({
   isDisplay,
   setValue,
   reset,
+  displayForm,
 }) => {
   const dispatch = useFormDispatch()
   const { delegates, editingDelegate } = useFormSelector(selectForm)
@@ -36,6 +38,7 @@ const DelegateTable: React.FC<DelegateTableProps> = ({
       }
     })
     dispatch(editDelegate(index))
+    displayForm()
   }
 
   const handleDeleteDelegate = (index: number) => {
@@ -54,6 +57,7 @@ const DelegateTable: React.FC<DelegateTableProps> = ({
     }
 
     dispatch(deleteDelegate(index))
+    displayForm()
   }
 
   return (

@@ -680,6 +680,11 @@ input.usa-input.usa-input--success.icon:-internal-autofill-selected {
   display: none;
 }
 
+@media (max-width: 850px) {
+  .step-indicator__application .usa-step-indicator__segment-label {
+    display: none;
+  }
+}
 /*
 * * * * * ==============================
 * * * * * ==============================

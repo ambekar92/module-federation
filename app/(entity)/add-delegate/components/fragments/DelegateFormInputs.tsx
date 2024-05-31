@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Button,
   ButtonGroup,
@@ -26,6 +26,7 @@ import {
   setEditingDelegate,
   updateInputKey,
   selectForm,
+  editDelegate,
 } from '../store/formSlice'
 import DelegateTable from './DelegateTable'
 import InviteModal from './InviteModal'
@@ -68,7 +69,8 @@ const DelegateFormInputs = ({
   touchedFields,
 }: FormInputInterface) => {
   const dispatch = useFormDispatch()
-  const { editingDelegate } = useFormSelector(selectForm)
+  const { delegates } = useFormSelector(selectForm)
+  const [showForm, setShowForm] = useState(true)
 
   const onSubmit: SubmitHandler<DelegateFormInputType> = async (data) => {
     //Need to update with POST Kafka Message when API endpoint is established
@@ -93,8 +95,10 @@ const DelegateFormInputs = ({
         lastName: '',
         email: '',
       })
-      dispatch(setEditingDelegate(null))
-      dispatch(updateInputKey())
+
+      dispatch(editDelegate(0))
+      delegates.length === 0 && dispatch(updateInputKey())
+      setShowForm(false)
     }
   }
 
@@ -114,9 +118,14 @@ const DelegateFormInputs = ({
       lastName: '',
       email: '',
     })
-    if (editingDelegate) {
+    if (delegates.length > 0) {
       dispatch(setEditingDelegate(null))
+      setShowForm(false)
     }
+  }
+
+  const displayForm = () => {
+    setShowForm(true)
   }
 
   return (
@@ -126,8 +135,11 @@ const DelegateFormInputs = ({
         handleSend={handleSend}
         handleCancel={handleCancel}
       />
-      <form onSubmit={handleSubmit(onSubmit)} className="width-full">
-        <Grid row className="width-full" col={12}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={showForm ? 'width-full' : 'display-none'}
+      >
+        <Grid row gap="lg" className="width-full" col={12}>
           {fieldKeys.map((key) => (
             <Grid
               key={key}
@@ -190,19 +202,23 @@ const DelegateFormInputs = ({
             <div className="default-btn float-right">
               <ButtonGroup type="default">
                 <Button type="button" outline onClick={handleClearOrCancel}>
-                  {editingDelegate ? 'Cancel' : 'Clear'}
+                  {delegates.length > 0 ? 'Cancel' : 'Clear'}
                 </Button>
                 <Button type="submit" disabled={!isValid}>
-                  {editingDelegate ? 'Update' : 'Add'}
+                  {delegates.length > 0 ? 'Update' : 'Add'}
                 </Button>
               </ButtonGroup>
             </div>
           </Grid>
         </Grid>
-        <Grid row className="margin-right-2 width-full">
-          <DelegateTable setValue={setValue} reset={reset} />
-        </Grid>
       </form>
+      <Grid row gap="lg" className="margin-right-2 width-full">
+        <DelegateTable
+          setValue={setValue}
+          reset={reset}
+          displayForm={displayForm}
+        />
+      </Grid>
     </>
   )
 }
