@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { RootState } from './applicationStore';
 import { Contributor } from '../components/contributor-invite/types';
 import { Owner, OwnershipType } from '../components/ownership/shared/types';
-import { Operator } from '../sections/ControlAndOperations';
+import { Operator } from '../components/control-and-operations/schema';
 
 interface ApplicationState {
   currentStep: number;
@@ -16,8 +16,9 @@ interface ApplicationState {
 	isAddingContributor: boolean,
   owners: Owner[],
 	operators: Operator[],
-	isAddingOperator: boolean,
-	contributors: Contributor[]
+	showControlOperationsForm: boolean,
+	contributors: Contributor[],
+  currentOperatorEditIndex: number | null
 }
 
 const initialState: ApplicationState = {
@@ -33,7 +34,8 @@ const initialState: ApplicationState = {
   contributors: [],
   owners: [],
   operators: [],
-  isAddingOperator: false,
+  showControlOperationsForm: false,
+  currentOperatorEditIndex: null
 }
 
 const applicationSlice = createSlice({
@@ -64,8 +66,8 @@ const applicationSlice = createSlice({
     setIsAddingContributor(state, action: PayloadAction<boolean>) {
       state.isAddingContributor = action.payload;
     },
-    setIsAddingOperator(state, action: PayloadAction<boolean>) {
-      state.isAddingOperator = action.payload;
+    setShowControlOperationsForm(state, action: PayloadAction<boolean>) {
+      state.showControlOperationsForm = action.payload;
     },
     setContributors(state, action: PayloadAction<Contributor[]>) {
       state.contributors = action.payload;
@@ -75,6 +77,9 @@ const applicationSlice = createSlice({
     },
     setOperators(state, action: PayloadAction<Operator[]>) {
       state.operators = action.payload;
+    },
+    setCurrentOperatorEditIndex(state, action: PayloadAction<number | null>) {
+      state.currentOperatorEditIndex = action.payload;
     }
   }
 })
@@ -90,8 +95,9 @@ export const {
   setIsAddingContributor,
   setContributors,
   setOwners,
-  setIsAddingOperator,
-  setOperators
+  setShowControlOperationsForm,
+  setOperators,
+  setCurrentOperatorEditIndex
 } = applicationSlice.actions;
 
 export default applicationSlice.reducer;

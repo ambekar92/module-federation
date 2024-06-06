@@ -1,23 +1,53 @@
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Header,
   Icon,
   Menu,
-  NavDropDownButton,
   NavMenuButton,
   PrimaryNav,
-  Title
-} from '@trussworks/react-uswds';
-import { signOut, useSession } from 'next-auth/react';
-import React, { useState } from 'react';
-import { Notification } from './components/navbarNotification';
-import styles from './layout.module.scss';
-import Link from 'next/link';
+  Title,
+} from '@trussworks/react-uswds'
+import { signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
+import {
+  SBA_LOGO_SQUARE_BLUE_RED_URL,
+  SBA_LOGO_SQUARE_WHITE_URL
+} from '../../constants/icons'
+import { Notification } from './components/navbarNotification'
+import styles from './layout.module.scss'
+
+export interface StyleSetting {
+  bg: string
+  textColor: string
+  logo: string
+	hoverColor: string
+}
 
 const Navigation = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [navDropdownOpen, setNavDropdownOpen] = useState([false, false])
   const [selectedNameId, setSelectedNameId] = useState('')
+  const [styleSettings, setStyleSettings] = useState<StyleSetting>({
+    bg: '',
+    textColor: '',
+    logo: SBA_LOGO_SQUARE_BLUE_RED_URL,
+    hoverColor: ''
+  })
+
   const { status } = useSession()
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      setStyleSettings({
+        bg: 'bg-primary-darker',
+        textColor: 'text-white',
+        logo: SBA_LOGO_SQUARE_WHITE_URL,
+        hoverColor: 'hover:text-primary'
+      })
+    }
+  }, [status])
 
   const toggleMobileNav = (): void => {
     setMobileNavOpen((prevOpen) => !prevOpen)
@@ -34,10 +64,7 @@ const Navigation = () => {
     setSelectedNameId(selectedNameId === id ? '' : id)
   }
   const profileDropdown = [
-    <Link
-      key="one"
-      href="/user/1"
-    >
+    <Link key="one" href="/user/1">
       Profile
     </Link>,
     <Link
@@ -52,104 +79,140 @@ const Navigation = () => {
   ]
   const primaryNavItems = [
     <React.Fragment key="primaryNav_0">
-      <NavDropDownButton
-        menuId="extended-nav-section-one"
-        isOpen={navDropdownOpen[0]}
-        label={'Notifications'}
-        onToggle={(): void => {
+      <button
+        type="button"
+        className="usa-button__base usa-nav__link"
+        onClick={(): void => {
           handleToggleNavDropdown(0)
         }}
-        isCurrent
-      />
+      >
+        <span
+          className={`${styleSettings.textColor} border-right-0 margin-right-1 cursor-pointer`}
+        >
+          {' Notifications '}
+          <FontAwesomeIcon
+            icon={navDropdownOpen[0] ? faChevronUp : faChevronDown}
+            size="xs"
+          />
+        </span>
+      </button>
       <Menu
-        id="extended-nav-section-one"
+        id="extended-nav-section-two"
         items={new Array(1).fill(<Notification />)}
         isOpen={navDropdownOpen[0]}
       />
     </React.Fragment>,
 
     <a key="primaryNav_2" className="usa-nav__link" href="#">
-      Account
+      <span className={styleSettings.textColor}>Account</span>
     </a>,
 
-    <React.Fragment key="primaryNav_1">
-      <NavDropDownButton
-        menuId="extended-nav-section-two"
-        isOpen={navDropdownOpen[1]}
-        label={'User Profile'}
-        onToggle={(): void => {
+    <React.Fragment key="primaryNav_3">
+      <button
+        type="button"
+        className="usa-button__base usa-nav__link"
+        onClick={(): void => {
           handleToggleNavDropdown(1)
         }}
-      />
+      >
+        <span
+          className={`${styleSettings.textColor} border-right-0 margin-right-1 cursor-pointer`}
+        >
+          User Profile{' '}
+          <FontAwesomeIcon
+            icon={navDropdownOpen[1] ? faChevronUp : faChevronDown}
+            size="xs"
+          />
+        </span>
+      </button>
       <Menu
-        id="extended-nav-section-two"
+        id="extended-nav-section-three"
         items={profileDropdown}
         isOpen={navDropdownOpen[1]}
       />
     </React.Fragment>,
   ]
 
-  if (status === 'authenticated') {
-    return (
-      <>
-        <Header className={`border-bottom-1px border-base-light ${styles['mobile-border--none']}`} basic showMobileOverlay={mobileNavOpen}>
-          <div className={'usa-nav-container display-flex flex-justify-between maxw-full'}>
-            <div className={`usa-navbar ${styles['mobile-border--none']} width-full`}>
-              <Title id="extended-logo">
-                <img
-                  src="/SBA-Logo-Horizontal.png"
-                  alt="logo"
-                  height={50}
-                />
-              </Title>
-              <NavMenuButton
-                label="Menu"
-                onClick={toggleMobileNav}
-                className="usa-menu-btn margin-left-auto"
-              />
-            </div>
-            <PrimaryNav
-              aria-label="Primary navigation"
-              items={primaryNavItems}
-              onToggleMobileNav={toggleMobileNav}
-              mobileExpanded={mobileNavOpen}
-            ></PrimaryNav>
+  return (
+    <>
+      <Header
+        className={`${styleSettings.bg} border-bottom-1px border-base-light ${styles['mobile-border--none']}`}
+        basic
+        showMobileOverlay={mobileNavOpen}
+      >
+        <div
+          className={
+            'usa-nav-container display-flex flex-justify-between maxw-full'
+          }
+        >
+          <div
+            className={`usa-navbar ${styles['mobile-border--none']} width-full`}
+          >
+            <Title id="extended-logo">
+              <img className='padding-y-05' src={`/${styleSettings.logo}`} alt="logo" height={50} />
+            </Title>
+            <NavMenuButton
+              label="Menu"
+              onClick={toggleMobileNav}
+              className="usa-menu-btn margin-left-auto"
+            />
           </div>
-        </Header>
-        <Header className={`border-bottom-1px border-base-lighter padding-x-4 ${styles['mobile-border--none']}`}>
-          <div className="usa-nav float-left">
-            <ul className="usa-nav__primary float-left usa-accordion">
-              <li className="usa-nav__primary-item">
-                <a className="usa-nav__link" href="/">Home</a>
-              </li>
+          <PrimaryNav
+            aria-label="Primary navigation"
+            items={primaryNavItems}
+            onToggleMobileNav={toggleMobileNav}
+            mobileExpanded={mobileNavOpen}
+          ></PrimaryNav>
+        </div>
+      </Header>
+      <Header
+        className={`${styleSettings.bg} border-bottom-1px border-base-lighter padding-x-4 ${styles['mobile-border--none']}`}
+      >
+        <div className="usa-nav float-left">
+          <ul className="usa-nav__primary float-left usa-accordion">
+            <li className="usa-nav__primary-item">
+              <a className="usa-nav__link" href="/">
+                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Home</span>
+              </a>
+            </li>
 
-              <li className="usa-nav__primary-item">
-                <a className="usa-nav__link" href="/messages">Messages</a>
-              </li>
+            <li className="usa-nav__primary-item">
+              <a className="usa-nav__link" href="/messages">
+                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Messages</span>
+              </a>
+            </li>
 
-              <li className="usa-nav__primary-item">
-                <a className="usa-nav__link" href="/documents">Documents</a>
-              </li>
+            <li className="usa-nav__primary-item">
+              <a className="usa-nav__link" href="/documents">
+                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Documents</span>
+              </a>
+            </li>
 
-              <li className="usa-nav__primary-item">
-                <a className="usa-nav__link" href="/">Saved</a>
-              </li>
+            <li className="usa-nav__primary-item">
+              <a className="usa-nav__link" href="/">
+                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Saved</span>
+              </a>
+            </li>
 
-              <li className="usa-nav__primary-item">
-                <a className="usa-nav__link" href="/">Support</a>
-              </li>
-            </ul>
-          </div>
-          <div className="usa-nav float-right">
-            <ul className='usa-nav__primary usa-accordion'>
-              <li className='usa-nav__primary-item'>
-                <a aria-disabled={true} tabIndex={-1} href="">Business Name <Icon.ExpandMore /></a>
-              </li>
-            </ul>
-          </div>
-        </Header>
-      </>
-    );
-  }
+            <li className="usa-nav__primary-item">
+              <a className="usa-nav__link" href="/">
+                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Support</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div className="usa-nav float-right">
+          <ul className="usa-nav__primary usa-accordion">
+            <li className="usa-nav__primary-item">
+              <a aria-disabled={true} tabIndex={-1} href="">
+                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Business Name <Icon.ExpandMore className='top-2px' /></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </Header>
+    </>
+  )
 }
+
 export default Navigation

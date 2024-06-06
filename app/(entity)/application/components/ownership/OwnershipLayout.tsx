@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, Grid, GridContainer } from '@trussworks/react-uswds';
 import React, { useEffect } from 'react';
-import { selectApplication, setOwnerType, setOwnerTypeSelected, setStep } from '../../redux/applicationSlice';
+import { selectApplication, setOwnerTypeSelected, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
 import Link from 'next/link';
 import { applicationSteps } from '../../utils/constants';
@@ -10,7 +10,7 @@ type OwnershipLayoutProps = {
 };
 
 function OwnershipLayout({children}: OwnershipLayoutProps) {
-  const { selectedStructure, ownerTypeSelected, ownerType, ownershipPercentageTotal } = useApplicationSelector(selectApplication);
+  const { ownerTypeSelected, owners, ownershipPercentageTotal } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
 
   const handleAddNew =() => {
@@ -25,9 +25,9 @@ function OwnershipLayout({children}: OwnershipLayoutProps) {
     <>
       <div>
         <h1>Ownership</h1>
-        <p className='light' style={{fontSize: '22px', fontWeight: 'lighter', lineHeight: '1.5'}}>
+        <h3 className='light' style={{fontSize: '22px', fontWeight: 'lighter', lineHeight: '1.5'}}>
 				We will now collect information for the owners of the business. We use this information to determine eligibility for our various programs, so please be as complete as possible.
-        </p>
+        </h3>
       </div>
       <div>
       	<h2>Business Structure</h2>
@@ -82,21 +82,28 @@ function OwnershipLayout({children}: OwnershipLayoutProps) {
 
       <div className='display-flex flex-justify flex-align-center'>
         <h3 className='margin-y-0'>Owners <span style={{fontWeight: 'lighter'}}>{ownershipPercentageTotal}%</span></h3>
-        <Button type='button' outline disabled={ownershipPercentageTotal >= 100} onClick={() => handleAddNew()}>Add New</Button>
+        {!ownerTypeSelected && owners.length === 0 && <Button type='button' outline disabled={ownershipPercentageTotal >= 100} onClick={() => handleAddNew()}>Add Owner</Button>}
       </div>
 
       <div className='flex-fill' style={{display: 'flex', gap: '1rem', flexDirection: 'column'}}>
         <GridContainer containerSize='widescreen' className={` width-full padding-y-2 margin-top-2 ${ownerTypeSelected && 'bg-base-lightest'}`}>
           {children}
         </GridContainer>
-        <div className='flex-fill'></div>
+
+        <div className='flex-fill'>
+          {owners.length > 0 && (
+            <div className='display-flex flex-justify-end'>
+              <Button type='button' outline disabled={ownershipPercentageTotal >= 100} onClick={() => handleAddNew()}>Add Owner</Button>
+            </div>
+          )}
+        </div>
 
         <hr className='margin-y-3 margin-bottom-0 width-full border-base-lightest'/>
 
         <ButtonGroup className='display-flex flex-justify padding-y-2 margin-right-2px'>
-          <Button type='button' outline disabled className='usa-button'>
-					Previous
-          </Button>
+          <Link href='/add-delegate' className='usa-button usa-button--outline'>
+						Previous
+          </Link>
           {ownershipPercentageTotal !== 100 ? (
             <Button type='button' className='usa-button' disabled>
             Next

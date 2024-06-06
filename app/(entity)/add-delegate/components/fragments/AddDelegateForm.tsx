@@ -77,7 +77,7 @@ function AddDelegateForm() {
       <Grid row col={12}>
         <Grid col={12}>
           <CustomHeader title="Assign a Delegate">
-            <ButtonGroup className="float-right">
+            {/* <ButtonGroup className="float-right">
               <Button
                 className="padding-1 display-flex flex-align-center"
                 outline
@@ -92,7 +92,7 @@ function AddDelegateForm() {
               >
                 <CloseIcon fontSize="medium" /> Close
               </Button>
-            </ButtonGroup>
+            </ButtonGroup> */}
           </CustomHeader>
         </Grid>
 
@@ -172,7 +172,7 @@ function AddDelegateForm() {
             Previous
           </Button>
           {option === 'no' ? (
-            <Link className="usa-button" href="/select-intended-programs">
+            <Link className="usa-button" href="/application/ownership">
               Next
             </Link>
           ) : (

@@ -2,11 +2,12 @@
 /* eslint-disable no-console */
 'use client' // Temp until BE
 import React, { useState } from 'react'
-import ClaimBusinessLanding from './fragments/ClaimBusinessLandingPage'
-import ValidateBusinessForm from './fragments/ValidateBusinessForm'
-import ClaimBusinessForm from './fragments/ClaimBusinessForm'
+import ClaimBusinessLanding from './layout/CMBLanding'
+import ValidateBusinessForm from './forms/ValidateBusinessForm'
+import ClaimBusinessForm from './forms/CMBForm'
 import Styles from './ClaimMyBusiness.module.scss'
-import { BusinessProfileType, IBusinessProfile } from './utils/types'
+import { BusinessProfileType, IBusinessProfile } from '../utils/types'
+import { CmbResponseType } from '@/app/services/cmb-fetcher'
 
 export default function ClaimBusiness(): JSX.Element {
   const [readyToProceedClaim, setReadyToProceedClaim] = useState(false)
@@ -16,7 +17,7 @@ export default function ClaimBusiness(): JSX.Element {
   const claimFormComplete = (responseData: any) => {
     const businessesArray = responseData
     const businessesData: { [key: string]: any } = {}
-    businessesArray.forEach((business: IBusinessProfile) => {
+    businessesArray.forEach((business: CmbResponseType) => {
       businessesData[business.uei] = business
     })
 

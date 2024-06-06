@@ -8,11 +8,13 @@ import { useApplicationDispatch, useApplicationSelector } from '../../redux/hook
 import { applicationSteps } from '../../utils/constants';
 import { Contributor } from './types';
 import { UserApplicationInfo } from '../ownership/Partnership';
+import InviteContributorModal from './InviteContributorModal';
 
 function ContributorForm() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
@@ -75,6 +77,7 @@ function ContributorForm() {
       setFirstName('');
       setLastName('');
       setEmailAddress('');
+      dispatch(setIsAddingContributor(false));
     } else {
       alert('Please fill out all required fields.');
     }
@@ -136,7 +139,7 @@ function ContributorForm() {
 
   const tableHeaders = [
     { id: 'Name', headerName: 'Legal Name' },
-    { id: 'Role', headerName: 'Role' },
+    // { id: 'PrincipalType', headerName: 'Principal Type'},
     { id: 'Email', headerName: 'Email' },
   ];
 
@@ -167,16 +170,32 @@ function ContributorForm() {
       Email: contributor.emailAddress,
     }));
 
+  const closeModal = () => {
+    setShowModal(false)
+  }
+
+  const handleNextClick = () => {
+    if(contributors.length > 0) {
+      setShowModal(true);
+    }
+  }
   return (
     <>
+      <InviteContributorModal
+        open={showModal}
+        handleSend={closeModal}
+        handleCancel={closeModal}
+      />
+      <h3 className="margin-y-0">Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</h3>
       <hr className="margin-y-3 width-full border-base-lightest" />
 
-      <div className="display-flex flex-justify flex-align-center">
-        <h3 className="margin-y-0">Contributors & Spouses</h3>
-        <Button type="button" outline onClick={handleAddNew}>
-          Add New
-        </Button>
-      </div>
+      {contributors.length === 0 && (
+        <div className="margin-left-auto">
+          <Button type="button" outline onClick={handleAddNew}>
+          	Invite Spouses
+          </Button>
+        </div>
+      )}
 
       {isAddingContributor && (
         <GridContainer containerSize='widescreen' className='width-full padding-y-2 margin-top-2 bg-base-lightest'>
@@ -243,7 +262,9 @@ function ContributorForm() {
 
       {ownerTableRows.length > 0 && (
         <>
-          <h3>Owners</h3>
+          <h2>Owners</h2>
+          <p>Your firm must be at least 51% owned by one or more economically disadvantaged individuals to qualify for the SBA program. If you do not own 51% or more of the firm, send the other owner(s) who are claiming economic disadvantage an invitation to submit their information and questionnaire.</p>
+          <p>Note: An individual can only claim disadvantage for SBA certification once in their lifetime. If you own 51% or more of the firm, the other owner(s) do not need to submit their information and questionnaire</p>
           <CustomTable
             header={tableHeaders}
             rows={ownerTableRows}
@@ -257,7 +278,8 @@ function ContributorForm() {
 
       {spouseTableRows.length > 0 && (
         <>
-          <h3>Spouses</h3>
+          <h2>Spouses</h2>
+          <p>If your spouse is a key employee, officer, or holds more than 20% interest in your company, they must register as a Nondisadvantaged applicant as well as your spouse.</p>
           <CustomTable
             header={tableHeaders}
             rows={spouseTableRows}
@@ -271,7 +293,17 @@ function ContributorForm() {
 
       {otherTableRows.length > 0 && (
         <>
-          <h3>Other Disadvantaged Owners</h3>
+          <h2>Control and Operation</h2>
+          <p>Each of the following people involved with your firm must submit their information and questionnaire.</p>
+          <ul>
+            <li>Everyone who owns at least 20% of your firm</li>
+            <li>Officers</li>
+            <li>Directors</li>
+            <li>Board members</li>
+            <li>Managers</li>
+            <li>Partners</li>
+          </ul>
+
           <CustomTable
             header={tableHeaders}
             rows={otherTableRows}
@@ -282,18 +314,30 @@ function ContributorForm() {
           />
         </>
       )}
-
+      {contributors.length > 0 && (
+        <div className="margin-left-auto">
+          <Button type="button" outline onClick={handleAddNew}>
+          Invite Spouses
+          </Button>
+        </div>
+      )}
       <div className='flex-fill'></div>
-
-      <hr className='margin-y-3 width-full border-base-lightest'/>
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-top-2 margin-right-2px'>
         <Link className='usa-button usa-button--outline' href={applicationSteps.documentUpload.link}>
           Previous
         </Link>
-        <Link className='usa-button' href={applicationSteps.sign.link}>
-          Next
-        </Link>
+        {contributors.length === 0
+          ? (
+            <Link className='usa-button' href={applicationSteps.sign.link}>
+          		Next
+        		</Link>
+          ): (
+            <Button type='button' onClick={handleNextClick}>
+							Next
+            </Button>
+          )
+        }
       </ButtonGroup>
     </>
   );

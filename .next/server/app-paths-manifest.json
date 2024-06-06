@@ -1,6 +1,7 @@
 {
-  "/(evaluation)/firm/[application_id]/documents/page": "app/(evaluation)/firm/[application_id]/documents/page.js",
+  "/(evaluation)/reviews/page": "app/(evaluation)/reviews/page.js",
+  "/(evaluation)/firm/[application_id]/firm-summary/page": "app/(evaluation)/firm/[application_id]/firm-summary/page.js",
+  "/api/auth/csrf": "app/api/auth/csrf.js",
   "/not-found": "app/not-found.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/(evaluation)/firm/[application_id]/firm-summary/page": "app/(evaluation)/firm/[application_id]/firm-summary/page.js"
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
 }

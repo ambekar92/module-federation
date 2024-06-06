@@ -26,7 +26,9 @@ export const config = {
     '/additional-information',
     '/application',
     '/application(.*)', // all sub-routes
-    '/reviews'
+    '/reviews',
+    '/firm/application(.*)/firm-summary',
+    '/firm/application(.*)/documents'
   ],
 }
 

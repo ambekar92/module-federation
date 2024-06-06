@@ -18,6 +18,7 @@ const Questionnaires = () => {
 
   return (
     <>
+      <h3>Please answer the questions about your business or firm in each section below. When all sections are complete, review and sign the application.</h3>
       {sections.map((section, sectionIndex) => (
         <>
           <h2 key={sectionIndex}>{section.sectionName}</h2>

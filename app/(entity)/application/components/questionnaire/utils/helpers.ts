@@ -4,7 +4,8 @@ import {
   CORE_FEDERAL_RELATIONSHIPS,
   EIGHTA_CHARACTER_ROUTE, EIGHTA_ECONOMIC_DISADVANTAGE_ROUTE, EIGHTA_PRIOR_INVOLVEMENT_ROUTE,
   EIGHTA_SOCIAL_DISADVANTAGE_ROUTE, EIGHTA_SPECIFIC_ROUTE,
-  PROGRAM_ELIGIBILITY, WOSB_QA_ROUTE, VETCERT_QA_ROUTE
+  PROGRAM_ELIGIBILITY, WOSB_QA_ROUTE, VETCERT_QA_ROUTE,
+  CONTACT_INFO_ROUTE
 } from '@/app/constants/questionnaires';
 
 export const sections = [
@@ -15,6 +16,7 @@ export const sections = [
       { title: 'Federal Relationships', stepIs: 1, route: '/application/questionnaire-individual?step=1', url: CORE_FEDERAL_RELATIONSHIPS },
       { title: 'Business Information', stepIs: 2, route: '/application/questionnaire-individual?step=2', url: BUSINESS_INFORMATION },
       { title: 'Business Relationships', stepIs: 3, route: '/application/questionnaire-individual?step=3', url: BUSINESS_RELATIONSHIPS },
+      { title: 'Contact Information', stepIs: 4, route: '/application/questionnaire-individual?step=4', url: CONTACT_INFO_ROUTE }
     ]
   },
   {

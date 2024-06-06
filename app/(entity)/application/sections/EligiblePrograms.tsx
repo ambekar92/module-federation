@@ -8,27 +8,56 @@ import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 
+// Filters programs based on owner data
+const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
+  return sbaProgramOptions.filter(program => {
+    return owners.some(owner => {
+      let updatedDisadvantages = owner.socialDisadvantages.length > 0
+        ? owner.socialDisadvantages
+        : ['not_claiming'];
+
+      if (updatedDisadvantages.length > 1) {
+        updatedDisadvantages = updatedDisadvantages.filter((d: string) => d !== 'not_claiming');
+      }
+
+      const manageDisadvantage = (condition: boolean, disadvantage: string) => {
+        if (condition && !updatedDisadvantages.includes(disadvantage)) {
+          updatedDisadvantages.push(disadvantage);
+        } else if (!condition) {
+          updatedDisadvantages = updatedDisadvantages.filter((d: string) => d !== disadvantage);
+        }
+      };
+
+      manageDisadvantage(owner.gender === 'f', 'female');
+      manageDisadvantage(owner.isVeteran === 'yes' || owner.isVeteran === 'service_disabled_veteran', 'veteran');
+      manageDisadvantage(owner.isVeteran === 'service_disabled_veteran', 'disabledVeteran');
+
+      return program.disadvantages.some(disadvantage => updatedDisadvantages.includes(disadvantage));
+    });
+  });
+};
+
 function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
-  const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>(sbaProgramOptions);
+  const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
 
   const dispatch = useApplicationDispatch();
+
   useEffect(() => {
     dispatch(setStep(applicationSteps.eligiblePrograms.stepIndex));
     dispatch(setDisplayStepNavigation(false));
-  }, [dispatch]);
 
-  useEffect(() => {
-    const storedPrograms = localStorage.getItem('eligiblePrograms');
-    if (storedPrograms) {
-      const programNames = JSON.parse(storedPrograms) as string[];
-      const programs = programNames.map(name => sbaProgramOptions.find(program => program.name.includes(name))).filter(Boolean) as ProgramOption[];
+    // Fetch owner data from local storage
+    const userApplicationInfo = localStorage.getItem('userApplicationInfo');
+    if (userApplicationInfo) {
+      const { owners } = JSON.parse(userApplicationInfo);
+      // Calculate eligible programs based on owner data
+      const programs = calculateEligiblePrograms(owners);
       setEligiblePrograms(programs);
     } else {
-      localStorage.setItem('eligiblePrograms', JSON.stringify(sbaProgramOptions.map(program => program.name)));
       setEligiblePrograms(sbaProgramOptions);
     }
-  }, []);
+  }, [dispatch]);
 
   const handleCheckboxChange = (program: ProgramOption) => {
     setSelectedPrograms(prev => {
@@ -53,7 +82,7 @@ function EligiblePrograms() {
           : 'To which programs would you like to apply today?'
         }
       </h1>
-      {eligiblePrograms.length > 0 ? <p>You appear to be eligible for the programs below. Please select the ones for which you&apos;d like to apply</p> : null}
+      {eligiblePrograms.length > 0 ? <p>You appear to be eligible for the programs below. s for which you&apos;d like to apply.</p> : null}
       <Grid row gap>
         {eligiblePrograms.map((program, index) => (
           <Grid key={index} className='margin-bottom-2' desktop={{ col: 6 }} tablet={{ col: 12 }} mobile={{ col: 12 }}>
@@ -97,4 +126,5 @@ function EligiblePrograms() {
     </>
   );
 }
+
 export default EligiblePrograms;

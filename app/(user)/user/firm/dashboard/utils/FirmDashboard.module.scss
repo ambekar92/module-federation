@@ -1,0 +1,49 @@
+@use 'colors' as *;
+
+.buttonContainer {
+  display: inline-flex;
+
+  .actionButton {
+    display: flex;
+    padding-top: 0;
+    padding-right: 0;
+    align-items: center;
+    border: 1px solid $gray-300;
+    color: $black;
+    background-color: $gray-0;
+    justify-content: space-between;
+    border-radius: 5px;
+    margin-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+
+    .container {
+      padding-top: 12px;
+      padding-right: 20px;
+    }
+
+    &:hover {
+      color: $gray-0;
+      background-color: $red-500;
+      border: $gray-0;
+    }
+  }
+
+  .closeIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-radius: 5px;
+    border-left: solid 1px $gray-300;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border: 1px solid $gray-300;
+    color: $black;
+    background-color: $gray-0;
+  }
+}

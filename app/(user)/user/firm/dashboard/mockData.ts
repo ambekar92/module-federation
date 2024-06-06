@@ -12,23 +12,23 @@ export const mockApplications = [
     title: 'Initial Application',
     status: 'Submitted',
     percentComplete: 25,
-    submittedDate: new Date('2024-04-15'),
-    tags: ['8(a)', 'WOSB', 'VetCert']
+    submittedDate: new Date(),
+    tags: ['8(a)', 'Women-Owned', 'Veteran-Owned']
   },
-  {
-    id: 2,
-    title: 'Initial Application',
-    status: 'In progress',
-    percentComplete: 60,
-    submittedDate: new Date('2024-03-20'),
-    tags: ['Mobile', 'Health', 'App Development']
-  },
-  {
-    id: 3,
-    title: 'E-commerce Website Redesign',
-    status: 'Not started',
-    percentComplete: 0,
-    submittedDate: new Date('2024-04-30'),
-    tags: ['Mobile', 'Health', 'App Development']
-  }
+  // {
+  //   id: 2,
+  //   title: 'Initial Application',
+  //   status: 'In progress',
+  //   percentComplete: 60,
+  //   submittedDate: new Date('2024-03-20'),
+  //   tags: ['Mobile', 'Health', 'App Development']
+  // },
+  // {
+  //   id: 3,
+  //   title: 'E-commerce Website Redesign',
+  //   status: 'Not started',
+  //   percentComplete: 0,
+  //   submittedDate: new Date('2024-04-30'),
+  //   tags: ['Mobile', 'Health', 'App Development']
+  // }
 ] satisfies Application[];

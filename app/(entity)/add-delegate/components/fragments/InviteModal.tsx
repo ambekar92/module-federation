@@ -39,7 +39,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
           </ModalHeading>
 
           <div className="usa-prose">
-            Clicking send invite, Delegate will receive an invitation email at the provided e-mail address.
+            By clicking &quot;Send Invite&quot;, the delegate will receive an invitation email at the provided e-mail address.
           </div>
           <ModalFooter>
             <ButtonGroup className="float-right">
@@ -52,7 +52,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 Cancel
               </Button>
               <Link
-                href={'/select-intended-programs'}
+                href={'/application/ownership'}
                 className="float-right usa-button"
                 onClick={handleSend}
               >

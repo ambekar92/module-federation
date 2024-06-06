@@ -3,7 +3,7 @@ import { QaInputProps } from '../utils/types';
 
 export const QaTextarea = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => (
   <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-tablet' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+    <Label className='maxw-full' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
       <span>{question.title}</span>
     </Label>
 

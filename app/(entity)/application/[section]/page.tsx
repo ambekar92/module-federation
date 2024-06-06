@@ -9,7 +9,7 @@ import IndividualQuestions from '../sections/IndividualQuestions';
 import Ownership from '../sections/Ownership';
 import ApplicationLayout from '../components/ApplicationLayout';
 import DocumentUpload from '../sections/DocumentUpload';
-import ControlAndOwnership from '../sections/ControlAndOperations';
+import ControlAndOperations from '../sections/ControlAndOperations';
 import EligiblePrograms from '../sections/EligiblePrograms';
 import Questionnaires from '../components/questionnaire/Questionnaires';
 import ContributorInvitation from '../sections/ContributorInvitation';
@@ -41,7 +41,7 @@ const ApplicationPage: React.FC<AdditionalInfoPageProps> = ({ params: { section 
       content = <EligiblePrograms />;
       break;
     case 'control-and-operations':
-      content = <ControlAndOwnership />;
+      content = <ControlAndOperations />;
       break;
     case 'questionnaires':
       content = <Questionnaires />

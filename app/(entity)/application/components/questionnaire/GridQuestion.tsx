@@ -1,6 +1,7 @@
 import { Question } from '@/app/services/qa-fetcher';
-import { Button, ButtonGroup, Label, Table, TextInput } from '@trussworks/react-uswds';
+import { Button, ButtonGroup, Grid, Label, TextInput } from '@trussworks/react-uswds';
 import { useState } from 'react';
+import { CustomTable } from '@/app/shared/components/CustomTable'; // Correct import with brackets
 
 type GridRow = {
   [key: string]: string;
@@ -11,14 +12,13 @@ const GridQuestion = ({ question }: { question: Question }) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [currentRow, setCurrentRow] = useState<GridRow>({});
 
-  // const truncateText = (text: string, maxLength: number) => {
-  //   if (text.length > maxLength) {
-  //     return `${text.substring(0, maxLength)}...`;
-  //   }
-  //   return text;
-  // };
-
   const handleAddOrUpdateRow = () => {
+    const isRowEmpty = question.grid_questions?.some(gridQuestion => !currentRow[gridQuestion.title]);
+    if (isRowEmpty) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
     if (editingIndex !== null) {
       setGridRows(prevRows => {
         const updatedRows = [...prevRows];
@@ -37,16 +37,34 @@ const GridQuestion = ({ question }: { question: Question }) => {
     setEditingIndex(index);
   };
 
+  const handleDeleteRow = (index: number) => {
+    setGridRows(prevRows => prevRows.filter((_, i) => i !== index));
+  };
+
   const handleInputChange = (questionName: string, value: string) => {
     setCurrentRow(prevRow => ({ ...prevRow, [questionName]: value }));
   };
 
+  const tableHeaders = question.grid_questions?.map(gridQuestion => ({
+    id: gridQuestion.id.toString(),
+    headerName: gridQuestion.title,
+  })) || [];
+
+  const tableRows = gridRows.map((row, index) => {
+    const rowContent: { [key: string]: string } = { id: index.toString() };
+    question.grid_questions?.forEach(gridQuestion => {
+      rowContent[gridQuestion.id.toString()] = row[gridQuestion.title];
+    });
+    return rowContent;
+  });
+
   return (
     <>
-      <div>
+      <Label htmlFor='' className='maxw-full' requiredMarker={question.answer_required_flag}>{question.title}</Label>
+      <Grid row gap='md'>
         {question.grid_questions?.map(gridQuestion => (
-          <div key={gridQuestion.id}>
-            <Label className='maxw-tablet' requiredMarker={gridQuestion.answer_required_flag} htmlFor={`input-${gridQuestion.id}`}>
+          <Grid col={6} key={gridQuestion.id}>
+            <Label className='maxw-full margin-top-1' requiredMarker={gridQuestion.answer_required_flag} htmlFor={`input-${gridQuestion.id}`}>
               <span>{gridQuestion.title}</span>
             </Label>
             <TextInput
@@ -56,9 +74,9 @@ const GridQuestion = ({ question }: { question: Question }) => {
               value={currentRow[gridQuestion.title] || ''}
               onChange={(e) => handleInputChange(gridQuestion.title, e.target.value)}
             />
-          </div>
+          </Grid>
         ))}
-      </div>
+      </Grid>
       <ButtonGroup className='margin-top-2'>
         <Button type='button' onClick={handleAddOrUpdateRow}>
           {editingIndex !== null ? 'Update' : 'Add'}
@@ -67,28 +85,14 @@ const GridQuestion = ({ question }: { question: Question }) => {
       </ButtonGroup>
 
       {gridRows.length > 0 && (
-        <Table bordered className='width-full'>
-          <thead>
-            <tr>
-              {question.grid_questions?.map(gridQuestion => (
-                <th key={gridQuestion.id} scope="col">{gridQuestion.title}</th>
-              ))}
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {gridRows.map((row, index) => (
-              <tr key={index}>
-                {question.grid_questions?.map(gridQuestion => (
-                  <td key={gridQuestion.id}>{row[gridQuestion.title]}</td>
-                ))}
-                <td>
-                  <Button type="button" onClick={() => handleEditRow(index)}>Edit</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <CustomTable
+          header={tableHeaders}
+          rows={tableRows}
+          editable={true}
+          remove={true}
+          onEdit={handleEditRow}
+          onDelete={handleDeleteRow}
+        />
       )}
     </>
   );

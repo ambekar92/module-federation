@@ -26,6 +26,7 @@ function Programs() {
   return (
     <>
       <h1>Select Intended Program(s) for Application</h1>
+      <h3>Please select the appropriate program(s) you wish to apply for from the options below.</h3>
       <Grid row gap>
         {sbaProgramOptions.map((program, index) => (
           <Grid key={index} className='margin-bottom-2' desktop={{ col: 6 }} tablet={{ col: 12 }}  mobile={{ col: 12 }}>
@@ -51,7 +52,7 @@ function Programs() {
         ))}
       </Grid>
       <div className='display-flex flex-justify'>
-        <Link href='/add-delegate' className='usa-button usa-button--outline'>
+        <Link href='/claim-your-business' className='usa-button usa-button--outline'>
 					Back
         </Link>
         {selectedPrograms.length === 0
@@ -60,7 +61,7 @@ function Programs() {
 							Next
             </Button>
           ) : (
-            <Link href='/application/ownership' className='usa-button'>
+            <Link href='/add-delegate' className='usa-button'>
 							Next
         		</Link>
           )}

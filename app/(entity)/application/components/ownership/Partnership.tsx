@@ -9,13 +9,13 @@ import OrganizationForm from './organization/OrganizationForm';
 import OwnersList from './shared/OwnersList';
 import { Owner, OwnershipType } from './shared/types';
 import { Contributor } from '../contributor-invite/types';
-import { Operator } from '../../sections/ControlAndOperations';
+import { Operator } from '../control-and-operations/schema';
 
 export type UserApplicationInfo = {
   totalPercent: number;
   owners: Owner[];
   contributors: Contributor[];
-	operators: Operator[];
+  operators: Operator[];
 };
 
 const convertOwnerToContributor = (owner: Owner): Contributor => {
@@ -35,7 +35,7 @@ const convertOwnerToContributor = (owner: Owner): Contributor => {
 };
 
 function Partnership() {
-  const { ownerType, ownerTypeSelected, owners, ownershipPercentageTotal } = useApplicationSelector(selectApplication);
+  const { ownerType, ownerTypeSelected, owners } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
   const [individualOwnerBeingEdited, setIndividualOwnerBeingEdited] = useState<Owner | null>(null);
   const [orgOwnerBeingEdited, setOrgOwnerBeingEdited] = useState<Owner | null>(null);
@@ -107,7 +107,7 @@ function Partnership() {
     const updatedContributors = copy.map(convertOwnerToContributor);
 
     const updatedInfo = updateUserApplicationInfo({
-      totalPercent: ownershipPercentageTotal,
+      totalPercent: copy.reduce((acc, owner) => acc + Number(owner.ownershipPercent), 0),
       owners: copy,
       contributors: updatedContributors,
     });
@@ -125,7 +125,7 @@ function Partnership() {
     const updatedContributors = updatedOwners.map(convertOwnerToContributor);
 
     const updatedInfo = updateUserApplicationInfo({
-      totalPercent: ownershipPercentageTotal,
+      totalPercent: updatedOwners.reduce((acc, owner) => acc + Number(owner.ownershipPercent), 0),
       owners: updatedOwners,
       contributors: updatedContributors,
     });
@@ -146,7 +146,7 @@ function Partnership() {
     }
     total += Number(currentOwnerPercent);
 
-    const updatedInfo = updateUserApplicationInfo({ totalPercent: total });
+    updateUserApplicationInfo({ totalPercent: total });
 
     dispatch(setOwnershipPercentageTotal(total));
   }
@@ -158,8 +158,7 @@ function Partnership() {
       total -= Number(owner.ownershipPercent);
     }
 
-    const updatedInfo = updateUserApplicationInfo({ totalPercent: total });
-
+    updateUserApplicationInfo({ totalPercent: total });
     dispatch(setOwnershipPercentageTotal(total));
   }
 

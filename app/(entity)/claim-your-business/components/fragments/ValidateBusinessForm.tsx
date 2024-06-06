@@ -66,12 +66,12 @@ const validationTableContent = ({
         <td>{govt_bus_poc_first_name} {govt_bus_poc_last_name}</td>
       </tr>
       <tr>
-        <th scope="row">Business Structure</th>
-        <td>{entity_structure}</td>
+        <th scope="row">Entity Structure</th>
+        <td>Partnership or Limited Liability Partnership</td>
       </tr>
       <tr>
-        <th scope="row">Entity-Owned</th>
-        <td>{owned}</td>
+        <th scope="row">Business Structure</th>
+        <td>Limited Liability Company</td>
       </tr>
     </tbody>
   </>

@@ -19,17 +19,19 @@ export const authConfig: NextAuthOptions = {
       return token
     },
     session: async ({ session, token }) => {
+      let userDetails = {data: {}};
       if (typeof token.csrfToken === 'string') {
         session.csrfToken = token.csrfToken // CSRF token is now part of the token object and persisted through JWT.
       }
       try {
-        await axios.post(`https://ucms-internal-api.demo.sba-one.net/api/v1/okta-post-login`, {
+        userDetails = await axios.post(`https://ucms-internal-api.demo.sba-one.net/api/v1/okta-post-login`, {
            ...session
         });
+        
       } catch (error) {
         console.error('Error making POST request:', error);
       }
-      return session
+      return {...session, ...userDetails.data}
     },
     
   },
