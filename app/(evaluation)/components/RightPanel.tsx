@@ -1,5 +1,7 @@
 import React from 'react'
-import RightPanelContent from '../components/RightPanelContent'
+import Notes from './reviews/Notes'
+import RequestInformation from './reviews/RequestInformation'
+import AnalystDocument from './reviews/AnalystDocument'
 
 import {
   Accordion,
@@ -12,6 +14,7 @@ const testItems: AccordionItemProps[] = [
     title: 'RFI / RTFs',
     content: (
       <div>
+        <RequestInformation />
       </div>
     ),
     expanded: false,
@@ -22,17 +25,18 @@ const testItems: AccordionItemProps[] = [
     title: 'Notes',
     content: (
       <div>
-        <RightPanelContent />
+        <Notes />
       </div>
     ),
-    expanded: false,
+    expanded: true,
     headingLevel: 'h2',
   },
   {
     id: 'item3',
-    title: 'Documents',
+    title: 'Analyst Documents',
     content: (
       <div>
+        <AnalystDocument />
       </div>
     ),
     expanded: false,

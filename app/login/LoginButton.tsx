@@ -10,7 +10,13 @@ const LoginButton = ({
   action: 'Sign In' | 'Create New Account'
 }) => {
   return (
-    <Button type="button" onClick={() => signIn()}>
+    <Button
+      type="button"
+      onClick={() => {
+        localStorage.clear()
+        signIn()
+      }}
+    >
       {action}
     </Button>
   )

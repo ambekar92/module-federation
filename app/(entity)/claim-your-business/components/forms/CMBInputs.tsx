@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { VALIDATE_SAM_ENTITY_ROUTE } from '@/app/constants/routes';
-import { CmbResponse, cmbFetcherGET } from '@/app/services/cmb-fetcher';
+import { CmbResponseType, cmbFetcherGET } from '@/app/services/cmb-fetcher';
 import {
   Button,
   ButtonGroup,
@@ -25,7 +25,7 @@ import { ClaimBusinessInputs } from '../../utils/types';
 import Styles from '../ClaimMyBusiness.module.scss';
 
 interface IClaimInputs {
-  claimFormComplete: (responseData: CmbResponse) => void;
+  claimFormComplete: (responseData: CmbResponseType) => void;
   handleOpen: () => void;
   control: Control<ClaimBusinessInputs>;
   errors: FieldErrors<ClaimBusinessInputs>;
@@ -70,7 +70,6 @@ const ClaimInputs = ({
   const getEntityData = (uei: string, tin: string, cageCode: string, bankAccountNumber: string) =>
     `${VALIDATE_SAM_ENTITY_ROUTE}?uei=${uei}&tax_identifier_number=${tin}&cage_code=${cageCode}&account_hash=${bankAccountNumber}`;
 
-  // Conditional useSWR hook, runs once button is clicked and shouldFetch is true
   const { data: responseData, error: responseError } = useSWR(
     () => shouldFetch && getEntityData(queryParams.uei, queryParams.tin, queryParams.cageCode, queryParams.bankAccountNumber),
     cmbFetcherGET,
@@ -78,7 +77,6 @@ const ClaimInputs = ({
 
   useEffect(() => {
     if (responseError) {
-      console.error('Fetch error:', responseError);
       setShouldFetch(false);
       setError('serverError', { type: 'submit', message: 'server error' });
       handleOpen();
@@ -86,35 +84,22 @@ const ClaimInputs = ({
     }
 
     if (responseData) {
-      console.log('Fetch response:', responseData);
       setShouldFetch(false);
-
-      if (Array.isArray(responseData)) {
-        // Not claimed, valid business data found
-        claimFormComplete(responseData);
-        return;
-      }
-
-      if ('message' in responseData) {
-        if (responseData.message === 'This business has already been claimed') {
-          setError('serverError', { type: 'submit', message: 'already claimed' });
-          handleOpen();
-          return;
-        }
-
-        if (responseData.message === 'No matching record found') {
-          setError('serverError', { type: 'submit', message: 'not found' });
-          handleOpen();
-          return;
-        }
-      }
-
-      if ('errors' in responseData) {
-        setError('serverError', { type: 'submit', message: 'Server Error please try again later.' });
+      if (responseData.message === 'This business has already been claimed') {
+        setError('serverError', { type: 'submit', message: 'already claimed' }); // message is case sensitive
         handleOpen();
         return;
       }
+
+      if (responseData.message === 'No matching record found') {
+        setError('serverError', { type: 'submit', message: 'not found' }); // message is case sensitive
+        handleOpen();
+        return;
+      }
+
+      claimFormComplete(responseData);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseData, responseError]);
 
   const handleBusinessClaim: SubmitHandler<ClaimBusinessInputs> = async (formData) => {
@@ -125,14 +110,6 @@ const ClaimInputs = ({
       bankAccountNumber: formData.bankAccountNumber,
     });
     setShouldFetch(true);
-  };
-
-  const onSubmit = async (formData: ClaimBusinessInputs) => {
-    try {
-      // Response handling moved to useEffect
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    }
   };
 
   const filterText = (text: string, onlyNumbers: boolean = false): string => {

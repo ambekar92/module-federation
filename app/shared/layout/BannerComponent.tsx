@@ -38,7 +38,7 @@ export default function BannerComponent() {
               setIsOpen(previousIsOpen => !previousIsOpen);
             }}
           >
-                        Here&apos;s how you know
+            Here&apos;s how you know
           </BannerButton>
           <BannerContent id="custom-banner" isOpen={isOpen}>
             <div className="grid-row grid-gap-lg">

@@ -1,7 +1,7 @@
+import { CmbResponseType } from '@/app/services/cmb-fetcher';
 import {
   Accordion,
   Alert,
-  Button,
   ButtonGroup,
   Grid,
   GridContainer,
@@ -10,9 +10,8 @@ import {
   SummaryBoxContent,
   SummaryBoxHeading
 } from '@trussworks/react-uswds';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  BusinessProfileType,
   IAccordionItem
 } from '../../utils/types';
 import ValidationTable from '../fragments/ValidationTable';
@@ -20,54 +19,37 @@ import ErrorModal from '../modals/ErrorModal';
 import SuccessModal from '../modals/SuccessModal';
 
 interface ValidateBusinessFormProps {
-  samData: BusinessProfileType;
+  samData: CmbResponseType;
 }
 
 function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
   const [open, setOpen] = useState(false);
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   const [errorMsg, setErrorMsg] = useState('');
   const handleClose = () => setOpen(false);
 
-  const [businessProfile, setBusinessProfile] = useState<BusinessProfileType>(samData);
-
-  const onClickVerify = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    const uei = e.currentTarget.name;
-    const updatedProfile = { ...businessProfile };
-    // await handleRequest(uei)
-    if (businessProfile[uei]) {
-      setBusinessProfile(updatedProfile);
-    }
-  };
-
-  const validateBusinessAccordionProps = (uei: string): IAccordionItem[] => [
+  const validateBusinessAccordionProps = (): IAccordionItem[] => [
     {
       title: (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {businessProfile[uei].legal_business_name}
+          {samData.sam_entity.legal_business_name}
         </div>
       ),
       content: (
         <div className="default-table">
-          <ValidationTable profile={businessProfile[uei]} />
-          {!businessProfile[uei] ? (
-            <div className="default-btn">
-              <div className="usa-button-group-container">
-                <ButtonGroup type="default">
-                  <Button
-                    type="button"
-                    role="button"
-                    name={uei}
-                    onClick={(e) => {
-                      onClickVerify(e);
-                    }}
-                  >
-                    Claim
-                  </Button>
-                  <br />
-                </ButtonGroup>
-              </div>
-            </div>
-          ) : null}
+          {samData.message === 'This business has not been claimed yet'
+					&& (
+					  <>
+					    <Alert
+					      role="alert"
+					      type="success"
+					      heading="Claimed"
+					      headingLevel="h4"
+					      slim
+					    />
+					    <ValidationTable profile={samData} />
+					  </>
+					)}
         </div>
       ),
       expanded: true,
@@ -126,19 +108,17 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
           </Grid>
         </Grid>
         <Grid row gap>
-          {Object.keys(businessProfile).map((uei: string) => (
-            <Grid
-              key={uei}
-              mobile={{ col: 12 }}
-              desktop={{ col: 6 }}
-              style={{ marginBottom: '1rem' }}
-            >
-              <Accordion
-                bordered={true}
-                items={validateBusinessAccordionProps(uei)}
-              />
-            </Grid>
-          ))}
+          <Grid
+            key={samData.sam_entity.uei}
+            mobile={{ col: 12 }}
+            desktop={{ col: 6 }}
+            style={{ marginBottom: '1rem' }}
+          >
+            <Accordion
+              bordered={true}
+              items={validateBusinessAccordionProps()}
+            />
+          </Grid>
         </Grid>
         <Grid row>
           <Grid col={12}>

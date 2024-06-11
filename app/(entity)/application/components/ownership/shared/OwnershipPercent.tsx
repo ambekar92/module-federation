@@ -32,7 +32,7 @@ const OwnershipPercent = ({editedItem, clearErrors, setError}: {editedItem:  Own
   return (
     <Grid row className='display-flex flex-column'>
     <Label htmlFor={'ownershipPercent'} requiredMarker={true}>Ownership (%)</Label>
-    <ErrorMessage>{control.getFieldState('ownershipPercent').error?.message}</ErrorMessage>
+    
     <Controller
         name={'ownershipPercent'}
         control={control}
@@ -47,6 +47,7 @@ const OwnershipPercent = ({editedItem, clearErrors, setError}: {editedItem:  Own
             />
         }
     />
+    <ErrorMessage>{control.getFieldState('ownershipPercent').error?.message}</ErrorMessage>
 </Grid>
   )
 }

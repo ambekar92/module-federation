@@ -11,6 +11,7 @@ const UserProfileMenu = () => {
   }
   const isMenuOpen = Boolean(anchorEl)
   const handleMenuClose = () => {
+    localStorage.clear()
     setAnchorEl(null)
   }
 

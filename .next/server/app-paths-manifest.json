@@ -1,4 +1,1 @@
-{
-  "/(home)/notifications/page": "app/(home)/notifications/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
-}
+{}

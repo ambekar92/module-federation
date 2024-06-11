@@ -130,7 +130,7 @@ function DocumentMockload() {
                     <th scope='col'>Created</th>
                     <th scope='col'>Program</th>
                     <th scope='col'>Type</th>
-                    <th scope='col'>Action</th>
+                    <th scope='col'>Actions</th>
                     {editMode[section.sectionName] && <th scope='col'>Delete</th>}
                   </tr>
                 </thead>
@@ -143,8 +143,14 @@ function DocumentMockload() {
                       <td>{doc.program}</td>
                       <td>{doc.type}</td>
                       <td>
-                        <Button unstyled type='button' onClick={() => handleReplaceDocumentClick(section.sectionName, subSection, docIndex)}>Replace Document</Button>
+                        <div className='display-flex'>
+                          <Button unstyled type='button' onClick={() => handleReplaceDocumentClick(section.sectionName, subSection, docIndex)}>Replace Document</Button>
+                          <Button unstyled className='text-no-underline display-flex flex-align-center hover:text-no-underline' type='button' onClick={() => handleDeleteDocument(section.sectionName, subSection, docIndex)}>
+                            <Icon.Delete /> Delete
+                          </Button>
+                        </div>
                       </td>
+
                       {editMode[section.sectionName] && (
                         <td>
                           <Button unstyled className='text-no-underline display-flex flex-align-center hover:text-no-underline' type='button' onClick={() => handleDeleteDocument(section.sectionName, subSection, docIndex)}>

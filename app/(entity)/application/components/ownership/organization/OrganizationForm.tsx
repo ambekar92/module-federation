@@ -39,7 +39,7 @@ const OrganizationForm = ({handleAddOwner, editedItem}: Props) => {
         <Grid row gap='md'>
             <Grid className='display-flex flex-column' mobile={{ col: 10 }} tablet={{ col: 10 }}>
                 <Label requiredMarker={true} htmlFor='org_name'>Organization Name</Label>
-                <ErrorMessage>{methods.formState.errors?.orgName?.message}</ErrorMessage>
+                
                 <Controller
                     name={'orgName'}
                     control={methods.control}
@@ -51,6 +51,7 @@ const OrganizationForm = ({handleAddOwner, editedItem}: Props) => {
                             className='maxw-full' type='text' id='last_name' placeholder='--' />
                     }
                 />
+                <ErrorMessage>{methods.formState.errors?.orgName?.message}</ErrorMessage>
             </Grid>
         </Grid>
         <FormProvider {...methods}>

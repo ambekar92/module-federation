@@ -35,5 +35,9 @@ export const applicationSteps = {
   'sign':{
     'stepIndex': 6,
     'link': '/application/sign'
+  },
+  'hubzone': {
+    'stepIndex': null,
+    'link': '/application/hubzone'
   }
 }

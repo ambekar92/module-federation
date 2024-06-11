@@ -10,7 +10,7 @@ const GoneByAnotherName = ({type}: {type: OwnershipType}) => {
     {...register('goneByAnotherName')}
         render={({field, fieldState: {error}}) => <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 6 }}>
         <Label requiredMarker={true} htmlFor='other_name'>Has this {type} ever gone by another name?</Label>
-        <ErrorMessage>{error?.message}</ErrorMessage>
+        
         <div className='usa-radio display-flex gap-1 bg-base-lightest'>
             <input
                 className="usa-radio__input"
@@ -36,6 +36,7 @@ const GoneByAnotherName = ({type}: {type: OwnershipType}) => {
                 No
             </Label>
         </div>
+        <ErrorMessage>{error?.message}</ErrorMessage>
 </Grid>}
      />
     

@@ -81,7 +81,7 @@ function OwnershipLayout({children}: OwnershipLayoutProps) {
       <hr className='margin-y-3 width-full border-base-lightest'/>
 
       <div className='display-flex flex-justify flex-align-center'>
-        <h3 className='margin-y-0'>Owners <span style={{fontWeight: 'lighter'}}>{ownershipPercentageTotal}%</span></h3>
+        <h3 className='margin-y-0'>Owners <span data-testid='percentTotal' style={{fontWeight: 'lighter'}}>{ownershipPercentageTotal}%</span></h3>
         {!ownerTypeSelected && owners.length === 0 && <Button type='button' outline disabled={ownershipPercentageTotal >= 100} onClick={() => handleAddNew()}>Add Owner</Button>}
       </div>
 

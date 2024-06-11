@@ -40,7 +40,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
               control={methods.control}
               render={({ field }) =>
                 <Select
-                  className='height-7 radius-lg margin-top-2' id={'prefix'}
+                  className='height-7 radius-lg' id={'prefix'}
                   value={field.value}
                   name={'prefix'}
                   onChange={field.onChange}
@@ -56,7 +56,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
 
           <Grid className='display-flex flex-column' mobile={{ col: 10 }} tablet={{ col: 5 }}>
             <Label htmlFor='first_name' requiredMarker={true}>First Name</Label>
-            <ErrorMessage>{methods.formState.errors?.firstName?.message}</ErrorMessage>
+            
             <Controller
               name={'firstName'}
               control={methods.control}
@@ -67,11 +67,11 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   onChange={field.onChange}
                   type='text' id='first_name' placeholder='--' />
               } />
+              <ErrorMessage>{methods.formState.errors?.firstName?.message}</ErrorMessage>
           </Grid>
 
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 5 }}>
             <Label htmlFor='middle_name'>Middle Name</Label>
-            <ErrorMessage>{methods.formState.errors?.middleName?.message}</ErrorMessage>
             <Controller
               name={'middleName'}
               control={methods.control}
@@ -90,7 +90,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
         <Grid row gap='md'>
           <Grid className='display-flex flex-column' mobile={{ col: 10 }} tablet={{ col: 10 }}>
             <Label requiredMarker={true} htmlFor='last_name'>Last Name</Label>
-            <ErrorMessage>{methods.formState.errors?.lastName?.message}</ErrorMessage>
+            
             <Controller
               name={'lastName'}
               control={methods.control}
@@ -102,6 +102,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   className='maxw-full' type='text' id='last_name' placeholder='--' />
               }
             />
+            <ErrorMessage>{methods.formState.errors?.lastName?.message}</ErrorMessage>
           </Grid>
 
           <Grid className='display-flex flex-column' mobile={{ col: 2 }} tablet={{ col: 2 }}>
@@ -110,7 +111,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
               name={'suffix'}
               control={methods.control}
               render={({ field }) =>
-                <Select className='height-7 radius-lg margin-top-2' id={'suffix'}
+                <Select className='height-7 radius-lg' id={'suffix'}
                   value={field.value}
                   name={'suffix'}
                   onChange={field.onChange}
@@ -138,7 +139,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
         <Grid row gap='md'>
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 6 }}>
             <Label requiredMarker={true} htmlFor={'USCitizen'}>Are you a legal citizen of the US?</Label>
-            <ErrorMessage>{methods.formState.errors?.USCitizen?.message as string}</ErrorMessage>
+            
             <div className='usa-radio display-flex gap-1 bg-base-lightest'>
               <input
                 className="usa-radio__input"
@@ -161,6 +162,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                         No
               </Label>
             </div>
+            <ErrorMessage>{methods.formState.errors?.USCitizen?.message as string}</ErrorMessage>
           </Grid>
           <FormProvider {...methods}>
             <GoneByAnotherName type={OwnershipType.individual} />
@@ -170,7 +172,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
         <Grid row gap='md'>
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 3 }}>
             <Label requiredMarker={true} htmlFor={'SSN'}>SSN</Label>
-            <ErrorMessage>{methods.formState.errors?.SSN?.message}</ErrorMessage>
+            
             <Controller
               name={'SSN'}
               control={methods.control}
@@ -186,11 +188,12 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                 />
               }
             />
+            <ErrorMessage>{methods.formState.errors?.SSN?.message}</ErrorMessage>
           </Grid>
 
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 9 }}>
             <Label requiredMarker={true} htmlFor='veteran_status'>Are you a veteran of the US military?</Label>
-            <ErrorMessage>{methods.formState.errors.isVeteran?.message}</ErrorMessage>
+           
             <Controller
               name='isVeteran'
               control={methods.control}
@@ -207,13 +210,13 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                 </Select>
               }
             />
-
+          <ErrorMessage>{methods.formState.errors.isVeteran?.message}</ErrorMessage>
           </Grid>
         </Grid>
 
         <Grid row className='display-flex flex-column'>
           <Label requiredMarker={true} htmlFor='martial_status'>Marital Status</Label>
-          <ErrorMessage>{methods.formState.errors?.maritalStatus?.message}</ErrorMessage>
+          
           <Controller
             name={'maritalStatus'}
             control={methods.control}
@@ -231,7 +234,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
               </Select>
             }
           />
-
+        <ErrorMessage>{methods.formState.errors?.maritalStatus?.message}</ErrorMessage>
         </Grid>
 
         <Grid row gap='md'>
@@ -239,7 +242,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
             <Label requiredMarker={true} htmlFor='spouse_owner'>
                     Gender
             </Label>
-            <ErrorMessage>{methods.formState.errors?.gender?.message}</ErrorMessage>
+            
             <div className='usa-radio display-flex gap-1 bg-base-lightest'>
               <input
                 className="usa-radio__input"
@@ -272,13 +275,14 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                         X
               </Label>
             </div>
+            <ErrorMessage>{methods.formState.errors?.gender?.message}</ErrorMessage>
           </Grid>
 
           <Grid mobile={{ col: 12 }} tablet={{ col: 6 }}>
             <Label requiredMarker={true} htmlFor='spouse_owner'>
                     Is your spouse an owner, officer, board member, partner, etc. of the applicant business?
             </Label>
-            <ErrorMessage>{methods.formState.errors?.isSpouseAnOwner?.message}</ErrorMessage>
+            
             <div className='usa-radio display-flex gap-1 bg-base-lightest'>
               <input
                 className="usa-radio__input"
@@ -301,6 +305,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                         No
               </Label>
             </div>
+            <ErrorMessage>{methods.formState.errors?.isSpouseAnOwner?.message}</ErrorMessage>
           </Grid>
         </Grid>
         <FormProvider {...methods}>

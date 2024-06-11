@@ -19,6 +19,10 @@ export default function Footer() {
 
   const { data: session, status } = useSession()
 
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault(); // Prevent default link behavior
+  };
+
   useEffect(() => {
     if (status === 'authenticated') {
       setStyleSettings({
@@ -49,7 +53,7 @@ export default function Footer() {
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor} ${footerLinkStyle} ${styleSettings.hoverColor} text-underline`}
-                          href="javascript:void(0);"
+                          onClick={handleLinkClick}
                         >
                           <span className='text-underline'>Documentation</span>
                         </a>
@@ -57,7 +61,7 @@ export default function Footer() {
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor} ${footerLinkStyle} ${styleSettings.hoverColor} text-underline`}
-                          href="javascript:void(0);"
+                          onClick={handleLinkClick}
                         >
                           <span className='text-underline'>
 													Features
@@ -67,7 +71,7 @@ export default function Footer() {
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor} ${footerLinkStyle} ${styleSettings.hoverColor} text-underline`}
-                          href="javascript:void(0);"
+                          onClick={handleLinkClick}
                         >
                           <span className='text-underline'>Getting Started {session && 'Session'}</span>
                         </a>
@@ -75,7 +79,7 @@ export default function Footer() {
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor} ${footerLinkStyle} ${styleSettings.hoverColor} text-underline`}
-                          href="javascript:void(0);"
+                          onClick={handleLinkClick}
                         >
                           <span className='text-underline'>About Us</span>
                         </a>
@@ -85,7 +89,7 @@ export default function Footer() {
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor} text-light ${footerLinkStyle} ${styleSettings.hoverColor}`}
-                          href="javascript:void(0);"
+                          onClick={handleLinkClick}
                         >
                           <span className='text-underline'>(800) CALL-GOVT</span>
                         </a>
@@ -93,7 +97,7 @@ export default function Footer() {
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor} text-light ${footerLinkStyle} ${styleSettings.hoverColor}`}
-                          href="javascript:void(0);"
+                          onClick={handleLinkClick}
                         >
                           <span className='text-underline'>info@agency.gov</span>
                         </a>

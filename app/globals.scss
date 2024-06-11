@@ -32,6 +32,9 @@ $line-height-tight-px: 1.35;
 	&-tight {line-height: $line-height-tight-px;}
 }
 
+.usa-banner__inner.usa-banner__inner {
+	margin-left: 0;
+}
 @mixin logo_sm {
   width: 10.5rem;
   max-width: 25%;

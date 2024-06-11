@@ -1,4 +1,5 @@
-import { Button, Grid } from '@trussworks/react-uswds'
+import Link from 'next/link'
+import { applicationSteps } from '../../utils/constants'
 
 function HubMock() {
   return (
@@ -16,9 +17,9 @@ function HubMock() {
       <p>You can always check your eligibility by visiting the HUBZone Calculator located on the Unified Certification Platform homepage.</p>
 
       <div className='display-flex flex-justify-end margin-top-5'>
-        <a className='usa-button' href="http://localhost:3001" target="_blank" rel="noopener noreferrer">
+        <Link className='usa-button' href={applicationSteps.hubzone.link}>
 					Start
-        </a>
+        </Link>
       </div>
     </div>
   )

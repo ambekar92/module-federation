@@ -1,5 +1,4 @@
 import { Table } from '@trussworks/react-uswds';
-import { IBusinessProfile } from '../../utils/types';
 import { CmbResponseType } from '@/app/services/cmb-fetcher';
 
 interface ValidationTableProps {
@@ -18,32 +17,38 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profile }) => (
     <tbody>
       <tr>
         <th scope="row">Business Name</th>
-        <td>{profile.legal_business_name}</td>
+        <td>{profile.sam_entity.legal_business_name}</td>
       </tr>
       <tr>
         <th scope="row">DBA</th>
-        <td>{profile.dba_name}</td>
+        <td>{profile.sam_entity.dba_name}</td>
       </tr>
       <tr>
         <th scope="row">Business UEI</th>
-        <td>{profile.uei}</td>
+        <td>{profile.sam_entity.uei}</td>
       </tr>
+
+      <tr>
+        <th scope="row">NAICS Code</th>
+        <td>{profile.sam_entity.naics_code_string}</td>
+      </tr>
+
       <tr>
         <th scope="row">Business Address</th>
-        <td>{`${profile.physical_address_1}, ${profile.physical_address_2},`}
-          <br/>{`${profile.physical_city}, ${profile.mailing_address_state_or_province}, ${profile.physical_zip_code_5}`}</td>
+        <td>{`${profile.sam_entity.physical_address_1}, ${profile.sam_entity.physical_address_2},`}
+          <br/>{`${profile.sam_entity.physical_city}, ${profile.sam_entity.mailing_address_state_or_province}, ${profile.sam_entity.physical_zip_code_5}`}</td>
       </tr>
       <tr>
         <th scope="row">Government Contact</th>
-        <td>{`${profile.govt_bus_poc_first_name} ${profile.govt_bus_poc_last_name}`}</td>
+        <td>{`${profile.sam_entity.govt_bus_poc_first_name} ${profile.sam_entity.govt_bus_poc_last_name}`}</td>
       </tr>
       <tr>
         <th scope="row">Entity Structure</th>
-        <td>Corporate Entity (Not Tax Exempt)</td>
+        <td>{profile.sam_entity_structure}</td>
       </tr>
       <tr>
         <th scope="row">Business Structure</th>
-        <td>Limited Liability Company</td>
+        <td>{profile.sam_business_type}</td>
       </tr>
     </tbody>
   </Table>

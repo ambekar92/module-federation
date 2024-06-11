@@ -55,7 +55,7 @@ const SignPage = () => {
         </div>
         <ModalFooter>
           <ButtonGroup>
-            <Link className='usa-button usa-button' href='/user/firm/dashboard'>
+            <Link className='usa-button usa-button' href='/user/dashboard'>
 							Submit
             </Link>
             {!formSubmitted && (

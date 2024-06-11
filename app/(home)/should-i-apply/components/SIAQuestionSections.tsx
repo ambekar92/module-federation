@@ -136,7 +136,7 @@ const SIAQuestionSections = () => {
 
         <div className='display-flex flex-row flex-justify-end'>
           <Button type='button' onClick={handleClick} outline>Export Page</Button>
-          <Link className={'usa-button margin-left-205'} href={'/should-i-apply-2'}>Next</Link>
+          <Link className={'usa-button margin-left-205'} href={'/should-i-apply/check-eligibility'}>Next</Link>
         </div>
       </section>
     </>

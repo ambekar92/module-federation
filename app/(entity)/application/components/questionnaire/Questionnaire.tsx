@@ -1,5 +1,5 @@
 import { QaQuestionsType, Question, qaFetcherGET } from '@/app/services/qa-fetcher';
-import { BooleanInput, MultiSelectInput, NumberInput, QaTextInput, QaTextarea, SelectInput } from '@/app/shared/components/questionnaire/inputs';
+import { AddressInput, BooleanInput, HiddenTextInput, MultiSelectInput, NumberInput, QaDateInput, QaTextInput, QaTextarea, SelectInput } from '@/app/shared/components/questionnaire/inputs';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { setDisplayStepNavigation, setStep } from '../../redux/applicationSlice';
@@ -116,6 +116,36 @@ const Questionnaire = ({ url, title }: QuestionnaireProps) => {
           <GridQuestion
             key={subIndex}
             question={subQuestion}
+          />
+        );
+      case 'date':
+        return (
+          <QaDateInput
+            key={subInputId}
+            isSubQuestion={true}
+            question={subQuestion}
+            inputId={subInputId}
+            handleChange={handleAnswerChange}
+          />
+        );
+      case 'text_with_asterisks':
+        return (
+          <HiddenTextInput
+            key={subInputId}
+            isSubQuestion={true}
+            question={subQuestion}
+            inputId={subInputId}
+            handleChange={handleAnswerChange}
+          />
+        );
+      case 'address':
+        return (
+          <AddressInput
+            key={subInputId}
+            isSubQuestion={true}
+            question={subQuestion}
+            inputId={subInputId}
+            handleChange={handleAnswerChange}
           />
         );
       case 'document_upload':
@@ -327,6 +357,102 @@ const Questionnaire = ({ url, title }: QuestionnaireProps) => {
               key={inputId}
               question={question}
             />
+          </div>
+        );
+      case 'date':
+        return (
+          <div key={inputId}>
+            <QaDateInput
+              key={inputId}
+              question={question}
+              inputId={inputId}
+              handleChange={handleAnswerChange}
+            />
+            <Grid row gap='md'>
+              {question.rules?.map((rule, ruleIndex) => {
+                const shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
+                if (shouldRenderSubQuestion && rule.sub_question) {
+                  if (rule.sub_question.question_type === 'grid') {
+                    return (
+                      <div key={`sub-${index + ruleIndex}`}>
+                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
+                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                      </Grid>
+                    );
+                  }
+                }
+                return null;
+              })}
+            </Grid>
+          </div>
+        );
+      case 'text_with_asterisks':
+        return (
+          <div key={inputId}>
+            <HiddenTextInput
+              key={inputId}
+              question={question}
+              inputId={inputId}
+              handleChange={handleAnswerChange}
+            />
+            <Grid row gap='md'>
+              {question.rules?.map((rule, ruleIndex) => {
+                const shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
+                if (shouldRenderSubQuestion && rule.sub_question) {
+                  if (rule.sub_question.question_type === 'grid') {
+                    return (
+                      <div key={`sub-${index + ruleIndex}`}>
+                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
+                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                      </Grid>
+                    );
+                  }
+                }
+                return null;
+              })}
+            </Grid>
+          </div>
+        );
+      case 'address':
+        return (
+          <div key={inputId}>
+            <AddressInput
+              key={inputId}
+              question={question}
+              inputId={inputId}
+              handleChange={handleAnswerChange}
+            />
+            <Grid row gap='md'>
+              {question.rules?.map((rule, ruleIndex) => {
+                const shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
+                if (shouldRenderSubQuestion && rule.sub_question) {
+                  if (rule.sub_question.question_type === 'grid') {
+                    return (
+                      <div key={`sub-${index + ruleIndex}`}>
+                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
+                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                      </Grid>
+                    );
+                  }
+                }
+                return null;
+              })}
+            </Grid>
           </div>
         );
       case 'document_upload':

@@ -1,5 +1,3 @@
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Header,
   Icon,
@@ -28,7 +26,6 @@ export interface StyleSetting {
 const Navigation = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [navDropdownOpen, setNavDropdownOpen] = useState([false, false])
-  const [selectedNameId, setSelectedNameId] = useState('')
   const [styleSettings, setStyleSettings] = useState<StyleSetting>({
     bg: '',
     textColor: '',
@@ -60,9 +57,7 @@ const Navigation = () => {
       return newOpenState
     })
   }
-  const handleClick = (id: string) => {
-    setSelectedNameId(selectedNameId === id ? '' : id)
-  }
+
   const profileDropdown = [
     <Link key="one" href="/user/1">
       Profile
@@ -90,10 +85,7 @@ const Navigation = () => {
           className={`${styleSettings.textColor} border-right-0 margin-right-1 cursor-pointer`}
         >
           {' Notifications '}
-          <FontAwesomeIcon
-            icon={navDropdownOpen[0] ? faChevronUp : faChevronDown}
-            size="xs"
-          />
+          <Icon.ExpandMore className='top-2px' style={{ rotate: navDropdownOpen[0] ? '180deg' : '' }} />
         </span>
       </button>
       <Menu
@@ -119,10 +111,7 @@ const Navigation = () => {
           className={`${styleSettings.textColor} border-right-0 margin-right-1 cursor-pointer`}
         >
           User Profile{' '}
-          <FontAwesomeIcon
-            icon={navDropdownOpen[1] ? faChevronUp : faChevronDown}
-            size="xs"
-          />
+          <Icon.ExpandMore className='top-2px' style={{ rotate: navDropdownOpen[1] ? '180deg' : '' }} />
         </span>
       </button>
       <Menu

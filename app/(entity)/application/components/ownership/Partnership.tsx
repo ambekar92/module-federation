@@ -168,7 +168,7 @@ function Partnership() {
         <h3 className='margin-y-0'>Identification</h3>
         <Grid row className='display-flex flex-column'>
           <Label className='margin-top-0' htmlFor='identification'>Type of Owner</Label>
-          <UsSelect className='maxw-full height-7 radius-lg' id='identification' name='identification'
+          <UsSelect role='listbox' className='maxw-full height-7 radius-lg' id='identification' name='identification'
             value={ownerType ?? ''}
             onChange={handleOwnerTypeChange}>
             <option value="">--</option>

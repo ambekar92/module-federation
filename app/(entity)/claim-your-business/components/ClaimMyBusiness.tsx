@@ -1,27 +1,18 @@
-/* eslint-disable no-debugger */
-/* eslint-disable no-console */
-'use client' // Temp until BE
-import React, { useState } from 'react'
-import ClaimBusinessLanding from './layout/CMBLanding'
-import ValidateBusinessForm from './forms/ValidateBusinessForm'
-import ClaimBusinessForm from './forms/CMBForm'
-import Styles from './ClaimMyBusiness.module.scss'
-import { BusinessProfileType, IBusinessProfile } from '../utils/types'
+'use client'
 import { CmbResponseType } from '@/app/services/cmb-fetcher'
+import { useState } from 'react'
+import Styles from './ClaimMyBusiness.module.scss'
+import ClaimBusinessForm from './forms/CMBForm'
+import ValidateBusinessForm from './forms/ValidateBusinessForm'
+import ClaimBusinessLanding from './layout/CMBLanding'
 
 export default function ClaimBusiness(): JSX.Element {
   const [readyToProceedClaim, setReadyToProceedClaim] = useState(false)
   const [readyToValidate, setReadyToValidate] = useState(false)
-  const [samData, setSamData] = useState<BusinessProfileType>({})
+  const [samData, setSamData] = useState<CmbResponseType>()
 
-  const claimFormComplete = (responseData: any) => {
-    const businessesArray = responseData
-    const businessesData: { [key: string]: any } = {}
-    businessesArray.forEach((business: CmbResponseType) => {
-      businessesData[business.uei] = business
-    })
-
-    setSamData(businessesData)
+  const claimFormComplete = (responseData: CmbResponseType ) => {
+    setSamData(responseData)
     setReadyToValidate(true)
   }
 
@@ -33,7 +24,7 @@ export default function ClaimBusiness(): JSX.Element {
     <div>
       {readyToProceedClaim ? (
         <div className={Styles.mb_default}>
-          {readyToValidate ? (
+          {readyToValidate && samData ? (
             <ValidateBusinessForm samData={samData} />
           ) : (
             <ClaimBusinessForm claimFormComplete={claimFormComplete} />

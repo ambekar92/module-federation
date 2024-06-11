@@ -1,4 +1,4 @@
-import { CmbResponse } from '@/app/services/cmb-fetcher';
+import { CmbResponseType } from '@/app/services/cmb-fetcher';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Grid,
@@ -14,7 +14,8 @@ import ErrorModal from '../modals/ErrorModal';
 import ClaimInputs from './CMBInputs';
 
 interface ClaimBusinessFormProps {
-  claimFormComplete: (responseData: CmbResponse) => void;
+  // eslint-disable-next-line no-unused-vars
+  claimFormComplete: (responseData: CmbResponseType) => void;
 }
 
 function ClaimBusinessForm({ claimFormComplete }: ClaimBusinessFormProps) {

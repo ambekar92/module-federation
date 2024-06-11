@@ -67,7 +67,7 @@ const ControlOperationsForm = () => {
       <Show.When isTrue={showControlOperationsForm}>
         <Grid row gap='md'>
           <Grid className="display-flex flex-column" mobile={{ col: 2 }} tablet={{ col: 2 }}>
-            <Label className='margin-bottom-1' htmlFor='prefix'>Prefix</Label>
+            <Label htmlFor='prefix'>Prefix</Label>
             <Controller<Operator>
               control={control}
               name='prefix'
@@ -89,7 +89,6 @@ const ControlOperationsForm = () => {
 
           <Grid className="display-flex flex-column" mobile={{ col: 10 }} tablet={{ col: 5 }}>
             <Label requiredMarker={true} htmlFor='firstName'>First Name</Label>
-            <ErrorMessage>{errors.firstName?.message}</ErrorMessage>
             <Controller<Operator>
               control={control}
               name='firstName'
@@ -101,11 +100,11 @@ const ControlOperationsForm = () => {
                 onChange={field.onChange}
               />}
             />
+            <ErrorMessage>{errors.firstName?.message}</ErrorMessage>
           </Grid>
 
           <Grid className="display-flex flex-column" mobile={{ col: 12 }} tablet={{ col: 5 }}>
             <Label htmlFor='middleName'>Middle Name</Label>
-            <ErrorMessage>{errors.middleName?.message}</ErrorMessage>
             <Controller<Operator>
               control={control}
               name='middleName'
@@ -122,7 +121,7 @@ const ControlOperationsForm = () => {
         <Grid row gap="md">
           <Grid className="display-flex flex-column" mobile={{ col: 10 }} tablet={{ col: 10 }}>
             <Label requiredMarker={true} htmlFor='lastName'>Last Name</Label>
-            <ErrorMessage>{errors.lastName?.message}</ErrorMessage>
+            
             <Controller<Operator>
               control={control}
               name='lastName'
@@ -135,9 +134,10 @@ const ControlOperationsForm = () => {
                 onChange={field.onChange}
               />}
             />
+            <ErrorMessage>{errors.lastName?.message}</ErrorMessage>
           </Grid>
           <Grid className="display-flex flex-column" mobile={{ col: 2 }} tablet={{ col: 2 }}>
-            <Label className='margin-bottom-1' htmlFor='suffx'>Suffix</Label>
+            <Label htmlFor='suffx'>Suffix</Label>
             <Controller<Operator>
               control={control}
               name='suffix'
@@ -160,7 +160,7 @@ const ControlOperationsForm = () => {
 
         <>
           <Label requiredMarker={true} htmlFor='emailAddress'>Email</Label>
-          <ErrorMessage>{errors.emailAddress?.message}</ErrorMessage>
+          
           <Controller<Operator>
             control={control}
             name='emailAddress'
@@ -173,10 +173,11 @@ const ControlOperationsForm = () => {
               onChange={field.onChange}
             />}
           />
+          <ErrorMessage>{errors.emailAddress?.message}</ErrorMessage>
         </>
         <>
           <Label requiredMarker={true} htmlFor='title'>Title / Position</Label>
-          <ErrorMessage>{errors.position?.message}</ErrorMessage>
+          
           <Controller<Operator>
             control={control}
             name='position'
@@ -189,11 +190,12 @@ const ControlOperationsForm = () => {
               onChange={field.onChange}
             />}
           />
+          <ErrorMessage>{errors.position?.message}</ErrorMessage>
         </>
 
         <>
           <Label htmlFor='principalType' requiredMarker={true}>Principal Type (Officer, Director, Member)</Label>
-          <ErrorMessage>{errors.principalType?.message}</ErrorMessage>
+          
           <Controller<Operator>
             control={control}
             name='principalType'
@@ -211,11 +213,12 @@ const ControlOperationsForm = () => {
                 key={idx}>{type}</option>)}
             </Select>}
           />
+          <ErrorMessage>{errors.principalType?.message}</ErrorMessage>
         </>
 
         <Grid col className='margin-bottom-2'>
           <Label requiredMarker={true} htmlFor='licenseHolder'>License Holder</Label>
-          <ErrorMessage>{errors.licenseHolder?.message}</ErrorMessage>
+          
           <Controller<Operator>
             control={control}
             name='licenseHolder'
@@ -224,6 +227,7 @@ const ControlOperationsForm = () => {
               <Radio name='licenseHolder' value='No' id='no' label='No' onChange={field.onChange} className='bg-base-lightest' checked={field.value === YesNo.No} />
             </Grid>}
           />
+          <ErrorMessage>{errors.licenseHolder?.message}</ErrorMessage>
         </Grid>
 
         <ButtonGroup className='margin-top-6 margin-left-2'>

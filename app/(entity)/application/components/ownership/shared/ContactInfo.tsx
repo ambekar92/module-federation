@@ -12,7 +12,7 @@ const ContactInfo = () => {
             <h3 className='margin-bottom-0'>Contact Information</h3>
             <Grid className='display-flex flex-column' row>
                 <Label requiredMarker={true} className='margin-top-0' htmlFor='email_address'>Email Address</Label>
-                <ErrorMessage>{control.getFieldState('contactInfo.email').error?.message}</ErrorMessage>
+                
                 <Controller
                     render={({ field, fieldState: { error } }) => (
                         <TextInput
@@ -24,12 +24,13 @@ const ContactInfo = () => {
                     name={'contactInfo.email'}
                     control={control}
                 />
+                <ErrorMessage>{control.getFieldState('contactInfo.email').error?.message}</ErrorMessage>
             </Grid>
 
             <Grid row gap='md'>
                 <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 12 }}>
                     <Label requiredMarker={true} htmlFor='phone_number'>Phone Number</Label>
-                    <ErrorMessage>{control.getFieldState('contactInfo.phoneNumber').error?.message}</ErrorMessage>
+                    
                     <Controller
                         render={({ field }) => (
                             <TextInput 
@@ -43,6 +44,7 @@ const ContactInfo = () => {
                         name={'contactInfo.phoneNumber'}
                         control={control}
                     />
+                    <ErrorMessage>{control.getFieldState('contactInfo.phoneNumber').error?.message}</ErrorMessage>
                 </Grid>
             </Grid>
         </>

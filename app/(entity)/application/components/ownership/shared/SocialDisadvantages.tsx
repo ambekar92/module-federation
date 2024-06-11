@@ -20,7 +20,7 @@ const SocialDisadvantages = () => {
             <Label className='margin-top-0 maxw-full' htmlFor='social_disadvantages' requiredMarker={true}>
               Are you claiming social disadvantage under the 8(a) program (if not, please select ‘Not Claiming Social Disadvantage’)?
             </Label>
-            <ErrorMessage>{error?.message}</ErrorMessage>
+            
             <Select
               id="social_disadvantages"
               isMulti
@@ -36,7 +36,6 @@ const SocialDisadvantages = () => {
                   borderRadius: '8px',
                   minHeight: '2.45rem',
                   height: '56px',
-                  borderColor: error ? '#e41d3d' : '#565c65',
                   outline: state.isFocused ? '3px solid #0f73ff' : '',
                   cursor: 'pointer'
                 })
@@ -47,6 +46,7 @@ const SocialDisadvantages = () => {
               }
               closeMenuOnSelect={false}
             />
+            <ErrorMessage>{error?.message}</ErrorMessage>
           </Grid>
         </Grid>}
       />
