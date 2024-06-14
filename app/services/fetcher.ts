@@ -2,12 +2,12 @@
 import axios from 'axios'
 import {API_ROUTE, GET_NOTIFICATION, GET_DOCUMENTS, GET_USER_PROFILE} from '../constants/routes'
 
-export interface ApiResponse {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any // Can vary based on structure
-  message?: string // Message type for message that comes from empty response
+interface ApiResponse<T> {
+  data: T;
+  message?: string;
 }
 
+// Axios instance
 export const axiosInstance = axios.create({
   baseURL: API_ROUTE,
   timeout: 30 * 60_000, // 30 minutes
@@ -15,66 +15,60 @@ export const axiosInstance = axios.create({
     Accept: 'application/json, text/plain, */*',
     'Content-Type': 'application/json; charset=utf-8',
   },
-})
+});
 
-// API Response Error Handling
-export const handleResponseError = (error: any) => {
+export const handleResponseError = (error: unknown) => {
   if (axios.isAxiosError(error)) {
-    const responseError = error.response
+    const responseError = error.response;
     if (responseError) {
-      throw new Error(`HTTP error, status = ${responseError.status}`)
+      throw new Error(`HTTP error, status = ${responseError.status}`);
     }
   }
-  throw new Error(`An unexpected error occurred: ${error}`)
-}
+  // Handle non-Axios errors or other issues
+  throw new Error(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
+};
 
-// GET METHOD
-export const fetcherGET = async (url: string): Promise<ApiResponse> => {
+// GET fetcher
+export const fetcherGET = async <T>(url: string): Promise<T> => {
   try {
-    const response = await axiosInstance.get<ApiResponse>(url)
-
-    if (response.status < 200 || response.status >= 300 || response.status === 500) {
-      handleResponseError(response);
+    const response = await axiosInstance.get<T>(url);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error('API call unsuccessful');
     }
-
-    return response.data // Valid response data returned here
   } catch (error) {
-    handleResponseError(error)
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || 'API error occurred');
+    }
+    throw error;
   }
+};
 
-  throw new Error('fetcherGET reached an unexpected location in code.')
-}
-
-// POST METHOD
-export const fetcherPOST = async (
-  url: string,
-  param: any,
-): Promise<ApiResponse> => {
+// POST fetcher
+export const fetcherPOST = async <T>(url: string, param: any): Promise<T> => {
   try {
-    const response = await axiosInstance.post<ApiResponse>(url, param)
-
+    const response = await axiosInstance.post<ApiResponse<T>>(url, param);
     if (response.status < 200 || response.status >= 300) {
-      handleResponseError(response)
+      throw new Error(`HTTP error, status = ${response.status}`);
     }
-
-    return response.data // Valid response data returned here
+    return response.data.data;
   } catch (error) {
-    handleResponseError(error)
+    handleResponseError(error);
+    throw error;
   }
-
-  throw new Error('fetcherPOST reached an unexpected location in code.')
-}
+};
 
 // API to get notifications list
 async function getNotifications(
   user_id: string | number,
-): Promise<ApiResponse> {
+): Promise<{data: any, message?: string}> {
   const api_url = GET_NOTIFICATION + '?user_id=' + user_id
   return fetcherGET(api_url)
 }
 
 // API to get getDocuments list
-async function getDocuments(user_id: string | number): Promise<ApiResponse> {
+async function getDocuments(user_id: string | number): Promise<{data: any, message?: string}> {
   const api_url = GET_DOCUMENTS + '?user_id=' + user_id
   return fetcherGET(api_url)
 }
@@ -82,7 +76,7 @@ async function getDocuments(user_id: string | number): Promise<ApiResponse> {
 // API to get user profile details
 async function getUserProfileInfo(
   user_id: string | number,
-): Promise<ApiResponse> {
+): Promise<{data: any, message?: string}> {
   const api_url = GET_USER_PROFILE + user_id
   return fetcherGET(api_url)
 }

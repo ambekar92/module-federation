@@ -11,26 +11,30 @@ import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import {
   SBA_LOGO_SQUARE_BLUE_RED_URL,
-  SBA_LOGO_SQUARE_WHITE_URL
+  SBA_LOGO_SQUARE_WHITE_URL,
 } from '../../constants/icons'
 import { Notification } from './components/navbarNotification'
 import styles from './layout.module.scss'
+
+//note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
+import { ADMIN_BANNER_ROUTE } from '../../constants/routes'
 
 export interface StyleSetting {
   bg: string
   textColor: string
   logo: string
-	hoverColor: string
+  hoverColor: string
 }
 
 const Navigation = () => {
+  const [adminBanner, setAdminBanner] = useState(ADMIN_BANNER_ROUTE)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [navDropdownOpen, setNavDropdownOpen] = useState([false, false])
   const [styleSettings, setStyleSettings] = useState<StyleSetting>({
     bg: '',
     textColor: '',
     logo: SBA_LOGO_SQUARE_BLUE_RED_URL,
-    hoverColor: ''
+    hoverColor: '',
   })
 
   const { status } = useSession()
@@ -41,7 +45,7 @@ const Navigation = () => {
         bg: 'bg-primary-darker',
         textColor: 'text-white',
         logo: SBA_LOGO_SQUARE_WHITE_URL,
-        hoverColor: 'hover:text-primary'
+        hoverColor: 'hover:text-primary',
       })
     }
   }, [status])
@@ -85,11 +89,15 @@ const Navigation = () => {
           className={`${styleSettings.textColor} border-right-0 margin-right-1 cursor-pointer`}
         >
           {' Notifications '}
-          <Icon.ExpandMore className='top-2px' style={{ rotate: navDropdownOpen[0] ? '180deg' : '' }} />
+          <Icon.ExpandMore
+            className="top-2px"
+            style={{ rotate: navDropdownOpen[0] ? '180deg' : '' }}
+          />
         </span>
       </button>
       <Menu
         id="extended-nav-section-two"
+        className={styles['navbarNotification']}
         items={new Array(1).fill(<Notification />)}
         isOpen={navDropdownOpen[0]}
       />
@@ -111,7 +119,10 @@ const Navigation = () => {
           className={`${styleSettings.textColor} border-right-0 margin-right-1 cursor-pointer`}
         >
           User Profile{' '}
-          <Icon.ExpandMore className='top-2px' style={{ rotate: navDropdownOpen[1] ? '180deg' : '' }} />
+          <Icon.ExpandMore
+            className="top-2px"
+            style={{ rotate: navDropdownOpen[1] ? '180deg' : '' }}
+          />
         </span>
       </button>
       <Menu
@@ -138,7 +149,12 @@ const Navigation = () => {
             className={`usa-navbar ${styles['mobile-border--none']} width-full`}
           >
             <Title id="extended-logo">
-              <img className='padding-y-05' src={`/${styleSettings.logo}`} alt="logo" height={50} />
+              <img
+                className="padding-y-05"
+                src={`/${styleSettings.logo}`}
+                alt="logo"
+                height={50}
+              />
             </Title>
             <NavMenuButton
               label="Menu"
@@ -161,31 +177,87 @@ const Navigation = () => {
           <ul className="usa-nav__primary float-left usa-accordion">
             <li className="usa-nav__primary-item">
               <a className="usa-nav__link" href="/">
-                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Home</span>
+                <span
+                  className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                >
+                  Home
+                </span>
               </a>
             </li>
 
             <li className="usa-nav__primary-item">
-              <a className="usa-nav__link" href="/messages">
-                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Messages</span>
-              </a>
+              {adminBanner === 'admin' ? (
+                <a className="usa-nav__link" href="/admin/configuration">
+                  <span
+                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                  >
+                    {' '}
+                    System Configuration
+                  </span>
+                </a>
+              ) : (
+                <a className="usa-nav__link" href="/messages">
+                  <span
+                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                  >
+                    {' '}
+                    Messages
+                  </span>
+                </a>
+              )}
             </li>
 
             <li className="usa-nav__primary-item">
-              <a className="usa-nav__link" href="/documents">
-                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Documents</span>
-              </a>
+              {adminBanner === 'admin' ? (
+                <a className="usa-nav__link" href="/entities">
+                  <span
+                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                  >
+                    {' '}
+                   Entities
+                  </span>
+                </a>
+              ) : (
+                <a className="usa-nav__link" href="/documents">
+                  <span
+                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                  >
+                    {' '}
+                    Documents
+                  </span>
+                </a>
+              )}
+            </li>
+
+            <li className="usa-nav__primary-item">
+              {adminBanner === 'admin' ? (
+                <a className="usa-nav__link" href="/users">
+                  <span
+                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                  >
+                    {' '}
+                    Users
+                  </span>
+                </a>
+              ) : (
+                <a className="usa-nav__link" href="/">
+                  <span
+                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                  >
+                    {' '}
+                    Saved
+                  </span>
+                </a>
+              )}
             </li>
 
             <li className="usa-nav__primary-item">
               <a className="usa-nav__link" href="/">
-                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Saved</span>
-              </a>
-            </li>
-
-            <li className="usa-nav__primary-item">
-              <a className="usa-nav__link" href="/">
-                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Support</span>
+                <span
+                  className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                >
+                  {adminBanner === 'admin' ? '' : 'Support'}
+                </span>
               </a>
             </li>
           </ul>
@@ -194,7 +266,11 @@ const Navigation = () => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
               <a aria-disabled={true} tabIndex={-1} href="">
-                <span className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}>Business Name <Icon.ExpandMore className='top-2px' /></span>
+                <span
+                  className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                >
+                  Business Name <Icon.ExpandMore className="top-2px" />
+                </span>
               </a>
             </li>
           </ul>

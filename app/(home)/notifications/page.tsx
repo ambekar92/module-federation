@@ -1,6 +1,6 @@
 import React from 'react'
-import NotificationLists from './components/NotificationLists'
+import NotificationLists from '../../shared/components/notifications/NotificationLists'
 
-export default function DocumentsPage(): JSX.Element {
+export default function Notifications(): JSX.Element {
   return <NotificationLists />
 }

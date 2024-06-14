@@ -11,3 +11,4 @@ export const QUESTIONNAIRE_ROUTE = API_ROUTE + '/questionnaire'
 export const WS_LIVE_NOTIFICATIONS = process.env.NEXT_PUBLIC_WS_LIVE_NOTIFICATIONS;
 export const DOCUMENT_REQUIRED_ROUTE = API_ROUTE+'/document-required-questions/1'
 export const FIRM_APPLICATIONS_ROUTE = API_ROUTE+'/application'
+export const ADMIN_BANNER_ROUTE = process.env.NEXT_PUBLIC_ADMIN_FEATURE_ENABLED;

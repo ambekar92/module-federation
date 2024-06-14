@@ -1,13 +1,10 @@
-import { faker } from '@faker-js/faker';
 import UserActivityList from './components/UserActivityList';
-import { ActivityItem } from './types';
+import { ActivityResponse } from './types';
 
 const page = async ({params: {id}}: {params: {id: string}}) => {
-  
-    const { data } = await getData(id)
-   
+    const  data: ActivityResponse  = await getData(id);
   return (
-    <UserActivityList data={data} />
+    <UserActivityList data={data?.actions} />
   )
 }
 
@@ -21,17 +18,6 @@ export async function getData(id: string) {
     console.error(e)
   }
 
-  // temp data till api has some data
-    const data: ActivityItem[] = 
-    Array(100).fill({}).map((_, i) => ({
-        dateTime: new Date().toISOString(), 
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        title: faker.lorem.words(13),
-        description: faker.lorem.words(50)
-    }));
-  
-   return { data }
   }
 
 export default page

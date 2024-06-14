@@ -1,7 +1,26 @@
-export type ActivityItem = {
-    dateTime:string;
-    firstName:string;
-    lastName: string;
+export type IAction = {
+    id: string;
+    url: string;
+    verb: string;
+    published: string;
+    actor: {
+      id: string;
+      url: string;
+      objectType: string;
+      displayName: string;
+    };
     title: string;
-    description: string;
-}
+    target: {
+      id: string;
+      url: string;
+      objectType: string;
+      displayName: string;
+    };
+  };
+
+  export type ActivityResponse = {
+    total_actions: number,
+    actions: IAction[]
+
+  }
+  

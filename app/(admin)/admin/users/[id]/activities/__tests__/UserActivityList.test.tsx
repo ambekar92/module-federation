@@ -1,41 +1,54 @@
 import { render, screen } from "@testing-library/react";
 import UserActivityList from "../components/UserActivityList";
-import { ActivityItem } from "../types";
+import { IAction } from "../types";
 import { faker } from "@faker-js/faker";
 import  user  from '@testing-library/user-event';
 
+function getMockData(n: number): IAction[]{
+    const mockData: IAction[] = Array(n).fill({}).map((el, idx) => {
+        return {
+          id: idx+'',
+          url: faker.internet.url(),
+          verb: 'started following',
+          published: faker.date.recent().toISOString(),
+          actor: {
+            id: idx+'',
+            url: faker.internet.url(),
+            objectType: 'user',
+            displayName: faker.person.fullName()
+          },
+          title: `${faker.person.fullName()} started following minutes ago`,
+          target: {
+            id: idx+'',
+            url: faker.internet.url(),
+            objectType: 'user',
+            displayName: `${faker.person.fullName()}`
+          }
+        };
+      });
+      return mockData
+}
+
 describe('UserActivityList', () => {
     it('should render', () => {
-        const mockData = [] as ActivityItem [];
+        const mockData = [] as IAction [];
         render(<UserActivityList data={mockData} />);
         const headingEl = screen.getByRole('heading', {name: /Activity Stream/i, level: 1});
         expect(headingEl).toBeInTheDocument();
 
         const searchEl = screen.getByRole('search');
         expect(searchEl).toBeInTheDocument();
-
-        const pagination = screen.getByRole('navigation');
-        expect(pagination).toBeInTheDocument();
+        
     });
 
     it('should display max 10 accordions', () => {
-        const mockData: ActivityItem[] = Array(300).fill({}).map(() => ({
-            dateTime: faker.date.recent().toISOString(), 
-            firstName:faker.person.firstName(), 
-            lastName: faker.person.lastName(), 
-            description: faker.word.words(10), 
-            title: faker.word.noun() }));
+        const mockData = getMockData(30)
         render(<UserActivityList data={mockData} />);
         const accordionElCnt = screen.getAllByRole('region').length;
         expect(accordionElCnt).toEqual(10);
     });
     it('should display max(10, activityItemsCnt) accordions', () => {
-        const mockData: ActivityItem[] = Array(3).fill({}).map(() => ({
-            dateTime: faker.date.recent().toISOString(), 
-            firstName:faker.person.firstName(), 
-            lastName: faker.person.lastName(), 
-            description: faker.word.words(3), 
-            title: faker.word.noun() }));
+        const mockData =  getMockData(3)
         render(<UserActivityList data={mockData} />);
         const accordionElCnt = screen.getAllByRole('region').length;
         expect(accordionElCnt).toEqual(3);
@@ -43,13 +56,8 @@ describe('UserActivityList', () => {
 
     test('user should see second page items when page 2 is clicked', async() => {
         user.setup();
-        const mockData: ActivityItem[] = Array(30).fill({}).map(() => ({
-            dateTime: faker.date.recent().toISOString(), 
-            firstName:faker.person.firstName(), 
-            lastName: faker.person.lastName(), 
-            description: faker.word.words(10), 
-            title: faker.word.noun() }));
-        const eleventhFullName = mockData[10].firstName + ' ' + mockData[10].lastName;
+        const mockData =  getMockData(30)
+        const eleventhFullName = mockData[10].actor.displayName;
         render(<UserActivityList data={mockData}/>);
        const fullName = screen.queryByText(eleventhFullName);
        expect(fullName).not.toBeUndefined();
@@ -60,12 +68,7 @@ describe('UserActivityList', () => {
     })
 
     it('should apply usa-current class to the first page button initially', () => {
-        const mockData: ActivityItem[] = Array(30).fill({}).map(() => ({
-            dateTime: faker.date.recent().toISOString(), 
-            firstName:faker.person.firstName(), 
-            lastName: faker.person.lastName(), 
-            description: faker.word.words(10), 
-            title: faker.word.noun() }));
+        const mockData = getMockData(30)
         render(<UserActivityList data={mockData} />);
         const page1 = screen.getByLabelText('Page 1');
         const page2 = screen.getByLabelText('Page 2');
@@ -75,12 +78,7 @@ describe('UserActivityList', () => {
 
     it ('should apply usa-current class to the second page button when user clicks on second page button', async () => {
         user.setup();
-        const mockData: ActivityItem[] = Array(30).fill({}).map(() => ({
-            dateTime: faker.date.recent().toISOString(), 
-            firstName:faker.person.firstName(), 
-            lastName: faker.person.lastName(), 
-            description: faker.word.words(10), 
-            title: faker.word.noun() }));
+        const mockData =  getMockData(30);
         render(<UserActivityList data={mockData} />);
         const page2 = screen.getByLabelText('Page 2');
         expect(page2).toBeInTheDocument();
@@ -91,12 +89,7 @@ describe('UserActivityList', () => {
 
     it('should navigate user to next page when next button is clicked', async() => {
         user.setup();
-        const mockData: ActivityItem[] = Array(30).fill({}).map(() => ({
-            dateTime: faker.date.recent().toISOString(), 
-            firstName:faker.person.firstName(), 
-            lastName: faker.person.lastName(), 
-            description: faker.word.words(10), 
-            title: faker.word.noun() }));
+        const mockData =  getMockData(30)
         render(<UserActivityList data={mockData} />);
         const nextButtonEl = screen.getByLabelText('Next page');
         expect(nextButtonEl).toBeInTheDocument();
@@ -111,12 +104,7 @@ describe('UserActivityList', () => {
     
     it('should navigate user to previous page when previous button is clicked', async() => {
         user.setup();
-        const mockData: ActivityItem[] = Array(30).fill({}).map(() => ({
-            dateTime: faker.date.recent().toISOString(), 
-            firstName:faker.person.firstName(), 
-            lastName: faker.person.lastName(), 
-            description: faker.word.words(10), 
-            title: faker.word.noun() }));
+        const mockData =  getMockData(30)
         render(<UserActivityList data={mockData} />);
         const page2 = screen.getByLabelText('Page 2')
         await user.click(page2);

@@ -1,10 +1,10 @@
 import React, { FC } from 'react'
-import { EmailSearchLayoutProps } from './types'
+import { EmailSearchLayoutProps } from '../utils/types'
 import {
   Grid,
   TextInput
 } from '@trussworks/react-uswds'
-import styles from './Messages.module.scss'
+import styles from '../utils/Messages.module.scss'
 
 export const EmailSearchLayout: FC<EmailSearchLayoutProps> = ({
   searchName,
@@ -22,6 +22,8 @@ export const EmailSearchLayout: FC<EmailSearchLayoutProps> = ({
         className={`${styles['message-center-search']}  flex-align-center  grid-col-10`}
       >
         <TextInput
+          type='text'
+          name='search-email'
           className={'maxw-full border-gray-10 '}
           id="keywords"
           placeholder={placeholder}

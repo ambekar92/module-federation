@@ -1,6 +1,6 @@
 {
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
+  "/(entity)/select-intended-programs/page": "app/(entity)/select-intended-programs/page.js",
+  "/api/auth/csrf": "app/api/auth/csrf.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/(entity)/entities/page": "app/(entity)/entities/page.js"
+  "/login/page": "app/login/page.js"
 }
