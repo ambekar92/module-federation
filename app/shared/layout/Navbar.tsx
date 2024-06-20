@@ -10,8 +10,7 @@ import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import {
-  SBA_LOGO_SQUARE_BLUE_RED_URL,
-  SBA_LOGO_SQUARE_WHITE_URL,
+  SBA_LOGO_SQUARE_WHITE_URL
 } from '../../constants/icons'
 import { Notification } from './components/navbarNotification'
 import styles from './layout.module.scss'
@@ -26,29 +25,69 @@ export interface StyleSetting {
   hoverColor: string
 }
 
+export interface adminNavBar {
+  id: string
+  url: string
+}
 const Navigation = () => {
-  const [adminBanner, setAdminBanner] = useState(ADMIN_BANNER_ROUTE)
+  const adminBanner = ADMIN_BANNER_ROUTE
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [navDropdownOpen, setNavDropdownOpen] = useState([false, false])
-  const [styleSettings, setStyleSettings] = useState<StyleSetting>({
-    bg: '',
-    textColor: '',
-    logo: SBA_LOGO_SQUARE_BLUE_RED_URL,
+  const [selectedNameId, setSelectedNameId] = useState('')
+
+  const styleSettings = {
     hoverColor: '',
-  })
+    bg: 'bg-primary-darker',
+    textColor: 'text-white',
+    logo: SBA_LOGO_SQUARE_WHITE_URL,
+  }
 
   const { status } = useSession()
 
+  const selectedBottomRedBorder = '3px solid #CC0000'
+
   useEffect(() => {
-    if (status === 'authenticated') {
-      setStyleSettings({
-        bg: 'bg-primary-darker',
-        textColor: 'text-white',
-        logo: SBA_LOGO_SQUARE_WHITE_URL,
-        hoverColor: 'hover:text-primary',
-      })
+    const pathname = window.location.pathname
+    // Determine activeLink based on pathname (you'll need to customize this logic)
+    switch (pathname) {
+      case '/':
+        setSelectedNameId('Home')
+        break
+      case '/admin/configuration':
+        setSelectedNameId('System Configuration')
+        break
+      case '/entities':
+        setSelectedNameId('Entities')
+        break
+      case '/users':
+        setSelectedNameId('Users')
+        break
+      case '/messages':
+        setSelectedNameId('Messages')
+        break
+      case '/documents':
+        setSelectedNameId('Documents')
+        break
+      case '/saved':
+        setSelectedNameId('Saved')
+        break
+      case '/support':
+        setSelectedNameId('Support')
+        break
+      case '/apply':
+        setSelectedNameId('Should I Apply?')
+        break
+      case '/application':
+        setSelectedNameId('Application Prep')
+        break
+      case '/calculator':
+        setSelectedNameId('HUBZone Calculator')
+        break
+
+      default:
+        setSelectedNameId('') // Default to Home if no match
     }
-  }, [status])
+  }, [])
 
   const toggleMobileNav = (): void => {
     setMobileNavOpen((prevOpen) => !prevOpen)
@@ -76,6 +115,11 @@ const Navigation = () => {
       Log Out
     </Link>,
   ]
+  const notAuthenticatedLogin = [
+    <a key="primaryNav_2" className="usa-button" style={{backgroundColor: '#D83933'}} href="/login">
+      <span className={styleSettings.textColor}>Login</span>
+    </a>,
+  ]
   const primaryNavItems = [
     <React.Fragment key="primaryNav_0">
       <button
@@ -88,7 +132,7 @@ const Navigation = () => {
         <span
           className={`${styleSettings.textColor} border-right-0 margin-right-1 cursor-pointer`}
         >
-          {' Notifications '}
+          {' Notification'}
           <Icon.ExpandMore
             className="top-2px"
             style={{ rotate: navDropdownOpen[0] ? '180deg' : '' }}
@@ -133,6 +177,26 @@ const Navigation = () => {
     </React.Fragment>,
   ]
 
+  const unAuthenticatedNavBar = [
+    { id: 'Home', url: '/' },
+    { id: 'Should I Apply?', url: '/' },
+    { id: 'Application Prep', url: '/' },
+    { id: 'HUBZone Calculator', url: '/' },
+  ]
+  const authenticatedNavBar = [
+    { id: 'Home', url: '/' },
+    { id: 'Message', url: '/messages' },
+    { id: 'Documents', url: '/documents' },
+    { id: 'Saved', url: '/' },
+    { id: 'Support', url: '/' },
+  ]
+  const adminNavBar = [
+    { id: 'Home', url: '/' },
+    { id: 'System Configuration', url: '/admin/configuration' },
+    { id: 'Entities', url: '/entities' },
+    { id: 'Users', url: '/users' },
+  ]
+
   return (
     <>
       <Header
@@ -142,7 +206,7 @@ const Navigation = () => {
       >
         <div
           className={
-            'usa-nav-container display-flex flex-justify-between maxw-full'
+            'usa-nav-container display-flex flex-justify-between flex-align-center maxw-full'
           }
         >
           <div
@@ -162,115 +226,106 @@ const Navigation = () => {
               className="usa-menu-btn margin-left-auto"
             />
           </div>
-          <PrimaryNav
-            aria-label="Primary navigation"
-            items={primaryNavItems}
-            onToggleMobileNav={toggleMobileNav}
-            mobileExpanded={mobileNavOpen}
-          ></PrimaryNav>
+          {status === 'authenticated' ? (
+            <PrimaryNav
+              aria-label="Primary navigation"
+              items={primaryNavItems}
+              onToggleMobileNav={toggleMobileNav}
+              mobileExpanded={mobileNavOpen}
+            ></PrimaryNav>
+          ) : (
+            <PrimaryNav
+              aria-label="Primary navigation"
+              items={notAuthenticatedLogin}
+              onToggleMobileNav={toggleMobileNav}
+              mobileExpanded={mobileNavOpen}
+            ></PrimaryNav>
+          )}
         </div>
       </Header>
       <Header
-        className={`${styleSettings.bg} border-bottom-1px border-base-lighter padding-x-4 ${styles['mobile-border--none']}`}
+        // className={`${styleSettings.bg} border-bottom-1px border-base-lighter padding-x-4 ${styles['mobile-border--none']}`}
+        style={{ borderColor: '#F8DFE2' }}
+        className={`border-bottom-1px padding-x-4 ${styles['mobile-border--none']}`}
       >
         <div className="usa-nav float-left">
           <ul className="usa-nav__primary float-left usa-accordion">
-            <li className="usa-nav__primary-item">
-              <a className="usa-nav__link" href="/">
-                <span
-                  className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+
+            {status === 'authenticated' && adminBanner === 'admin'
+              ? adminNavBar.map((header: any, index: number) => (
+                <li
+                  key={index}
+                  className="usa-nav__primary-item"
+                  style={{
+                    borderBottom:
+                        selectedNameId === header.id
+                          ? selectedBottomRedBorder
+                          : '',
+                  }}
+                  onClick={() => setSelectedNameId(header.id)}
                 >
-                  Home
-                </span>
-              </a>
-            </li>
-
-            <li className="usa-nav__primary-item">
-              {adminBanner === 'admin' ? (
-                <a className="usa-nav__link" href="/admin/configuration">
-                  <span
-                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                  <a className="usa-nav__link" href={header.url}>
+                    <span className={` ${styleSettings.hoverColor}`}>
+                      {' '}
+                      {header.id}
+                    </span>
+                  </a>
+                </li>
+              ))
+              : status === 'authenticated'
+                ? authenticatedNavBar.map((header: any, index: number) => (
+                  <li
+                    key={index}
+                    className="usa-nav__primary-item"
+                    style={{
+                      borderBottom:
+                          selectedNameId === header.id
+                            ? selectedBottomRedBorder
+                            : '',
+                    }}
+                    onClick={() => setSelectedNameId(header.id)}
                   >
-                    {' '}
-                    System Configuration
-                  </span>
-                </a>
-              ) : (
-                <a className="usa-nav__link" href="/messages">
-                  <span
-                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
+                    <a className="usa-nav__link" href={header.url}>
+                      <span className={` ${styleSettings.hoverColor}`}>
+                        {' '}
+                        {header.id}
+                      </span>
+                    </a>
+                  </li>
+                ))
+                : unAuthenticatedNavBar.map((header: any, index: number) => (
+                  <li
+                    key={index}
+                    className="usa-nav__primary-item"
+                    style={{
+                      borderBottom:
+                          selectedNameId === header.id
+                            ? selectedBottomRedBorder
+                            : '',
+                    }}
+                    onClick={() => setSelectedNameId(header.id)}
                   >
-                    {' '}
-                    Messages
-                  </span>
-                </a>
-              )}
-            </li>
-
-            <li className="usa-nav__primary-item">
-              {adminBanner === 'admin' ? (
-                <a className="usa-nav__link" href="/entities">
-                  <span
-                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
-                  >
-                    {' '}
-                   Entities
-                  </span>
-                </a>
-              ) : (
-                <a className="usa-nav__link" href="/documents">
-                  <span
-                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
-                  >
-                    {' '}
-                    Documents
-                  </span>
-                </a>
-              )}
-            </li>
-
-            <li className="usa-nav__primary-item">
-              {adminBanner === 'admin' ? (
-                <a className="usa-nav__link" href="/users">
-                  <span
-                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
-                  >
-                    {' '}
-                    Users
-                  </span>
-                </a>
-              ) : (
-                <a className="usa-nav__link" href="/">
-                  <span
-                    className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
-                  >
-                    {' '}
-                    Saved
-                  </span>
-                </a>
-              )}
-            </li>
-
-            <li className="usa-nav__primary-item">
-              <a className="usa-nav__link" href="/">
-                <span
-                  className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
-                >
-                  {adminBanner === 'admin' ? '' : 'Support'}
-                </span>
-              </a>
-            </li>
+                    <a className="usa-nav__link" href={header.url}>
+                      <span className={` ${styleSettings.hoverColor}`}>
+                        {' '}
+                        {header.id}
+                      </span>
+                    </a>
+                  </li>
+                ))}
           </ul>
         </div>
         <div className="usa-nav float-right">
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
               <a aria-disabled={true} tabIndex={-1} href="">
-                <span
-                  className={`${styleSettings.textColor} ${styleSettings.hoverColor}`}
-                >
-                  Business Name <Icon.ExpandMore className="top-2px" />
-                </span>
+                {status !== 'authenticated' ? (
+                  ''
+                ) : (
+                  <span className={` ${styleSettings.hoverColor}`}>
+                    Business Name <Icon.ExpandMore className="top-2px" />
+                  </span>
+                )}
               </a>
             </li>
           </ul>

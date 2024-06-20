@@ -1,5 +1,6 @@
 import { Icon } from '@trussworks/react-uswds'
 import { Email } from './types';
+import InitialsCircle from '../../../(admin)/admin/users/components/AccountCircle'
 
 export const EmailSearch = [
   { id: 1, searchName: 'Sender', placeholder: 'Sender'},
@@ -7,64 +8,52 @@ export const EmailSearch = [
   { id: 3, searchName: 'Keywords', placeholder: 'Keywords'},
 ];
 
-const defaultIcon = <Icon.AccountCircle />;
-
-export const emails: Email[] = [
-  {
-    id: 1,
-    read: false,
-    icon: defaultIcon,
-    from: 'Clark Kent',
-    subject: 'Daily Planet Submission',
-    date: '05/13/2024 | 10:40am',
-    message: 'Attached you will find my latest article submission for the Daily Planet.',
+export const inboxTestData = {
+  links:{
+    next: null,
+    previous: null
   },
-  {
-    id: 2,
-    read: true,
-    icon: defaultIcon,
-    from: 'Bruce Wayne',
-    subject: 'Wayne Enterprises Update',
-    date: '05/13/2024 | 10:40am',
-    message: 'Meeting reminder for the new project discussion.',
+  pagination: {
+    previous_page: null,
+    current_page: 1,
+    next_page: null,
+    page_size: 50
   },
-  {
-    id: 3,
-    read: false,
-    icon: defaultIcon,
-    from: 'Peter Quinn',
-    subject: 'Appointment Confirmation',
-    date: '05/13/2024 | 10:40am',
-    message: 'Your next appointment at the clinic is scheduled for Tuesday.',
-  },
-  {
-    id: 4,
-    read: false,
-    icon: defaultIcon,
-    from: 'Diana Prince',
-    subject: 'Ambassador Event',
-    date: '05/13/2024 | 10:40am',
-    message: 'Please confirm your attendance at the upcoming ambassador event.',
-  },
-  {
-    id: 5,
-    read: true,
-    icon: defaultIcon,
-    from: 'Peter Parker',
-    subject: 'Science Fair',
-    date: '05/13/2024 | 10:40am',
-    message: 'Need some advice on my project for the upcoming science fair.',
-  },
-  {
-    id: 6,
-    read: false,
-    icon: defaultIcon,
-    from: 'Steve Rogers',
-    subject: 'Historical Society',
-    date: '05/13/2024 | 10:40am',
-    message: 'Can we meet to discuss the upcoming exhibition on World War II?',
-  },
-];
+  count: 1,
+  total_pages: 1,
+  next: false,
+  results: [
+    {
+      uuid: 1,
+      // read: false,
+      //icon: <InitialsCircle name={'Clark Kent'}/>,
+      sender: {display_name:'Clark Kent', is_user: true},
+      subject: 'Daily Planet Submission',
+      sent_at: '2024-06-11T19:27:38.200399Z',
+      total_unread:'10',
+      last_message: 'Attached you will find my latest article submission for the Daily Planet.',
+    },
+    {
+      uuid: 2,
+      // read: false,
+      //icon: <InitialsCircle name={'Clark Kent'}/>,
+      sender: {display_name:'Bruce Wayne', is_user: true},
+      subject: 'Wayne Enterprises Update',
+      sent_at: '2024-06-11T19:27:38.200399Z',
+      total_unread:'10',
+      last_message: 'Meeting reminder for the new project discussion',
+    },
+    {
+      uuid: 3,
+      // read: false,
+      //icon: <InitialsCircle name={'Clark Kent'}/>,
+      sender: {display_name:'Peter Quinn', is_user: true},
+      subject: 'Appointment Confirmation',
+      sent_at: '2024-06-11T19:27:38.200399Z',
+      total_unread:'10',
+      last_message: 'Your next appointment at the clinic is scheduled for Tuesday.',
+    }
+  ]}
 
 export const firstRow = [
   { id: '1', title: 'Archive', icon: <Icon.FolderOpen /> },

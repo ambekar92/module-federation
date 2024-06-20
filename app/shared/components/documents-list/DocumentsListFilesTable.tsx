@@ -1,21 +1,36 @@
 import React from 'react'
-import styles from './DocumentsList.module.scss'
+import useSWR from 'swr'
 import IconButton from '@mui/material/IconButton'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import filesData from './filesData.json'
-
 import { Icon } from '@trussworks/react-uswds'
+import { fetcherGET } from '@/app/services/fetcher'
+import { GET_DOCUMENTS } from '@/app/constants/routes'
+import { DocumentsType } from './utils/types'
+import styles from './DocumentsList.module.scss'
 
 function DocumentsListFolders() {
+  const { data: responseData, error: responseError } = useSWR<DocumentsType>(
+    GET_DOCUMENTS,
+    fetcherGET,
+  )
+
+  if (responseError) {
+    return <div>Error: {responseError.message}</div>
+  }
+
+  if (!responseData) {
+    return <div>Loading...</div>
+  }
+
   const LoadTableRow = () => {
-    return filesData.data?.map((item, index) => {
+    return responseData.map((item: any, index: number) => {
       return (
         <tr key={index}>
-          <th scope="row">{item.name}</th>
-          <td data-sort-value="3">{item.author}</td>
-          <td data-sort-value="3">{item.created}</td>
-          <td data-sort-value="3">{item.program}</td>
-          <td data-sort-value="3">{item.modified}</td>
+          <th scope="row">{item.file_name}</th>
+          <td data-sort-value="3">{item.doc_owner_user_id}</td>
+          <td data-sort-value="3">{item.created_at}</td>
+          <td data-sort-value="3">{item.path_name}</td>
+          <td data-sort-value="3">{item.updated_at}</td>
         </tr>
       )
     })
@@ -40,7 +55,7 @@ function DocumentsListFolders() {
                 role="columnheader"
                 className={styles['table-th']}
               >
-                <span> Name </span>
+                <span> File Name </span>
                 <span className={styles['tableSortIcon']}>
                   {' '}
                   <Icon.UnfoldMore />{' '}
@@ -76,7 +91,7 @@ function DocumentsListFolders() {
                 role="columnheader"
                 className={styles['table-th']}
               >
-                <span>Program</span>
+                <span>File Path</span>
                 <span className={styles['tableSortIcon']}>
                   {' '}
                   <Icon.UnfoldMore />{' '}
@@ -88,7 +103,7 @@ function DocumentsListFolders() {
                 role="columnheader"
                 className={styles['table-th']}
               >
-                <span>Modified</span>
+                <span>Updated</span>
                 <span className={styles['tableSortIcon']}>
                   {' '}
                   <Icon.UnfoldMore />{' '}

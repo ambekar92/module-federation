@@ -33,7 +33,9 @@ export const fetcherGET = async <T>(url: string): Promise<T> => {
   try {
     const response = await axiosInstance.get<T>(url);
     if (response.status >= 200 && response.status < 300) {
+
       return response.data;
+
     } else {
       throw new Error('API call unsuccessful');
     }

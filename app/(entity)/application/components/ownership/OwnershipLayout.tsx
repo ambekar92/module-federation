@@ -101,7 +101,7 @@ function OwnershipLayout({children}: OwnershipLayoutProps) {
         <hr className='margin-y-3 margin-bottom-0 width-full border-base-lightest'/>
 
         <ButtonGroup className='display-flex flex-justify padding-y-2 margin-right-2px'>
-          <Link href='/add-delegate' className='usa-button usa-button--outline'>
+          <Link href='/assign-a-delegate' className='usa-button usa-button--outline'>
 						Previous
           </Link>
           {ownershipPercentageTotal !== 100 ? (

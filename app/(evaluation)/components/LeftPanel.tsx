@@ -5,7 +5,7 @@ import ActionMenuData from './utils/actionMenuData.json'
 import { Link } from '@trussworks/react-uswds'
 import ActionMenuModal from '../../shared/components/modals/ActionMenuModal'
 import { errorToJSON } from 'next/dist/server/render'
-import InviteModal from '@/app/(entity)/add-delegate/components/fragments/InviteModal'
+import InviteModal from '@/app/(entity)/assign-a-delegate/components/fragments/InviteModal'
 import Notes from './reviews/Notes'
 
 function LeftPanel(props) {

@@ -55,7 +55,7 @@ const HomePage = () => {
               <Link href="/notifications">Notifications</Link>
             </li>
             <li className="usa-sidenav__item">
-              <Link href="/add-delegate">Add Delegate</Link>
+              <Link href="/assign-a-delegate">Add Delegate</Link>
             </li>
             <li className="usa-sidenav__item">
               <Link href="/user/dashboard">Supervisor and Analysis Dashboard</Link>

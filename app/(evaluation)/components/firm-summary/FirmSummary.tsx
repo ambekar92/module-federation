@@ -44,7 +44,7 @@ const testItems: AccordionItemProps[] = [
   },
   {
     id: 'item4',
-    title: 'HUBZonw Calculator',
+    title: 'HUBZone Calculator',
     content: (
       <div>
       </div>
@@ -85,4 +85,3 @@ function FirmSummary() {
 }
 
 export default FirmSummary
-

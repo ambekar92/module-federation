@@ -1,7 +1,9 @@
-import axios from 'axios'
-import { NextAuthOptions, getServerSession } from 'next-auth'
-import OktaProvider from 'next-auth/providers/okta'
-import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken'
+import axios from 'axios';
+import { NextAuthOptions, getServerSession } from 'next-auth';
+import OktaProvider from 'next-auth/providers/okta';
+import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken';
+import { OKTA_POST_LOGIN_ROUTE } from '../constants/routes';
+import { IUserDetails } from './next-auth';
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -19,21 +21,28 @@ export const authConfig: NextAuthOptions = {
       return token
     },
     session: async ({ session, token }) => {
-      let userDetails = {data: {}};
+      if (typeof token.accessToken === 'string') {
+        session.user.accessToken = token.accessToken;
+      }
+      let userDetails: { data: IUserDetails } = { data: {} as IUserDetails };
       if (typeof token.csrfToken === 'string') {
-        session.csrfToken = token.csrfToken // CSRF token is now part of the token object and persisted through JWT.
+        session.csrfToken = token.csrfToken; // CSRF token is now part of the token object and persisted through JWT.
       }
       try {
-        userDetails = await axios.post(`https://ucms-internal-api.demo.sba-one.net/api/v1/okta-post-login`, {
-           ...session
+        userDetails = await axios.post(OKTA_POST_LOGIN_ROUTE, {
+          ...session
         });
-        
+        token.role = userDetails?.data?.permissions?.[0]?.slug
+        // For testing purposes, can hardcode role
+        // token.role = Role.CONTRIBUTOR;
       } catch (error) {
         console.error('Error making POST request:', error);
       }
+      // For testing purposes, can hardcode role
+      // userDetails.data.permissions[0].slug = Role.CONTRIBUTOR;
       return {...session, ...userDetails.data}
     },
-    
+
   },
 }
 export async function getSessionServer() {

@@ -11,6 +11,33 @@ import MessageLayout from './MessageLayout'
 import styles from '../utils/Messages.module.scss'
 import MainContent from './MainContent'
 
+export type InboxItem = {
+  uuid: string;
+  subject: string;
+  sender: string | { display_name: string; is_user: boolean };
+  sent_at: string;
+  total_unread: number | string;
+  last_message: string;
+};
+
+export type InboxResponse = {
+  links: {
+    next: string | null;
+    previous: string | null;
+  };
+  pagination: {
+    previous_page: number | null;
+    current_page: number;
+    next_page: number | null;
+    page_size: number;
+  };
+  count: number;
+  total_pages: number;
+  next: string | boolean;
+  previous: string | boolean;
+  results: InboxItem[];
+};
+
 const CreateMessages = () => {
   return (
     <GridContainer className='flex-fill padding-0' containerSize="widescreen">
@@ -40,7 +67,7 @@ const CreateMessages = () => {
         </div>
       </Header>
 
-      <Grid row gap="lg" className='height-full maxw-full'>
+      <Grid row gap="lg">
         <MessageLayout sidebar={<SidebarContent />} mainContent={MainContent()} />
       </Grid>
     </GridContainer>

@@ -1,0 +1,92 @@
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 300px;
+  height: fit-content;
+
+	a.usa-button {
+		background-color: #D83933;
+	}
+	
+	.carousel-slide {
+		width: 100%;
+		height: 100%;
+		position: relative;
+		transition: transform 0.7s ease-in-out;
+	}
+	
+	.carousel-slide.initial {
+		transition: none;
+	}
+	
+	.prev-button {
+		transform: rotate(180deg);
+	}
+	
+	.carousel-nav {
+		position: absolute;
+		bottom: 1rem;
+		transform: translateX(-50%);
+		left: 50%;
+		display: flex;
+	}
+	
+	li {
+		margin: 0;
+		display: flex;
+		align-items: center;
+	}
+	
+	button {
+		height: 21px;
+	}
+	
+	.carousel-nav_progress {
+		display: flex;
+		align-items: center;
+		margin: 0 1rem;
+		background: #002E6D;
+		padding: 0.25rem 0.5rem;
+		gap: 8px;
+		border-radius: 1rem;
+	}
+	
+	.carousel-indicators {
+		margin-left: 4px;
+		display: flex;
+		justify-content: space-between;
+		gap: 8px;
+		width: 100%;
+	}
+	
+	.dot {
+		cursor: pointer;
+		display: block;
+		margin: 0;
+		border: none;
+		height: 18px;
+		width: 18px;
+		aspect-ratio: 1 / 1;
+		border-radius: 50%;
+		background-color: #005ea2;
+	}
+	
+	.dot:hover {
+		background-color: #73b3e7;
+	}
+	
+	.dot.active {
+		background-color: #73b3e7;
+	}
+	
+	@keyframes slideFromLeft {
+		from { transform: translateX(-100%); }
+		to { transform: translateX(0); }
+	}
+	
+	@keyframes slideFromRight {
+		from { transform: translateX(100%); }
+		to { transform: translateX(0); }
+	}	
+}

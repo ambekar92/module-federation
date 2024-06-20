@@ -7,6 +7,7 @@ interface QAWrapperProps {
 }
 
 const MessageLayout: React.FC<QAWrapperProps> = ({ sidebar, mainContent }) => {
+
   return (
     <>
       {sidebar && (

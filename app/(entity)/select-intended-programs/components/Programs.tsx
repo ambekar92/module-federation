@@ -61,7 +61,7 @@ function Programs() {
 							Next
             </Button>
           ) : (
-            <Link href='/add-delegate' className='usa-button'>
+            <Link href='/assign-a-delegate' className='usa-button'>
 							Next
         		</Link>
           )}

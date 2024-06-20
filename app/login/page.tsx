@@ -5,12 +5,22 @@ import { getSessionServer } from '../lib/auth';
 import styles from './Login.module.scss';
 import LoginButton from './LoginButton';
 import { redirect } from 'next/navigation';
+import { Role } from '../shared/types/role';
 
 export default async function Login({searchParams}: {searchParams: {next: string}}) {
   const session = await getSessionServer();
   if(session) {
-    // Leave this for now until the "check user" api is up so that only new users are redirected to CYB -KJ
-    redirect(`${'/claim-your-business' || searchParams.next || '/home'}`)
+    switch (session?.permissions?.[0]?.slug) {
+      case Role.EXTERNAL:
+        redirect('/claim-your-business');
+      case Role.PRIMARY_QUALIFY_OWNER:
+      case Role.CONTRIBUTOR:
+        redirect('/dashboard');
+      case Role.ADMIN:
+        redirect('/admin/dashboard');
+      default:
+        redirect('/');
+    }
   }
   return (
     <>

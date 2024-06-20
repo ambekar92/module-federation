@@ -32,6 +32,49 @@ $line-height-tight-px: 1.35;
 	&-tight {line-height: $line-height-tight-px;}
 }
 
+/* Extra-extra-extra-small text */
+.text-size-3xs { font-size: 0.75rem; }
+
+/* Extra-extra-small text */
+.text-size-2xs { font-size: 0.875rem; }
+
+/* Extra-small text */
+.text-size-xs { font-size: 1rem; }
+
+/* Small text */
+.text-size-sm { font-size: 1.125rem; }
+
+/* Base text size */
+.text-size-base { font-size: 1.25rem; }
+
+/* Medium text */
+.text-size-md { font-size: 1.375rem; }
+
+/* Large text */
+.text-size-lg { font-size: 1.5rem; }
+
+/* Extra-large text */
+.text-size-xl { font-size: 1.75rem; }
+
+/* Extra-extra-large text */
+.text-size-2xl { font-size: 2rem; }
+
+/* Extra-extra-extra-large text */
+.text-size-3xl { font-size: 2.25rem; }
+
+/* Even larger text */
+.text-size-4xl { font-size: 2.5rem; }
+
+/* Very large text */
+.text-size-5xl { font-size: 3rem; }
+
+/* Optional: Responsive text sizes for different breakpoints */
+@media screen and (max-width: 768px) {
+.text-size-xl, .text-size-2xl, .text-size-3xl, .text-size-4xl, .text-size-5xl {
+		font-size: 1.25rem; /* Smaller size for mobile devices */
+}
+}
+
 .usa-banner__inner.usa-banner__inner {
 	margin-left: 0;
 }
