@@ -56,7 +56,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
 
           <Grid className='display-flex flex-column' mobile={{ col: 10 }} tablet={{ col: 5 }}>
             <Label htmlFor='first_name' requiredMarker={true}>First Name</Label>
-            
+
             <Controller
               name={'firstName'}
               control={methods.control}
@@ -67,7 +67,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   onChange={field.onChange}
                   type='text' id='first_name' placeholder='--' />
               } />
-              <ErrorMessage>{methods.formState.errors?.firstName?.message}</ErrorMessage>
+            <ErrorMessage>{methods.formState.errors?.firstName?.message}</ErrorMessage>
           </Grid>
 
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 5 }}>
@@ -90,7 +90,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
         <Grid row gap='md'>
           <Grid className='display-flex flex-column' mobile={{ col: 10 }} tablet={{ col: 10 }}>
             <Label requiredMarker={true} htmlFor='last_name'>Last Name</Label>
-            
+
             <Controller
               name={'lastName'}
               control={methods.control}
@@ -139,7 +139,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
         <Grid row gap='md'>
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 6 }}>
             <Label requiredMarker={true} htmlFor={'USCitizen'}>Are you a legal citizen of the US?</Label>
-            
+
             <div className='usa-radio display-flex gap-1 bg-base-lightest'>
               <input
                 className="usa-radio__input"
@@ -172,7 +172,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
         <Grid row gap='md'>
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 3 }}>
             <Label requiredMarker={true} htmlFor={'SSN'}>SSN</Label>
-            
+
             <Controller
               name={'SSN'}
               control={methods.control}
@@ -193,7 +193,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
 
           <Grid className='display-flex flex-column' mobile={{ col: 12 }} tablet={{ col: 9 }}>
             <Label requiredMarker={true} htmlFor='veteran_status'>Are you a veteran of the US military?</Label>
-           
+
             <Controller
               name='isVeteran'
               control={methods.control}
@@ -210,13 +210,13 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                 </Select>
               }
             />
-          <ErrorMessage>{methods.formState.errors.isVeteran?.message}</ErrorMessage>
+            <ErrorMessage>{methods.formState.errors.isVeteran?.message}</ErrorMessage>
           </Grid>
         </Grid>
 
         <Grid row className='display-flex flex-column'>
           <Label requiredMarker={true} htmlFor='martial_status'>Marital Status</Label>
-          
+
           <Controller
             name={'maritalStatus'}
             control={methods.control}
@@ -234,7 +234,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
               </Select>
             }
           />
-        <ErrorMessage>{methods.formState.errors?.maritalStatus?.message}</ErrorMessage>
+          <ErrorMessage>{methods.formState.errors?.maritalStatus?.message}</ErrorMessage>
         </Grid>
 
         <Grid row gap='md'>
@@ -242,7 +242,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
             <Label requiredMarker={true} htmlFor='spouse_owner'>
                     Gender
             </Label>
-            
+
             <div className='usa-radio display-flex gap-1 bg-base-lightest'>
               <input
                 className="usa-radio__input"
@@ -282,7 +282,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
             <Label requiredMarker={true} htmlFor='spouse_owner'>
                     Is your spouse an owner, officer, board member, partner, etc. of the applicant business?
             </Label>
-            
+
             <div className='usa-radio display-flex gap-1 bg-base-lightest'>
               <input
                 className="usa-radio__input"

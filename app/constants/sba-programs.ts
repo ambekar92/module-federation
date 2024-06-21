@@ -59,7 +59,7 @@ export const sbaProgramOptions: ProgramOption[] = [
     description: `The HUBZone Program supports businesses located in historically underutilized areas. It
 		aims to stimulate economic growth in these regions by providing government contracting
 		preferences to qualified HUBZone businesses.`,
-    disadvantages: ['long_term_isolated_residence'],
+    disadvantages: ['long_term_isolated_residence', 'unmarried-not-veteran'],
     details: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',
     registration: 'hubzone'
   },

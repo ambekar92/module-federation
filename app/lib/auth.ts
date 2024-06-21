@@ -14,7 +14,10 @@ export const authConfig: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt: async ({ token }) => {
+    jwt: async ({ token, account }) => {
+      if (account && account.access_token) {
+        token.accessToken = account.access_token;
+      }
       if (token.csrfToken !== null) {
         token.csrfToken = generateCsrfToken()
       }

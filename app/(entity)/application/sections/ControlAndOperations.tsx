@@ -26,7 +26,7 @@ function ControlAndOperations() {
       dispatch(setOperators(JSON.parse(savedOperators)));
     }
   }
-    , [])
+  , [])
 
   return (
     <>
@@ -70,9 +70,15 @@ function ControlAndOperations() {
           <Link href={applicationSteps.ownership.link} className="usa-button usa-button--outline">
             Previous
           </Link>
-          <Link href={applicationSteps.eligiblePrograms.link} className="usa-button">
+          {operators.length === 0  ? (
+            <Button type='button' className='usa-button' disabled>
             Next
-          </Link>
+            </Button>
+          ) : (
+            <Link href={applicationSteps.eligiblePrograms.link} className="usa-button">
+            Next
+            </Link>
+          )}
         </ButtonGroup>
       </div>
     </>

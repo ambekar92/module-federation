@@ -1,17 +1,17 @@
 'use client'
-import { CmbResponseType } from '@/app/services/cmb-fetcher'
 import { useState } from 'react'
+import { CmbResponseType } from '../utils/types'
 import Styles from './ClaimMyBusiness.module.scss'
 import ClaimBusinessForm from './forms/CMBForm'
-import ValidateBusinessForm from './forms/ValidateBusinessForm'
 import ClaimBusinessLanding from './layout/CMBLanding'
+import ValidateBusinessForm from './validation/ValidateBusinessForm'
 
 export default function ClaimBusiness(): JSX.Element {
   const [readyToProceedClaim, setReadyToProceedClaim] = useState(false)
   const [readyToValidate, setReadyToValidate] = useState(false)
-  const [samData, setSamData] = useState<CmbResponseType>()
+  const [samData, setSamData] = useState<CmbResponseType[]>()
 
-  const claimFormComplete = (responseData: CmbResponseType ) => {
+  const claimFormComplete = (responseData: CmbResponseType[] ) => {
     setSamData(responseData)
     setReadyToValidate(true)
   }

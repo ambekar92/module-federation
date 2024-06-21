@@ -11,7 +11,7 @@
 //   it('renders all program cards', () => {
 //     sbaProgramOptions.forEach(option => {
 //       console.log(">> ", option) ;
-      
+
 //       expect(screen.getByText(option.name)).toBeInTheDocument();
 //       expect(screen.getByText(option.description)).toBeInTheDocument();
 //       expect(screen.getByText(option.details)).toBeInTheDocument();
@@ -33,7 +33,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 // import '@testing-library/jest-dom/extend-expect';
 import Programs from '../components/Programs';
-import { sbaProgramOptions } from '../../../constants/sba-programs'; 
+import { sbaProgramOptions } from '../../../constants/sba-programs';
 
 describe('Programs Component', () => {
   test('selects and deselects programs', () => {
@@ -58,17 +58,15 @@ describe('Programs Component', () => {
     render(<Programs />);
 
     const nextButton = screen.getByRole('button', { name: /next/i });
-
     expect(nextButton).toBeDisabled();
 
     const firstProgramLabel = screen.getByText(sbaProgramOptions[0].name);
-    fireEvent.click(firstProgramLabel);
-
-    expect(nextButton).not.toBe();
 
     fireEvent.click(firstProgramLabel);
+    expect(nextButton).not.toBeEnabled();
 
+    fireEvent.click(firstProgramLabel);
     expect(nextButton).toBeDisabled();
   });
-  
+
 });

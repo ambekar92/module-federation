@@ -1,3 +1,5 @@
+import { CmbResponseType } from './types';
+
 // Text Helpers for input fields
 export const claimBusinessInputDetails = {
   uei: {
@@ -47,3 +49,26 @@ export const getBusinessesClaimed = async (uei: string): Promise<boolean> => {
 export const getLostBusinessProfile = async (uei: string): Promise<boolean> => {
   return Promise.resolve(lostBusinessProfiles.includes(uei));
 };
+
+export function isCmbResponseTypeArray(data: any): data is CmbResponseType[] {
+  return Array.isArray(data) && data.every(item =>
+    typeof item === 'object' &&
+    typeof item.sam_entity_id === 'number' &&
+    typeof item.legal_business_name === 'string' &&
+    typeof item.uei === 'string' &&
+    typeof item.cage_code === 'string' &&
+    typeof item.account_hash === 'string' &&
+    typeof item.tax_identifier_number === 'string' &&
+    typeof item.dba_name === 'string' &&
+    typeof item.physical_address_1 === 'string' &&
+    typeof item.physical_address_2 === 'string' &&
+    typeof item.physical_city === 'string' &&
+    typeof item.naics_code_string === 'string' &&
+    typeof item.mailing_address_state_or_province === 'string' &&
+    typeof item.physical_zip_code_5 === 'string' &&
+    typeof item.sam_extract_code === 'string' &&
+    typeof item.entity_structure === 'string' &&
+    typeof item.govt_bus_poc_first_name === 'string' &&
+    typeof item.govt_bus_poc_last_name === 'string'
+  );
+}

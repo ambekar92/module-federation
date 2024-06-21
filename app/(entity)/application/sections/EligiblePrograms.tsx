@@ -31,6 +31,7 @@ const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
       manageDisadvantage(owner.gender === 'f', 'female');
       manageDisadvantage(owner.isVeteran === 'yes' || owner.isVeteran === 'service_disabled_veteran', 'veteran');
       manageDisadvantage(owner.isVeteran === 'service_disabled_veteran', 'disabledVeteran');
+      manageDisadvantage(owner.maritalStatus === 'unmarried' && owner.isVeteran === 'not_applicable', 'unmarried-not-veteran')
 
       return program.disadvantages.some(disadvantage => updatedDisadvantages.includes(disadvantage));
     });

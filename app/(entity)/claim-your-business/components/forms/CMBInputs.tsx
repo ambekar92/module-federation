@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { VALIDATE_SAM_ENTITY_ROUTE } from '@/app/constants/routes';
-import { CmbResponseType, cmbFetcherGET } from '@/app/services/cmb-fetcher';
+import { fetcherGET } from '@/app/services/fetcher';
 import {
   Button,
   ButtonGroup,
@@ -21,11 +21,11 @@ import useSWR from 'swr';
 import {
   claimBusinessInputDetails
 } from '../../utils/helpers';
-import { ClaimBusinessInputs } from '../../utils/types';
+import { ClaimBusinessInputs, CmbResponse } from '../../utils/types';
 import Styles from '../ClaimMyBusiness.module.scss';
 
 interface IClaimInputs {
-  claimFormComplete: (responseData: CmbResponseType) => void;
+  claimFormComplete: (responseData: CmbResponse) => void;
   handleOpen: () => void;
   control: Control<ClaimBusinessInputs>;
   errors: FieldErrors<ClaimBusinessInputs>;
@@ -55,7 +55,6 @@ const ClaimInputs = ({
   control,
   errors,
   handleSubmit,
-  isValid,
   setError,
   touchedFields,
 }: IClaimInputs) => {
@@ -65,39 +64,44 @@ const ClaimInputs = ({
     cageCode: '',
     bankAccountNumber: '',
   });
-  const [shouldFetch, setShouldFetch] = useState(false);
+  const [shouldFetchEntity, setShouldFetchEntity] = useState(false);
 
   const getEntityData = (uei: string, tin: string, cageCode: string, bankAccountNumber: string) =>
     `${VALIDATE_SAM_ENTITY_ROUTE}?uei=${uei}&tax_identifier_number=${tin}&cage_code=${cageCode}&account_hash=${bankAccountNumber}`;
 
   const { data: responseData, error: responseError } = useSWR(
-    () => shouldFetch && getEntityData(queryParams.uei, queryParams.tin, queryParams.cageCode, queryParams.bankAccountNumber),
-    cmbFetcherGET,
+    () => (shouldFetchEntity ? getEntityData(queryParams.uei, queryParams.tin, queryParams.cageCode, queryParams.bankAccountNumber) : null),
+		fetcherGET<CmbResponse>
   );
 
   useEffect(() => {
     if (responseError) {
-      setShouldFetch(false);
+      setShouldFetchEntity(false);
       setError('serverError', { type: 'submit', message: 'server error' });
       handleOpen();
       return;
     }
 
-    if (responseData) {
-      setShouldFetch(false);
-      if (responseData.message === 'This business has already been claimed') {
-        setError('serverError', { type: 'submit', message: 'already claimed' }); // message is case sensitive
+    if(responseData) {
+      setShouldFetchEntity(false);
+      if(responseData.message === 'No matching record found') {
+        setError('serverError', { type: 'submit', message: 'not found' });
         handleOpen();
         return;
       }
-
-      if (responseData.message === 'No matching record found') {
-        setError('serverError', { type: 'submit', message: 'not found' }); // message is case sensitive
+      if(responseData.message === 'This business has already been claimed') {
+        setError('serverError', { type: 'submit', message: 'already claimed' });
         handleOpen();
         return;
       }
-
-      claimFormComplete(responseData);
+      if(responseData.message === 'This business has not been claimed yet') {
+        claimFormComplete(responseData);
+        return;
+      } else {
+        setError('serverError', { type: 'submit', message: 'server error' });
+        handleOpen();
+        return;
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseData, responseError]);
@@ -109,12 +113,11 @@ const ClaimInputs = ({
       cageCode: formData.cageCode,
       bankAccountNumber: formData.bankAccountNumber,
     });
-    setShouldFetch(true);
+    setShouldFetchEntity(true)
   };
 
   const filterText = (text: string, onlyNumbers: boolean = false): string => {
     if (onlyNumbers) {
-      // Filter out everything but digits
       return text.replace(/\D/g, '');
     }
     // Filter out non-alphanumeric characters (as per the original function)

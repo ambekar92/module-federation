@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { ClaimBusinessSchema, InvitationCodeFormSchema } from './schemas'
-import { CmbResponseType } from '@/app/services/cmb-fetcher'
 
 // ClaimBusinessFormTypes.ts
 export type ClaimBusinessType = {
@@ -58,9 +57,40 @@ export interface IBusinessProfile {
 	owner_user: number;
 }
 
-export type BusinessProfileType = {
-  [key: string]: CmbResponseType
+export type CmbResponseType = {
+  message: string;
+  sam_business_type: string;
+  sam_entity_structure: string;
+  primary_naics: string;
+  sam_entity: {
+    sam_entity_id: number;
+    legal_business_name: string;
+    uei: string;
+    cage_code: string;
+    account_hash: string;
+    tax_identifier_number: string;
+    dba_name: string;
+    physical_address_1: string;
+    physical_address_2: string;
+    physical_city: string;
+    naics_code_string: string;
+    mailing_address_state_or_province: string;
+    physical_zip_code_5: string;
+    sam_extract_code: string;
+    entity_structure: string;
+    govt_bus_poc_first_name: string;
+    govt_bus_poc_last_name: string;
+  };
+};
+
+export type CmbResponse = CmbResponseType | {message: string};
+
+export type UnclaimedEntityType = {
+  legal_business_name: string,
+  uei: string
 }
+
+export type UnclaimedEntityResponse = UnclaimedEntityType | {message: string};
 
 export interface IAccordionItem {
   title: React.ReactNode

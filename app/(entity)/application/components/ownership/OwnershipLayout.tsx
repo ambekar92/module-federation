@@ -86,7 +86,8 @@ function OwnershipLayout({children}: OwnershipLayoutProps) {
       </div>
 
       <div className='flex-fill' style={{display: 'flex', gap: '1rem', flexDirection: 'column'}}>
-        <GridContainer containerSize='widescreen' className={` width-full padding-y-2 margin-top-2 ${ownerTypeSelected && 'bg-base-lightest'}`}>
+        <GridContainer containerSize='widescreen' className={`width-full padding-y-2 margin-top-2 
+        ${owners.length > 0 && 'bg-base-lightest'} ${ownerTypeSelected && 'bg-base-lightest'}`}>
           {children}
         </GridContainer>
 

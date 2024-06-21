@@ -1,7 +1,8 @@
-import Link from 'next/link'
-import { applicationSteps } from '../../utils/constants'
+import { useSession } from 'next-auth/react';
 
 function HubMock() {
+  const session = useSession();
+  const accessToken = session?.data?.user?.accessToken;
   return (
     <div style={{lineHeight: 1.5}}>
       <h2>HUBZone Calculator</h2>
@@ -17,9 +18,9 @@ function HubMock() {
       <p>You can always check your eligibility by visiting the HUBZone Calculator located on the Unified Certification Platform homepage.</p>
 
       <div className='display-flex flex-justify-end margin-top-5'>
-        <Link className='usa-button' href={applicationSteps.hubzone.link}>
+        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`http://localhost:3001/firm?wt=${accessToken}`}>
 					Start
-        </Link>
+        </a>
       </div>
     </div>
   )
