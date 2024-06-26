@@ -19,7 +19,8 @@ const ContactInfo = () => {
                             className='maxw-full' type='email' id='email_address' placeholder='--'
                             name={'contactInfo.email'}
                             value={field.value}
-                            onChange={field.onChange} />
+                            onChange={field.onChange} 
+                            validationStatus = { field.value ? (!control.getFieldState('contactInfo.email').error?.message ? 'success' : 'error'): (control.getFieldState('contactInfo.email').error?.message ? 'error' : undefined) } />
                     )}
                     name={'contactInfo.email'}
                     control={control}
@@ -39,6 +40,7 @@ const ContactInfo = () => {
                             value={formatPhoneNumber(field.value)} 
                             onChange={(e) => field.onChange(formatPhoneNumber(e.target.value))}
                             name={'contactInfo.phoneNumber'}
+                            validationStatus = { field.value ? (!control.getFieldState('contactInfo.phoneNumber').error?.message ? 'success' : 'error'): (control.getFieldState('contactInfo.phoneNumber').error?.message ? 'error' : undefined) }
                              />
                         )}
                         name={'contactInfo.phoneNumber'}

@@ -23,6 +23,7 @@ import {
 } from '../../utils/helpers';
 import { ClaimBusinessInputs, CmbResponse } from '../../utils/types';
 import Styles from '../ClaimMyBusiness.module.scss';
+import InputHelperText from '@/app/shared/components/inputs/InputHelperText';
 
 interface IClaimInputs {
   claimFormComplete: (responseData: CmbResponse) => void;
@@ -141,18 +142,14 @@ const ClaimInputs = ({
                   id={`input-${key}`}
                   type="text"
                   maxLength={claimBusinessInputDetails[key].maxlength}
-                  className={errors[key] ? 'icon width-full' : ''}
+                  className={errors[key] ? 'icon' : ''}
                   onChange={(e) => field.onChange(filterText(e.target.value, key === 'tin'))}
                   validationStatus={errors[key] ? 'error' : touchedFields[key] ? 'success' : undefined}
                   value={field.value!}
                 />
               )}
             />
-            <div className={`${Styles.mt_small} usa-input-helper-text`}>
-              <span className={errors[key] && 'text-secondary'}>
-                {claimBusinessInputDetails[key].fieldHelper}
-              </span>
-            </div>
+            <InputHelperText hasError={!!errors[key]} text={claimBusinessInputDetails[key].fieldHelper} />
           </div>
         ))}
         <p className="text-bold text-red text-right">

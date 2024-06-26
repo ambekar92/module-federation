@@ -1,11 +1,16 @@
 @use 'colors' as *;
 
+input.usa-input.icon {
+  background: url('../../public/visibility.svg') no-repeat center right 10px;
+  background-color: $gray-0;
+}
+
 .usa-input {
   max-width: 641px;
   width: 100%;
 }
 
-input.usa-input {
+input.usa-input, select.usa-select {
   display: flex;
   min-height: 56px;
   padding: 8px 16px;
@@ -16,18 +21,15 @@ input.usa-input {
   outline: thin solid --grays-border-disabled;
 }
 
-input.usa-input.icon {
-  background: url('../../public/visibility.svg') no-repeat center right 10px;
-  background-color: $gray-0;
-}
-
 input:not([disabled]):focus {
   outline: thin solid $bright-blue;
   outline-offset: 0rem;
 }
 
 input.usa-input.usa-input--error,
-input.usa-input.usa-input--success {
+input.usa-input.usa-input--success,
+select.usa-select.usa-input--error,
+select.usa-select.usa-input--success {
   border-width: thin;
 }
 

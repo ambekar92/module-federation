@@ -1,8 +1,9 @@
-import ShouldIApplyForm from './components/ShouldIApplyForm'
+import { redirect } from 'next/navigation'
 
-const ShouldIApplyPage = () => {
+const ShouldIApply = () => {
   return (
-    <ShouldIApplyForm />
+    redirect('/should-i-apply/ownership')
   )
 }
-export default ShouldIApplyPage
+
+export default ShouldIApply

@@ -170,7 +170,8 @@ function Partnership() {
           <Label className='margin-top-0' htmlFor='identification'>Type of Owner</Label>
           <UsSelect role='listbox' className='maxw-full height-7 radius-lg' id='identification' name='identification'
             value={ownerType ?? ''}
-            onChange={handleOwnerTypeChange}>
+            onChange={handleOwnerTypeChange}
+            validationStatus={ownerType ? 'success' : undefined}>
             <option value="">--</option>
             <option value="individual">Individual</option>
             <option value="organization">Organization</option>

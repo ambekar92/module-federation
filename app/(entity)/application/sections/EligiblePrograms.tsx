@@ -7,6 +7,8 @@ import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
+import { fetcherPOST } from '@/app/services/fetcher';
+import { CREATING_APPLICATION_ROUTE } from '@/app/constants/routes';
 
 // Filters programs based on owner data
 const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
@@ -41,8 +43,35 @@ const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
 function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const dispatch = useApplicationDispatch();
+
+  const handlePostRequest = async (): Promise<void> => {
+    try {
+      const postData = {
+        application_id: Math.floor(Math.random() * 10),
+        program_id: Math.floor(Math.random() * 10)
+      };
+
+      await fetcherPOST(`${CREATING_APPLICATION_ROUTE}`, postData);
+    } catch (error: any) {
+      console.error('POST request error:', error);
+      throw error;
+    }
+  }
+
+  const handleNextClick = async (): Promise<void> => {
+    setIsLoading(true);
+    try {
+      await handlePostRequest();
+      window.location.href = applicationSteps.questionnaire.link;
+    } catch (error: unknown) {
+      console.error('Error submitting data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.eligiblePrograms.stepIndex));
@@ -112,16 +141,20 @@ function EligiblePrograms() {
       <hr className='margin-y-3 width-full border-base-lightest'/>
       <ButtonGroup className='display-flex flex-justify'>
         <Link href={applicationSteps.controlAndOwnership.link} className='usa-button usa-button--outline'>
-          Back
+    			Back
         </Link>
-        {selectedPrograms.length === 0 && eligiblePrograms.length !== 0 ? (
+        {eligiblePrograms.length === 0 ? (
           <Button disabled type='button'>
-            Next
+      			Next
           </Button>
         ) : (
-          <Link href={applicationSteps.questionnaire.link} className='usa-button'>
-            Next
-          </Link>
+          <Button
+            type='button'
+            onClick={handleNextClick}
+            disabled={selectedPrograms.length === 0 || isLoading}
+          >
+            {isLoading ? 'Submitting...' : 'Next'}
+          </Button>
         )}
       </ButtonGroup>
     </>

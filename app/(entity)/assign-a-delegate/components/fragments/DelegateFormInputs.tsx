@@ -151,7 +151,7 @@ const DelegateFormInputs = ({
         handleCancel={handleCancel}
       />
 
-      <Grid row gap="lg" className="width-full margin-top-2" col={12}>
+      <Grid row className="width-full margin-top-2" col={12}>
         <hr className="width-full" />
         <Grid
           mobile={{ col: 12 }}
@@ -172,7 +172,7 @@ const DelegateFormInputs = ({
 
       </Grid>
 
-      <GridContainer containerSize="widescreen" className={`width-full padding-y-2 margin-top-2 bg-base-lightest`}>
+      <GridContainer containerSize="widescreen" className={'width-full padding-y-2 margin-top-2 bg-base-lightest'}>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className={showForm ? 'width-full' : 'display-none'}

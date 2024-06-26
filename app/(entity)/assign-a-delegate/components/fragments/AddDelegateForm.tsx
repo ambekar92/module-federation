@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Alert,
   Radio,
+  Link,
 } from '@trussworks/react-uswds'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -112,7 +113,7 @@ function AddDelegateForm() {
       </Grid>
 
       {option === 'yes' && (
-        <Grid row gap col={12}>
+        <Grid row col={12}>
           <DelegateFormInputs
             showModal={showModal}
             handleNext={handleNext}
@@ -133,16 +134,15 @@ function AddDelegateForm() {
       }
 
       {option === 'no' && (
-        <Grid row gap="lg" className="margin-top-2 flex-justify-end" col={12}>
+        <Grid row className="margin-top-2 flex-justify-end" col={12}>
           <hr className="width-full" />
           <ButtonGroup className="display-flex">
-            <Button
-              type="button"
-              onClick={handleNext}
-              className="display-flex"
+            <Link
+              href={'/application/ownership'}
+              className="float-right usa-button"
             >
               Next
-            </Button>
+            </Link>
           </ButtonGroup>
         </Grid>
       )}

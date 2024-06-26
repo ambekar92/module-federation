@@ -143,8 +143,7 @@ export const adminHeader = [
   { id: 3, headerName: 'Role' },
   { id: 4, headerName: 'Permissions' },
   { id: 5, headerName: 'Status' },
-  { id: 6, headerName: 'Edit' },
-  { id: 7, headerName: 'Delete' },
+  { id: 6, headerName: 'Actions' },
 
 ]
 

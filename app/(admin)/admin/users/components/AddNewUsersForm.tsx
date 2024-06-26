@@ -1,9 +1,8 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import {
   Modal,
   ModalToggleButton,
-  ModalHeading,
   ModalFooter,
   ButtonGroup,
   Button,
@@ -15,32 +14,38 @@ import styles from './DeleteUser.module.scss'
 
 interface ModalsAddUsers {
   showAlert: any
-  bodyData: any
   onAddUser: any
+  rowCount: number
+}
+interface newNewUserInterface{
+  id: number
+  Name: string
+  Email: string
+  Role: string
+  Permissions:string
+  Status: string
+  Edit: 'Edit',
+  Delete: 'Delete',
 }
 
+interface newUserInterface {
+  id:number,
+  username: string,
+  first_name: string,
+  last_name: string,
+  email: string,
+  is_staff: boolean,
+  is_superuser: boolean,
+  is_active: boolean,
+  last_login: string,
+  date_joined: string
+}
 export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
   showAlert,
-  bodyData,
   onAddUser,
+  rowCount,
 }) => {
-  const newId =
-    bodyData.length > 0
-      ? Math.max(...bodyData.map((item: any) => item.id)) + 1
-      : 1
-  const [newUser, setNewUser] = useState({
-    id: newId,
-    Name: '',
-    Email: '',
-    Role: '',
-    Permissions: '',
-    Status: '',
-    Edit: 'Edit',
-    Delete: 'Delete',
-  })
-
   const [showBlankMessageUser, setShowBlankMessageUser] = useState(false)
-  const [showNewUserAlert, setShowNewUserAlert] = useState(false)
 
   const nameTextRef = useRef<HTMLInputElement>(null)
   const emailTexRef = useRef<HTMLInputElement>(null)
@@ -54,49 +59,66 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
   const newPermission = permissionSelectRef.current?.value || ''
   const newStatus = actDevCheckRef.current?.value || ''
 
-  const handleAddRecord = (newRecord: any) => {
-    onAddUser(newUser)
-  }
+  useEffect(() => {
+
+  }, [rowCount]);
+
+  const newId = rowCount ? rowCount + 1 : 1
+  const [newUser, setNewUser] = useState<newUserInterface>({
+    id: newId,
+    username: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    is_staff: true,
+    is_superuser: true,
+    is_active: true,
+    last_login: '',
+    date_joined: ''
+  })
+
   const handleSave = () => {
     setNewUser({
-      id:
-        bodyData.length > 0
-          ? Math.max(...bodyData.map((item: any) => item.id)) + 1
-          : 1,
-      Name: newName,
-      Email: newEmail,
-      Role: newRole,
-      Permissions: newPermission,
-      Status: newStatus,
-      Edit: 'Edit',
-      Delete: 'Delete',
+      id:newId,
+      username:'',
+      first_name:newName,
+      last_name:'',
+      email: newEmail,
+      is_staff:newRole ==='true'? true: false,
+      is_superuser:newPermission ==='true'? true: false,
+      is_active: newStatus ==='true'? true: false,
+      last_login:'',
+      date_joined:'',
+
     })
 
     onAddUser(newUser)
-
+    showAlert(true)
     if (
-      newUser.Name !== '' &&
-      newUser.Email !== '' &&
-      newUser.Role !== '--' &&
-      newUser.Permissions !== '--' &&
-      newUser.Status !== '--'
-    ) {
+      newUser.first_name !== '' &&
+      newUser.email !== '' &&
+      newRole !== '--' &&
+      newPermission !== '--' &&
+      newStatus !== '--'
 
+    ) {
       modalRef.current?.toggleModal()
     }
     if (
-      (newUser.Name === '' &&
-        newUser.Email === '' &&
-        newUser.Role === '--' &&
-        newUser.Permissions === '--' &&
-        newUser.Status === '--') ||
-      newUser.Name === '' ||
-      newUser.Email === '' ||
-      newUser.Role === '--' ||
-      newUser.Permissions === '--' ||
-      newUser.Status === '--'
+      (newUser.first_name === '' &&
+        newUser.email === '' &&
+        newRole === '--' &&
+        newPermission === '--' &&
+        newStatus === '--')||
+
+      newUser.first_name === '' ||
+      newUser.email === '' ||
+      newRole === '--' ||
+      newPermission === '--' ||
+      newStatus === '--'
     ) {
       setShowBlankMessageUser(true)
+
     }
   }
 
@@ -121,7 +143,15 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
           forceAction={true}
           modalRoot="#modal-root"
         >
-          <ModalHeading id="modal-1-heading">Add New User</ModalHeading>
+          <p
+            style={{
+              fontFamily: 'Source Sans Pro',
+              fontWeight: 700,
+              fontSize: '19.5px',
+            }}
+          >
+            Add New User
+          </p>
 
           <Grid row>
             <Grid className="flex-1 margin-right-2">
@@ -131,12 +161,13 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
 
               <input
                 className={styles['text-field']}
+
                 name="name"
                 id="name"
                 type="text"
                 placeholder="--"
                 onChange={(e) =>
-                  setNewUser({ ...newUser, Name: e.target.value })
+                  setNewUser({ ...newUser, first_name: e.target.value })
                 }
               />
               {showBlankMessageUser && (
@@ -160,7 +191,7 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
                   type="email"
                   placeholder="--"
                   onChange={(e) =>
-                    setNewUser({ ...newUser, Email: e.target.value })
+                    setNewUser({ ...newUser, email: e.target.value })
                   }
                 />
                 {showBlankMessageUser && (
@@ -174,6 +205,7 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
             </Grid>
           </Grid>
           <Grid
+            style={{ color: '#E7E8E9' }}
             className="grid-row border-top margin-top-2 margin-bottom-2"
             row
           ></Grid>
@@ -183,19 +215,17 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
 
               <select
                 id="role"
+                style={{ width: '150px' }}
                 name="selectedOptionRole"
                 onChange={(e) =>
-                  setNewUser({ ...newUser, Role: e.target.value })
+                  setNewUser({ ...newUser, is_staff: e.target.value === 'true' })
                 }
                 className="usa-select"
                 ref={roleSelectRef}
               >
                 <option value="">--</option>
-                <option value="Owner">Owner</option>
-                <option value="Administrator">Administrator</option>
-                <option value="Viewer">Viewer</option>
-                <option value="Basic Editor">Basic Editor</option>
-                <option value="Manager">Manager</option>
+                <option value="true">Staff</option>
+                <option value="false">Not Staff</option>
               </select>
               {showBlankMessageUser && (
                 <div className="margin-top-1">
@@ -209,20 +239,17 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
               <label style={{ color: 'gray' }}>Permissions</label>
               <select
                 id="role"
+                style={{ width: '170px' }}
                 name="selectedOptionStatus"
                 className="usa-select"
                 onChange={(e) =>
-                  setNewUser({ ...newUser, Permissions: e.target.value })
+                  setNewUser({ ...newUser, is_superuser: e.target.value=== 'true'  })
                 }
               >
-                {' '}
                 <option value="">--</option>
-                <option value="Access All">Access All</option>
-                <option value="Activate/Deactivate">Activate/Deactivate</option>
-                <option value="Add User">Add User</option>
-                <option value="Basic Editing">Basic Editor</option>
-                <option value="View Only">View Only</option>
-              </select>{' '}
+                <option value="true">Access All</option>
+                <option value="false">View Only</option>
+              </select>
               {showBlankMessageUser && (
                 <div className="margin-top-1">
                   <span className="usa-input-helper-text error-message">
@@ -236,16 +263,16 @@ export const ModalsAddUsers: React.FC<ModalsAddUsers> = ({
 
               <select
                 id="role"
+                style={{ width: '220px' }}
                 name="selectedOptionPermission"
                 className="usa-select"
                 onChange={(e) =>
-                  setNewUser({ ...newUser, Status: e.target.value })
+                  setNewUser({ ...newUser, is_active: e.target.value=== 'true'  })
                 }
               >
-                {' '}
-                <option>--</option>
-                <option value="Activate">Activate</option>
-                <option value="Deactivate">Deactivate</option>
+                <option value="">--</option>
+                <option value="true">Activate</option>
+                <option value="false">Deactivate</option>
               </select>
               {showBlankMessageUser && (
                 <div className="margin-top-1">

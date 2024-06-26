@@ -1,5 +1,5 @@
 'use client'
-import React, { FC } from 'react';
+import React, { FC } from 'react'
 
 export interface CustomTableHeaderProps {
   headers: { id: number; headerName: string }[]
@@ -14,22 +14,19 @@ export const TableHeader: FC<CustomTableHeaderProps> = ({
   return (
     <thead>
       <tr>
-        {headers
-          .filter(
-            (column: any) =>
-              !(column.headerName === 'Edit' && !column.editable) &&
-              !(column.headerName === 'Delete' && !column.remove),
-          )
-          .map((column: any) => (
-            <th key={column.id} scope="col">
-              {column.headerName}
-            </th>
-          ))}
-
-        {editable &&  <th></th>}
-        {remove &&  <th></th>}
-
+        {headers.map((item: any) => (
+          <th
+            key={item.id}
+            style={{
+              paddingLeft: '20px',
+              paddingTop: '20px',
+              paddingBottom: '20px',
+            }}
+          >
+            {item.headerName}
+          </th>
+        ))}
       </tr>
     </thead>
-  );
-};
+  )
+}

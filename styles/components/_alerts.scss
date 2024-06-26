@@ -2,7 +2,6 @@
 // _alerts.scss
 .usa-alert {
    display: flex;
-   max-width: 641px;
    width: 100%;
 }
 
@@ -24,10 +23,6 @@
    background-color: $blues-surface-darker;
 }
 
-.usa-alert.usa-alert--success {
-   border-left: 8px solid $greens-border-default;
-   background: $greens-surface-subtle;
-}
 
 .usa-alert--success .usa-alert__body {
    background-color: $greens-surface-subtle;
@@ -35,11 +30,6 @@
 
 .usa-alert--success .usa-alert__body::before {
    background-color: $greens-text-icons-label;
-}
-
-.usa-alert.usa-alert--warning {
-   border-left: 8px solid $yellows-border-default;
-   background: $yellows-surface-subtle;
 }
 
 .usa-alert--warning .usa-alert__body {

@@ -44,6 +44,7 @@ const OwnershipPercent = ({editedItem, clearErrors, setError}: {editedItem:  Own
                 min={1}
                 max={100}
                 onChange={handleChange}
+                validationStatus = { field.value ? (!control.getFieldState('ownershipPercent').error?.message ? 'success' : 'error'): (control.getFieldState('ownershipPercent').error?.message ? 'error' : undefined) }
             />
         }
     />

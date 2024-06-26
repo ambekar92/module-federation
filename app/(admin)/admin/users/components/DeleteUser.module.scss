@@ -3,8 +3,10 @@
     background-color: transparent;
     }
     .usa-table th, .usa-table td{
+        border-top: none !important;
         border-left: none !important;
         border-right: none !important;
+        padding: 15px 0px 15px 0px ;
 }
 
 .text-field {

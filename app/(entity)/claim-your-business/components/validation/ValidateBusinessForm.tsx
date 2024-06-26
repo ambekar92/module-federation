@@ -25,11 +25,15 @@ interface ValidateBusinessFormProps {
 
 function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
   const [open, setOpen] = useState(false);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
-  const handleClose = () => setOpen(false);
-  const handleModalOpen = () => setShowConfirmationModal(!showConfirmationModal);
   const [errorMsg, setErrorMsg] = useState('');
   const [isPostSuccessful, setPostSuccessful] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+    if(errorMsg !== '') {
+      setErrorMsg('')
+    }
+  }
+  const handleOpen = () => setOpen(true);
 
   const validateBusinessAccordionProps = (): IAccordionItem[] => {
     return ([{
@@ -56,20 +60,20 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
     <>
       <GridContainer containerSize="widescreen">
         <Show>
-          <Show.When isTrue={errorMsg === 'success'}>
+          <Show.When isTrue={open && errorMsg === 'success'}>
             <SuccessModal open={open} handleClose={handleClose} />
           </Show.When>
         </Show>
 
         <Show>
-          <Show.When isTrue={errorMsg === 'network error'}>
+          <Show.When isTrue={open && errorMsg === 'network error'}>
             <ErrorModal open={open} handleClose={handleClose} error={errorMsg} />
           </Show.When>
         </Show>
 
         <Show>
-          <Show.When isTrue={showConfirmationModal && errorMsg === ''}>
-            <ConfirmModal handleClose={handleModalOpen} open={showConfirmationModal} setErrorMsg={setErrorMsg} setPostSuccessful={setPostSuccessful} business={samData} />
+          <Show.When isTrue={open && errorMsg === ''}>
+            <ConfirmModal handleClose={handleClose} handleOpen={handleOpen} open={open} setErrorMsg={setErrorMsg} setPostSuccessful={setPostSuccessful} business={samData} />
           </Show.When>
         </Show>
 
@@ -134,14 +138,14 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
               </Link>
               {isPostSuccessful ? (
                 <Link href="/select-intended-programs" className="usa-button usa-button">
-								Continue
+									Continue
                 </Link>
               ): (
                 <Button
-                  onClick={handleModalOpen}
+                  onClick={handleOpen}
                   type='button'
                 >
-                Next
+                	Next
                 </Button>
               )}
             </ButtonGroup>

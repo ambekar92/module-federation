@@ -36,6 +36,9 @@ export const authConfig: NextAuthOptions = {
           ...session
         });
         token.role = userDetails?.data?.permissions?.[0]?.slug
+        if (userDetails?.data?.user_id) {
+          session.user.id = userDetails.data.user_id;
+        }
         // For testing purposes, can hardcode role
         // token.role = Role.CONTRIBUTOR;
       } catch (error) {

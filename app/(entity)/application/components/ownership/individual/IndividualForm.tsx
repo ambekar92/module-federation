@@ -65,7 +65,8 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   value={field.value}
                   name={'firstName'}
                   onChange={field.onChange}
-                  type='text' id='first_name' placeholder='--' />
+                  type='text' id='first_name' placeholder='--' 
+                  validationStatus = { field.value ? (!methods.formState.errors?.firstName?.message ? 'success' : 'error'): (methods.formState.errors?.firstName?.message ? 'error' : undefined) } />
               } />
             <ErrorMessage>{methods.formState.errors?.firstName?.message}</ErrorMessage>
           </Grid>
@@ -99,7 +100,8 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   value={field.value}
                   name={'lastName'}
                   onChange={field.onChange}
-                  className='maxw-full' type='text' id='last_name' placeholder='--' />
+                  className='maxw-full' type='text' id='last_name' placeholder='--'
+                  validationStatus = { field.value ? (!methods.formState.errors?.lastName?.message ? 'success' : 'error'): (methods.formState.errors?.lastName?.message ? 'error' : undefined) } />
               }
             />
             <ErrorMessage>{methods.formState.errors?.lastName?.message}</ErrorMessage>
@@ -185,6 +187,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   value={formatSSN(field.value ?? '')}
                   name={'SSN'}
                   onChange={e => field.onChange(formatSSN(e.target.value))}
+                  validationStatus = { field.value ? (!methods.formState.errors?.SSN?.message ? 'success' : 'error'): (methods.formState.errors?.SSN?.message ? 'error' : undefined) }
                 />
               }
             />
@@ -202,6 +205,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   value={field.value ?? ''}
                   name='isVeteran'
                   onChange={field.onChange}
+                  validationStatus = { field.value ? (!methods.formState.errors.isVeteran?.message ? 'success' : 'error'): (methods.formState.errors.isVeteran?.message ? 'error' : undefined) }
                 >
                   <option value="">--</option>
                   <option value="not_applicable">Not Applicable</option>
@@ -225,6 +229,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                 value={field.value ?? ''}
                 name={'maritalStatus'}
                 onChange={field.onChange}
+                validationStatus = { field.value ? (!methods.formState.errors?.maritalStatus?.message ? 'success' : 'error'): (methods.formState.errors?.maritalStatus?.message ? 'error' : undefined) }
               >
                 <option>--</option>
                 <option value="married_owner">Married - Spouse is an owner, officer, board member, partner, etc. of the applicant business</option>

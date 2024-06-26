@@ -14,6 +14,8 @@ import EligiblePrograms from '../sections/EligiblePrograms';
 import Questionnaires from '../components/questionnaire/Questionnaires';
 import ContributorInvitation from '../sections/ContributorInvitation';
 import ProgramSpecificQuestions from '../sections/ProgramSpecificQuestions';
+import OwnershipQuestions from '../sections/OwnershipQuestions';
+import ControlAndOpsQuestions from '../sections/ControlAndOpsQuestions';
 
 // Import the Attestation component dynamically and disable SSR
 // NOTE: This is really just to allow the build to work will need to be fixed once API is up -KJ
@@ -34,6 +36,12 @@ const ApplicationPage: React.FC<AdditionalInfoPageProps> = ({ params: { section 
 
   let content;
   switch (section) {
+    case 'ownership-test':
+      content = <OwnershipQuestions />
+      break;
+    case 'control-and-ops-test':
+      content = <ControlAndOpsQuestions />
+      break;
     case 'ownership':
       content = <Ownership />;
       break;

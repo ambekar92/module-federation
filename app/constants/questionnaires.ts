@@ -1,5 +1,9 @@
 import { QUESTIONNAIRE_ROUTE } from './routes'
 
+// Grid Routes
+export const OWNER_AND_MANAGEMENT = QUESTIONNAIRE_ROUTE + '/47/owner-and-management';
+export const CONTROL_AND_OPERATIONS_ROUTE = QUESTIONNAIRE_ROUTE + '/48/control-and-operation'
+
 // Individual Questions
 export const CORE_FEDERAL_RELATIONSHIPS = QUESTIONNAIRE_ROUTE + '/16/core-federal-relationships';
 export const PROGRAM_ELIGIBILITY = QUESTIONNAIRE_ROUTE + '/9/core-program-eligibility';

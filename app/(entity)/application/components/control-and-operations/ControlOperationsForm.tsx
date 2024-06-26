@@ -76,7 +76,6 @@ const ControlOperationsForm = () => {
                 className="height-7 radius-lg maxw-full"
                 value={field.value as Prefix || ''}
                 id='prefix' name='prefix'
-
               >
                 <option value=''>--</option>
                 {Object.values(Prefix).map((prefix, idx) => <option
@@ -97,7 +96,8 @@ const ControlOperationsForm = () => {
                 id='firstName'
                 name='firstName'
                 type='text'
-                onChange={field.onChange}
+                onChange={field.onChange} 
+                validationStatus = { field.value ? (!errors.firstName?.message ? 'success' : 'error'): (errors.firstName?.message ? 'error' : undefined) }  
               />}
             />
             <ErrorMessage>{errors.firstName?.message}</ErrorMessage>
@@ -132,6 +132,7 @@ const ControlOperationsForm = () => {
                 name='lastName'
                 type='text'
                 onChange={field.onChange}
+                validationStatus = { field.value ? (!errors.lastName?.message ? 'success' : 'error'): (errors.lastName?.message ? 'error' : undefined) }
               />}
             />
             <ErrorMessage>{errors.lastName?.message}</ErrorMessage>
@@ -146,7 +147,6 @@ const ControlOperationsForm = () => {
                 className="height-7 radius-lg maxw-full"
                 value={field.value as Suffix || ''}
                 id='suffix' name='suffix'
-
               >
                 <option value=''>--</option>
                 {Object.values(Suffix).map((suffix, idx) => <option
@@ -171,6 +171,7 @@ const ControlOperationsForm = () => {
               name='emailAddress'
               type='text'
               onChange={field.onChange}
+              validationStatus = { field.value ? (!errors.emailAddress?.message ? 'success' : 'error'): (errors.emailAddress?.message ? 'error' : undefined) }
             />}
           />
           <ErrorMessage>{errors.emailAddress?.message}</ErrorMessage>
@@ -188,6 +189,7 @@ const ControlOperationsForm = () => {
               name='position'
               type='text'
               onChange={field.onChange}
+              validationStatus = { field.value ? (!errors.position?.message ? 'success' : 'error'): (errors.position?.message ? 'error' : undefined) }
             />}
           />
           <ErrorMessage>{errors.position?.message}</ErrorMessage>
@@ -204,7 +206,7 @@ const ControlOperationsForm = () => {
               className="height-7 radius-lg maxw-full"
               value={field.value as PrincipalType || ''}
               id='principalType' name='principalType'
-
+              validationStatus = { field.value ? (!errors.principalType?.message ? 'success' : 'error'): (errors.principalType?.message ? 'error' : undefined) }
             >
               <option value=''>--</option>
               {Object.values(PrincipalType).map((type, idx) => <option

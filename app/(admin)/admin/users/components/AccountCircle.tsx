@@ -8,10 +8,13 @@ interface InitialsCircleProps {
 const InitialsCircle: React.FC<InitialsCircleProps> = ({
   name,
 }) => {
-  const initials = name
-    .split(' ')
-    .map(part => part.charAt(0).toUpperCase())
-    .join('');
+  const initials = name.split(' ').length > 1
+    ? name
+      .split(' ')
+      .filter(part => part !== '')
+      .map(part => part.charAt(0).toUpperCase())
+      .join('')
+    : name.charAt(0).toUpperCase();
 
   return (
     <div

@@ -48,7 +48,8 @@ const OrganizationForm = ({handleAddOwner, editedItem}: Props) => {
                             value={field.value}
                             name={'orgName'}
                             onChange={field.onChange}
-                            className='maxw-full' type='text' id='last_name' placeholder='--' />
+                            className='maxw-full' type='text' id='last_name' placeholder='--' 
+                            validationStatus = { field.value ? (!methods.formState.errors?.orgName?.message ? 'success' : 'error'): (methods.formState.errors?.orgName?.message ? 'error' : undefined) } />
                     }
                 />
                 <ErrorMessage>{methods.formState.errors?.orgName?.message}</ErrorMessage>

@@ -74,7 +74,7 @@ const Navigation = () => {
       case '/support':
         setSelectedNameId('Support')
         break
-      case '/apply':
+      case '/should-i-apply/ownership':
         setSelectedNameId('Should I Apply?')
         break
       case '/application':
@@ -179,7 +179,7 @@ const Navigation = () => {
 
   const unAuthenticatedNavBar = [
     { id: 'Home', url: '/' },
-    { id: 'Should I Apply?', url: '/' },
+    { id: 'Should I Apply?', url: '/should-i-apply/ownership' },
     { id: 'Application Prep', url: '/' },
     { id: 'HUBZone Calculator', url: '/' },
   ]

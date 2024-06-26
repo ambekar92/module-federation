@@ -1,1 +1,6 @@
-{}
+{
+  "/(entity)/application/[section]/page": "app/(entity)/application/[section]/page.js",
+  "/api/auth/csrf": "app/api/auth/csrf.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/(entity)/claim-your-business/page": "app/(entity)/claim-your-business/page.js"
+}

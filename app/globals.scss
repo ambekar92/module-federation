@@ -24,6 +24,7 @@ $line-height-tight-px: 1.35;
 	.grid-container-widescreen {
 		flex-grow: 1;
 		width: 100%;
+    max-width: 100%;
 	}
 }
 

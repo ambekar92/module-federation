@@ -10,6 +10,7 @@ import { CmbResponseType } from '../../utils/types'
 interface ConfirmModalProps {
   open: boolean;
   handleClose: () => void;
+	handleOpen: () => void;
   business: CmbResponseType;
   setErrorMsg: (msg: string) => void;
 	setPostSuccessful: (success: boolean) => void;
@@ -30,22 +31,25 @@ const boxStyles = {
   padding: '1rem 2rem'
 }
 
-const ConfirmModal: React.FC<ConfirmModalProps> = ({ business, open, handleClose, setErrorMsg, setPostSuccessful }) => {
+const ConfirmModal: React.FC<ConfirmModalProps> = ({ business, open, handleClose, handleOpen, setErrorMsg, setPostSuccessful }) => {
   const session = useSession();
   const user_id = session?.data?.user_id;
 
   const handlePostRequest = async () => {
     try {
-      const postData = {
+      const postData = [{
         owner_user_id: user_id,
         sam_entity_id: business.sam_entity.sam_entity_id
-      };
+      }];
 
       await fetcherPOST(`${ENTITY_ROUTE}`, postData);
       setPostSuccessful(true);
+      handleClose();
     } catch (error: any) {
       setErrorMsg('network error');
-      setPostSuccessful(true); // temp fix
+      setPostSuccessful(false); // temp fix
+      handleOpen();
+      return;
     }
   }
 

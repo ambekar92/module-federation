@@ -16,3 +16,5 @@ export const DOCUMENT_REQUIRED_ROUTE = API_ROUTE + '/document-required-questions
 export const FIRM_APPLICATIONS_ROUTE = API_ROUTE + '/application';
 export const OKTA_POST_LOGIN_ROUTE = API_ROUTE + '/okta-post-login';
 export const ADMIN_BANNER_ROUTE = process.env.NEXT_PUBLIC_ADMIN_FEATURE_ENABLED;
+export const CREATING_APPLICATION_ROUTE = API_ROUTE + '/creating-program-application';
+export const USER_ROUTE = API_ROUTE + '/users'

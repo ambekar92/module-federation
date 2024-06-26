@@ -26,7 +26,7 @@ export default function RootLayout({children, session}: RootLayoutProps) {
             <Navbar />
             <UserSessionModal />
             <div className="grid-container-widescreen display-flex">
-              <main className="margin-y-205 flex-fill display-flex flex-column">{children}</main>
+              <main className="flex-fill display-flex flex-column">{children}</main>
             </div>
             <Footer />
           </div>

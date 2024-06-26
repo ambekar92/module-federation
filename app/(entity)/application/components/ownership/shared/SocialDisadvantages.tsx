@@ -37,7 +37,8 @@ const SocialDisadvantages = () => {
                   minHeight: '2.45rem',
                   height: '56px',
                   outline: state.isFocused ? '3px solid #0f73ff' : '',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  borderColor:`${ (field.value.length !== 0) ? (!error?.message ? '#00a91c': '#b50909'): (error?.message ? '#b50909' : undefined) }`
                 })
               }}
               isOptionDisabled={(option) =>
