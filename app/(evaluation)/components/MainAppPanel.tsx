@@ -1,10 +1,28 @@
-import React, { useState, useEffect } from 'react'
-import MenuData from './utils/menuData.json'
-import { Link } from '@trussworks/react-uswds'
+'use client'
+import React from 'react'
+import { FIRM_EVALUATIONS_ROUTE } from '@/app/constants/routes'
+import { fetcherPOST } from '@/app/services/fetcher'
 
-function MainAppPanel() {
+interface IMainAppPanel {
+  application_id: string
+}
+
+function MainAppPanel({ application_id }: IMainAppPanel) {
+  const handlePostRequest = async () => {
+    try {
+      const postData = {
+        application_id: parseInt(application_id),
+      }
+
+      await fetcherPOST(`${FIRM_EVALUATIONS_ROUTE}`, postData)
+    } catch (error: any) {
+      console.error('Network Error: ', error)
+      return
+    }
+  }
+
   return (
-    <div className='grid-container'>
+    <div className="grid-container">
       <li className="usa-card tablet-lg:grid-col-6 widescreen:grid-col-4">
         <div className="usa-card__container">
           <div className="usa-card__header">
@@ -23,7 +41,7 @@ function MainAppPanel() {
           </div>
           <div className="margin-top-7">
             <div className="usa-card__footer">
-              <a href="#" className="usa-button">
+              <a href="#" className="usa-button" onClick={handlePostRequest}>
                 Start Review
               </a>
             </div>

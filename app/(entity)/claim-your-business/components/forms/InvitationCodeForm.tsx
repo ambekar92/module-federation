@@ -13,6 +13,8 @@ import { useSession } from 'next-auth/react'
 import { InvitationCodeFormSchema } from '../../utils/schemas'
 import { InvitationCodeInputType } from '../../utils/types'
 import CustomHeader from '../../../../shared/components/forms/CustomHeader'
+import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/routes'
+import { axiosInstance } from '@/app/services/fetcher'
 
 interface invitationCodeFormProps {
   submitForm: () => void
@@ -47,15 +49,16 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
     return text.replace(/[^a-zA-Z0-9]/g, '')
   }
 
-  const onSubmit = () => {
-    if (validInvitationCode === getValues('invitationCode')) {
+  const onSubmit = async () => {
+    const response = await axiosInstance.post(ACCEPT_INVITATION_ROUTE, {'invitation_code': getValues('invitationCode')});
+    if (response.status === 200 ) {
       reset({
         invitationCode: '',
       })
-      submitForm()
-      return
+      submitForm();
+    } else {
+      setShowAlert(true)
     }
-    setShowAlert(true)
   }
 
   const onClear = () => {

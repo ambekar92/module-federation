@@ -104,4 +104,11 @@ export const supervisorColumns = [
 
 ]
 
+export interface IProductivity {
+    completed_tasks_current_month: number,
+    completed_tasks_current_quarter: number,
+    completed_tasks_current_fiscal_year: number,
+    average_processing_time_seconds: number,
+}
+
 export const PAGE_SIZE = 20;

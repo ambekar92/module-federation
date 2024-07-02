@@ -1,9 +1,9 @@
 import { CharacterCount, Label } from '@trussworks/react-uswds';
-import { QaInputProps } from '../utils/types';
+import { QaInputProps } from './types';
 
 export const QaTextarea = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => (
   <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-full' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+    <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
       <span>{question.title}</span>
     </Label>
 

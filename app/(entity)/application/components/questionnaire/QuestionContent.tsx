@@ -6,7 +6,7 @@ interface MainContentProps {
 	children?: React.JSX.Element;
   currentSection?: { sectionName: string; questions: QuestionType[] };
 }
-
+// Currently Only being used for the Sign.tsx -KJ (6/29/24)
 const QuestionContent = ({ currentSection, sectionName, children }: MainContentProps) => {
   let content = <></>
   if(currentSection) {

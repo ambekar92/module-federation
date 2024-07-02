@@ -7,7 +7,7 @@ interface InputHelperTextProps {
 
 const InputHelperText: React.FC<InputHelperTextProps> = ({ hasError, text }) => (
   <div className={'margin-top-1 usa-input-helper-text'}>
-    <span className={hasError ? 'text-secondary' : ''}>
+    <span className={hasError ? 'text-secondary-dark' : ''}>
       {text}
     </span>
   </div>
@@ -15,5 +15,4 @@ const InputHelperText: React.FC<InputHelperTextProps> = ({ hasError, text }) => 
 
 export default InputHelperText
 
-// For text inputs pair with
-// className={errors[key] ? 'icon' : ''} as seen in app/(entity)/claim-your-business/components/forms/CMBInputs.tsx
+// Usage can be found in app/(entity)/claim-your-business/components/forms/CMBInputs.tsx

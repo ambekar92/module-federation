@@ -50,7 +50,21 @@ export const fetcherGET = async <T>(url: string): Promise<T> => {
 // POST fetcher
 export const fetcherPOST = async <T>(url: string, param: any): Promise<T> => {
   try {
-    const response = await axiosInstance.post<ApiResponse<T>>(url, param);
+    const response = await axiosInstance.post<T>(url, param);
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`HTTP error, status = ${response.status}`);
+    }
+    return response.data;
+  } catch (error) {
+    handleResponseError(error);
+    throw error;
+  }
+};
+
+// POST fetcher
+export const fetcherPUT = async <T>(url: string, param: any): Promise<T> => {
+  try {
+    const response = await axiosInstance.put<ApiResponse<T>>(url, param);
     if (response.status < 200 || response.status >= 300) {
       throw new Error(`HTTP error, status = ${response.status}`);
     }

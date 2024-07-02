@@ -9,7 +9,6 @@ import {
   Button,
   Label,
 } from '@trussworks/react-uswds'
-import Link from 'next/link'
 
 interface InviteModalProps {
   open: boolean
@@ -51,13 +50,13 @@ const InviteModal: React.FC<InviteModalProps> = ({
               >
                 Cancel
               </Button>
-              <Link
-                href={'/application/ownership'}
+              <Button
+                type='button'
                 className="float-right usa-button"
-                onClick={handleSend}
+                onClick={() => handleSend()}
               >
                 Send Invite
-              </Link>
+              </Button>
             </ButtonGroup>
           </ModalFooter>
         </Modal>

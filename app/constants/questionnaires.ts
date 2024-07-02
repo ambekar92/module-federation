@@ -1,4 +1,7 @@
-import { QUESTIONNAIRE_ROUTE } from './routes'
+import { API_ROUTE, QUESTIONNAIRE_ROUTE } from './routes'
+
+// A User's Questionnaires
+export const QUESTIONNAIRE_LIST_ROUTE = API_ROUTE + '/questionnaire-list'
 
 // Grid Routes
 export const OWNER_AND_MANAGEMENT = QUESTIONNAIRE_ROUTE + '/47/owner-and-management';
@@ -16,7 +19,7 @@ export const FEDERAL_RELATIONSHIP_ROUTE = QUESTIONNAIRE_ROUTE + '/16/core-federa
 export const BUSINESS_RELATIONSHIP_ROUTE = QUESTIONNAIRE_ROUTE + '/20/core-business-relationships';
 
 // 8(a)
-export const EIGHTA_SPECIFIC_ROUTE = QUESTIONNAIRE_ROUTE + '/1/eight-a-specific	';
+export const EIGHTA_SPECIFIC_ROUTE = QUESTIONNAIRE_ROUTE + '/1/eight-a-specific';
 export const EIGHTA_PRIOR_INVOLVEMENT_ROUTE = QUESTIONNAIRE_ROUTE + '/22/eight-a-prior-familial-involvement';
 export const EIGHTA_CHARACTER_ROUTE = QUESTIONNAIRE_ROUTE + '/23/eight-a-character';
 export const EIGHTA_SOCIAL_DISADVANTAGE_ROUTE = QUESTIONNAIRE_ROUTE + '/25/eight-a-social-disadvantage';

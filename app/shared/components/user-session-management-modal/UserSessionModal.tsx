@@ -11,7 +11,7 @@ import { signOut } from 'next-auth/react'
 import { useIdleTimer } from 'react-idle-timer'
 import styles from './UserSessionModal.module.scss'
 
-const timeout = 30 * 60_000
+const timeout = 60 * 60_000
 const promptBeforeIdle = 5 * 60_000
 
 interface UserSessionProps {

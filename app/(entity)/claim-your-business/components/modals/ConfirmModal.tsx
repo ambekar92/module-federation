@@ -63,14 +63,16 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ business, open, handleClose
             </Button>
           </div>
           <div>
-            <h2 className='margin-top-0'>Confirm Your Entity Structure</h2>
-            <p>
-              You are confirming that the structure of {business.sam_entity.legal_business_name} is an {business.sam_entity.entity_structure}
-            </p>
-            <p>
-						If this designation is incorrect, please update your information on SAM.gov immediately.
-            </p>
+            <h2 className='margin-top-0'>Confirm your Business and Entity Structure</h2>
+            <ul className='padding-left-2'>
+              <li>
+								You are confirming that the structure of <strong>{business.sam_entity.legal_business_name}</strong> is a <strong>{business.sam_entity_structure}</strong>
+              </li>
+            </ul>
 
+            <p>
+							If this designation is incorrect, please update your information on SAM.gov immediately.
+            </p>
             <ButtonGroup>
               <Button type="button" onClick={handlePostRequest}>
 								Continue

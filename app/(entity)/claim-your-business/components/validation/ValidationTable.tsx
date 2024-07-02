@@ -28,12 +28,6 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => (
           <th scope="row">Business UEI</th>
           <td>{profiles.sam_entity.uei}</td>
         </tr>
-
-        <tr>
-          <th scope="row">NAICS Code</th>
-          <td>{profiles.sam_entity.naics_code_string}</td>
-        </tr>
-
         <tr>
           <th scope="row">Business Address</th>
           <td>{`${profiles.sam_entity.physical_address_1}, ${profiles.sam_entity.physical_address_2},`}
@@ -44,8 +38,16 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => (
           <td>{`${profiles.sam_entity.govt_bus_poc_first_name} ${profiles.sam_entity.govt_bus_poc_last_name}`}</td>
         </tr>
         <tr>
+          <th scope="row">Business Type</th>
+          <td>{profiles.sam_business_type}</td>
+        </tr>
+        <tr>
           <th scope="row">Entity Structure</th>
-          <td>{profiles.sam_entity.entity_structure}</td>
+          <td>{profiles.sam_entity_structure}</td>
+        </tr>
+        <tr>
+          <th scope="row">NAICS Code</th>
+          <td>{profiles.sam_entity.naics_code_string}</td>
         </tr>
       </tbody>
     </div>

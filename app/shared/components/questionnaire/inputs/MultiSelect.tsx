@@ -22,7 +22,7 @@ export const MultiSelectInput = ({
   isSubQuestion
 }: MultiSelectInputComponentProps) => (
   <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-full' htmlFor={inputId}>{label}</Label>
+    <Label className='maxw-full text-bold' htmlFor={inputId}>{label}</Label>
     <Select
       data-testid="multi-select-input"
       styles={{

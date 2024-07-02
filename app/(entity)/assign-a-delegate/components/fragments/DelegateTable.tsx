@@ -1,15 +1,11 @@
+import { Grid } from '@trussworks/react-uswds'
 import React from 'react'
 import { UseFormReset, UseFormSetValue } from 'react-hook-form'
-import { Grid } from '@trussworks/react-uswds'
 import {
-  deleteDelegate,
-  editDelegate,
-  selectForm,
-  setEditingDelegate,
-  updateInputKey,
+  selectForm
 } from '../store/formSlice'
-import { useFormDispatch, useFormSelector } from '../store/hooks'
-import { FormDelegateType, DelegateFormInputType } from '../utils/types'
+import { useFormSelector } from '../store/hooks'
+import { DelegateFormInputType } from '../utils/types'
 import styles from './DelegateForm.module.scss'
 
 type DelegateTableProps = {
@@ -25,41 +21,7 @@ const DelegateTable: React.FC<DelegateTableProps> = ({
   reset,
   displayForm,
 }) => {
-  const dispatch = useFormDispatch()
-  const { delegates, editingDelegate } = useFormSelector(selectForm)
-
-  const handleEditDelegate = (index: number) => {
-    const delegate = delegates[index]
-    Object.entries(delegate).forEach(([key, value]) => {
-      if (key !== 'id') {
-        setValue(
-          key as keyof FormDelegateType,
-          typeof value !== 'string' ? '' : value,
-        )
-      }
-    })
-    dispatch(editDelegate(index))
-    displayForm()
-  }
-
-  const handleDeleteDelegate = (index: number) => {
-    if (
-      editingDelegate !== null &&
-      delegates[index].id === editingDelegate.id
-    ) {
-      // The owner being deleted is currently being edited, so reset the form
-      reset({
-        firstName: '',
-        lastName: '',
-        email: '',
-      })
-      dispatch(setEditingDelegate(null))
-      dispatch(updateInputKey())
-    }
-
-    dispatch(deleteDelegate(index))
-    displayForm()
-  }
+  const { delegates } = useFormSelector(selectForm)
 
   return (
     <Grid row className="width-full">
@@ -74,7 +36,6 @@ const DelegateTable: React.FC<DelegateTableProps> = ({
             </tr>
           </thead>
           <tbody>
-
             {delegates.map((delegate, index) => (
               <tr key={index}>
                 <td>{delegate.firstName}</td>

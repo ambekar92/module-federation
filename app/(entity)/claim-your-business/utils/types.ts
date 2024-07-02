@@ -83,8 +83,6 @@ export type CmbResponseType = {
   };
 };
 
-export type CmbResponse = CmbResponseType | {message: string};
-
 export type UnclaimedEntityType = {
   legal_business_name: string,
   uei: string

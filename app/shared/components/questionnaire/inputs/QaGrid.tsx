@@ -1,4 +1,5 @@
-import { Question } from '@/app/services/qa-fetcher';
+
+import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid, Label, Select as UsSelect, TextInput, Table, Icon, CharacterCount, DateRangePicker } from '@trussworks/react-uswds';
 import { useState } from 'react';
 import Select from 'react-select';
@@ -100,7 +101,7 @@ const QaGrid = ({ question }: { question: Question }) => {
       case 'number':
         return (
           <div className='usa-form-group'>
-            <Label className='maxw-full' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
+            <Label className='maxw-full text-bold' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
               {gridQuestion.title}
             </Label>
             <TextInput
@@ -113,7 +114,7 @@ const QaGrid = ({ question }: { question: Question }) => {
       case 'boolean':
         return (
           <div className='usa-form-group'>
-            <Label className='maxw-full' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
+            <Label className='maxw-full text-bold' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
               {gridQuestion.title}
             </Label>
             <div className="usa-radio display-flex gap-1">
@@ -128,7 +129,7 @@ const QaGrid = ({ question }: { question: Question }) => {
       case 'select':
         return (
           <div>
-            <Label className='maxw-full' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
+            <Label className='maxw-full text-bold' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
               {gridQuestion.title}
             </Label>
             <UsSelect
@@ -152,7 +153,7 @@ const QaGrid = ({ question }: { question: Question }) => {
       case 'multi_select':
         return (
           <div>
-            <Label className='maxw-full' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
+            <Label className='maxw-full text-bold' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
               {gridQuestion.title}
             </Label>
             <Select
@@ -181,7 +182,7 @@ const QaGrid = ({ question }: { question: Question }) => {
       case 'textarea':
         return (
           <div>
-            <Label className='maxw-full' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
+            <Label className='maxw-full text-bold' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
               <span>{gridQuestion.title}</span>
             </Label>
             <CharacterCount
@@ -199,7 +200,7 @@ const QaGrid = ({ question }: { question: Question }) => {
       case 'date':
         return (
           <div>
-            <Label className='maxw-full' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
+            <Label className='maxw-full text-bold' requiredMarker={gridQuestion.answer_required_flag} htmlFor={inputId}>
               <span>{gridQuestion.title}</span>
             </Label>
             <DateRangePicker

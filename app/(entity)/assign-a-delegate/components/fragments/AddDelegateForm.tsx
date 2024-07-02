@@ -1,28 +1,24 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
+  Alert,
+  ButtonGroup,
   Grid,
   GridContainer,
   Label,
-  Button,
-  ButtonGroup,
-  Alert,
-  Radio,
   Link,
+  Radio
 } from '@trussworks/react-uswds'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useFormSelector } from '../store/hooks'
-import { selectForm } from '../store/formSlice'
-import DelegateFormInputs from './DelegateFormInputs'
 import { DelegateFormSchema } from '../utils/schemas'
 import { DelegateFormInputType } from '../utils/types'
+import DelegateFormInputs from './DelegateFormInputs'
 
 function AddDelegateForm() {
-  const { delegates } = useFormSelector(selectForm)
   const [option, setOption] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  const steps = ['Assign Option', 'Add Delegate', 'Invite Modal']
+  const steps = ['Add Delegate', 'Invite Modal']
 
   const closeModal = () => {
     setShowModal(false)
@@ -89,8 +85,8 @@ function AddDelegateForm() {
             heading="Note"
             slim
           >
-            {/* The delegate must use the email address you are providing below to
-            access your application */}
+            The delegate must use the email address you are providing below to
+            access your application
           </Alert>
         </Grid>
       </Grid>

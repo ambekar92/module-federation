@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Button,
   ButtonGroup,
@@ -31,6 +31,12 @@ import {
 } from '../store/formSlice'
 import DelegateTable from './DelegateTable'
 import InviteModal from './InviteModal'
+import { INVITATION_ROUTE } from '@/app/constants/routes'
+import { fetcherPOST } from '@/app/services/fetcher'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
+import getApplicationId from '@/app/shared/utility/getApplicationId'
 
 interface FormInputInterface {
   showModal: boolean
@@ -72,6 +78,15 @@ const DelegateFormInputs = ({
   const dispatch = useFormDispatch()
   const { delegates } = useFormSelector(selectForm)
   const [showForm, setShowForm] = useState(true)
+  const [inviteSent, setInviteSent] = useState(false)
+  const { data: session, status } = useSession();
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user_id) {
+      setUserId(session.user_id);
+    }
+  }, [session, status]);
 
   const onSubmit: SubmitHandler<DelegateFormInputType> = async (data) => {
     //Need to update with POST Kafka Message when API endpoint is established
@@ -103,10 +118,48 @@ const DelegateFormInputs = ({
     }
   }
 
-  const handleSend = () => {
-    closeModal()
-    handleNext()
-  }
+  const handleSend = async () => {
+    handleNext();
+
+    if (!userId) {
+      alert('You must be signed in to continue.');
+      return;
+    }
+
+    try {
+      const entityData = await getEntityByUserId(userId);
+      if (!entityData || entityData.length === 0) {
+        throw new Error('Entity data not found');
+      }
+
+      const applicationData = await getApplicationId(entityData[0].id);
+      if (!applicationData || applicationData.length === 0) {
+        throw new Error('Application data not found');
+      }
+
+      const postData = {
+        application_id: applicationData[0].id,
+        email: delegates[0].email,
+        entity_id: entityData[0].id,
+        application_role_id: 5,
+        first_name: delegates[0].firstName,
+        last_name: delegates[0].lastName
+      };
+
+      await fetcherPOST(INVITATION_ROUTE, postData);
+
+      // Uncomment below to see response
+      // const response = await fetcherPOST(INVITATION_ROUTE, postData);
+      // console.log('POST Response:', response);
+
+      closeModal();
+      setInviteSent(true);
+
+    } catch (error) {
+      console.error('Error in POST request:', error);
+      alert('An error has occurred.');
+    }
+  };
 
   const handleCancel = () => {
     closeModal()
@@ -177,7 +230,7 @@ const DelegateFormInputs = ({
           onSubmit={handleSubmit(onSubmit)}
           className={showForm ? 'width-full' : 'display-none'}
         >
-          <Grid row gap="lg" className="width-full" col={12}>
+          <Grid row className="width-full" col={12}>
             {fieldKeys.map((key) => (
               <Grid
                 key={key}
@@ -189,6 +242,7 @@ const DelegateFormInputs = ({
                     (key === 'email' && 12) ||
                     12,
                 }}
+                className={key === 'lastName' ? 'padding-left-2' : ''}
               >
                 <Label
                   htmlFor={`input-${key}`}
@@ -228,8 +282,8 @@ const DelegateFormInputs = ({
                     />
                   )}
                 />
-                <div className="usa-input-helper-text">
-                  <span className={errors[key] && 'error-message'}>
+                <div className="usa-input-helper-text margin-top-1">
+                  <span className={errors[key] && 'text-secondary-dark'}>
                     {delegateInputDetails[key].fieldHelper}
                   </span>
                 </div>
@@ -241,9 +295,12 @@ const DelegateFormInputs = ({
                   <Button type="submit" disabled={!isValid}>
                     {delegates.length > 0 ? 'Update' : 'Add'}
                   </Button>
-                  <Button type="button" unstyled onClick={handleClearOrCancel}>
+
+                  <div className='margin-left-2'>
+                    <Button type="button" unstyled onClick={handleClearOrCancel}>
                     Cancel
-                  </Button>
+                    </Button>
+                  </div>
                 </ButtonGroup>
               </div>
             </Grid>
@@ -251,7 +308,7 @@ const DelegateFormInputs = ({
         </form>
 
         {!showForm &&
-          <Grid row gap="lg" className="margin-right-2 width-full">
+          <Grid row className="margin-right-2 width-full">
             <DelegateTable
               setValue={setValue}
               reset={reset}
@@ -262,17 +319,29 @@ const DelegateFormInputs = ({
 
       </GridContainer>
 
-      <Grid row gap="lg" className="margin-top-2 flex-justify-end" col={12}>
+      <Grid row gap="sm" className="margin-y-2 flex-justify-end" col={12}>
         <hr className="width-full" />
         <ButtonGroup className="display-flex">
-          <Button
-            type="button"
-            onClick={handleNext}
-            className="display-flex"
-            disabled={delegates.length > 0 ? false : true}
-          >
-            Next
-          </Button>
+          {inviteSent
+            ? (
+              <Link
+                href={'/application/ownership'}
+                className="usa-button"
+              >
+								Next
+              </Link>
+            )
+            : (
+              <Button
+                type="button"
+                onClick={() => handleNext()}
+                className="display-flex"
+                disabled={delegates.length > 0 ? false : true}
+              >
+            		Continue
+              </Button>
+            )}
+
         </ButtonGroup>
       </Grid>
     </>

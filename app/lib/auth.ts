@@ -14,12 +14,15 @@ export const authConfig: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt: async ({ token, account }) => {
+    jwt: async ({ token, account, profile }) => {
       if (account && account.access_token) {
         token.accessToken = account.access_token;
       }
       if (token.csrfToken !== null) {
         token.csrfToken = generateCsrfToken()
+      }
+      if (profile && profile.sub) {
+        token.okta_id = profile.sub;
       }
       return token
     },
@@ -27,26 +30,45 @@ export const authConfig: NextAuthOptions = {
       if (typeof token.accessToken === 'string') {
         session.user.accessToken = token.accessToken;
       }
-      let userDetails: { data: IUserDetails } = { data: {} as IUserDetails };
       if (typeof token.csrfToken === 'string') {
-        session.csrfToken = token.csrfToken; // CSRF token is now part of the token object and persisted through JWT.
+        session.csrfToken = token.csrfToken;
       }
+      // Add the Okta ID to the session
+      if (typeof token.okta_id === 'string') {
+        session.user.okta_id = token.okta_id;
+      }
+
+      let userDetails: { data: IUserDetails } = { data: {} as IUserDetails };
+      const postData = {
+        user: {
+          name: session.user.name,
+          email: session.user.email,
+          okta_id: token.okta_id
+        },
+        expires: session.expires,
+        csrfToken: session.csrfToken
+      };
       try {
-        userDetails = await axios.post(OKTA_POST_LOGIN_ROUTE, {
-          ...session
-        });
-        token.role = userDetails?.data?.permissions?.[0]?.slug
+        userDetails = await axios.post(OKTA_POST_LOGIN_ROUTE, postData);
+        if (userDetails?.data?.permissions?.[0]?.slug) {
+          token.role = userDetails.data.permissions[0].slug;
+        }
         if (userDetails?.data?.user_id) {
           session.user.id = userDetails.data.user_id;
         }
-        // For testing purposes, can hardcode role
-        // token.role = Role.CONTRIBUTOR;
+        if (userDetails?.data?.okta_id && typeof userDetails.data.okta_id === 'string') {
+          session.user.okta_id = userDetails.data.okta_id;
+        }
       } catch (error) {
         console.error('Error making POST request:', error);
       }
-      // For testing purposes, can hardcode role
-      // userDetails.data.permissions[0].slug = Role.CONTRIBUTOR;
-      return {...session, ...userDetails.data}
+
+      const userSession = {...session, ...(userDetails.data || {})};
+      // FOR TESTING to ensure we are not spreading an undefined object
+      // console.log('Final Session Object:');
+      // console.log(JSON.stringify(userSession, null, 2));
+
+      return userSession;
     },
 
   },

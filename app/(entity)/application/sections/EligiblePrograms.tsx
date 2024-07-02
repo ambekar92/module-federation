@@ -9,6 +9,9 @@ import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import { fetcherPOST } from '@/app/services/fetcher';
 import { CREATING_APPLICATION_ROUTE } from '@/app/constants/routes';
+import { useSession } from 'next-auth/react';
+import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
+import getApplicationId from '@/app/shared/utility/getApplicationId';
 
 // Filters programs based on owner data
 const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
@@ -44,17 +47,42 @@ function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { data: session, status } = useSession();
+  const [userId, setUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user_id) {
+      setUserId(session.user_id);
+    }
+  }, [session, status]);
 
   const dispatch = useApplicationDispatch();
 
   const handlePostRequest = async (): Promise<void> => {
+    if (!userId) {
+      alert('You must be signed in to continue.');
+      return;
+    }
     try {
+      const entityData = await getEntityByUserId(userId);
+      if (!entityData || entityData.length === 0) {
+        throw new Error('Entity data not found');
+      }
+      const applicationData = await getApplicationId(entityData[0].id);
+      if (!applicationData || applicationData.length === 0) {
+        throw new Error('Application data not found');
+      }
+
       const postData = {
-        application_id: Math.floor(Math.random() * 10),
-        program_id: Math.floor(Math.random() * 10)
+        application_id: applicationData[0].id,
+        programs: selectedPrograms.map(program => program.id)
+        // program_id: selectedPrograms[Math.ceil(Math.random() * selectedPrograms.length)].id
       };
 
       await fetcherPOST(`${CREATING_APPLICATION_ROUTE}`, postData);
+      // Uncomment below to see response
+      // const response = await fetcherPOST(`${CREATING_APPLICATION_ROUTE}`, postData);
+      // console.log('POST Response:', response);
     } catch (error: any) {
       console.error('POST request error:', error);
       throw error;

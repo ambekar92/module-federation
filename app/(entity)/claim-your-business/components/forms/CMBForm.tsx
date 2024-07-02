@@ -6,7 +6,7 @@ import {
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ClaimBusinessSchema } from '../../utils/schemas';
-import { ClaimBusinessInputs, CmbResponse } from '../../utils/types';
+import { ClaimBusinessInputs, CmbResponseType } from '../../utils/types';
 import CMBFormHeader from '../layout/CMBFormHeader';
 import CMBFormSummaryBoxes from '../layout/CMBFormSummaryBoxes';
 import ErrorModal from '../modals/ErrorModal';
@@ -14,7 +14,7 @@ import ClaimInputs from './CMBInputs';
 
 interface ClaimBusinessFormProps {
   // eslint-disable-next-line no-unused-vars
-  claimFormComplete: (responseData: CmbResponse) => void;
+  claimFormComplete: (responseData: CmbResponseType) => void;
 }
 
 function ClaimBusinessForm({ claimFormComplete }: ClaimBusinessFormProps) {

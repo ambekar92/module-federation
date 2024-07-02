@@ -10,13 +10,14 @@ declare module 'next-auth' {
       image: string | undefined,
 			accessToken?: string;
 			id: number;
-    },
-
+			okta_id?: string;
+    }
+		expires: string
   }
-
 }
 
 export interface IUserDetails  {
+	okta_id: boolean;
   user_id: number,
     permissions: {
       id: number,

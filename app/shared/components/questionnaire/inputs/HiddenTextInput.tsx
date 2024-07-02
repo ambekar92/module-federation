@@ -1,13 +1,13 @@
 'use client'
 import { Label, TextInput } from '@trussworks/react-uswds';
-import { QaInputProps } from '../utils/types';
+import { QaInputProps } from './types';
 import { useState } from 'react';
 
 export const HiddenTextInput = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
         <span>{question.title}</span>
       </Label>
       <div className='display-flex flex-column' style={{maxWidth: '480px'}}>

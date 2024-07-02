@@ -18,7 +18,8 @@ interface ApplicationState {
 	operators: Operator[],
 	showControlOperationsForm: boolean,
 	contributors: Contributor[],
-  currentOperatorEditIndex: number | null
+  currentOperatorEditIndex: number | null,
+	totalQuestionnaires: number,
 }
 
 const initialState: ApplicationState = {
@@ -35,7 +36,8 @@ const initialState: ApplicationState = {
   owners: [],
   operators: [],
   showControlOperationsForm: false,
-  currentOperatorEditIndex: null
+  currentOperatorEditIndex: null,
+  totalQuestionnaires: 0
 }
 
 const applicationSlice = createSlice({
@@ -80,6 +82,9 @@ const applicationSlice = createSlice({
     },
     setCurrentOperatorEditIndex(state, action: PayloadAction<number | null>) {
       state.currentOperatorEditIndex = action.payload;
+    },
+    setTotalQuestionnaires(state, action: PayloadAction<number>) {
+      state.totalQuestionnaires = action.payload
     }
   }
 })
@@ -97,7 +102,8 @@ export const {
   setOwners,
   setShowControlOperationsForm,
   setOperators,
-  setCurrentOperatorEditIndex
+  setCurrentOperatorEditIndex,
+  setTotalQuestionnaires
 } = applicationSlice.actions;
 
 export default applicationSlice.reducer;

@@ -32,6 +32,22 @@ type Rule = {
   sub_question?: Question;
 };
 
+type AnswerValue = {
+  answer: string | number | boolean | string[] | null;
+};
+
+export type Answer = {
+  id: number;
+  profile_answer_flag: boolean;
+  reminder_flag: boolean;
+  application_contributor_id: number;
+  value: AnswerValue;
+  question_id: number;
+  answer_by: number | null;
+};
+
+export type QaQuestionsType = Question[];
+
 // From the API *subject to change again lol* -KJ
 export type Question = {
   id: number;
@@ -49,24 +65,6 @@ export type Question = {
   rules: Rule[];
   grid_questions?: Question[];
 };
-
-// Not being used yet
-type AnswerValue = {
-  answer: string | number | boolean | null;
-};
-
-type Answer = {
-  id: number;
-  profile_answer_flag: boolean;
-  reminder_flag: boolean;
-  application_contributor_id: number;
-  value: AnswerValue;
-  question_id: number;
-  answer_by: number | null;
-};
-
-export type QaQuestionsType = Question[];
-
 export const qaFetcherGET = async (url: string): Promise<QaQuestionsType> => {
   const response = await axiosInstance.get<QaQuestionsType>(url);
   if (response.status >= 200 && response.status < 300) {

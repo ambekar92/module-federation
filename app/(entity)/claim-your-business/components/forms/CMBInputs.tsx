@@ -21,12 +21,12 @@ import useSWR from 'swr';
 import {
   claimBusinessInputDetails
 } from '../../utils/helpers';
-import { ClaimBusinessInputs, CmbResponse } from '../../utils/types';
+import { ClaimBusinessInputs, CmbResponseType } from '../../utils/types';
 import Styles from '../ClaimMyBusiness.module.scss';
 import InputHelperText from '@/app/shared/components/inputs/InputHelperText';
 
 interface IClaimInputs {
-  claimFormComplete: (responseData: CmbResponse) => void;
+  claimFormComplete: (responseData: CmbResponseType) => void;
   handleOpen: () => void;
   control: Control<ClaimBusinessInputs>;
   errors: FieldErrors<ClaimBusinessInputs>;
@@ -72,7 +72,7 @@ const ClaimInputs = ({
 
   const { data: responseData, error: responseError } = useSWR(
     () => (shouldFetchEntity ? getEntityData(queryParams.uei, queryParams.tin, queryParams.cageCode, queryParams.bankAccountNumber) : null),
-		fetcherGET<CmbResponse>
+		fetcherGET<CmbResponseType>
   );
 
   useEffect(() => {
@@ -85,6 +85,8 @@ const ClaimInputs = ({
 
     if(responseData) {
       setShouldFetchEntity(false);
+
+      // Comment lines 90-107 for testing if all businesses are claimed
       if(responseData.message === 'No matching record found') {
         setError('serverError', { type: 'submit', message: 'not found' });
         handleOpen();
@@ -103,6 +105,9 @@ const ClaimInputs = ({
         handleOpen();
         return;
       }
+
+      // Uncomment line 110 to test
+      // claimFormComplete(responseData);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [responseData, responseError]);

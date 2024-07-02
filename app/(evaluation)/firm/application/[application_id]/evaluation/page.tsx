@@ -3,7 +3,11 @@ import LeftPanel from '../../../../components/LeftPanel'
 import HeaderPanel from '../../../../components/HeaderPanel'
 import MainAppPanel from '../../../../components/MainAppPanel'
 
-const EvaluationPage = () => {
+const EvaluationPage = async ({
+  params: { application_id },
+}: {
+  params: { application_id: string }
+}) => {
   return (
     <>
       <div className="grid-row bg-gray-5">
@@ -13,7 +17,7 @@ const EvaluationPage = () => {
 
         <div className="grid-col-9">
           <HeaderPanel />
-          <MainAppPanel />
+          <MainAppPanel application_id={application_id} />
         </div>
       </div>
     </>

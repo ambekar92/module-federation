@@ -8,23 +8,39 @@ import {
   Button,
 } from '@trussworks/react-uswds'
 import styles from './DeleteWithdrawConfirmationModal.module.scss'
+import { fetcherPUT } from '@/app/services/fetcher'
+import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
 
 interface ModalProps {
   confirmationType: string | undefined
-  openConfirmationModal: boolean
+  openConfirmationModal: boolean,
+	entityId: number | undefined
 }
 
 const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
   confirmationType,
   openConfirmationModal,
+  entityId = 1
 }) => {
   const [openModal, setOpenModal] = useState<boolean>(
     openConfirmationModal !== undefined ? true : false,
   )
 
-  const handleBtnClick = () => {
+  const handleBtnClick = async () => {
+    try {
+      const putData = {
+        entity_id: entityId,
+        application_id: 1,
+        state_action: confirmationType
+      };
+
+      await fetcherPUT(`${UPDATE_APPLICATION_STATE}`, putData);
+      alert(`Success! Your application has been ${confirmationType}.`)
+    } catch (error: any) {
+			 alert('There was an error processing your request.');
+      return;
+    }
     setOpenModal(false)
-    alert('Success! Your application has been deleted.')
   }
 
   const deleteModalBody = (

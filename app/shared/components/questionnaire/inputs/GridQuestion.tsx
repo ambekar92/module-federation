@@ -1,4 +1,5 @@
-import { Question } from '@/app/services/qa-fetcher';
+
+import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Label, Table, TextInput } from '@trussworks/react-uswds';
 import { useState } from 'react';
 
@@ -46,7 +47,7 @@ export const GridQuestion = ({ question }: { question: Question }) => {
       <div>
         {question.grid_questions?.map(gridQuestion => (
           <div key={gridQuestion.id}>
-            <Label className='maxw-full' requiredMarker={gridQuestion.answer_required_flag} htmlFor={`input-${gridQuestion.id}`}>
+            <Label className='maxw-full text-bold' requiredMarker={gridQuestion.answer_required_flag} htmlFor={`input-${gridQuestion.id}`}>
               <span className='text-bold'>{gridQuestion.title}</span>
             </Label>
             <TextInput

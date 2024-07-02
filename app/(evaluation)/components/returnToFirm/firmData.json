@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "reason": "Highest Compensated",
+      "section": "Ownership & Management",
+      "status": "Created",
+      "action1": "Edit",
+      "action2": "x Delete"
+    },
+    {
+      "id": 2,
+      "reason": "Certificate of Business",
+      "section": "Ownership & Management",
+      "status": "Created",
+      "action1": "Edit",
+      "action2": "x Delete"
+    }
+  ]
+}

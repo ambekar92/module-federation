@@ -1,9 +1,9 @@
 import { Label } from '@trussworks/react-uswds';
-import { QaInputProps } from '../utils/types';
+import { QaInputProps } from './types';
 
 export const BooleanInput = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => (
   <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-full' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+    <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
       <span>{question.title}</span>
     </Label>
     <div className='usa-radio display-flex gap-1'>
@@ -11,9 +11,9 @@ export const BooleanInput = ({ question, inputId, handleChange, isSubQuestion }:
         className="usa-radio__input"
         id={`${inputId}-true`}
         type="radio"
-        value="true"
+        value="TRUE"
         name={question.name}
-        onChange={() => handleChange(question.name, 'TRUE')}
+        onChange={(e) => handleChange(e.target.value)}
       />
       <Label className="usa-radio__label" htmlFor={`${inputId}-true`}>
         Yes
@@ -22,9 +22,9 @@ export const BooleanInput = ({ question, inputId, handleChange, isSubQuestion }:
         className="usa-radio__input"
         id={`${inputId}-false`}
         type="radio"
-        value="false"
+        value="FALSE"
         name={question.name}
-        onChange={() => handleChange(question.name, 'FALSE')}
+        onChange={(e) => handleChange(e.target.value)}
       />
       <Label className="usa-radio__label margin-left-105" htmlFor={`${inputId}-false`}>
         No

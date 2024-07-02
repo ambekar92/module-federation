@@ -1,11 +1,11 @@
 import { Label, Select } from '@trussworks/react-uswds';
-import { QaInputProps } from '../utils/types';
+import { QaInputProps } from './types';
 
 export const SelectInput = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => (
   question.answer_choice && 'options' in question.answer_choice &&
   <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-full' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
-      <span>{question.title}</span>
+    <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      {question.title}
     </Label>
     <Select
       className='height-7 radius-lg'

@@ -1,11 +1,11 @@
 import { Fieldset, Label, RequiredMarker, Select, TextInput } from '@trussworks/react-uswds';
-import { QaInputProps } from '../utils/types';
+import { QaInputProps } from './types';
 import { USA_STATES } from '@/app/constants/usa-states';
 
 export const AddressInput = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => (
   <div className={isSubQuestion ? 'padding-left-3' : ''}>
     <Fieldset onChange={() => handleChange}>
-      <Label className='maxw-full' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
         <span>{question.title}</span>
       </Label>
       <p>

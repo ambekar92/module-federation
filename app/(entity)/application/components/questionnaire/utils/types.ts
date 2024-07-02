@@ -20,3 +20,17 @@ export type QuestionType = BaseQuestion | SelectQuestion;
 export interface MultiStepQuestionsProps {
 	step?: number;
 }
+
+interface QuestionnaireList {
+	section: string,
+	title: string,
+	url: string,
+	status: string,
+}
+
+interface QuestionnaireListError {
+	status_code?: number,
+	detail?: string
+}
+
+export type QuestionnaireListType = QuestionnaireList[]

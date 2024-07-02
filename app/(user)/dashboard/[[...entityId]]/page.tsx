@@ -14,7 +14,6 @@ import FirmApplicationCard from '../components/FirmApplicationCard'
 import DeleteWithdrawConfirmationModal from '../components/delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
 import styles from '../utils/FirmDashboard.module.scss';
 
-
 interface FirmUserDashboardPageProps {
   params: {
     entityId?: number;
@@ -90,7 +89,6 @@ const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {enti
     setOpenConfirmationModal(true)
   }
 
-
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -138,6 +136,7 @@ const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {enti
         <DeleteWithdrawConfirmationModal
           openConfirmationModal={openConfirmationModal}
           confirmationType={confirmationType}
+          entityId={entityId}
         />
       )}
     </>

@@ -9,9 +9,9 @@ import ValidateBusinessForm from './validation/ValidateBusinessForm'
 export default function ClaimBusiness(): JSX.Element {
   const [readyToProceedClaim, setReadyToProceedClaim] = useState(false)
   const [readyToValidate, setReadyToValidate] = useState(false)
-  const [samData, setSamData] = useState<CmbResponseType[]>()
+  const [samData, setSamData] = useState<CmbResponseType>()
 
-  const claimFormComplete = (responseData: CmbResponseType[] ) => {
+  const claimFormComplete = (responseData: CmbResponseType ) => {
     setSamData(responseData)
     setReadyToValidate(true)
   }
