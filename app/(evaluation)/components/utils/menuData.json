@@ -1,73 +1,45 @@
-{
-  "data": [
+ [
     {
       "id": 1,
-      "name": "Application",
-      "child": [
-        {
-          "id": 1,
-          "name": "Ownership & Management"
-        },
-        {
-          "id": 1,
-          "name": "SBA Certification Program Eligibility"
-        },
-        {
-          "id": 1,
-          "name": "Business Information"
-        },
-        {
-          "id": 1,
-          "name": "Program Specific"
-        },
-        {
-          "id": 1,
-          "name": "Individual Contributor(s)"
-        },
-        {
-          "id": 1,
-          "name": "Individual Contributor(s) Program Specific"
-        },
-        {
-          "id": 1,
-          "name": "Approval Stuff"
-        }
-      ]
-    },
-    {
-      "id": 1,
-      "name": "Firm Summary",
-      "child": []
+      "section": "Firm Summary",
+      "child": [],
+      "url": "1/firm-summary"
     },
     {
       "id": 2,
-      "name": "Documents",
-      "child": []
+      "section": "Documents",
+      "child": [],
+      "url": "1/documents"
     },
     {
       "id": 3,
-      "name": "Analysis",
-      "child": []
+      "section": "Analysis",
+      "child": [],
+      "url": "1/analysis"
     },
     {
       "id": 4,
-      "name": "Notes",
-      "child": []
+      "section": "Notes",
+      "child": [],
+      "url": "1/reviews"
     },
     {
       "id": 5,
-      "name": "Messages",
-      "child": []
+      "section": "Messages",
+      "child": [],
+      "url": "1/messages"
     },
     {
       "id": 6,
-      "name": "Audit",
-      "child": []
+      "section": "Audit",
+      "child": [],
+      "url": "1/audit"
     },
     {
       "id": 7,
-      "name": "Task Timers",
-      "child": []
+      "section": "Task Timers",
+      "child": [],
+      "url": "1/task-timers"
     }
   ]
-}
+

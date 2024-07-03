@@ -108,7 +108,7 @@ const QaGrid = ({ question }: { question: Question }) => {
               {...commonProps}
               type={gridQuestion.question_type}
             />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary">{errorMessage}</span></div>}
+            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
           </div>
         );
       case 'boolean':
@@ -123,7 +123,7 @@ const QaGrid = ({ question }: { question: Question }) => {
               <input className="usa-radio__input" id={`${inputId}-false`} type="radio" value="No" name={gridQuestion.name} checked={currentRow[gridQuestion.name] === 'No'} onChange={() => handleInputChange(gridQuestion.name, 'No')} />
               <Label className="usa-radio__label margin-left-105" htmlFor={`${inputId}-false`}>No</Label>
             </div>
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary">{errorMessage}</span></div>}
+            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
           </div>
         );
       case 'select':
@@ -147,7 +147,7 @@ const QaGrid = ({ question }: { question: Question }) => {
                 </option>
               ))}
             </UsSelect>
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary">{errorMessage}</span></div>}
+            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
           </div>
         );
       case 'multi_select':
@@ -176,7 +176,7 @@ const QaGrid = ({ question }: { question: Question }) => {
               onChange={(selectedOptions) => handleInputChange(gridQuestion.name, selectedOptions ? selectedOptions.map(option => option.value) : [])}
               onBlur={() => handleBlur(gridQuestion.name, currentRow[gridQuestion.name] || [])}
             />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary">{errorMessage}</span></div>}
+            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
           </div>
         );
       case 'textarea':
@@ -194,7 +194,7 @@ const QaGrid = ({ question }: { question: Question }) => {
               rows={2}
               aria-describedby={`${inputId}-info ${inputId}-hint`}
             />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary">{errorMessage}</span></div>}
+            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
           </div>
         );
       case 'date':
@@ -231,9 +231,11 @@ const QaGrid = ({ question }: { question: Question }) => {
                 value: currentRow[gridQuestion.name + '-start'] || ''
               }}
             />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary">{errorMessage}</span></div>}
+            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
           </div>
         );
+      case 'document_upload':
+        return null;
       default:
         return <div>Unsupported input type</div>;
     }
@@ -241,7 +243,7 @@ const QaGrid = ({ question }: { question: Question }) => {
 
   return (
     <>
-      <Label htmlFor='' className='maxw-full' requiredMarker={question.answer_required_flag}>{question.title}</Label>
+      <Label htmlFor='' className='maxw-full text-bold' requiredMarker={question.answer_required_flag}>{question.title}</Label>
       <Grid row gap='md'>
         {question.grid_questions?.map(gridQuestion => (
           <Grid col={6} key={gridQuestion.id}>

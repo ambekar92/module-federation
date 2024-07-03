@@ -1,61 +1,22 @@
-// components/Questionnaires.tsx
-
-import { Card, CardHeader, CardGroup, ButtonGroup } from '@trussworks/react-uswds';
-import Link from 'next/link';
-import { useEffect, useState, useCallback } from 'react';
-import { useApplicationDispatch } from '../../redux/hooks';
-import { setStep, setTotalQuestionnaires } from '../../redux/applicationSlice';
-import { applicationSteps } from '../../utils/constants';
-import { useSession } from 'next-auth/react';
-import { fetcherGET } from '@/app/services/fetcher';
-import { QuestionnaireListType } from './utils/types';
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
+import { fetcherGET } from '@/app/services/fetcher';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { ButtonGroup, Card, CardGroup, CardHeader } from '@trussworks/react-uswds';
+import Link from 'next/link';
+import { useCallback, useEffect } from 'react';
 import useSWR from 'swr';
-import getApplicationContributorId from '@/app/shared/utility/getApplicationContributorId';
-import getApplicationId from '@/app/shared/utility/getApplicationId';
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
+import { setStep, setTotalQuestionnaires } from '../../redux/applicationSlice';
+import { useApplicationDispatch } from '../../redux/hooks';
+import { applicationSteps } from '../../utils/constants';
+import { QuestionnaireListType } from './utils/types';
 
 const Questionnaires = () => {
   const dispatch = useApplicationDispatch();
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
-  const [applicationId, setApplicationId] = useState<number | null>(null);
+  const { applicationId  } = useApplicationId();
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
   }, [dispatch]);
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
-
-  useEffect(() => {
-    const fetchApplicationId = async () => {
-      if (userId) {
-        const entityData = await getEntityByUserId(userId);
-        if (!entityData || entityData.length === 0) {
-          throw new Error('Entity data not found');
-        }
-
-        const applicationData = await getApplicationId(entityData[0].id);
-        if (!applicationData || applicationData.length === 0) {
-          throw new Error('Application data not found');
-        }
-
-        const appId = await getApplicationContributorId(applicationData[0].id);
-        // For testing
-        // const appId = await getApplicationContributorId(1);
-        if (appId && appId.length > 0) {
-          // console.log(appId[0].id);
-          setApplicationId(appId[appId.length - 1].id);
-        }
-      }
-    };
-
-    fetchApplicationId();
-  }, [userId]);
 
   const { data: questionnairesData, error } = useSWR(
     applicationId ? `${QUESTIONNAIRE_LIST_ROUTE}/${applicationId}` : null,

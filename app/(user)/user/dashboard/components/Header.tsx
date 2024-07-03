@@ -1,25 +1,22 @@
-import { Show } from '@/app/shared/components/Show'
-import { Checkbox, Grid } from '@trussworks/react-uswds'
-import { useContext } from 'react'
+import { Grid } from '@trussworks/react-uswds'
+import { useSession } from 'next-auth/react'
 import HeaderOverview from './HeaderOverview'
-import SupervisorCtx from './supervisorContext'
+import { Show } from '@/app/shared/components/Show'
 
 const Header = () => {
-    const supervisorCtx = useContext(SupervisorCtx)
+    const sessionData = useSession()
   return (
     <>
         <Grid className="mobile:grid-col-12 desktop:grid-col-12 border-bottom-1px display-flex flex-align-center flex-row flex-justify">
-          <h2 className='margin-right-2'>{supervisorCtx?.isSupervisor ? 'Analyst Overview' : 'My Tasks'}</h2>  
-          <Checkbox id='supervisor-toggle' label={supervisorCtx?.isSupervisor ? 'User View' : 'Supervisor View'} name='supervisor-toggle'
-          onChange={() => supervisorCtx?.setIsSupervisor(prev => !prev)}
-          ></Checkbox>
+          <h2 className='margin-right-2'>{sessionData.data?.permissions[0].slug === 'external_user' ? 'My Tasks':'Analyst Overview'}</h2>  
         </Grid> 
 
-        <Show>
-            <Show.When isTrue={supervisorCtx?.isSupervisor}>
-                <HeaderOverview />
-            </Show.When>
-        </Show>
+<Show>
+  <Show.When isTrue={sessionData.data?.permissions[0].slug !== 'external_user'}>
+  
+  <HeaderOverview />
+  </Show.When>
+  </Show>        
 
 
     </>

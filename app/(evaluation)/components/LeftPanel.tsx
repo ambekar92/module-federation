@@ -1,18 +1,24 @@
 'use client'
-import React, { useState, useEffect, act } from 'react'
-import MenuData from './utils/menuData.json'
-import ActionMenuData from './utils/actionMenuData.json'
+import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes'
+import { fetcherGET } from '@/app/services/fetcher'
 import { Link } from '@trussworks/react-uswds'
+import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import ActionMenuModal from '../../shared/components/modals/ActionMenuModal'
-import { errorToJSON } from 'next/dist/server/render'
-import InviteModal from '@/app/(entity)/assign-a-delegate/components/fragments/InviteModal'
-import Notes from './reviews/Notes'
+import { Params, QuestionnaireItem } from '../types/types'
+import ActionMenuData from './utils/actionMenuData.json'
+import MenuData from './utils/menuData.json'
+import { useApplicationData } from '../firm/useApplicationData'
 
-function LeftPanel(props) {
+function LeftPanel() {
   const [showModal, setShowModal] = useState(false)
+const {applicationData} = useApplicationData();
+
   const [actionModalProps, setActionModalProps] = useState({
     title: '',
     actionLabel: '',
+    userIdType: '',
     modalType: 'default',
     description: '',
     steps: [],
@@ -36,7 +42,13 @@ function LeftPanel(props) {
       step: -1,
       rows: [],
     },
-  })
+  });
+  const [questionnaireItems, setQuestionnaireItems] = useState<{section: string, child: QuestionnaireItem[]}[]>([]);
+  const [activeSection, setActiveSection] = useState<string>('');
+  const [activeTitle, setActiveTitle] = useState('');
+  const router = useRouter();
+  const params = useParams<Params>();
+  const pathname = usePathname();
 
   const handleAction = () => {
     setShowModal(false)
@@ -46,16 +58,59 @@ function LeftPanel(props) {
     setShowModal(false)
   }
 
+  const {data: navItems , isLoading} = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`, fetcherGET);
+
+  useEffect(() => {
+    const sectionItemsMap = new Map<string, QuestionnaireItem[]>();
+    if (navItems) {
+      for (const item of navItems) {
+        if (!sectionItemsMap.has(item.section)) {
+          sectionItemsMap.set(item.section, [])
+        } 
+        sectionItemsMap.get(item.section)!.push(item)
+      }
+    }
+    const sectionItems = Array.from(sectionItemsMap.entries()).map(([sectionName, items]) => ({section: sectionName, child: items})) // [sectionName, [items]]
+    setQuestionnaireItems(sectionItems);
+  }, [navItems])
+
+  useEffect(() => {
+    if (!navItems) return;
+    const currentSection = navItems.find(item => item.url.includes(params.section_questions));
+    if (currentSection) {
+      setActiveSection(currentSection.section);
+      setActiveTitle(currentSection.title);
+    }
+  }, [pathname])
+
+  useEffect(() => {
+    if (activeSection || activeTitle) return;
+    if (!navItems) return;
+    const currentSection = navItems.find(item => item.url.includes(params.section_questions));
+    if (currentSection) {
+      setActiveSection(currentSection.section);
+      setActiveTitle(currentSection.title);
+    }
+  }, [activeSection, activeTitle, navItems])
+
+  function onNavLinkClick(e: any, item: QuestionnaireItem) {
+    e.preventDefault();
+    router.push(`../${item.url}`);
+    setActiveSection(item.section);
+    setActiveTitle(item.title);
+  }
+
   const handleActionSelect = (e: Event) => {
     /*eslint-disable eqeqeq*/
     const modalProp = ActionMenuData.data.find(
-      (item) => item.id == e.target?.value,
+      (item) => item.id == Number(e.target?.value),
     )
 
     if (modalProp) {
       setActionModalProps({
         title: modalProp?.title || '',
         actionLabel: modalProp?.actionLabel || '',
+        userIdType: modalProp?.userIdType || '',
         modalType: modalProp?.modalType || 'default',
         description: modalProp?.description || '',
         steps: modalProp?.steps || [],
@@ -90,6 +145,7 @@ function LeftPanel(props) {
         open={showModal}
         title={actionModalProps.title}
         actionLabel={actionModalProps.actionLabel}
+        userIdType={actionModalProps.userIdType}
         modalType={actionModalProps.modalType}
         description={actionModalProps.description}
         steps={actionModalProps.steps}
@@ -105,20 +161,21 @@ function LeftPanel(props) {
         handleCancel={handleCancel}
       />
       <div className="grid-container margin-top-2">
-        <h2 className="margin-top-0">Stark Tech, LLC</h2>
+        <h2 className="margin-top-0">{applicationData?.sam_entity?.legal_business_name ?? 'N/A'}</h2>
         <div className="margin-top-1">
           {' '}
           <span className="text-bold margin-right-1">UEI</span>{' '}
-          <span>9H79234245</span>{' '}
+          <span>{applicationData?.sam_entity?.uei ?? 'N/A'}</span>{' '}
         </div>
         <div className="margin-top-1">
           {' '}
           <span className="text-bold margin-right-1">Certification</span>{' '}
-          <span>MPP</span>{' '}
+          {/* TODO not clear what key maps to this value in Application type*/}
+          <span>{'N/A'}</span>{' '} 
         </div>
         <div className="margin-top-1 margin-bottom-3">
           {' '}
-          <span className="usa-tag margin-top-2"> Entity Owned</span>
+          <span className="usa-tag margin-top-2">Entity Owned</span>
         </div>
         <div className="usa-combo-box margin-bottom-4">
           <select
@@ -143,46 +200,40 @@ function LeftPanel(props) {
       </div>
       <div className="grid-container">
         <nav aria-label="Side navigation">
-          <ul className="usa-sidenav">
-            {MenuData.data.map((item, index) => {
+          {isLoading && <div>Loading...</div>}
+          {!isLoading && <ul className="usa-sidenav">
+            
+            {[...questionnaireItems, ...MenuData].map((item, index) => {
               if (item.child.length > 0) {
                 return (
-                  <div key={index}>
-                    <li className="usa-sidenav__item">
-                      {item.name === props.status ? (
-                        <Link className="usa-current">{item.name}</Link>
-                      ) : (
-                        <Link>{item.name}</Link>
-                      )}
+                  <ul key={index}>
+                    <li style={{listStyle: 'none'}} className="usa-sidenav__item">
+                      <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`../${item.child[0].url}`} className={item.section === activeSection ? "usa-current" : ''}>{item.section}</Link>
                       <ul className="usa-sidenav__sublist">
                         {item.child.map((childItem, index1) => {
                           return (
                             <div key={index1}>
                               <li className="usa-sidenav__item">
-                                <Link>{childItem.name}</Link>
+                                <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`../${childItem.url}`} className={childItem.title === activeTitle ? "usa-current" : ''}>{childItem.title}</Link>
                               </li>
                             </div>
                           )
                         })}
                       </ul>
                     </li>
-                  </div>
+                  </ul>
                 )
               } else {
                 return (
-                  <div key={index}>
-                    <li className="usa-sidenav__item">
-                      {item.name === props.status ? (
-                        <Link className="usa-current">{item.name}</Link>
-                      ) : (
-                        <Link>{item.name}</Link>
-                      )}
+                  <ul key={index}>
+                    <li style={{listStyle: 'none'}} className="usa-sidenav__item">
+                      <Link onClick={(e) => onNavLinkClick(e, item as unknown as QuestionnaireItem)} href='#' className={item.section === activeSection ? "usa-current" : ''}>{item.section}</Link>
                     </li>
-                  </div>
+                  </ul>
                 )
               }
             })}
-          </ul>
+          </ul>}
         </nav>
       </div>
     </>

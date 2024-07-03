@@ -2,7 +2,7 @@ import { GridContainer } from '@trussworks/react-uswds';
 import React from 'react';
 import { selectApplication } from '../redux/applicationSlice';
 import { useApplicationSelector } from '../redux/hooks';
-import OwnershipStepIndicator from './ApplicationStepIndicator';
+import ApplicationStepIndicator from './ApplicationStepIndicator';
 
 type ApplicationLayoutProps = {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ function ApplicationLayout({children}: ApplicationLayoutProps) {
     <>
       <GridContainer className='height-full display-flex flex-column' containerSize='widescreen'>
         <div className='step-indicator__application'>
-          <OwnershipStepIndicator stepNumber={currentStep} />
+          <ApplicationStepIndicator stepNumber={currentStep} />
         </div>
 
         <hr className='margin-y-0 border-base-lightest'/>

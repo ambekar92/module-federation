@@ -1,24 +1,31 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
 import {
-  ButtonGroup,
-  Modal,
-  ModalHeading,
-  ModalFooter,
+  FIRM_EVALUATIONS_ASSIGN_USER_ROUTE,
+  USER_ROUTE,
+} from '@/app/constants/routes'
+import { fetcherGET, fetcherPUT } from '@/app/services/fetcher'
+import {
   Button,
-  Label,
-  Radio,
-  Textarea,
-  Table,
+  ButtonGroup,
   FileInput,
+  Label,
+  Modal,
+  ModalFooter,
+  ModalHeading,
+  Radio,
+  Table,
+  Textarea,
 } from '@trussworks/react-uswds'
+import { useParams } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import StepsIndicator from '../forms/StepsIndicator'
-import Link from 'next/link'
-import { FLAG_IMG_URL } from '@/app/constants/icons'
 
 interface ActionMenuModalProps {
   open: boolean
+  process_id: number
+  userIdType: string
   modalType: string
   title: string
   description: string
@@ -50,6 +57,8 @@ interface ActionMenuModalProps {
 
 const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
   open,
+  
+  userIdType,
   modalType,
   title,
   actionLabel,
@@ -84,6 +93,10 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
     contributor: '',
     veteranInfo: '',
   })
+  const [assignedUser, setAssignedUser] = useState('')
+  const { data, error } = useSWR<any>(USER_ROUTE, fetcherGET)
+  const [userData, setUserData] = useState([])
+  const {application_id: process_id } = useParams();
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -100,7 +113,28 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
         ...requiredFields,
         [field]: !requiredFields[field],
       })
+    modalType === 'reassign' && setAssignedUser(e.target.value)
   }
+
+  const handleAssignUser = async () => {
+    try {
+      const postData = {
+        process_id: process_id,
+        [userIdType]: parseInt(assignedUser),
+      }
+
+      await fetcherPUT(`${FIRM_EVALUATIONS_ASSIGN_USER_ROUTE}`, postData)
+    } catch (error: any) {
+      console.error('Network Error: ', error)
+      return
+    }
+  }
+
+  useEffect(() => {
+    if (data) {
+      setUserData(data)
+    }
+  }, [data])
 
   useEffect(() => {
     setCurrentStep(0)
@@ -396,11 +430,19 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
                     onChange={(e) => {
                       modalType === 'requestExpert' &&
                         onChange(e, 'contributor')
+                      modalType === 'reassign' && onChange(e, '')
                     }}
                   >
                     <option value="">--</option>
-                    <option>John Smith</option>
-                    <option>Jane Doe</option>
+                    {userData &&
+                      userData.map((user: any, index: number) => {
+                        return (
+                          <option
+                            key={user.id}
+                            value={user.id}
+                          >{`${user.last_name}, ${user.first_name}`}</option>
+                        )
+                      })}
                   </select>
                 </>
               )}
@@ -431,7 +473,9 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
                 onClick={
                   steps.length < 1 ||
                   (steps.length > 0 && currentStep === steps.length - 1)
-                    ? handleAction
+                    ? modalType === 'reassign'
+                      ? handleAssignUser
+                      : handleAction
                     : handleNext
                 }
                 disabled={

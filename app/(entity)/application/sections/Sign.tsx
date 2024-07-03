@@ -9,9 +9,13 @@ import AttestationJSON from '../utils/form-data.json';
 import { useApplicationDispatch } from '../redux/hooks';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { applicationSteps } from '../utils/constants';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { fetcherPUT } from '@/app/services/fetcher';
+import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes';
 
 const SignPage = () => {
   const dispatch = useApplicationDispatch();
+  const { applicationId, userId } = useApplicationId();
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.sign.stepIndex));
@@ -27,6 +31,22 @@ const SignPage = () => {
     }
     modalRef.current?.toggleModal();
   }
+
+  const handlePostRequest = async () => {
+    try {
+      const postData = {
+        application_id: applicationId,
+  			signed_by_id: userId,
+  			agree_to_statement: true
+      };
+
+      await fetcherPUT(`${FIRM_APPLICATIONS_ROUTE}`, postData);
+      window.location.href = '/user/dashboard';
+
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   return (
     <>
@@ -55,9 +75,9 @@ const SignPage = () => {
         </div>
         <ModalFooter>
           <ButtonGroup>
-            <Link className='usa-button usa-button' href='/user/dashboard'>
+            <Button type='button' onClick={handlePostRequest} className='usa-button usa-button'>
 							Submit
-            </Link>
+            </Button>
             {!formSubmitted && (
               <ModalToggleButton modalRef={modalRef} closer unstyled className="padding-105 text-center">
                 Go back

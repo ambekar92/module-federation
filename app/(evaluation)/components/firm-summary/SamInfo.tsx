@@ -1,7 +1,13 @@
-import React from 'react'
+'use client'
+import { SamEntity } from '@/app/services/types/application'
 import { Table } from '@trussworks/react-uswds'
+import moment from 'moment'
+import { useApplicationData } from '../../firm/useApplicationData'
 
 function SamInfo() {
+  const {applicationData} =useApplicationData();
+  const samEntity = applicationData?.sam_entity ?? null;
+  
   return (
     <>
       <div className='grid-row margin-0'>
@@ -23,13 +29,13 @@ function SamInfo() {
             </thead>
             <tbody>
               <tr>
-                <td>Acme Corp is the place to be working these days, LLC</td>
-                <td>Lorem Ipsum</td>
-                <td>JFKSJHSAQ4</td>
-                <td>(SSN) 666-96-1234</td>
-                <td>Active</td>
-                <td>Lorem Ipsum</td>
-                <td>Lorem Ipsum</td>
+                <td>{samEntity?.legal_business_name || 'N/A'}</td>
+                <td>{samEntity?.dba_name || 'N/A'}</td>
+                <td>{samEntity?.uei || 'N/A'}</td>
+                <td>{samEntity?.tax_identifier_number || 'N/A'}</td>
+                <td>{samEntity?.exclusion_status_flag || 'N/A'}</td>
+                <td>{samEntity?.exclusion_status_flag || 'N/A'}</td>
+                <td>{samEntity?.debt_subject_to_offset_flag || 'N/A'}</td>
               </tr>
             </tbody>
           </Table>
@@ -53,13 +59,13 @@ function SamInfo() {
             </thead>
             <tbody>
               <tr>
-                <td>Active</td>
-                <td>02/24/2023</td>
-                <td>11/18/2023</td>
-                <td>12219 Braddock Falls, McLearn, Va 22032</td>
-                <td>Active</td>
-                <td>09/20/2021</td>
-                <td>Lorem Ipsum</td>
+                <td>{registrationStatus(samEntity)}</td>
+                <td>{samEntity ? moment(samEntity?.last_update_date).format('MM/DD/yy') : 'N/A'}</td>
+                <td>{samEntity ? moment(samEntity?.expiration_date).format('MM/DD/yy') : 'N/A'}</td>
+                <td>{getAddress(samEntity)}</td>
+                <td>{samEntity?.corporate_url ?? 'N/A'}</td>
+                <td>{samEntity ? moment(samEntity?.business_start_date).format('MM/DD/yy') : 'N/A'}</td>
+                <td>{samEntity?.cage_code ?? 'N/A'}</td>
               </tr>
             </tbody>
           </Table>
@@ -70,5 +76,16 @@ function SamInfo() {
   )
 }
 
-export default SamInfo
+export default SamInfo;
 
+function registrationStatus(samEntity: SamEntity | null) {
+  if (!samEntity) return 'N/A'
+  const today = new Date().getTime();
+  const expirationDate = new Date(samEntity.expiration_date).getTime();
+  return today > expirationDate ? 'Expired' : 'Active';
+}
+
+function getAddress(samEntity: SamEntity | null) {
+  if (!samEntity) return 'N/A'
+  return `${samEntity.physical_address_1} ${samEntity.physical_address_2} ${samEntity.physical_city} ${ samEntity.mailing_address_state_or_province} ${samEntity.physical_zip_code_5}`
+}

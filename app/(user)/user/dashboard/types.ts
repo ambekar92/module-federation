@@ -1,25 +1,20 @@
+// external user and supervisor user task dashboard
 export type Task = {
-    firmName: string,
+    legal_business_name: string,
     uei: string,
-    certification: string,
-    applicationType: string,
-    dueOn: string,
-    daysInQueue: string,
+    entity_id: number,
+    application_type_id: number,
+    application_id: number,
+    days_in_queue: number,
+    assignment_date: string,
     status: string,
-    id: string
-} & (UserTask | SupervisorTask)
+    due_on: string, //  currently missing from the API response [mdev]
+    // applicable to external users only
+    submitted_on?: string, //  currently missing from the API response [mdev]
 
-export type UserTask = {
-    type: 'user',
-    submittedOn: string,
-} 
-
-export type SupervisorTask = {
-    type: 'supervisor',
-    assignedTo: string,
-    takeAction: 'Re-Assign' // add other actions when known [mdev]
-
-} 
+    // applicable to supervisor users only
+    assigned_to: string, //  currently missing from the API response [mdev]
+}
 
 export interface IColumn {
     val: string,
@@ -36,7 +31,7 @@ export enum SupervisorColumns {
 
 export const userColumns = [
     {
-        val: 'firmName',
+        val: 'legal_business_name',
         label: 'Firm Name'
     },
     {
@@ -48,17 +43,17 @@ export const userColumns = [
         label: 'Application Type'
     },
     {
-        val: 'daysInQueue',
+        val: 'days_in_queue',
         label: 'Days in Queue'
     },
     
     {
-        val: 'dueOn',
+        val: 'due_on',
         label: 'Due On'
     },
     
     {
-        val: 'submittedOn',
+        val: 'submitted_on',
         label: 'Submitted On',
     },
     {
@@ -94,7 +89,7 @@ export const supervisorColumns = [
         label: 'Status'
     },
     {
-        val: 'assignedTo',
+        val: 'assigned_to',
         label: 'Assigned to'
     },
     {

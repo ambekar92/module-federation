@@ -40,6 +40,7 @@
       "next-auth": "^4.24.6",
       "next-easy-middlewares": "^1.0.10",
       "next-i18n-router": "^5.4.2",
+      "quill": "^2.0.2",
       "react": "^18",
       "react-cookie": "^7.1.4",
       "react-dom": "^18",

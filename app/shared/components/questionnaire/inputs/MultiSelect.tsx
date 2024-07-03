@@ -1,47 +1,77 @@
-// MultiSelectInputComponent.tsx
+import React, { useEffect, useState } from 'react';
+import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Label } from '@trussworks/react-uswds';
 import Select, { MultiValue } from 'react-select';
 
-interface MultiSelectInputComponentProps {
+interface OptionType {
+  value: string;
   label: string;
+}
+
+interface MultiSelectInputComponentProps {
+  question: Question;
   inputId: string;
-  options: { value: string; label: string }[];
-  handleChange: (selectedOptions: MultiValue<{ value: string; label: string }>) => void;
-  selectedOptions: MultiValue<{ value: string; label: string }>;
-  isOptionDisabled?: (option: { value: string; label: string }) => boolean;
-	isSubQuestion?: boolean;
+  options: OptionType[];
+  handleChange: (selectedOptions: MultiValue<OptionType>) => void;
+  isOptionDisabled?: (option: OptionType) => boolean;
+  isSubQuestion?: boolean;
 }
 
 export const MultiSelectInput = ({
-  label,
+  question,
   inputId,
   options,
   handleChange,
-  selectedOptions,
   isOptionDisabled,
   isSubQuestion
-}: MultiSelectInputComponentProps) => (
-  <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-full text-bold' htmlFor={inputId}>{label}</Label>
-    <Select
-      data-testid="multi-select-input"
-      styles={{
-        control: (baseStyles, state) => ({
-          ...baseStyles,
-          marginTop: '0.5rem',
-          borderRadius: '8px',
-          minHeight: '2.45rem',
-          height: '56px',
-          borderColor: '#565c65',
-          outline: state.isFocused ? '3px solid #0f73ff' : '',
-          cursor: 'pointer'
-        })
-      }}
-      options={options}
-      isMulti
-      onChange={handleChange}
-      value={selectedOptions}
-      isOptionDisabled={isOptionDisabled}
-    />
-  </div>
-);
+}: MultiSelectInputComponentProps) => {
+  const [selectedOptions, setSelectedOptions] = useState<MultiValue<OptionType>>([]);
+
+  useEffect(() => {
+    if (question.answer?.value?.answer) {
+      const initialSelectedOptions = question.answer.value.answer.map((option: string) => ({
+        value: option,
+        label: option
+      }));
+      setSelectedOptions(initialSelectedOptions);
+    }
+  }, [question.answer]);
+
+  const combinedOptions = [
+    ...options,
+    ...selectedOptions.filter(option => !options.some(opt => opt.value === option.value))
+  ];
+
+  const handleSelectChange = (newValue: MultiValue<OptionType>) => {
+    setSelectedOptions(newValue);
+    handleChange(newValue);
+  };
+
+  return (
+    <div className={isSubQuestion ? 'padding-left-3' : ''}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+        {question.title}
+      </Label>
+      <Select
+        data-testid="multi-select-input"
+        styles={{
+          control: (baseStyles, state) => ({
+            ...baseStyles,
+            marginTop: '0.5rem',
+            borderRadius: '8px',
+            minHeight: '2.45rem',
+            height: '56px',
+            borderColor: '#565c65',
+            outline: state.isFocused ? '3px solid #0f73ff' : '',
+            cursor: 'pointer'
+          })
+        }}
+        options={combinedOptions}
+        isMulti
+        onChange={handleSelectChange}
+        value={selectedOptions}
+        isOptionDisabled={isOptionDisabled}
+      />
+    </div>
+  );
+};

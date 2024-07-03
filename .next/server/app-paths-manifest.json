@@ -2,6 +2,6 @@
   "/(evaluation)/firm/application/[application_id]/evaluation/page": "app/(evaluation)/firm/application/[application_id]/evaluation/page.js",
   "/api/auth/csrf": "app/api/auth/csrf.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/not-found": "app/not-found.js",
+  "/(entity)/assign-a-delegate/page": "app/(entity)/assign-a-delegate/page.js",
   "/login/page": "app/login/page.js"
 }

@@ -1,11 +1,10 @@
 'use client'
-import { faCopy } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Task } from '../types'
-import { useState } from 'react';
-import styles from '../WorkloadDashboard.module.scss'
 import { SizeProp } from '@fortawesome/fontawesome-svg-core';
-import { Tooltip } from '@mui/material';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
+import styles from '../WorkloadDashboard.module.scss';
+import { Task } from '../types';
 
 const FirmInfoCell = ({task}:{task: Task}) => {
   const [copied, setCopied] = useState<boolean>(false);
@@ -20,11 +19,6 @@ const FirmInfoCell = ({task}:{task: Task}) => {
         setCopied(false)
       }, 500)
     })
-  }
-
-  function handleMouseEnter() {
-    setSize('xs');
-    
   }
 
   return (

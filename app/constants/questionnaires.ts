@@ -30,3 +30,5 @@ export const WOSB_QA_ROUTE = QUESTIONNAIRE_ROUTE + '/3/wosb-specific';
 
 // VetCert
 export const VETCERT_QA_ROUTE = QUESTIONNAIRE_ROUTE + '/5/vetcert-specific';
+
+export const SEND_INVITATION_DELEGATE = API_ROUTE + '/send-invitation-to-delegate';

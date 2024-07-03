@@ -1,41 +1,49 @@
-import React, { useState, useEffect } from 'react'
+'use client'
+
+import { SamEntity } from "@/app/services/types/application";
+import { useApplicationData } from "../firm/useApplicationData";
 
 function HeaderPanel() {
+  
+  const { applicationData, isLoading} = useApplicationData();
+  const samEntity = applicationData?.sam_entity ?? null;
+ 
   return (
     <>
       <div className="grid-container margin-top-2">
-        <h1 className="margin-top-0">Stark Tech, LLC</h1>
+        <h1 className="margin-top-0">{samEntity?.legal_business_name ?? 'N/A'}</h1>
 
         <div className="grid-row margin-bottom-4">
           <div className="grid-col-3">
             <p className="margin-0 text-bold">Address</p>
             <div className="margin-top-1">
               <span>
-                1234 this street
-                <br />
-                cityname, ST 12345
+                {getAddress(samEntity)}
               </span>
             </div>
           </div>
           <div className="grid-col-2">
             <p className="margin-0 text-bold">Business type</p>
             <div className="margin-top-1">
+              {/* TODO not clear what key maps to this value in Application type*/}
               <span>LLC</span>
             </div>
           </div>
           <div className="grid-col-2">
             <p className="margin-0 text-bold">Status</p>
             <div className="margin-top-1">
+              {/* TODO not clear what key maps to this value in Application type  */}
               <span>Not Started</span>
             </div>
           </div>
           <div className="grid-col-3">
             <p className="margin-0 text-bold">Exclusion Status</p>
             <div className="margin-top-1">
-              <span>yes</span>
+              <span>{samEntity?.exclusion_status_flag === 'Y' ? 'yes' : 'no'}</span>
             </div>
           </div>
           <div className="grid-col-2">
+            {/* TODO not clear what key maps to this value in Application type - title seems to be off */}
             <p className="margin-0 text-bold">lorem ipsum</p>
             <div className="margin-top-1">
               <span>lorem ipsum</span>
@@ -91,4 +99,9 @@ function HeaderPanel() {
   )
 }
 
-export default HeaderPanel
+export default HeaderPanel;
+
+function getAddress(samEntity: SamEntity | null) {
+  if (!samEntity) return 'N/A'
+  return `${samEntity.physical_address_1} ${samEntity.physical_address_2} ${samEntity.physical_city} ${ samEntity.mailing_address_state_or_province} ${samEntity.physical_zip_code_5}`
+}

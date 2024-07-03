@@ -25,7 +25,18 @@ export const CREATING_APPLICATION_ROUTE =
 export const USER_ROUTE = API_ROUTE + '/users'
 export const INVITATION_ROUTE = API_ROUTE + '/invitation'
 export const UPDATE_APPLICATION_STATE = API_ROUTE + '/update-application-state'
-export const ANSWER_ROUTE = API_ROUTE + '/answer';
 export const APPLICATION_CONTRIBUTOR_ROUTE = API_ROUTE + '/application-contributors'
-export const ACCEPT_INVITATION_ROUTE = API_ROUTE + '/accept-invitation';
-export const USER_PRODUCTIVITY_ROUTE = API_ROUTE + '/user-productivity-dashboard';
+export const QUESTIONNAIRE_LIST_ROUTE = API_ROUTE + '/questionnaire-list';
+export const ANSWER_ROUTE = API_ROUTE + '/answer'
+
+export const ACCEPT_INVITATION_ROUTE = API_ROUTE + '/accept-invitation'
+export const USER_PRODUCTIVITY_ROUTE =
+  API_ROUTE + '/user-productivity-dashboard'
+export const FIRM_EVALUATIONS_ADD_NOTE_ROUTE =
+  API_ROUTE + '/upsert-viewflow-note'
+export const FIRM_EVALUATIONS_ASSIGN_USER_ROUTE =
+  API_ROUTE + '/assign-user-to-viewflow'
+export const DELEGATES_ROUTE = API_ROUTE + '/delegates'
+export const APPLICATION_ROUTE = API_ROUTE + '/application'
+export const TESTER_LOGIN_ROUTE = API_ROUTE + '/login'
+export const USER_TASK_DASHBOARD = API_ROUTE + '/user-task-dashboard'

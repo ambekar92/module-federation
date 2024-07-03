@@ -133,7 +133,8 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         );
       case 'textarea':
@@ -144,7 +145,8 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         );
       case 'number':
@@ -154,17 +156,18 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         );
       case 'boolean':
         return (
           <BooleanInput
-            key={subInputId}
-            isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
+            isSubQuestion={false}
           />
         );
       case 'select':
@@ -175,26 +178,24 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         );
       case 'multi_select':
         return (
           subQuestion.answer_choice && 'options' in subQuestion.answer_choice &&
           <MultiSelectInput
+            question={subQuestion}
             key={subInputId}
             isSubQuestion={true}
-            label={subQuestion.title}
             inputId={subInputId}
             options={subQuestion.answer_choice.options.map(option => ({ value: option.option, label: option.option }))}
             handleChange={(selectedOptions) => handleAnswerChange(subQuestion, selectedOptions)}
             selectedOptions={
               (() => {
                 const answerValue = selectedAnswers[subQuestion.name]?.value;
-                if (Array.isArray(answerValue)) {
-                  return answerValue.map(option => ({ value: String(option), label: String(option) }));
-                }
-                return [];
+                return Array.isArray(answerValue) ? answerValue : [];
               })()
             }
           />
@@ -213,7 +214,8 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         );
       case 'text_with_asterisks':
@@ -223,7 +225,8 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         );
       case 'address':
@@ -233,7 +236,8 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             isSubQuestion={true}
             question={subQuestion}
             inputId={subInputId}
-            handleChange={(value) => handleAnswerChange(subQuestion, value)}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
           />
         );
       case 'document_upload':
@@ -245,7 +249,7 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
 
   const renderQuestion = (question: Question, index: number) => {
     const inputId = `input-${question.question_type}-${index}`;
-    const answer = selectedAnswers[question.name]?.value;
+    const answer = selectedAnswers[question.name]?.value ?? question.answer?.value?.answer;
 
     switch (question.question_type) {
       case 'text':
@@ -254,38 +258,33 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             <QaTextInput
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
                 let shouldRenderSubQuestion = false;
 
-                if (question.question_type === 'boolean' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-                } else if (question.question_type === 'text' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-                } else if (question.question_type === 'number' && typeof answer === 'number') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-                } else if (question.question_type === 'select' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-                } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+                if (Array.isArray(answer) && question.question_type === 'multi_select') {
                   shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+                } else {
+                  switch (question.question_type) {
+                    case 'boolean':
+                    case 'text':
+                    case 'number':
+                    case 'select':
+                      shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type];
+                      break;
+                  }
                 }
 
                 if (shouldRenderSubQuestion && rule.sub_question) {
-                  if (rule.sub_question.question_type === 'grid') {
-                    return (
-                      <div key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </Grid>
-                    );
-                  }
+                  const SubQuestionComponent = rule.sub_question.question_type === 'grid' ? Grid : 'div';
+                  return (
+                    <SubQuestionComponent key={`sub-${index + ruleIndex}`} col={rule.sub_question.question_type !== 'grid' ? 6 : undefined}>
+                      {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                    </SubQuestionComponent>
+                  );
                 }
 
                 return null;
@@ -300,38 +299,33 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             <QaTextarea
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
                 let shouldRenderSubQuestion = false;
 
-                if (question.question_type === 'boolean' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-                } else if (question.question_type === 'text' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-                } else if (question.question_type === 'number' && typeof answer === 'number') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-                } else if (question.question_type === 'select' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-                } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+                if (Array.isArray(answer) && question.question_type === 'multi_select') {
                   shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+                } else {
+                  switch (question.question_type) {
+                    case 'boolean':
+                    case 'text':
+                    case 'number':
+                    case 'select':
+                      shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type];
+                      break;
+                  }
                 }
 
                 if (shouldRenderSubQuestion && rule.sub_question) {
-                  if (rule.sub_question.question_type === 'grid') {
-                    return (
-                      <div key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </Grid>
-                    );
-                  }
+                  const SubQuestionComponent = rule.sub_question.question_type === 'grid' ? Grid : 'div';
+                  return (
+                    <SubQuestionComponent key={`sub-${index + ruleIndex}`} col={rule.sub_question.question_type !== 'grid' ? 6 : undefined}>
+                      {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                    </SubQuestionComponent>
+                  );
                 }
 
                 return null;
@@ -345,38 +339,33 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             <NumberInput
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
                 let shouldRenderSubQuestion = false;
 
-                if (question.question_type === 'boolean' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-                } else if (question.question_type === 'text' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-                } else if (question.question_type === 'number' && typeof answer === 'number') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-                } else if (question.question_type === 'select' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-                } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+                if (Array.isArray(answer) && question.question_type === 'multi_select') {
                   shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+                } else {
+                  switch (question.question_type) {
+                    case 'boolean':
+                    case 'text':
+                    case 'number':
+                    case 'select':
+                      shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type];
+                      break;
+                  }
                 }
 
                 if (shouldRenderSubQuestion && rule.sub_question) {
-                  if (rule.sub_question.question_type === 'grid') {
-                    return (
-                      <div key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </Grid>
-                    );
-                  }
+                  const SubQuestionComponent = rule.sub_question.question_type === 'grid' ? Grid : 'div';
+                  return (
+                    <SubQuestionComponent key={`sub-${index + ruleIndex}`} col={rule.sub_question.question_type !== 'grid' ? 6 : undefined}>
+                      {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                    </SubQuestionComponent>
+                  );
                 }
 
                 return null;
@@ -390,7 +379,9 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             <BooleanInput
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
+              isSubQuestion={false}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
@@ -422,38 +413,33 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
             <SelectInput
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
                 let shouldRenderSubQuestion = false;
 
-                if (question.question_type === 'boolean' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-                } else if (question.question_type === 'text' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-                } else if (question.question_type === 'number' && typeof answer === 'number') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-                } else if (question.question_type === 'select' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-                } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+                if (Array.isArray(answer) && question.question_type === 'multi_select') {
                   shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+                } else {
+                  switch (question.question_type) {
+                    case 'boolean':
+                    case 'text':
+                    case 'number':
+                    case 'select':
+                      shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type];
+                      break;
+                  }
                 }
 
                 if (shouldRenderSubQuestion && rule.sub_question) {
-                  if (rule.sub_question.question_type === 'grid') {
-                    return (
-                      <div key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </Grid>
-                    );
-                  }
+                  const SubQuestionComponent = rule.sub_question.question_type === 'grid' ? Grid : 'div';
+                  return (
+                    <SubQuestionComponent key={`sub-${index + ruleIndex}`} col={rule.sub_question.question_type !== 'grid' ? 6 : undefined}>
+                      {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                    </SubQuestionComponent>
+                  );
                 }
 
                 return null;
@@ -464,58 +450,58 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
       case 'multi_select':
         return (
           question.answer_choice && 'options' in question.answer_choice &&
-					<div key={inputId}>
-					  <MultiSelectInput
-					    label={question.title}
-					    inputId={inputId}
-					    options={question.answer_choice.options.map(option => ({ value: option.option, label: option.option }))}
-					    handleChange={(selectedOptions) => handleAnswerChange(question, selectedOptions)}
-					    selectedOptions={
-					      (() => {
-					        const answerValue = selectedAnswers[question.name]?.value;
-					        if (Array.isArray(answerValue)) {
-					          return answerValue.map(option => ({ value: String(option), label: String(option) }));
-					        }
-					        return [];
-					      })()
-					    }
-					  />
-					  <Grid row gap='md'>
-					    {question.rules?.map((rule: Rule, ruleIndex: number) => {
-					      let shouldRenderSubQuestion = false;
+						<div key={inputId}>
+						  <MultiSelectInput
+						    question={question}
+						    inputId={inputId}
+						    options={question.answer_choice.options.map(option => ({ value: option.option, label: option.option }))}
+						    handleChange={(selectedOptions) => handleAnswerChange(question, selectedOptions)}
+						    selectedOptions={
+						      (() => {
+						        const answerValue = selectedAnswers[question.name]?.value;
+						        if (Array.isArray(answerValue)) {
+						          return answerValue.map(option => ({ value: String(option), label: String(option) }));
+						        }
+						        return [];
+						      })()
+						    }
+						  />
+						  <Grid row gap='md'>
+						    {question.rules?.map((rule: Rule, ruleIndex: number) => {
+						      let shouldRenderSubQuestion = false;
 
-					      if (question.question_type === 'boolean' && typeof answer === 'string') {
-					        shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-					      } else if (question.question_type === 'text' && typeof answer === 'string') {
-					        shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-					      } else if (question.question_type === 'number' && typeof answer === 'number') {
-					        shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-					      } else if (question.question_type === 'select' && typeof answer === 'string') {
-					        shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-					      } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
-					        shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
-					      }
+						      if (question.question_type === 'boolean' && typeof answer === 'string') {
+						        shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
+						      } else if (question.question_type === 'text' && typeof answer === 'string') {
+						        shouldRenderSubQuestion = answer === rule.answer_given_value.text;
+						      } else if (question.question_type === 'number' && typeof answer === 'number') {
+						        shouldRenderSubQuestion = answer === rule.answer_given_value.number;
+						      } else if (question.question_type === 'select' && typeof answer === 'string') {
+						        shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
+						      } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+						        shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+						      }
 
-					      if (shouldRenderSubQuestion && rule.sub_question) {
-					        if (rule.sub_question.question_type === 'grid') {
-					          return (
-					            <div key={`sub-${index + ruleIndex}`}>
-					              {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-					            </div>
-					          );
-					        } else {
-					          return (
-					            <Grid col={6} key={`sub-${index + ruleIndex}`}>
-					              {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-					            </Grid>
-					          );
-					        }
-					      }
+						      if (shouldRenderSubQuestion && rule.sub_question) {
+						        if (rule.sub_question.question_type === 'grid') {
+						          return (
+						            <div key={`sub-${index + ruleIndex}`}>
+						              {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+						            </div>
+						          );
+						        } else {
+						          return (
+						            <Grid col={6} key={`sub-${index + ruleIndex}`}>
+						              {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+						            </Grid>
+						          );
+						        }
+						      }
 
-					      return null;
-					    })}
-					  </Grid>
-					</div>
+						      return null;
+						    })}
+						  </Grid>
+						</div>
         );
       case 'grid':
         return (
@@ -533,38 +519,33 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
               key={inputId}
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
                 let shouldRenderSubQuestion = false;
 
-                if (question.question_type === 'boolean' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-                } else if (question.question_type === 'text' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-                } else if (question.question_type === 'number' && typeof answer === 'number') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-                } else if (question.question_type === 'select' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-                } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+                if (Array.isArray(answer) && question.question_type === 'multi_select') {
                   shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+                } else {
+                  switch (question.question_type) {
+                    case 'boolean':
+                    case 'text':
+                    case 'number':
+                    case 'select':
+                      shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type];
+                      break;
+                  }
                 }
 
                 if (shouldRenderSubQuestion && rule.sub_question) {
-                  if (rule.sub_question.question_type === 'grid') {
-                    return (
-                      <div key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </Grid>
-                    );
-                  }
+                  const SubQuestionComponent = rule.sub_question.question_type === 'grid' ? Grid : 'div';
+                  return (
+                    <SubQuestionComponent key={`sub-${index + ruleIndex}`} col={rule.sub_question.question_type !== 'grid' ? 6 : undefined}>
+                      {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                    </SubQuestionComponent>
+                  );
                 }
 
                 return null;
@@ -579,38 +560,33 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
               key={inputId}
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
                 let shouldRenderSubQuestion = false;
 
-                if (question.question_type === 'boolean' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-                } else if (question.question_type === 'text' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-                } else if (question.question_type === 'number' && typeof answer === 'number') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-                } else if (question.question_type === 'select' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-                } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+                if (Array.isArray(answer) && question.question_type === 'multi_select') {
                   shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+                } else {
+                  switch (question.question_type) {
+                    case 'boolean':
+                    case 'text':
+                    case 'number':
+                    case 'select':
+                      shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type];
+                      break;
+                  }
                 }
 
                 if (shouldRenderSubQuestion && rule.sub_question) {
-                  if (rule.sub_question.question_type === 'grid') {
-                    return (
-                      <div key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </Grid>
-                    );
-                  }
+                  const SubQuestionComponent = rule.sub_question.question_type === 'grid' ? Grid : 'div';
+                  return (
+                    <SubQuestionComponent key={`sub-${index + ruleIndex}`} col={rule.sub_question.question_type !== 'grid' ? 6 : undefined}>
+                      {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                    </SubQuestionComponent>
+                  );
                 }
 
                 return null;
@@ -625,38 +601,33 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
               key={inputId}
               question={question}
               inputId={inputId}
-              handleChange={(value) => handleAnswerChange(question, value)}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
             />
             <Grid row gap='md'>
               {question.rules?.map((rule: Rule, ruleIndex: number) => {
                 let shouldRenderSubQuestion = false;
 
-                if (question.question_type === 'boolean' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.boolean;
-                } else if (question.question_type === 'text' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.text;
-                } else if (question.question_type === 'number' && typeof answer === 'number') {
-                  shouldRenderSubQuestion = answer === rule.answer_given_value.number;
-                } else if (question.question_type === 'select' && typeof answer === 'string') {
-                  shouldRenderSubQuestion = rule.answer_given_value.select?.includes(answer);
-                } else if (question.question_type === 'multi_select' && Array.isArray(answer)) {
+                if (Array.isArray(answer) && question.question_type === 'multi_select') {
                   shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
+                } else {
+                  switch (question.question_type) {
+                    case 'boolean':
+                    case 'text':
+                    case 'number':
+                    case 'select':
+                      shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type];
+                      break;
+                  }
                 }
 
                 if (shouldRenderSubQuestion && rule.sub_question) {
-                  if (rule.sub_question.question_type === 'grid') {
-                    return (
-                      <div key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <Grid col={6} key={`sub-${index + ruleIndex}`}>
-                        {renderSubQuestion(rule.sub_question, index + ruleIndex)}
-                      </Grid>
-                    );
-                  }
+                  const SubQuestionComponent = rule.sub_question.question_type === 'grid' ? Grid : 'div';
+                  return (
+                    <SubQuestionComponent key={`sub-${index + ruleIndex}`} col={rule.sub_question.question_type !== 'grid' ? 6 : undefined}>
+                      {renderSubQuestion(rule.sub_question, index + ruleIndex)}
+                    </SubQuestionComponent>
+                  );
                 }
 
                 return null;

@@ -5,6 +5,9 @@ import { EntitiesType } from '../types/responses'
 const getEntityByUserId = async(userId: number) => {
   const response = await fetcherGET<EntitiesType>(`${ENTITIES_ROUTE}?owner_user_id=${userId}`)
 
+  // For testing purposes
+  // const response = await fetcherGET<EntitiesType>(`${ENTITIES_ROUTE}?owner_user_id=14`)
+
   if(response) {
     return (response)
   } else {

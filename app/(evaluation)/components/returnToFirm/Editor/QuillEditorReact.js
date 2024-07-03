@@ -31,13 +31,14 @@ const RichTextEditor = ({ value, onChange }) => {
   // ];
 
   return (
-    <div style={{ height: "100%", marginBottom:"100px"}}>
+    <div style={{ height: "100px", marginBottom:"100px"}}>
       <ReactQuill
         theme="snow" // You can choose different themes here
         value={editorHtml}
         onChange={handleChange}
         modules={modules}
         // formats={formats}
+        style={{ height: '100%' }}
       />
     </div>
   );

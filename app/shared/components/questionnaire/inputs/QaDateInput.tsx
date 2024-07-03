@@ -1,29 +1,37 @@
-import { DateRangePicker, Label } from '@trussworks/react-uswds';
+import React from 'react';
+import { DatePicker, Label } from '@trussworks/react-uswds';
 import { QaInputProps } from './types';
 
-export const QaDateInput = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => (
-  <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
-      <span>{question.title}</span>
-    </Label>
-    <DateRangePicker
-      id={inputId}
-      endDateHint="mm/dd/yyyy"
-      onChange={() => handleChange}
-      endDateLabel='Event end date'
-      endDatePickerProps={{
-        disabled: false,
-        id: 'event-date-end',
-        name: question.name + '-end'
-      }}
-      startDateHint="mm/dd/yyyy"
-      aria-describedby={`${question.name}-info ${question.name}-hint`}
-      startDateLabel='Event start date'
-      startDatePickerProps={{
-        disabled: false,
-        id: 'event-date-start',
-        name: question.name + '-start'
-      }}
-    />
-  </div>
-);
+export const QaDateInput = ({ question, inputId, handleChange, isSubQuestion, selectedAnswers }: QaInputProps) => {
+  const dateFromApi = selectedAnswers[question.name]?.value ?? question.answer?.value?.answer;
+
+  // converts 'MM/DD/YYYY' to 'YYYY-MM-DD'
+  const formatDate = (dateStr: string) => {
+    const [month, day, year] = dateStr.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  };
+
+  const currentValue = dateFromApi ? formatDate(dateFromApi) : '';
+
+  const handleDateChange = (val?: string) => {
+    handleChange(question, val ?? '');
+  };
+  const today = new Date().toISOString().split('T')[0];
+
+  return (
+    <div className={isSubQuestion ? 'padding-left-3' : ''}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+        <span>{question.title}</span>
+      </Label>
+      <DatePicker
+        aria-describedby={`${question.name}-info ${question.name}-hint`}
+        aria-labelledby={`${question.name}-info ${question.name}-label`}
+        id={inputId}
+        name={question.name}
+        maxDate={today}
+        defaultValue={currentValue}
+        onChange={handleDateChange}
+      />
+    </div>
+  );
+};

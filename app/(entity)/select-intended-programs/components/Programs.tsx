@@ -54,7 +54,7 @@ function Programs() {
 
     } catch (error) {
       console.error('Error in POST request:', error);
-      alert('An error has occurred.');
+      alert(error);
     }
   };
 

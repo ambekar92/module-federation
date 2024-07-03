@@ -1,16 +1,23 @@
 import { Label, TextInput } from '@trussworks/react-uswds';
 import { QaInputProps } from './types';
 
-export const NumberInput = ({ question, inputId, handleChange, isSubQuestion }: QaInputProps) => (
-  <div className={isSubQuestion ? 'padding-left-3' : ''}>
-    <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
-      <span>{question.title}</span>
-    </Label>
-    <TextInput
-      type='number'
-      id={inputId}
-      name={question.name}
-      onChange={(e) => handleChange(question.name, e.target.value)}
-    />
-  </div>
-);
+export const NumberInput = ({ question, inputId, handleChange, isSubQuestion, selectedAnswers }: QaInputProps) => {
+  const currentValue = selectedAnswers[question.name]?.value !== undefined
+    ? selectedAnswers[question.name].value
+    : question.answer?.value?.answer || '';
+
+  return (
+    <div className={isSubQuestion ? 'padding-left-3' : ''}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+        <span>{question.title}</span>
+      </Label>
+      <TextInput
+        type='number'
+        id={inputId}
+        name={question.name}
+        value={currentValue}
+        onChange={(e) => handleChange(question, e.target.value)}
+      />
+    </div>
+  );
+};

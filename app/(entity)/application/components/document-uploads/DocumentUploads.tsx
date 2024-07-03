@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
 import { DOCUMENT_REQUIRED_ROUTE } from '@/app/constants/routes';
-import { Grid, Label, Button, ButtonGroup, Icon, Table } from '@trussworks/react-uswds';
-import useSWR from 'swr';
 import { fetcherGET } from '@/app/services/fetcher';
-import { DocumentUploadType } from './utils/types';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { Button, ButtonGroup, Icon, Table } from '@trussworks/react-uswds';
 import { useSession } from 'next-auth/react';
-import getApplicationContributorId from '@/app/shared/utility/getApplicationContributorId';
-import getApplicationId from '@/app/shared/utility/getApplicationId';
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { DocumentUploadType } from './utils/types';
 
 interface DocumentDetails {
   name: string;
@@ -24,9 +22,8 @@ interface DocumentsState {
 }
 
 const DocumentUploads = () => {
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
-  const [applicationId, setApplicationId] = useState<number | null>(null);
+  const { data: session } = useSession();
+  const { applicationId } = useApplicationId();
   const { data: questions, error } = useSWR(
     applicationId ? `${DOCUMENT_REQUIRED_ROUTE}/${applicationId}` : null,
 		fetcherGET<DocumentUploadType>
@@ -34,38 +31,6 @@ const DocumentUploads = () => {
   const [documents, setDocuments] = useState<DocumentsState>({});
   const [editMode, setEditMode] = useState<{ [key: string]: boolean }>({});
   const [originalDocuments, setOriginalDocuments] = useState<DocumentsState>({});
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
-
-  useEffect(() => {
-    const fetchApplicationId = async () => {
-      if (userId) {
-        const entityData = await getEntityByUserId(userId);
-        if (!entityData || entityData.length === 0) {
-          throw new Error('Entity data not found');
-        }
-
-        const applicationData = await getApplicationId(entityData[0].id);
-        if (!applicationData || applicationData.length === 0) {
-          throw new Error('Application data not found');
-        }
-
-        const appId = await getApplicationContributorId(applicationData[0].id);
-        // For testing
-        // const appId = await getApplicationContributorId(1);
-        if (appId && appId.length > 0) {
-          // console.log(appId[0].id);
-          setApplicationId(appId[appId.length - 1].id);
-        }
-      }
-    };
-
-    fetchApplicationId();
-  }, [userId]);
 
   useEffect(() => {
     if (questions) {

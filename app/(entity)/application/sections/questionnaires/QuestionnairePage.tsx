@@ -1,7 +1,7 @@
 'use client'
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
-import { QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher';
+import { APPLICATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
+import { fetcherGET, fetcherPOST } from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { Button, ButtonGroup } from '@trussworks/react-uswds';
 import { useSession } from 'next-auth/react';
@@ -71,11 +71,33 @@ function QuestionnairePage({ index }: QuestionnairePageProps) {
     fetcherGET<QuestionnaireListType>
   );
 
+  // const updateProgress = async () => {
+  //   try {
+  //     if (applicationId && questionnairesData) {
+  //       const postData = {
+  //         application_id: applicationId,
+  //         progress: questionnairesData[Math.min(currentStep, questionnairesData.length - 1)].title
+  //       };
+  //       // For testing
+  //       // const response = await fetcherPOST(APPLICATION_ROUTE, postData);
+  //       // console.log(response);
+
+  //       await fetcherPOST(APPLICATION_ROUTE, postData);
+  //     } else {
+  //       const customError = 'Application ID or user ID not found';
+  //       throw customError;
+  //     }
+  //   } catch (error) {
+  //     console.log('API error occurred');
+  //   }
+  // };
+
   useEffect(() => {
     if (questionnairesData) {
       const lastIndex = questionnairesData.length - 1;
       const safeIndex = currentStep > lastIndex ? lastIndex : currentStep;
       setCurrentQuestionnaire(`${QUESTIONNAIRE_ROUTE}/${questionnairesData[safeIndex].url}`);
+      // updateProgress();
     }
   }, [questionnairesData, currentStep]);
 
@@ -106,7 +128,7 @@ function QuestionnairePage({ index }: QuestionnairePageProps) {
         mainContent={
           <QuestionnaireTemp
             url={currentQuestionnaire}
-            title={questionnairesData[Math.min(currentStep, questionnairesData.length - 1)].section}
+            title={questionnairesData[Math.min(currentStep, questionnairesData.length - 1)].title}
           />
         }
       />

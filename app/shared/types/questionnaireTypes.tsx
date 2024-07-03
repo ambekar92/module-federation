@@ -76,7 +76,7 @@ export type Answer = {
   profile_answer_flag: boolean;
   reminder_flag: boolean;
   application_contributor_id: number;
-  value: string | number | boolean | string[] | null;
+  value: {answer: string | number | boolean | string[] | null};
   question_id: number;
   answer_by: number | null;
 };

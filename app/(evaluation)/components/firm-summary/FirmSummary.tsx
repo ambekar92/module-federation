@@ -1,16 +1,17 @@
-import React from 'react'
+'use client'
 
 import {
   Accordion,
 } from '@trussworks/react-uswds'
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion'
-import SamInfo from './SamInfo'
+import { useApplicationData } from '../../firm/useApplicationData'
 import NaicsCodes from './NaicsCodes'
+import SamInfo from './SamInfo'
 import VaCert from './VaCert'
 
-const testItems: AccordionItemProps[] = [
+const accordionItems: AccordionItemProps[] = [
   {
-    id: 'item1',
+    id: 'sam_info',
     title: 'SAM Info',
     content: (
       <div>
@@ -21,7 +22,7 @@ const testItems: AccordionItemProps[] = [
     headingLevel: 'h2',
   },
   {
-    id: 'item2',
+    id: 'naics_codes',
     title: 'NAICS Codes',
     content: (
       <div>
@@ -32,7 +33,7 @@ const testItems: AccordionItemProps[] = [
     headingLevel: 'h2',
   },
   {
-    id: 'item3',
+    id: 'va_cert',
     title: 'VA Cert',
     content: (
       <div>
@@ -43,7 +44,7 @@ const testItems: AccordionItemProps[] = [
     headingLevel: 'h2',
   },
   {
-    id: 'item4',
+    id: 'hubzone_calculator',
     title: 'HUBZone Calculator',
     content: (
       <div>
@@ -53,7 +54,7 @@ const testItems: AccordionItemProps[] = [
     headingLevel: 'h2',
   },
   {
-    id: 'item5',
+    id: 'mmp_participation_info',
     title: 'MPP Participation Information',
     content: (
       <div>
@@ -65,17 +66,20 @@ const testItems: AccordionItemProps[] = [
 ]
 
 function FirmSummary() {
+  const { applicationData, isLoading} = useApplicationData();
+  const appication = applicationData?.application_type ?? null;
   return (
     <>
       <div className='grid-row'>
         <div className="grid-col-12">
           <h1>Firm Summary</h1>
-          <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+          {isLoading && <p>Loading...</p>}
+          {!isLoading && <p> {appication?.description ?? 'N/A'} </p>}
         </div>
 
         <div className="grid-col-12 margin-top-4">
           <Accordion
-            items={testItems}
+            items={accordionItems}
             multiselectable={true}
           />
         </div>
