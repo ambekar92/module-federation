@@ -1,21 +1,21 @@
 // as of now getServerSession does not work in middleware. Recommended way is to use next-auth/middleware
 // https://github.com/nextauthjs/next-auth/issues/7732#issuecomment-1577104038
 
-import { getToken } from 'next-auth/jwt'
-import {createMiddleware} from 'next-easy-middlewares'
-import { NextRequest, NextResponse } from 'next/server'
-import { Role } from './app/shared/types/role'
-import { authenticate } from './middlewares/authenticate'
+import { getToken } from 'next-auth/jwt';
+import { MiddlewareConfig, createMiddleware } from 'next-easy-middlewares';
+import { NextRequest, NextResponse } from 'next/server';
+import { Role } from './app/shared/types/role';
 
 const middlewares: { [key: string]: any } = {
+  // only primary_qualify_owner and contributor  can access this route
   '/dashboard/:path*': async (request: NextRequest) => {
-    // only primary_qualify_owner and contributor  can access this route
     const token = await getToken({req: request, secret: process.env.NEXTAUTH_SECRET})
+    const originalUrl = encodeURIComponent(request.nextUrl.pathname);
     if (!token) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/login`)
+      return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
     } else if (token.role === Role.ADMIN) {
       return NextResponse.redirect(`${request.nextUrl.origin}/admin/dashboard`)
-    } else if (token.role !== Role.PRIMARY_QUALIFY_OWNER && token.role !== Role.CONTRIBUTOR && token.role !== Role.ADMIN){
+    } else if (token.role !== Role.PRIMARY_QUALIFY_OWNER && token.role !== Role.CONTRIBUTOR && token!.role !== Role.ADMIN){
       return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard`);
     } else {
       return NextResponse.next();
@@ -24,8 +24,9 @@ const middlewares: { [key: string]: any } = {
   '/admin/dashboard': async (request: NextRequest) => {
     // only admin  can access this route
     const token = await getToken({req: request, secret: process.env.NEXTAUTH_SECRET})
+    const originalUrl = encodeURIComponent(request.nextUrl.pathname);
     if (!token) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/login`)
+      return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
     } else if (token.role === Role.PRIMARY_QUALIFY_OWNER || token.role === Role.CONTRIBUTOR) {
       return NextResponse.redirect(`${request.nextUrl.origin}/dashboard`)
     } else if (token.role !== Role.PRIMARY_QUALIFY_OWNER && token.role !== Role.CONTRIBUTOR && token.role !== Role.ADMIN){
@@ -33,12 +34,17 @@ const middlewares: { [key: string]: any } = {
     } else {
       return NextResponse.next();
     }
+  },
+  // protect all routes except /login
+  'regex:^(?!/login$).*$': async (request: NextRequest) => {
+    const token = await getToken({req: request, secret: process.env.NEXTAUTH_SECRET})
+    const originalUrl = encodeURIComponent(request.nextUrl.pathname);
+    if (!token) {
+      return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
+    }
+    else return NextResponse.next();
   }
-}
-
-const globalMiddlewares= {
-  before: authenticate,
-} as any;
+} as MiddlewareConfig;
 
 export const config = {
   matcher: [
@@ -67,4 +73,4 @@ export const config = {
   ],
 }
 
-export const middleware = createMiddleware(middlewares, globalMiddlewares)
+export const middleware = createMiddleware(middlewares)

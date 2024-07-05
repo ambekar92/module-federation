@@ -180,7 +180,7 @@ const Navigation = () => {
   const unAuthenticatedNavBar = [
     { id: 'Home', url: '/' },
     { id: 'Should I Apply?', url: '/should-i-apply/ownership' },
-    { id: 'Application Prep', url: '/' },
+    { id: 'Resources', url: '/resources' },
     { id: 'HUBZone Calculator', url: '/' },
   ]
   const authenticatedNavBar = [

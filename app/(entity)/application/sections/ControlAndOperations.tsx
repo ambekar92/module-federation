@@ -6,10 +6,12 @@ import ControlOperationsTable from '../components/control-and-operations/Control
 import { selectApplication, setCurrentOperatorEditIndex, setOperators, setShowControlOperationsForm, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 
 function ControlAndOperations() {
   const dispatch = useApplicationDispatch();
   const { operators, showControlOperationsForm } = useApplicationSelector(selectApplication);
+  useUpdateApplicationProgress('Control & Operations');
 
   const handleAddNew = () => {
     dispatch(setShowControlOperationsForm(true));

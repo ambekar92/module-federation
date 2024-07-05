@@ -9,6 +9,7 @@ interface UseApplicationIdResult {
   applicationId: number | null;
   status: 'loading' | 'authenticated' | 'unauthenticated';
 	userEmail: string | null;
+	contributorId: number | null;
 }
 
 export function useApplicationId(): UseApplicationIdResult {
@@ -16,6 +17,7 @@ export function useApplicationId(): UseApplicationIdResult {
   const [userId, setUserId] = useState<number | null>(null);
   const [applicationId, setApplicationId] = useState<number | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [contributorId, setContributorId] = useState<number | null>(null);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user_id) {
@@ -37,10 +39,15 @@ export function useApplicationId(): UseApplicationIdResult {
           if (!applicationData || applicationData.length === 0) {
             throw new Error('Application data not found');
           }
+          // Get ID of the last item returned from applicationData
+          const appId = applicationData[applicationData.length - 1].id;
+          setApplicationId(appId);
 
-          const appId = await getApplicationContributorId(applicationData[0].id);
-          if (appId && appId.length > 0) {
-            setApplicationId(appId[appId.length - 1].id);
+          // Use id from application to get contributors for application
+          const contributorsData = await getApplicationContributorId(appId);
+          if (contributorsData && contributorsData.length > 0) {
+            // Get & Set the ID of the last item returned from contributorsData
+            setContributorId(contributorsData[contributorsData.length - 1].id);
           }
         } catch (error) {
           console.log('Application ID or user ID not found')
@@ -51,5 +58,5 @@ export function useApplicationId(): UseApplicationIdResult {
     fetchApplicationId();
   }, [userId]);
 
-  return { userId, applicationId, status, userEmail };
+  return { userId, applicationId, status, userEmail, contributorId };
 }

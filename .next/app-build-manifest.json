@@ -1,5 +1,11 @@
 {
   "pages": {
+    "/(entity)/assign-a-delegate/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/(entity)/assign-a-delegate/page.css",
+      "static/chunks/app/(entity)/assign-a-delegate/page.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -20,17 +26,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
-    ],
-    "/(evaluation)/firm/application/[application_id]/evaluation/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(evaluation)/firm/application/[application_id]/evaluation/page.js"
-    ],
-    "/(entity)/assign-a-delegate/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(entity)/assign-a-delegate/page.css",
-      "static/chunks/app/(entity)/assign-a-delegate/page.js"
     ],
     "/login/page": [
       "static/chunks/webpack.js",

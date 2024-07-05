@@ -1,13 +1,14 @@
+import { Show } from '@/app/shared/components/Show'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, ButtonGroup, ErrorMessage, Grid, Label, Radio, Select, TextInput } from '@trussworks/react-uswds'
-import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { setContributors, setCurrentOperatorEditIndex, setOperators, setShowControlOperationsForm } from '../../redux/applicationSlice'
+import { setCurrentOperatorEditIndex, setShowControlOperationsForm } from '../../redux/applicationSlice'
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks'
+import { useUserApplicationInfo } from '../../utils/useUserApplicationInfo'
 import { Contributor } from '../contributor-invite/types'
 import { Prefix, PrincipalType, Suffix, YesNo, defaultValues } from './constants-types'
 import { Operator, schema } from './schema'
-import { Show } from '@/app/shared/components/Show'
+import { useEffect } from 'react'
 
 const convertOperatorToContributor = (operator: Operator): Contributor => ({
   contributorRole: 'role_other',
@@ -17,49 +18,56 @@ const convertOperatorToContributor = (operator: Operator): Contributor => ({
 });
 
 const ControlOperationsForm = () => {
-  const { formState: { errors }, handleSubmit, control, watch, reset, setValue  } = useForm({
+  const { formState: { errors }, handleSubmit, control, reset, setValue } = useForm({
     resolver: zodResolver(schema),
     defaultValues,
   });
 
   const dispatch = useApplicationDispatch();
   const { operators, contributors, currentOperatorEditIndex, showControlOperationsForm } = useApplicationSelector((state) => state.application);
+  const { updateUserApplicationInfo } = useUserApplicationInfo();
 
   useEffect(() => {
-    const sub = watch((vals) => console.log(vals))
-    return () => sub.unsubscribe()
-  }, [])
-
-  useEffect(() => {
-    if (currentOperatorEditIndex !== null) {
-      const operator = operators[currentOperatorEditIndex];
-      reset(operator);
+    if (currentOperatorEditIndex !== null && operators[currentOperatorEditIndex]) {
+      const operatorToEdit = operators[currentOperatorEditIndex];
+      Object.keys(operatorToEdit).forEach((key) => {
+        setValue(key as keyof Operator, operatorToEdit[key as keyof Operator]);
+      });
     } else {
-      reset(defaultValues)
+      reset(defaultValues);
     }
-  }, [currentOperatorEditIndex])
+  }, [currentOperatorEditIndex, operators, setValue, reset]);
 
+  function onSubmit(formData: Operator) {
+    const isEditing = currentOperatorEditIndex !== null;
+    let updatedOperators;
+    let updatedContributors;
+
+    if (isEditing) {
+      updatedOperators = operators.map((operator, idx) =>
+        idx === currentOperatorEditIndex ? formData : operator
+      );
+      updatedContributors = contributors.map((contributor, index) =>
+        index === currentOperatorEditIndex ? convertOperatorToContributor(formData) : contributor
+      );
+    } else {
+      updatedOperators = [...operators, formData];
+      updatedContributors = [...contributors, convertOperatorToContributor(formData)];
+    }
+
+    updateUserApplicationInfo({
+      operators: updatedOperators,
+      contributors: updatedContributors
+    });
+
+    dispatch(setShowControlOperationsForm(false));
+    dispatch(setCurrentOperatorEditIndex(null));
+    reset(defaultValues);
+  }
 
   function handleCloseForm() {
     dispatch(setShowControlOperationsForm(false));
     dispatch(setCurrentOperatorEditIndex(null));
-  }
-
-  function onSubmit(formData: Operator) {
-    dispatch(setShowControlOperationsForm(false));
-    const isEditing = currentOperatorEditIndex !== null;
-    let updatedOperators;
-    if (isEditing) {
-      updatedOperators = operators.map((operator, idx) => idx === currentOperatorEditIndex ? formData : operator);
-      const updatedContributors = contributors.map((contributor, index) => index === currentOperatorEditIndex ? convertOperatorToContributor(formData) : contributor);
-      dispatch(setOperators(updatedOperators));
-      dispatch(setContributors(updatedContributors));
-    } else {
-      updatedOperators = [...operators, formData];
-      dispatch(setOperators(updatedOperators));
-      dispatch(setContributors([...contributors, convertOperatorToContributor(formData)]));
-    }
-    localStorage.setItem('operators', JSON.stringify(updatedOperators))
   }
 
   return (
@@ -96,8 +104,9 @@ const ControlOperationsForm = () => {
                 id='firstName'
                 name='firstName'
                 type='text'
-                onChange={field.onChange} 
-                validationStatus = { field.value ? (!errors.firstName?.message ? 'success' : 'error'): (errors.firstName?.message ? 'error' : undefined) }  
+                className='maxw-full'
+                onChange={field.onChange}
+                validationStatus = { field.value ? (!errors.firstName?.message ? 'success' : 'error'): (errors.firstName?.message ? 'error' : undefined) }
               />}
             />
             <ErrorMessage>{errors.firstName?.message}</ErrorMessage>
@@ -112,6 +121,7 @@ const ControlOperationsForm = () => {
                 value={field.value as string}
                 id='middleName'
                 name='middleName'
+                className='maxw-full'
                 type='text'
                 onChange={field.onChange}
               />}
@@ -121,7 +131,7 @@ const ControlOperationsForm = () => {
         <Grid row gap="md">
           <Grid className="display-flex flex-column" mobile={{ col: 10 }} tablet={{ col: 10 }}>
             <Label requiredMarker={true} htmlFor='lastName'>Last Name</Label>
-            
+
             <Controller<Operator>
               control={control}
               name='lastName'
@@ -160,7 +170,7 @@ const ControlOperationsForm = () => {
 
         <>
           <Label requiredMarker={true} htmlFor='emailAddress'>Email</Label>
-          
+
           <Controller<Operator>
             control={control}
             name='emailAddress'
@@ -178,7 +188,7 @@ const ControlOperationsForm = () => {
         </>
         <>
           <Label requiredMarker={true} htmlFor='title'>Title / Position</Label>
-          
+
           <Controller<Operator>
             control={control}
             name='position'
@@ -197,7 +207,7 @@ const ControlOperationsForm = () => {
 
         <>
           <Label htmlFor='principalType' requiredMarker={true}>Principal Type (Officer, Director, Member)</Label>
-          
+
           <Controller<Operator>
             control={control}
             name='principalType'
@@ -220,7 +230,7 @@ const ControlOperationsForm = () => {
 
         <Grid col className='margin-bottom-2'>
           <Label requiredMarker={true} htmlFor='licenseHolder'>License Holder</Label>
-          
+
           <Controller<Operator>
             control={control}
             name='licenseHolder'
@@ -234,17 +244,16 @@ const ControlOperationsForm = () => {
 
         <ButtonGroup className='margin-top-6 margin-left-2'>
           <Grid gap={6} row>
-            <Button onClick={handleSubmit(onSubmit)} type='submit'>Add</Button>
+            <Button onClick={handleSubmit(onSubmit)} type='submit'>{currentOperatorEditIndex !== null ? 'Update' : 'Add'}</Button>
             <Button onClick={handleCloseForm} type='button' unstyled >Cancel</Button>
           </Grid>
         </ButtonGroup>
       </Show.When>
       <Show.Otherwise>{null}</Show.Otherwise>
-        
+
     </Show>
 
   )
 }
 
 export default ControlOperationsForm
-

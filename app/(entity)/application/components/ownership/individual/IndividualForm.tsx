@@ -13,8 +13,8 @@ import { defaultValues } from './constants'
 import { IndividualFormType, schema } from './schema'
 
 type Props = {
-    handleAddOwner: SubmitHandler<any>,
-    editedItem: Owner | null
+	handleAddOwner: SubmitHandler<any>,
+	editedItem: Owner | null
 }
 
 const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
@@ -65,7 +65,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
                   value={field.value}
                   name={'firstName'}
                   onChange={field.onChange}
-                  type='text' id='first_name' placeholder='--' 
+                  type='text' id='first_name' placeholder='--'
                   validationStatus = { field.value ? (!methods.formState.errors?.firstName?.message ? 'success' : 'error'): (methods.formState.errors?.firstName?.message ? 'error' : undefined) } />
               } />
             <ErrorMessage>{methods.formState.errors?.firstName?.message}</ErrorMessage>

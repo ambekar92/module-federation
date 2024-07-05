@@ -96,6 +96,14 @@ const DelegateFormInputs = ({
     })
     const data = getValues()
     if (isValid) {
+      if (!userId) {
+        alert('You must be signed in to continue.');
+        return;
+      }
+      if(data?.email === session?.user?.email){
+        alert('Email ID should not be same as login user email ID.');
+        return
+      }
       // Dispatch the thunk to update delegates
       dispatch(
         addOrUpdateDelegate({
@@ -112,10 +120,6 @@ const DelegateFormInputs = ({
       dispatch(editDelegate(0))
       delegates.length === 0 && dispatch(updateInputKey())
       setShowForm(false)
-      if (!userId) {
-        alert('You must be signed in to continue.');
-        return;
-      }
 
       console.log(delegates);
       try {
@@ -149,7 +153,7 @@ const DelegateFormInputs = ({
           await fetcherPOST(INVITATION_ROUTE, postData);
         }
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     }
   }
@@ -161,11 +165,11 @@ const DelegateFormInputs = ({
         invitation_id: userId
       };
 
-      await fetcherPUT(SEND_INVITATION_DELEGATE, postData);
+      await fetcherPOST(SEND_INVITATION_DELEGATE, postData);
       closeModal();
       setInviteSent(true);
     } catch (error) {
-      console.error('Error in POST request:', error);
+      console.log('Error in POST request:', error);
       alert('An error has occurred.');
     }
   };

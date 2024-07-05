@@ -14,6 +14,7 @@ import getApplicationId from '@/app/shared/utility/getApplicationId';
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
 import { useSession } from 'next-auth/react';
 import { Rule } from '@/app/shared/types/questionnaireTypes';
+import { ReadOnly } from '@/app/shared/components/questionnaire/inputs/ReadOnly';
 
 interface QuestionnaireProps {
   url: string;
@@ -129,6 +130,17 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
       case 'text':
         return (
           <QaTextInput
+            key={subInputId}
+            isSubQuestion={true}
+            question={subQuestion}
+            inputId={subInputId}
+            handleChange={handleAnswerChange}
+            selectedAnswers={selectedAnswers}
+          />
+        );
+      case 'read_only':
+        return (
+          <ReadOnly
             key={subInputId}
             isSubQuestion={true}
             question={subQuestion}
@@ -290,6 +302,19 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
                 return null;
               })}
             </Grid>
+          </div>
+        );
+      case 'read_only':
+        return (
+          <div key={inputId}>
+            <ReadOnly
+              key={inputId}
+              isSubQuestion={false}
+              question={question}
+              inputId={inputId}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
+            />
           </div>
         );
       case 'textarea':

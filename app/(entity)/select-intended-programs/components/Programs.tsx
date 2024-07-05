@@ -11,49 +11,39 @@ import {
   sbaProgramOptions,
 } from '../../../constants/sba-programs'
 import ProgramCard from '../../../shared/components/ownership/ProgramCard'
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 
 function Programs() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([])
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
+  const { userId } = useApplicationId();
 
   const handlePostRequest = async () => {
-    if (!userId) {
-      alert('You must be signed in to continue.');
-      return;
-    }
-
     try {
-      const entityData = await getEntityByUserId(userId);
-      if (!entityData || entityData.length === 0) {
-        throw new Error('Entity data not found');
+      if(userId) {
+        const entityData = await getEntityByUserId(userId);
+        if (!entityData || entityData.length === 0) {
+          throw new Error('Entity data not found');
+        }
+
+        const postData = {
+          entity_id: entityData[0].id,
+          application_type_id: 1,
+          programs: selectedPrograms.map(program => program.id),
+          workflow_state: 'draft',
+          application_role_id: 1,
+          user_id: userId
+        };
+
+        await fetcherPOST(`${FIRM_APPLICATIONS_ROUTE}`, postData);
+
+        // Uncomment below to see response
+        // const response = await fetcherPOST(`${FIRM_APPLICATIONS_ROUTE}`, postData);
+        // console.log('POST Response:', response);
+
+        window.location.href = '/assign-a-delegate';
       }
-
-      const postData = {
-        entity_id: entityData[0].id,
-        application_type_id: 1,
-        programs: selectedPrograms.map(program => program.id),
-        workflow_state: 'draft',
-        application_role_id: 1,
-        user_id: userId
-      };
-
-      await fetcherPOST(`${FIRM_APPLICATIONS_ROUTE}`, postData);
-
-      // Uncomment below to see response
-      // const response = await fetcherPOST(`${FIRM_APPLICATIONS_ROUTE}`, postData);
-      // console.log('POST Response:', response);
-
-      window.location.href = '/assign-a-delegate';
-
     } catch (error) {
-      console.error('Error in POST request:', error);
+      console.log('Error in POST request:', error);
       alert(error);
     }
   };

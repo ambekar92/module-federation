@@ -1,10 +1,10 @@
 'use client'
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
 import { APPLICATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
-import { fetcherGET, fetcherPOST } from '@/app/services/fetcher';
+import { fetcherGET, fetcherPUT } from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { Button, ButtonGroup } from '@trussworks/react-uswds';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -12,9 +12,6 @@ import { QuestionnaireListType } from '../../components/questionnaire/utils/type
 import { setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../redux/hooks';
 import { applicationSteps } from '../../utils/constants';
-import getApplicationContributorId from '@/app/shared/utility/getApplicationContributorId';
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
-import getApplicationId from '@/app/shared/utility/getApplicationId';
 import QuestionnaireTemp from './QuestionnaireTemp';
 
 interface QuestionnairePageProps {
@@ -23,83 +20,48 @@ interface QuestionnairePageProps {
 
 function QuestionnairePage({ index }: QuestionnairePageProps) {
   const dispatch = useApplicationDispatch();
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
+  const { contributorId, applicationId } = useApplicationId();
   const [currentStep, setCurrentStep] = useState(index - 1);
   const [currentQuestionnaire, setCurrentQuestionnaire] = useState('');
-  const [applicationId, setApplicationId] = useState<number | null>(null);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
-
-  useEffect(() => {
-    const fetchApplicationId = async () => {
-      if (userId) {
-        const entityData = await getEntityByUserId(userId);
-        if (!entityData || entityData.length === 0) {
-          throw new Error('Entity data not found');
-        }
-
-        const applicationData = await getApplicationId(entityData[0].id);
-        if (!applicationData || applicationData.length === 0) {
-          throw new Error('Application data not found');
-        }
-
-        const appId = await getApplicationContributorId(applicationData[0].id);
-        // For testing
-        // const appId = await getApplicationContributorId(1);
-        if (appId && appId.length > 0) {
-          // console.log(appId[0].id);
-          setApplicationId(appId[appId.length - 1].id);
-        }
-      }
-    };
-
-    fetchApplicationId();
-  }, [userId]);
-
   const { data: questionnairesData, error } = useSWR(
-    applicationId ? `${QUESTIONNAIRE_LIST_ROUTE}/${applicationId}` : null,
+    contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
     fetcherGET<QuestionnaireListType>
   );
 
-  // const updateProgress = async () => {
-  //   try {
-  //     if (applicationId && questionnairesData) {
-  //       const postData = {
-  //         application_id: applicationId,
-  //         progress: questionnairesData[Math.min(currentStep, questionnairesData.length - 1)].title
-  //       };
-  //       // For testing
-  //       // const response = await fetcherPOST(APPLICATION_ROUTE, postData);
-  //       // console.log(response);
-
-  //       await fetcherPOST(APPLICATION_ROUTE, postData);
-  //     } else {
-  //       const customError = 'Application ID or user ID not found';
-  //       throw customError;
-  //     }
-  //   } catch (error) {
-  //     console.log('API error occurred');
-  //   }
-  // };
-
   useEffect(() => {
+    const updateProgress = async () => {
+      try {
+        if (applicationId && questionnairesData) {
+          const postData = {
+            application_id: applicationId,
+            progress: questionnairesData[Math.min(currentStep, questionnairesData.length - 1)].title
+          };
+          // For testing
+          // const response = await fetcherPOST(APPLICATION_ROUTE, postData);
+          // console.log(response);
+
+          await fetcherPUT(APPLICATION_ROUTE, postData);
+        } else {
+          const customError = 'Application ID or user ID not found';
+          throw customError;
+        }
+      } catch (error) {
+        console.log('API error occurred');
+      }
+    };
     if (questionnairesData) {
       const lastIndex = questionnairesData.length - 1;
       const safeIndex = currentStep > lastIndex ? lastIndex : currentStep;
       setCurrentQuestionnaire(`${QUESTIONNAIRE_ROUTE}/${questionnairesData[safeIndex].url}`);
-      // updateProgress();
+      updateProgress();
     }
-  }, [questionnairesData, currentStep]);
+  }, [questionnairesData, currentStep, applicationId]);
 
   if(error) {
     return <div>Error: {error.message}</div>;

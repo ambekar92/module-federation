@@ -41,13 +41,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({ business, open, handleClose
         owner_user_id: user_id,
         sam_entity_id: business.sam_entity.sam_entity_id
       }];
-
+      // console.log(postData);
       await fetcherPOST(`${ENTITY_ROUTE}`, postData);
       setPostSuccessful(true);
       handleClose();
     } catch (error: any) {
       setErrorMsg('network error');
-      setPostSuccessful(false); // temp fix
+      setPostSuccessful(false);
       handleOpen();
       return;
     }

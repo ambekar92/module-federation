@@ -12,14 +12,14 @@ import { QuestionnaireListType } from './utils/types';
 
 const Questionnaires = () => {
   const dispatch = useApplicationDispatch();
-  const { applicationId  } = useApplicationId();
+  const { contributorId } = useApplicationId();
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
   }, [dispatch]);
 
   const { data: questionnairesData, error } = useSWR(
-    applicationId ? `${QUESTIONNAIRE_LIST_ROUTE}/${applicationId}` : null,
+    contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
     fetcherGET<QuestionnaireListType>
   );
 

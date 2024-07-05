@@ -1,17 +1,19 @@
 'use client';
-import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
-import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { CREATING_APPLICATION_ROUTE } from '@/app/constants/routes';
 import { ProgramOption, sbaProgramOptions } from '@/app/constants/sba-programs';
+import { fetcherPOST } from '@/app/services/fetcher';
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import getApplicationId from '@/app/shared/utility/getApplicationId';
+import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
+import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
-import { fetcherPOST } from '@/app/services/fetcher';
-import { CREATING_APPLICATION_ROUTE } from '@/app/constants/routes';
-import { useSession } from 'next-auth/react';
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
-import getApplicationId from '@/app/shared/utility/getApplicationId';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 
 // Filters programs based on owner data
 const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
@@ -47,34 +49,15 @@ function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
+  const { applicationId } = useApplicationId();
+  useUpdateApplicationProgress('Eligible Programs');
 
   const dispatch = useApplicationDispatch();
 
   const handlePostRequest = async (): Promise<void> => {
-    if (!userId) {
-      alert('You must be signed in to continue.');
-      return;
-    }
     try {
-      const entityData = await getEntityByUserId(userId);
-      if (!entityData || entityData.length === 0) {
-        throw new Error('Entity data not found');
-      }
-      const applicationData = await getApplicationId(entityData[0].id);
-      if (!applicationData || applicationData.length === 0) {
-        throw new Error('Application data not found');
-      }
-
       const postData = {
-        application_id: applicationData[0].id,
+        application_id: applicationId,
         programs: selectedPrograms.map(program => program.id)
         // program_id: selectedPrograms[Math.ceil(Math.random() * selectedPrograms.length)].id
       };
@@ -84,7 +67,7 @@ function EligiblePrograms() {
       // const response = await fetcherPOST(`${CREATING_APPLICATION_ROUTE}`, postData);
       // console.log('POST Response:', response);
     } catch (error: any) {
-      console.error('POST request error:', error);
+      console.log('POST request error:', error);
       throw error;
     }
   }
@@ -95,7 +78,7 @@ function EligiblePrograms() {
       await handlePostRequest();
       window.location.href = applicationSteps.questionnaire.link;
     } catch (error: unknown) {
-      console.error('Error submitting data:', error);
+      console.log('Error submitting data:', error);
     } finally {
       setIsLoading(false);
     }

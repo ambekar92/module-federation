@@ -6,9 +6,11 @@ import { setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import DocumentMockload from '../components/document-uploads/DocumentMockload';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 
 function DocumentUpload() {
   const dispatch = useApplicationDispatch();
+  useUpdateApplicationProgress('Document Upload');
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.documentUpload.stepIndex));

@@ -12,10 +12,12 @@ import { applicationSteps } from '../utils/constants';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { fetcherPUT } from '@/app/services/fetcher';
 import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 
 const SignPage = () => {
   const dispatch = useApplicationDispatch();
   const { applicationId, userId } = useApplicationId();
+  useUpdateApplicationProgress('Sign Application');
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.sign.stepIndex));
@@ -41,7 +43,7 @@ const SignPage = () => {
       };
 
       await fetcherPUT(`${FIRM_APPLICATIONS_ROUTE}`, postData);
-      window.location.href = '/user/dashboard';
+      window.location.href = '/dashboard';
 
     } catch (error) {
       alert(error);

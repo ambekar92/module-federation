@@ -3,35 +3,53 @@ import { CustomTable } from '@/app/shared/components/CustomTable';
 import { Button, ButtonGroup, Grid, GridContainer, Label, TextInput } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { selectApplication, setContributors, setIsAddingContributor, setStep } from '../../redux/applicationSlice';
+import { selectApplication, setContributors, setIsAddingContributor, setOperators, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
 import { applicationSteps } from '../../utils/constants';
 import { Contributor } from './types';
-import { UserApplicationInfo } from '../ownership/Partnership';
 import InviteContributorModal from './InviteContributorModal';
+import { UserApplicationInfo, convertOwnerToContributor, useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
 
 function ContributorForm() {
+  const { updateUserApplicationInfo } = useUserApplicationInfo();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-
-  const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
+  const { isAddingContributor, contributors, operators } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
 
-  const updateUserApplicationInfo = (partialUpdate: Partial<UserApplicationInfo>) => {
-    const existingInfo: UserApplicationInfo = JSON.parse(localStorage.getItem('userApplicationInfo') || '{}');
-    const updatedInfo = { ...existingInfo, ...partialUpdate };
-    localStorage.setItem('userApplicationInfo', JSON.stringify(updatedInfo));
-    return updatedInfo;
+  const syncOwnersWithContributors = () => {
+    const userApplicationInfo = localStorage.getItem('userApplicationInfo');
+    if (userApplicationInfo) {
+      const { owners } = JSON.parse(userApplicationInfo) as UserApplicationInfo;
+      if (owners) {
+        const ownerContributors = owners.map(convertOwnerToContributor);
+        const nonOwnerContributors = contributors.filter(c => c.contributorRole !== 'role_owner');
+        const updatedContributors = [...ownerContributors, ...nonOwnerContributors];
+        dispatch(setContributors(updatedContributors));
+        updateUserApplicationInfo({ contributors: updatedContributors });
+      }
+    }
   };
 
   useEffect(() => {
+    syncOwnersWithContributors();
+  }, []);
+
+  useEffect(() => {
+    dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
+    dispatch(setIsAddingContributor(false));
     const userApplicationInfo = localStorage.getItem('userApplicationInfo');
     if (userApplicationInfo) {
-      const { contributors } = JSON.parse(userApplicationInfo) as UserApplicationInfo;
-      dispatch(setContributors(contributors));
+      const { contributors, operators } = JSON.parse(userApplicationInfo) as UserApplicationInfo;
+      if (contributors) {
+        dispatch(setContributors(contributors));
+      }
+      if (operators) {
+        dispatch(setOperators(operators));
+      }
     }
   }, [dispatch]);
 
@@ -45,9 +63,9 @@ function ContributorForm() {
 
   const handleAddOrUpdateContributor = () => {
     const requiredFieldsFilled =
-      firstName.trim() !== '' &&
-      lastName.trim() !== '' &&
-      emailAddress.trim() !== '';
+			firstName.trim() !== '' &&
+			lastName.trim() !== '' &&
+			emailAddress.trim() !== '';
 
     if (requiredFieldsFilled) {
       const newContributor: Contributor = {
@@ -119,11 +137,6 @@ function ContributorForm() {
     dispatch(setIsAddingContributor(true));
   };
 
-  useEffect(() => {
-    dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
-    dispatch(setIsAddingContributor(false));
-  }, [dispatch]);
-
   const roleDisplayName = (role: string) => {
     switch (role) {
       case 'role_owner':
@@ -161,14 +174,12 @@ function ContributorForm() {
       Email: contributor.emailAddress,
     }));
 
-  const otherTableRows = contributors
-    .filter(contributor => contributor.contributorRole === 'role_other')
-    .map((contributor, index) => ({
-      id: index,
-      Name: `${contributor.firstName} ${contributor.lastName}`,
-      Role: roleDisplayName(contributor.contributorRole),
-      Email: contributor.emailAddress,
-    }));
+  const operatorTableRows = operators.map((operator, index) => ({
+    id: index,
+    Name: `${operator.firstName} ${operator.lastName}`,
+    Role: roleDisplayName('role_other'),
+    Email: operator.emailAddress,
+  }));
 
   const closeModal = () => {
     setShowModal(false)
@@ -291,7 +302,7 @@ function ContributorForm() {
         </>
       )}
 
-      {otherTableRows.length > 0 && (
+      {operatorTableRows.length > 0 && (
         <>
           <h2>Control and Operation</h2>
           <p>Each of the following people involved with your firm must submit their information and questionnaire.</p>
@@ -306,7 +317,7 @@ function ContributorForm() {
 
           <CustomTable
             header={tableHeaders}
-            rows={otherTableRows}
+            rows={operatorTableRows}
             editable={true}
             remove={true}
             onEdit={handleEditOther}
