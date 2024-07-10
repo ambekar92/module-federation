@@ -5,12 +5,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { selectApplication, setContributors, setIsAddingContributor, setOperators, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
-import { applicationSteps } from '../../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../../utils/constants';
 import { Contributor } from './types';
 import InviteContributorModal from './InviteContributorModal';
 import { UserApplicationInfo, convertOwnerToContributor, useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
+import { QuestionnaireProps } from '../../utils/types';
 
-function ContributorForm() {
+function ContributorForm({contributorId}: QuestionnaireProps) {
   const { updateUserApplicationInfo } = useUserApplicationInfo();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -196,6 +197,7 @@ function ContributorForm() {
         open={showModal}
         handleSend={closeModal}
         handleCancel={closeModal}
+        contributorId={contributorId}
       />
       <h3 className="margin-y-0">Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</h3>
       <hr className="margin-y-3 width-full border-base-lightest" />
@@ -335,12 +337,12 @@ function ContributorForm() {
       <div className='flex-fill'></div>
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-top-2 margin-right-2px'>
-        <Link className='usa-button usa-button--outline' href={applicationSteps.documentUpload.link}>
+        <Link className='usa-button usa-button--outline' aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.documentUpload.link}`}>
           Previous
         </Link>
         {contributors.length === 0
           ? (
-            <Link className='usa-button' href={applicationSteps.sign.link}>
+            <Link className='usa-button' aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.sign.link}`}>
           		Next
         		</Link>
           ): (

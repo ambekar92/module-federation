@@ -1,32 +1,26 @@
 'use client'
 import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
 import { fetcherPOST } from '@/app/services/fetcher'
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import { Button, Grid } from '@trussworks/react-uswds'
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   ProgramOption,
   sbaProgramOptions,
 } from '../../../constants/sba-programs'
 import ProgramCard from '../../../shared/components/ownership/ProgramCard'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 
 function Programs() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([])
-  const { userId } = useApplicationId();
+  const { userId, entityId } = useApplicationId();
 
   const handlePostRequest = async () => {
     try {
       if(userId) {
-        const entityData = await getEntityByUserId(userId);
-        if (!entityData || entityData.length === 0) {
-          throw new Error('Entity data not found');
-        }
-
         const postData = {
-          entity_id: entityData[0].id,
+          entity_id: entityId,
           application_type_id: 1,
           programs: selectedPrograms.map(program => program.id),
           workflow_state: 'draft',
@@ -37,6 +31,7 @@ function Programs() {
         await fetcherPOST(`${FIRM_APPLICATIONS_ROUTE}`, postData);
 
         // Uncomment below to see response
+        // console.log(postData)
         // const response = await fetcherPOST(`${FIRM_APPLICATIONS_ROUTE}`, postData);
         // console.log('POST Response:', response);
 

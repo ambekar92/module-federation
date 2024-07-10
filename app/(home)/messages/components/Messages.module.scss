@@ -1,56 +1,89 @@
 @use 'colors' as *;
 
-.usa-search-blue-button {
-  width: 70px;
-  height: 56px;
-  border: none;
-  background: var(--blues-border-lighter, #005ea2);
-  background-position: center;
+@media (max-width: 768px) {
+	.mobile-grid-container {
+		display: grid;
+		grid-template-columns: auto auto auto auto auto;
+		padding: 5px;
+		padding-left: 0px;
+		font-size: 35px;
+		font-family: "Source Sans 3";
+	}
+
+	.item5 {
+		padding-top: 20px;
+		padding-left: 20px;
+	}
 }
 
-.img .usa-search-icon {
-  width: 50px;
+.name-text {
+	font-size: 16px;
+	font-weight: 400;
 }
 
-.usa-message-center {
-  font-size: 40px;
-  font-weight: 700;
-  padding-left: 20px;
-  @media (max-width: 768px) {
-    font-size: 40px;
-    font-weight: 700;
-    padding-left: 20px;
-  }
+.name-mail {
+	font-size: 12px;
+	font-weight: 400;
+	font-style: italic;
 }
 
-.usa-message-filter {
-  @media (max-width: 768px) {
-    padding-left: 20px;
-    padding-bottom: 20px;
-  }
+.email-dot-icon {
+	grid-row: 1/4;
+	padding: 10px 5px 0px 0px;
+
 }
 
-.main-container {
-  padding-top: 40px;
-  padding-bottom: 10px;
-  @media (max-width: 768px) {
-    padding-top: 0px;
-  }
+.email-icon {
+	grid-row: 1/4;
+	font-size: 40px;
+	margin-right: 0px;
 }
 
-.main-container-icon {
-  padding-top: 5px;
-  padding-right: 15px;
+
+.email-dot {
+	font-size: 14px;
+	padding: 3px 5px 0px 0px;
+}
+
+.email-focused {
+	border-left: 4px solid #005EA2;
+}
+
+.email-image {
+	font-size: 14px;
+}
+
+.email-title {
+	font-size: 18px;
+}
+
+.row-spaces {
+	margin: 5px 0px 5px 0px;
+}
+
+.line {
+	border: none;
+	border-top: 1px solid #DFE1E2;
+	margin: 13px 0;
+	width: 150%;
+	margin-left: -20%;
+}
+
+.input {
+	&-search {
+		&.input-search {
+			height: 40px;
+			min-height: 40px;
+		}
+	}
+}
+.usa-search-icon {
+  width: 18px;
+	height: 18px;
 }
 .message-center-search {
   padding-left: 15px;
   @media (max-width: 768px) {
     padding-left: 20px;
   }
-}
-
-.usa-email {
-  border-color: white;
-  float: left;
-  padding: 0px 0px 0px 0px;
 }

@@ -54,18 +54,32 @@ export const fetcherGET = async <T>(url: string): Promise<T> => {
 }
 
 // POST fetcher
-export const fetcherPOST = async <T>(url: string, param: any): Promise<T> => {
+export const fetcherPOST = async <T>(url: string, data: any, options?: { headers?: { 'Content-Type'?: string } }): Promise<T> => {
   try {
-    const response = await axiosInstance.post<T>(url, param)
-    if (response.status < 200 || response.status >= 300) {
-      throw new Error(`HTTP error, status = ${response.status}`)
+    let headers = options?.headers || {};
+    if (data instanceof FormData) {
+      headers = {
+        ...headers,
+        'Content-Type': 'multipart/form-data',
+      };
+    } else if (!headers['Content-Type']) {
+      headers = {
+        ...headers,
+        'Content-Type': 'application/json',
+      };
     }
-    return response.data
+    const response = await axiosInstance.post<T>(url, data, { headers });
+
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`HTTP error, status = ${response.status}`);
+    }
+
+    return response.data;
   } catch (error) {
-    handleResponseError(error)
-    throw error
+    handleResponseError(error);
+    throw error;
   }
-}
+};
 
 // POST fetcher
 export const fetcherPUT = async <T>(url: string, param: any): Promise<T> => {

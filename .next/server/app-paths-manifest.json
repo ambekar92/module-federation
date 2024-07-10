@@ -1,5 +1,8 @@
 {
+  "/(entity)/claim-your-business/page": "app/(entity)/claim-your-business/page.js",
+  "/(evaluation)/firm/[application_id]/documents/page": "app/(evaluation)/firm/[application_id]/documents/page.js",
+  "/api/auth/csrf": "app/api/auth/csrf.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
   "/(entity)/assign-a-delegate/page": "app/(entity)/assign-a-delegate/page.js",
-  "/page": "app/page.js",
-  "/login/page": "app/login/page.js"
+  "/(evaluation)/firm/application/[application_id]/documents/page": "app/(evaluation)/firm/application/[application_id]/documents/page.js"
 }

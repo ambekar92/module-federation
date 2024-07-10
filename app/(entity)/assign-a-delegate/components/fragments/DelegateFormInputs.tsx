@@ -1,6 +1,7 @@
-import { INVITATION_ROUTE } from '@/app/constants/routes'
-import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher'
-import getApplicationId from '@/app/shared/utility/getApplicationId'
+import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
+import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
+import { fetcherGET, fetcherPOST, fetcherPUT } from '@/app/services/fetcher'
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import {
   Button,
@@ -12,7 +13,7 @@ import {
 } from '@trussworks/react-uswds'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   Control,
   Controller,
@@ -25,20 +26,21 @@ import {
   UseFormStateReturn,
   UseFormTrigger,
 } from 'react-hook-form'
+import useSWR from 'swr'
 import {
   addOrUpdateDelegate,
   editDelegate,
   selectForm,
+  setDelegates,
   setEditingDelegate,
   updateInputKey,
 } from '../store/formSlice'
 import { useFormDispatch, useFormSelector } from '../store/hooks'
-import { delegateInputDetails, filterText } from '../utils/helpers'
-import { DelegateFormInputType, FormDelegateType } from '../utils/types'
+import { delegateInputDetails } from '../utils/helpers'
+import { DelegateFormInputType, DelegatesResponse, FormDelegateType } from '../utils/types'
+import Styles from './DelegateForm.module.scss'
 import DelegateTable from './DelegateTable'
 import InviteModal from './InviteModal'
-import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
-import Styles from './DelegateForm.module.scss';
 
 interface FormInputInterface {
   showModal: boolean
@@ -53,7 +55,12 @@ interface FormInputInterface {
   reset: UseFormReset<DelegateFormInputType>
   trigger: UseFormTrigger<DelegateFormInputType>
   getValues: UseFormGetValues<DelegateFormInputType>
-  touchedFields: UseFormStateReturn<DelegateFormInputType>['touchedFields']
+  touchedFields: UseFormStateReturn<DelegateFormInputType>['touchedFields'],
+	userDetails: {
+		userId: number | null ,
+		applicationId: number | null,
+		contributorId: number | null
+	}
 }
 
 const fieldKeys: (keyof DelegateFormInputType)[] = [
@@ -63,32 +70,40 @@ const fieldKeys: (keyof DelegateFormInputType)[] = [
 ]
 
 const DelegateFormInputs = ({
-  showModal,
-  handleNext,
-  handlePrevious,
-  closeModal,
-  control,
-  errors,
-  handleSubmit,
-  isValid,
-  setValue,
-  getValues,
-  trigger,
-  reset,
-  touchedFields,
+  showModal, handleNext,
+  handlePrevious, closeModal,
+  control, errors, handleSubmit,
+  isValid, setValue, getValues,
+  trigger, reset, touchedFields,
+  userDetails
 }: FormInputInterface) => {
-  const dispatch = useFormDispatch()
-  const { delegates, editingDelegate } = useFormSelector(selectForm)
-  const [showForm, setShowForm] = useState(true)
-  const [inviteSent, setInviteSent] = useState(false)
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
+  const { userId, applicationId, contributorId } = userDetails
+  const dispatch = useFormDispatch();
+  const { delegates, editingDelegate } = useFormSelector(selectForm);
+  const [showForm, setShowForm] = useState(true);
+  const [inviteSent, setInviteSent] = useState(false);
+  const { data: session } = useSession();
+  const [emailValiadate, setEmailValiadate] = useState(false)
 
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
+  const { data: delegatesData, error } = useSWR(
+    (contributorId) ? `${DELEGATES_ROUTE}/${contributorId}` : null,
+		fetcherGET<DelegatesResponse[]>,
+		{ revalidateOnFocus: false }
+  );
+
+  if(error) {
+    return <></>
+  }
+
+  if(delegatesData) {
+    setShowForm(false)
+    setDelegates([{
+      id: delegatesData[0].id,
+      firstName: delegatesData[0].first_name,
+      lastName: delegatesData[0].last_name,
+      email: delegatesData[0].email,
+    }])
+  }
 
   const onSubmit: SubmitHandler<DelegateFormInputType> = async () => {
     const isValid = await trigger(['firstName', 'lastName', 'email'], {
@@ -101,9 +116,12 @@ const DelegateFormInputs = ({
         return;
       }
       if(data?.email === session?.user?.email){
-        alert('Email ID should not be same as login user email ID.');
+        setEmailValiadate(true);
         return
+      }else{
+        setEmailValiadate(false);
       }
+
       // Dispatch the thunk to update delegates
       dispatch(
         addOrUpdateDelegate({
@@ -121,16 +139,10 @@ const DelegateFormInputs = ({
       delegates.length === 0 && dispatch(updateInputKey())
       setShowForm(false)
 
-      console.log(delegates);
       try {
         const entityData = await getEntityByUserId(userId);
         if (!entityData || entityData.length === 0) {
           throw new Error('Entity data not found');
-        }
-
-        const applicationData = await getApplicationId(entityData[0].id);
-        if (!applicationData || applicationData.length === 0) {
-          throw new Error('Application data not found');
         }
 
         if(editingDelegate) {
@@ -138,19 +150,23 @@ const DelegateFormInputs = ({
             id: userId,
             email: data.email,
             first_name: data.firstName,
-            last_name: data.lastName
+            last_name: data.lastName,
           };
           await fetcherPUT(INVITATION_ROUTE, postData);
+          // const response = await fetcherPUT(INVITATION_ROUTE, postData);
+          // console.log(response)
         } else {
           const postData = {
-            application_id: applicationData[0].id,
+            application_id: applicationId,
             email: data.email,
-            entity_id: entityData[0].id,
+            entity_id: entityData[entityData.length - 1].id,
             application_role_id: 5,
             first_name: data.firstName,
             last_name: data.lastName
           };
           await fetcherPOST(INVITATION_ROUTE, postData);
+          // const response = await fetcherPOST(INVITATION_ROUTE, postData);
+          // console.log(response)
         }
       } catch (error) {
         console.log(error);
@@ -169,7 +185,7 @@ const DelegateFormInputs = ({
       closeModal();
       setInviteSent(true);
     } catch (error) {
-      console.log('Error in POST request:', error);
+      // console.log('Error in POST request:', error);
       alert('An error has occurred.');
     }
   };
@@ -185,19 +201,18 @@ const DelegateFormInputs = ({
       lastName: '',
       email: '',
     })
-    if (delegates.length > 0) {
+    if (delegates.length === 0) {
       dispatch(setEditingDelegate(null));
-      setShowForm(false);
       setInviteSent(false)
+    } else {
+      setShowForm(false);
     }
-  }
-
-  const displayForm = () => {
-    setShowForm(true)
   }
 
   const handleEditDelegate = (index: number) => {
     const delegate = delegates[index]
+    if(!delegate) {return;}
+
     Object.entries(delegate).forEach(([key, value]) => {
       if (key !== 'id') {
         setValue(
@@ -207,7 +222,7 @@ const DelegateFormInputs = ({
       }
     })
     dispatch(editDelegate(index))
-    displayForm()
+    setShowForm(true)
   }
 
   return (
@@ -278,15 +293,9 @@ const DelegateFormInputs = ({
                           ? 'icon maxw-full width-full'
                           : 'maxw-full width-full'
                       }
-                      onChange={(e) =>
-                        field.onChange(
-                          key === 'firstName' || key === 'lastName'
-                            ? filterText(e.target.value, false)
-                            : e,
-                        )
-                      }
+                      onChange={(e) =>field.onChange(e)}
                       validationStatus={
-                        errors[key]
+                        errors[key] || emailValiadate && (key === 'email')
                           ? 'error'
                           : touchedFields[key]
                             ? 'success'
@@ -297,8 +306,15 @@ const DelegateFormInputs = ({
                   )}
                 />
                 <div className="usa-input-helper-text margin-top-1">
-                  <span className={errors[key] && 'text-secondary-dark'}>
-                    {delegateInputDetails[key].fieldHelper}
+                  <span className={
+                    errors[key] && 'text-secondary-dark' ||
+                    (emailValiadate && (key === 'email')) && 'text-secondary-dark'
+                  }>
+                    {
+                      (emailValiadate && (key === 'email'))
+                        ? 'Email ID should not be same as login user email ID.'
+                        : delegateInputDetails[key].fieldHelper
+                    }
                   </span>
                 </div>
               </Grid>
@@ -323,7 +339,7 @@ const DelegateFormInputs = ({
 
         {!showForm &&
           <Grid row className="margin-right-2 width-full">
-            <DelegateTable inviteSent={inviteSent} />
+            <DelegateTable delegatesData={delegatesData} />
           </Grid>
         }
 
@@ -335,7 +351,8 @@ const DelegateFormInputs = ({
           {inviteSent
             ? (
               <Link
-                href={'/application/ownership'}
+                aria-disabled={!contributorId}
+                href={`/application/questionnaire/${contributorId}/ownership`}
                 className="usa-button"
               >
 								Next

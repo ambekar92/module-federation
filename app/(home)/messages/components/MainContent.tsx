@@ -1,14 +1,6 @@
 'use client'
-import {
-  Button,
-  ButtonGroup,
-  Grid,
-  TextInput
-} from '@trussworks/react-uswds'
 import { useState } from 'react'
-import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import { firstRow, secondRow } from '../utils/constants'
 
 function MainContent() {
   const [value, setValue] = useState('')

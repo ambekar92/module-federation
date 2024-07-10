@@ -9,20 +9,20 @@ type InputProps<T extends FieldValues> = {
 } & Partial<Pick<HTMLInputElement, 'disabled'| 'required' | 'type'>>
 
 const Input = <T extends FieldValues>({name, label, hint, ...props}: InputProps<T>) => {
-    const {control} = useFormContext<T>();
+  const {control} = useFormContext<T>();
   return (
     <Controller
-        name={name}
-        control={control}
-        render={({field, fieldState: {error}}) => (
-            <FormGroup error={!!error} className="bg-white radius-sm padding-4">
-                <Label error={!!error} htmlFor={name} requiredMarker={props.required}>{label}</Label>
-                <span className='text-base'>{hint}</span>
-                <ErrorMessage>{error?.message}</ErrorMessage>
-                <TextInput value={field.value} onChange={field.onChange} id={name} name={name} type={props.type as any} disabled={props.disabled}/>
-            </FormGroup>
-        )}
-     />
+      name={name}
+      control={control}
+      render={({field, fieldState: {error}}) => (
+        <FormGroup error={!!error} className="bg-white radius-sm padding-4">
+          <Label error={!!error} htmlFor={name} requiredMarker={props.required}>{label}</Label>
+          <span className='text-base'>{hint}</span>
+          <ErrorMessage>{error?.message}</ErrorMessage>
+          <TextInput value={field.value} onChange={field.onChange} id={name} name={name} type={props.type as any} disabled={props.disabled}/>
+        </FormGroup>
+      )}
+    />
   )
 }
 

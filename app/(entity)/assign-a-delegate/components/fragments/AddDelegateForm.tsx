@@ -13,12 +13,15 @@ import { useForm } from 'react-hook-form'
 import { DelegateFormSchema } from '../utils/schemas'
 import { DelegateFormInputType } from '../utils/types'
 import DelegateFormInputs from './DelegateFormInputs'
+import { setDelegates } from '../store/formSlice'
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 
 function AddDelegateForm() {
   const [option, setOption] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const steps = ['Add Delegate', 'Invite Modal']
+  const { userId, applicationId, contributorId } = useApplicationId();
 
   const closeModal = () => {
     setShowModal(false)
@@ -59,6 +62,9 @@ function AddDelegateForm() {
   })
 
   const onChange = (selectedOption: string) => {
+    if(selectedOption === 'no') {
+      setDelegates([]);
+    }
     setOption(selectedOption)
   }
 
@@ -124,6 +130,7 @@ function AddDelegateForm() {
             getValues={getValues}
             trigger={trigger}
             reset={reset}
+            userDetails={{userId, applicationId, contributorId}}
           />
         </Grid>
       )
@@ -134,7 +141,8 @@ function AddDelegateForm() {
           <hr className="width-full" />
           <ButtonGroup className="display-flex">
             <Link
-              href={'/application/ownership'}
+              aria-disabled={!contributorId}
+              href={`/application/${contributorId}/ownership`}
               className="float-right usa-button"
             >
               Next

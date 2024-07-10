@@ -1,5 +1,5 @@
-import { DOCUMENT_REQUIRED_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher';
+import { DOCUMENT_REQUIRED_ROUTE, GET_DOCUMENTS } from '@/app/constants/routes';
+import { fetcherGET, fetcherPOST } from '@/app/services/fetcher';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { Button, ButtonGroup, Icon, Table } from '@trussworks/react-uswds';
 import { useSession } from 'next-auth/react';
@@ -23,14 +23,15 @@ interface DocumentsState {
 
 const DocumentUploads = () => {
   const { data: session } = useSession();
-  const { applicationId } = useApplicationId();
+  const { contributorId } = useApplicationId();
   const { data: questions, error } = useSWR(
-    applicationId ? `${DOCUMENT_REQUIRED_ROUTE}/${applicationId}` : null,
+    contributorId ? `${DOCUMENT_REQUIRED_ROUTE}/${contributorId}` : null,
 		fetcherGET<DocumentUploadType>
   );
   const [documents, setDocuments] = useState<DocumentsState>({});
   const [editMode, setEditMode] = useState<{ [key: string]: boolean }>({});
   const [originalDocuments, setOriginalDocuments] = useState<DocumentsState>({});
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (questions) {
@@ -42,28 +43,47 @@ const DocumentUploads = () => {
     }
   }, [questions]);
 
-  const handleFileUpload = (sectionName: string, subSectionName: string, file: File, replaceIndex: number | null = null) => {
-    const newDocument: DocumentDetails = {
-      name: file.name,
-      author: session?.user?.name || '',
-      created: new Date().toLocaleDateString(),
-      program: 'General',
-      type: file.type,
-    };
+  const handleFileUpload = async (sectionName: string, subSectionName: string, file: File, replaceIndex: number | null = null) => {
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+      formData.append('document_type_id', '1'); // temp until api in sync
+      formData.append('internal_document', 'false');
+      formData.append('hubzone_key', '1');
 
-    setDocuments(prevDocuments => {
-      const updatedSubSection = replaceIndex !== null
-        ? prevDocuments[sectionName][subSectionName].map((doc, index) => index === replaceIndex ? newDocument : doc)
-        : [...(prevDocuments[sectionName]?.[subSectionName] || []), newDocument];
+      const response = await fetcherPOST(`${GET_DOCUMENTS}/?application_contributor_id=${contributorId}`, formData);
 
-      return {
-        ...prevDocuments,
-        [sectionName]: {
-          ...prevDocuments[sectionName],
-          [subSectionName]: updatedSubSection,
-        },
-      };
-    });
+      if (response) {
+        const newDocument: DocumentDetails = {
+          name: file.name,
+          author: session?.user?.name || '',
+          created: new Date().toLocaleDateString(),
+          program: 'General',
+          type: file.type,
+        };
+
+        setDocuments(prevDocuments => {
+          const updatedSubSection = replaceIndex !== null
+            ? prevDocuments[sectionName][subSectionName].map((doc, index) => index === replaceIndex ? newDocument : doc)
+            : [...(prevDocuments[sectionName]?.[subSectionName] || []), newDocument];
+
+          return {
+            ...prevDocuments,
+            [sectionName]: {
+              ...prevDocuments[sectionName],
+              [subSectionName]: updatedSubSection,
+            },
+          };
+        });
+      } else {
+        throw new Error('Failed to upload file');
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleAddNewClick = (sectionName: string, subSectionName: string) => {
@@ -139,11 +159,13 @@ const DocumentUploads = () => {
                 <Button outline type='button' onClick={() => toggleEditMode(question.name)}>
                   {editMode[question.name] ? 'Cancel' : 'Edit'}
                 </Button>
+                {!editMode[question.name] && (
+                  <Button type='button' onClick={() => handleAddNewClick(question.name, question.title)} disabled={isUploading}>
+                    {isUploading ? 'Uploading...' : 'Add New'}
+                  </Button>
+                )}
                 {editMode[question.name] && (
                   <Button type='button' onClick={handleSave}>Save</Button>
-                )}
-                {!editMode[question.name] && (
-                  <Button type='button' onClick={() => handleAddNewClick(question.name, question.title)}>Add New</Button>
                 )}
               </ButtonGroup>
             </div>
@@ -155,8 +177,7 @@ const DocumentUploads = () => {
                   <th scope='col'>Created</th>
                   <th scope='col'>Program</th>
                   <th scope='col'>Type</th>
-                  <th scope='col'>Actions</th>
-                  {editMode[question.name] && <th scope='col'>Delete</th>}
+                  {editMode[question.name] && <th scope='col'>Actions</th>}
                 </tr>
               </thead>
               <tbody>
@@ -167,19 +188,16 @@ const DocumentUploads = () => {
                     <td>{doc.created}</td>
                     <td>{doc.program}</td>
                     <td>{doc.type}</td>
-                    <td>
-                      <div className='display-flex'>
-                        <Button unstyled type='button' onClick={() => handleReplaceDocumentClick(question.name, question.title, docIndex)}>Replace Document</Button>
-                        <Button unstyled className='text-no-underline display-flex flex-align-center hover:text-no-underline' type='button' onClick={() => handleDeleteDocument(question.name, question.title, docIndex)}>
-                          <Icon.Delete /> Delete
-                        </Button>
-                      </div>
-                    </td>
                     {editMode[question.name] && (
                       <td>
-                        <Button unstyled className='text-no-underline display-flex flex-align-center hover:text-no-underline' type='button' onClick={() => handleDeleteDocument(question.name, question.title, docIndex)}>
-                          <Icon.Delete /> Delete
-                        </Button>
+                        <div className='display-flex flex-justify-center'>
+                          <Button type='button' onClick={() => handleReplaceDocumentClick(question.name, question.title, docIndex)} disabled={isUploading}>
+                            {isUploading ? 'Uploading...' : 'Replace Document'}
+                          </Button>
+                          <Button unstyled className='text-no-underline display-flex flex-align-center hover:text-no-underline margin-left-2' type='button' onClick={() => handleDeleteDocument(question.name, question.title, docIndex)}>
+                            <Icon.Delete /> Delete
+                          </Button>
+                        </div>
                       </td>
                     )}
                   </tr>

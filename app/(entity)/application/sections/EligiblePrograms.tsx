@@ -1,18 +1,16 @@
 'use client';
-import { CREATING_APPLICATION_ROUTE } from '@/app/constants/routes';
+import { ELIGIBLE_APPLY_PROGRAMS_ROUTE, CREATING_APPLICATION_ROUTE } from '@/app/constants/routes';
 import { ProgramOption, sbaProgramOptions } from '@/app/constants/sba-programs';
-import { fetcherPOST } from '@/app/services/fetcher';
+import { fetcherPUT, fetcherPOST } from '@/app/services/fetcher';
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
-import getApplicationId from '@/app/shared/utility/getApplicationId';
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
-import { applicationSteps } from '../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../utils/constants';
+import { QuestionnaireProps } from '../utils/types';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 
 // Filters programs based on owner data
@@ -45,11 +43,11 @@ const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
   });
 };
 
-function EligiblePrograms() {
+function EligiblePrograms({contributorId}: QuestionnaireProps) {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { applicationId } = useApplicationId();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   useUpdateApplicationProgress('Eligible Programs');
 
   const dispatch = useApplicationDispatch();
@@ -59,15 +57,15 @@ function EligiblePrograms() {
       const postData = {
         application_id: applicationId,
         programs: selectedPrograms.map(program => program.id)
-        // program_id: selectedPrograms[Math.ceil(Math.random() * selectedPrograms.length)].id
       };
 
+      await fetcherPUT(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
       await fetcherPOST(`${CREATING_APPLICATION_ROUTE}`, postData);
       // Uncomment below to see response
-      // const response = await fetcherPOST(`${CREATING_APPLICATION_ROUTE}`, postData);
-      // console.log('POST Response:', response);
+      // const response = await fetcherPUT(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
+      // console.log('PUT Response:', response);
     } catch (error: any) {
-      console.log('POST request error:', error);
+      console.log('PUT request error:', error);
       throw error;
     }
   }
@@ -76,7 +74,7 @@ function EligiblePrograms() {
     setIsLoading(true);
     try {
       await handlePostRequest();
-      window.location.href = applicationSteps.questionnaire.link;
+      window.location.href = `${qaAppLinkPrefix}/questionnaire/${contributorId}`
     } catch (error: unknown) {
       console.log('Error submitting data:', error);
     } finally {
@@ -123,7 +121,7 @@ function EligiblePrograms() {
           : 'To which programs would you like to apply today?'
         }
       </h1>
-      {eligiblePrograms.length > 0 ? <p>You appear to be eligible for the programs below. s for which you&apos;d like to apply.</p> : null}
+      {eligiblePrograms.length > 0 ? <p>You appear to be eligible for the program(s) below for which you&apos;d like to apply.</p> : null}
       <Grid row gap>
         {eligiblePrograms.map((program, index) => (
           <Grid key={index} className='margin-bottom-2' desktop={{ col: 6 }} tablet={{ col: 12 }} mobile={{ col: 12 }}>
@@ -151,7 +149,7 @@ function EligiblePrograms() {
       <div className='flex-fill'></div>
       <hr className='margin-y-3 width-full border-base-lightest'/>
       <ButtonGroup className='display-flex flex-justify'>
-        <Link href={applicationSteps.controlAndOwnership.link} className='usa-button usa-button--outline'>
+        <Link aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.controlAndOwnership.link}`} className='usa-button usa-button--outline'>
     			Back
         </Link>
         {eligiblePrograms.length === 0 ? (

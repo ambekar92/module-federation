@@ -4,11 +4,12 @@ import { useEffect } from 'react';
 import DocumentUploads from '../components/document-uploads/DocumentUploads';
 import { setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
-import { applicationSteps } from '../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../utils/constants';
 import DocumentMockload from '../components/document-uploads/DocumentMockload';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import { QuestionnaireProps } from '../utils/types';
 
-function DocumentUpload() {
+function DocumentUpload({contributorId}: QuestionnaireProps) {
   const dispatch = useApplicationDispatch();
   useUpdateApplicationProgress('Document Upload');
 
@@ -22,10 +23,12 @@ function DocumentUpload() {
       <DocumentUploads />
       {/* <DocumentMockload /> */}
       <ButtonGroup className='display-flex flex-justify margin-top-2 margin-right-2px'>
-        <Link className='usa-button usa-button--outline' href='/application/questionnaire-hubzone-calculator'>
+        <Link className='usa-button usa-button--outline'
+				 aria-disabled={!contributorId}
+				 href={`/application/questionnaire/${contributorId}/individual-contributor-hubzone-business-relationships`}>
           Previous
         </Link>
-        <Link className='usa-button' href={applicationSteps.contributorInvitation.link}>
+        <Link className='usa-button' aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.contributorInvitation.link}`}>
             Next
         </Link>
       </ButtonGroup>

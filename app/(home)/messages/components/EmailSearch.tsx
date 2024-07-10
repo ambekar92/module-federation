@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { EmailSearchLayoutProps } from '../utils/types'
+import { EmailSearchLayoutProps } from '../types'
 import {
   Grid,
   TextInput

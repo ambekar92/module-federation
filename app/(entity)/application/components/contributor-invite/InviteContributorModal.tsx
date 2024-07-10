@@ -10,9 +10,10 @@ import {
   Label,
 } from '@trussworks/react-uswds'
 import Link from 'next/link'
-import { applicationSteps } from '../../utils/constants'
+import { applicationSteps, qaAppLinkPrefix } from '../../utils/constants'
+import { QuestionnaireProps } from '../../utils/types'
 
-interface InviteContributorModalProps {
+interface InviteContributorModalProps extends QuestionnaireProps {
   open: boolean
   handleSend: () => void
   handleCancel: () => void
@@ -22,6 +23,7 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
   open,
   handleSend,
   handleCancel,
+  contributorId
 }) => {
   return (
     <>
@@ -53,7 +55,8 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
                 Cancel
               </Button>
               <Link
-                href={applicationSteps.sign.link}
+                aria-disabled={!contributorId}
+                href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.sign.link}`}
                 className="float-right usa-button"
                 onClick={handleSend}
               >

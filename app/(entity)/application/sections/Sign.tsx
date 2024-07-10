@@ -8,15 +8,15 @@ import QuestionContent from '../components/questionnaire/QuestionContent';
 import AttestationJSON from '../utils/form-data.json';
 import { useApplicationDispatch } from '../redux/hooks';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
-import { applicationSteps } from '../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../utils/constants';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { fetcherPUT } from '@/app/services/fetcher';
 import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 
-const SignPage = () => {
+function SignPage() {
+  const { contributorId, applicationId, userId } = useApplicationId();
   const dispatch = useApplicationDispatch();
-  const { applicationId, userId } = useApplicationId();
   useUpdateApplicationProgress('Sign Application');
 
   useEffect(() => {
@@ -36,15 +36,18 @@ const SignPage = () => {
 
   const handlePostRequest = async () => {
     try {
-      const postData = {
-        application_id: applicationId,
-  			signed_by_id: userId,
-  			agree_to_statement: true
-      };
+      if(applicationId) {
+        const postData = {
+          application_id: applicationId,
+          signed_by_id: userId,
+          agree_to_statement: true
+        };
 
-      await fetcherPUT(`${FIRM_APPLICATIONS_ROUTE}`, postData);
-      window.location.href = '/dashboard';
-
+        await fetcherPUT(`${FIRM_APPLICATIONS_ROUTE}`, postData);
+        window.location.href = '/dashboard';
+      } else {
+        console.log('PUT request failed')
+      }
     } catch (error) {
       alert(error);
     }
@@ -60,7 +63,10 @@ const SignPage = () => {
       />
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        <Link className='usa-button' href={applicationSteps.contributorInvitation.link}>
+        <Link className='usa-button'
+				 aria-disabled={!contributorId}
+				 href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.contributorInvitation.link}`}
+				 >
           Previous
         </Link>
         <Button type='button' onClick={handleModalToggle}>Submit</Button>

@@ -20,15 +20,17 @@ interface FirmUserDashboardPageProps {
   };
 }
 
-const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {entityId}}) => {
+const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {entityId} }) => {
   const session = useSession();
   const [clickedId, setClickedId] = useState<number | null>(null)
   const [actionButton, setActionButton] = useState<ReactElement>()
   const [openConfirmationModal, setOpenConfirmationModal] =
     useState<boolean>(false)
-  const [confirmationType, setConfirmationType] = useState<string | undefined>('')
+  const [confirmationType, setConfirmationType] = useState<string | undefined>('');
 
-  const url = entityId ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}` : `${FIRM_APPLICATIONS_ROUTE}`
+  const url = entityId ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}` :
+    session.data?.user?.id ? `${FIRM_APPLICATIONS_ROUTE}?user_id=${session.data?.user?.id}` : ``;
+
   const { data, error } = useSWR<ApplicationResponse>(url, applicationFetcherGet);
 
   const applicationDeleteOrWithdraw = async (event: any, id: number) => {
@@ -47,7 +49,7 @@ const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {enti
           className={styles.actionButton}
           onClick={handleActionButtonClick}
         >
-					Delete Application
+          Delete Application
         </Button>
         <Button
           type="button"
@@ -104,8 +106,8 @@ const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {enti
         <p>[Business name]</p>
       </div>
 
-      <div>
-        <h2>Applications</h2>
+      <h2>Applications</h2>
+      {data && !!data.length && <div>
         <Collection>
           {data?.map((a) => (
             <Fragment key={a.id}>
@@ -131,7 +133,9 @@ const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {enti
             </Fragment>
           ))}
         </Collection>
-      </div>
+      </div>}
+      {(!data || !data.length) && <div> No applications found.
+      </div>}
       {openConfirmationModal && (
         <DeleteWithdrawConfirmationModal
           openConfirmationModal={openConfirmationModal}

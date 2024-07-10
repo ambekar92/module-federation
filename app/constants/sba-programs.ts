@@ -57,26 +57,30 @@ export const sbaProgramOptions: ProgramOption[] = [
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program#id-program-eligibility-requirements',
     registration: 'edwosb',
   },
-  {
-    id: 7,
-    name: 'Mentor-Protégé Program',
-    description: `A mentor and its protégé can joint venture as a small business for any small business
-		contract, provided the protégé individually qualifies as small. The joint venture may
-		also pursue any type of set-aside contract for which the protégé qualifies, including
-		contracts set aside for 8(a), service-disabled veteran-owned, women-owned, and HUBZone
-		businesses.`,
-    disadvantages: ['long_term_isolated_residence', 'woman', 'gender'],
-    details:
-      'https://www.sba.gov/federal-contracting/contracting-assistance-programs/sba-mentor-protege-program',
-    registration: 'protege',
-  },
+  // {
+  //   id: 7,
+  //   name: 'Mentor-Protégé Program',
+  //   description: `A mentor and its protégé can joint venture as a small business for any small business
+  // 	contract, provided the protégé individually qualifies as small. The joint venture may
+  // 	also pursue any type of set-aside contract for which the protégé qualifies, including
+  // 	contracts set aside for 8(a), service-disabled veteran-owned, women-owned, and HUBZone
+  // 	businesses.`,
+  //   disadvantages: ['long_term_isolated_residence', 'woman', 'gender'],
+  //   details:
+  //     'https://www.sba.gov/federal-contracting/contracting-assistance-programs/sba-mentor-protege-program',
+  //   registration: 'protege',
+  // },
   {
     id: 2,
     name: 'HUBZone',
     description: `The HUBZone Program supports businesses located in historically underutilized areas. It
 		aims to stimulate economic growth in these regions by providing government contracting
 		preferences to qualified HUBZone businesses.`,
-    disadvantages: ['long_term_isolated_residence', 'unmarried-not-veteran'],
+    disadvantages: [
+      'long_term_isolated_residence', 'unmarried-not-veteran', 'gender', 'woman', 'female',
+      'ethnic_origin', 'asian_pacific_american', 'native_american', 'hispanic_american',
+  		'black_american', 'minority', 'race', 'disabledVeteran', 'veteran'
+    ],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',
     registration: 'hubzone',

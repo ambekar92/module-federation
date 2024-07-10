@@ -3,7 +3,6 @@ import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
 import { APPLICATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { fetcherGET, fetcherPUT } from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { Button, ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -12,15 +11,15 @@ import { QuestionnaireListType } from '../../components/questionnaire/utils/type
 import { setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../redux/hooks';
 import { applicationSteps } from '../../utils/constants';
-import QuestionnaireTemp from './QuestionnaireTemp';
+import { QuestionnaireProps } from '../../utils/types';
+import Questions from '../../qa-helpers/Questions';
 
-interface QuestionnairePageProps {
+interface QuestionnairePageProps extends QuestionnaireProps {
   index: number;
 }
 
-function QuestionnairePage({ index }: QuestionnairePageProps) {
+function QuestionnairePage({ index, contributorId, applicationId }: QuestionnairePageProps) {
   const dispatch = useApplicationDispatch();
-  const { contributorId, applicationId } = useApplicationId();
   const [currentStep, setCurrentStep] = useState(index - 1);
   const [currentQuestionnaire, setCurrentQuestionnaire] = useState('');
 
@@ -43,7 +42,7 @@ function QuestionnairePage({ index }: QuestionnairePageProps) {
             progress: questionnairesData[Math.min(currentStep, questionnairesData.length - 1)].title
           };
           // For testing
-          // const response = await fetcherPOST(APPLICATION_ROUTE, postData);
+          // const response = await fetcherPUT(APPLICATION_ROUTE, postData);
           // console.log(response);
 
           await fetcherPUT(APPLICATION_ROUTE, postData);
@@ -88,7 +87,7 @@ function QuestionnairePage({ index }: QuestionnairePageProps) {
       <QAWrapper
         fill
         mainContent={
-          <QuestionnaireTemp
+          <Questions
             url={currentQuestionnaire}
             title={questionnairesData[Math.min(currentStep, questionnairesData.length - 1)].title}
           />
@@ -97,20 +96,22 @@ function QuestionnairePage({ index }: QuestionnairePageProps) {
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
         {currentStep === 0 ? (
-          <Link className='usa-button usa-button--outline' href={'/application/questionnaires'}>
+          <Link className='usa-button usa-button--outline' aria-disabled={!contributorId} href={`/application/questionnaire/${contributorId}/list`}>
           	Previous
           </Link>
         ) : (
-          <Button type='button' className='usa-button' outline onClick={handlePrevious}>
+          <Button type='button' className='usa-button' aria-disabled={!contributorId} outline onClick={handlePrevious}>
           	Previous
           </Button>
         )}
         {currentStep >= questionnairesData.length - 1 ? (
-          <Link className='usa-button' href={'/application/questionnaire-hubzone-calculator'}>
+          <Link className='usa-button'
+            aria-disabled={!contributorId}
+            href={`/application/questionnaire/${contributorId}/hubzone-calculator`}>
           	Next
           </Link>
         ) : (
-          <Button type='button' className='usa-button' onClick={handleNext}>
+          <Button type='button' className='usa-button' aria-disabled={!contributorId} onClick={handleNext}>
           	Next
           </Button>
         )}

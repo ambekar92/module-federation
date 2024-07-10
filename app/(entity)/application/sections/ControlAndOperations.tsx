@@ -5,10 +5,11 @@ import ControlOperationsForm from '../components/control-and-operations/ControlO
 import ControlOperationsTable from '../components/control-and-operations/ControlOperationsTable';
 import { selectApplication, setCurrentOperatorEditIndex, setOperators, setShowControlOperationsForm, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../redux/hooks';
-import { applicationSteps } from '../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../utils/constants';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import { QuestionnaireProps } from '../utils/types';
 
-function ControlAndOperations() {
+function ControlAndOperations({contributorId}: QuestionnaireProps) {
   const dispatch = useApplicationDispatch();
   const { operators, showControlOperationsForm } = useApplicationSelector(selectApplication);
   useUpdateApplicationProgress('Control & Operations');
@@ -69,7 +70,7 @@ function ControlAndOperations() {
         <hr className="margin-y-3 margin-bottom-0 width-full border-base-lightest" />
 
         <ButtonGroup className="display-flex flex-justify padding-y-2 margin-right-2px">
-          <Link href={applicationSteps.ownership.link} className="usa-button usa-button--outline">
+          <Link className="usa-button usa-button--outline" aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.ownership.link}`}>
             Previous
           </Link>
           {operators.length === 0  ? (
@@ -77,7 +78,7 @@ function ControlAndOperations() {
             Next
             </Button>
           ) : (
-            <Link href={applicationSteps.eligiblePrograms.link} className="usa-button">
+            <Link className="usa-button" aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.eligiblePrograms.link}`}>
             Next
             </Link>
           )}

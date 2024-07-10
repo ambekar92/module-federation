@@ -6,7 +6,7 @@ import useSWR from "swr";
 
 export function useApplicationData() {
   const params = useParams<{application_id: string}>();
-  const { data, isLoading } = useSWR(`${APPLICATION_ROUTE}?id=${params.application_id}`, fetcherGET<Application[]>);
+  const { data, isLoading } = useSWR(`${APPLICATION_ROUTE}?application_type_id=${params.application_id}`, fetcherGET<Application[]>);
   const applicationData = data?.[0] ?? null;
   return {applicationData, isLoading}
 }

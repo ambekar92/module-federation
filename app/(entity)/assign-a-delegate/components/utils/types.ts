@@ -6,7 +6,7 @@ export type ValidFieldNames = 'fistName' | 'lastName' | 'email'
 export type FormDelegateType = {
   firstName: string
   lastName: string
-  email: string
+  email: string,
 }
 
 export type DelegatesResponse = {

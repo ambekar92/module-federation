@@ -7,5 +7,6 @@ export enum QuestionType {
     READ_ONLY = 'read_only',
     SELECT = 'select',
     DATE = 'date',
-    TEXT_AREA = 'text_area'
+    TEXT_AREA = 'text_area',
+		NUMBER= 'number'
   }

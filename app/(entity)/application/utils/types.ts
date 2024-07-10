@@ -20,3 +20,7 @@ export type QuestionType = BaseQuestion | SelectQuestion;
 export interface MultiStepQuestionsProps {
 	step?: number;
 }
+
+export interface QuestionnaireProps {
+  contributorId: number;
+}

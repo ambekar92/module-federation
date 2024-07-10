@@ -1,15 +1,16 @@
 import { Button, ButtonGroup, Grid, GridContainer } from '@trussworks/react-uswds';
+import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { selectApplication, setOwnerTypeSelected, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
-import Link from 'next/link';
-import { applicationSteps } from '../../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../../utils/constants';
 
 type OwnershipLayoutProps = {
   children: React.ReactNode;
+	contributorId: number
 };
 
-function OwnershipLayout({children}: OwnershipLayoutProps) {
+function OwnershipLayout({children, contributorId}: OwnershipLayoutProps) {
   const { ownerTypeSelected, owners, ownershipPercentageTotal } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
 
@@ -110,8 +111,11 @@ function OwnershipLayout({children}: OwnershipLayoutProps) {
             Next
             </Button>
           ) : (
-            <Link className='usa-button' href={applicationSteps.controlAndOwnership.link}>
-						Next
+            <Link className='usa-button'
+              aria-disabled={!contributorId}
+              tabIndex={!contributorId ? -1 : undefined}
+              href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.controlAndOwnership.link}`}>
+							Next
             </Link>
           )}
         </ButtonGroup>

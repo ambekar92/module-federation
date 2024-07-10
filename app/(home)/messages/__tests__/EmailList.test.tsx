@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import EmailList from '../components/EmailList'
+import EmailList from '../components/email-folders/InboxEmailList'
 
 jest.mock('swr', () => () => ({
   data: {

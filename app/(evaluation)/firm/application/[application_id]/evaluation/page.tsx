@@ -1,4 +1,3 @@
-'use client'
 import HeaderPanel from '../../../../components/HeaderPanel'
 import MainAppPanel from '../../../../components/MainAppPanel'
 

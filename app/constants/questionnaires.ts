@@ -4,8 +4,8 @@ import { API_ROUTE, QUESTIONNAIRE_ROUTE } from './routes'
 export const QUESTIONNAIRE_LIST_ROUTE = API_ROUTE + '/questionnaire-list'
 
 // Grid Routes
-export const OWNER_AND_MANAGEMENT = QUESTIONNAIRE_ROUTE + '/47/owner-and-management';
-export const CONTROL_AND_OPERATIONS_ROUTE = QUESTIONNAIRE_ROUTE + '/48/control-and-operation'
+export const OWNER_AND_MANAGEMENT = QUESTIONNAIRE_ROUTE + '/41/owner-and-management';
+export const CONTROL_AND_OPERATIONS_ROUTE = QUESTIONNAIRE_ROUTE + '/42/control-and-operation'
 
 // Individual Questions
 export const CORE_FEDERAL_RELATIONSHIPS = QUESTIONNAIRE_ROUTE + '/16/core-federal-relationships';

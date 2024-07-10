@@ -1,6 +1,5 @@
 import React from 'react';
 import { Grid } from '@trussworks/react-uswds';
-import Styles from './forms.module.scss';
 
 interface QAWrapperProps {
   sidebar?: React.ReactNode;    // Optional content for the sidebar (left column)
@@ -12,7 +11,7 @@ const QAWrapper: React.FC<QAWrapperProps> = ({ sidebar, mainContent, fill }) => 
   return (
     <Grid row gap='lg' className={`border-top ${fill && 'flex-fill'}`}>
       {sidebar && (
-        <Grid col={4} className={`border-right padding-bottom-3 ${Styles['hidden-mobile']}`}>
+        <Grid col={4} className={`border-right padding-bottom-3`}>
           {sidebar}
         </Grid>
       )}

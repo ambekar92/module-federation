@@ -10,6 +10,7 @@ interface UseApplicationIdResult {
   status: 'loading' | 'authenticated' | 'unauthenticated';
 	userEmail: string | null;
 	contributorId: number | null;
+	entityId:  number | null;
 }
 
 export function useApplicationId(): UseApplicationIdResult {
@@ -18,6 +19,7 @@ export function useApplicationId(): UseApplicationIdResult {
   const [applicationId, setApplicationId] = useState<number | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [contributorId, setContributorId] = useState<number | null>(null);
+  const [entityId, setEntityId] = useState<number | null>(null);
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user_id) {
@@ -34,8 +36,9 @@ export function useApplicationId(): UseApplicationIdResult {
           if (!entityData || entityData.length === 0) {
             throw new Error('Entity data not found');
           }
+          setEntityId(entityData[entityData.length-1].id)
 
-          const applicationData = await getApplicationId(entityData[0].id);
+          const applicationData = await getApplicationId(entityData[entityData.length - 1].id);
           if (!applicationData || applicationData.length === 0) {
             throw new Error('Application data not found');
           }
@@ -45,11 +48,13 @@ export function useApplicationId(): UseApplicationIdResult {
 
           // Use id from application to get contributors for application
           const contributorsData = await getApplicationContributorId(appId);
-          if (contributorsData && contributorsData.length > 0) {
+          if (contributorsData) {
             // Get & Set the ID of the last item returned from contributorsData
             setContributorId(contributorsData[contributorsData.length - 1].id);
+            // console.log(contributorsData[contributorsData.length-1].id)
           }
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.log('Application ID or user ID not found')
         }
       }
@@ -58,5 +63,5 @@ export function useApplicationId(): UseApplicationIdResult {
     fetchApplicationId();
   }, [userId]);
 
-  return { userId, applicationId, status, userEmail, contributorId };
+  return { userId, applicationId, status, userEmail, contributorId, entityId };
 }

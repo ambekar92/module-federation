@@ -1,20 +1,14 @@
-import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
-import { AddressInput, BooleanInput, HiddenTextInput, MultiSelectInput, NumberInput, QaDateInput, QaTextInput, QaTextarea, SelectInput } from '@/app/shared/components/questionnaire/inputs';
+import { ANSWER_ROUTE } from '@/app/constants/routes';
+import { fetcherGET, fetcherPOST } from '@/app/services/fetcher';
+import { AddressInput, BooleanInput, HiddenTextInput, MultiSelectInput, NumberInput, QaDateInput, QaTextInput, QaTextarea, SelectInput, QaGrid, ReadOnly } from '@/app/shared/questionnaire/inputs';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { Answer, QaQuestionsType, Question, Rule } from '@/app/shared/types/questionnaireTypes';
+import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { setDisplayStepNavigation, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../redux/hooks';
 import { applicationSteps } from '../../utils/constants';
-import QaGrid from '@/app/shared/components/questionnaire/inputs/QaGrid';
-import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
-import { fetcherGET, fetcherPOST } from '@/app/services/fetcher';
-import { ANSWER_ROUTE } from '@/app/constants/routes';
-import getApplicationContributorId from '@/app/shared/utility/getApplicationContributorId';
-import getApplicationId from '@/app/shared/utility/getApplicationId';
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId';
-import { useSession } from 'next-auth/react';
-import { Rule } from '@/app/shared/types/questionnaireTypes';
-import { ReadOnly } from '@/app/shared/components/questionnaire/inputs/ReadOnly';
 
 interface QuestionnaireProps {
   url: string;
@@ -32,66 +26,34 @@ const QuestionnaireTemp = ({ url, title }: QuestionnaireProps) => {
   const { data, error } = useSWR(url, fetcherGET<QaQuestionsType>);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const [savedState, setSavedState] = useState(false);
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState<number | null>(null);
-  const [applicationId, setApplicationId] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
-
-  useEffect(() => {
-    const fetchApplicationId = async () => {
-      if (userId) {
-        const entityData = await getEntityByUserId(userId);
-        if (!entityData || entityData.length === 0) {
-          throw new Error('Entity data not found');
-        }
-
-        const applicationData = await getApplicationId(entityData[0].id);
-        if (!applicationData || applicationData.length === 0) {
-          throw new Error('Application data not found');
-        }
-
-        const appId = await getApplicationContributorId(applicationData[0].id);
-        // For testing
-        // const appId = await getApplicationContributorId(1);
-        if (appId && appId.length > 0) {
-          // console.log(appId[0].id);
-          setApplicationId(appId[appId.length - 1].id);
-        }
-      }
-    };
-
-    fetchApplicationId();
-  }, [userId]);
+  const { userId, contributorId } = useApplicationId();
 
   const handleAnswerChange = (question: Question, value: any) => {
-    setSelectedAnswers(prevState => ({
-      ...prevState,
-      [question.name]: {
-        id: question.id,
-        profile_answer_flag: question.profile_answer_flag,
-        reminder_flag: false,
-        application_contributor_id: 0,
-        value: question.question_type === 'multi_select'
-          ? value.map((option: { value: string }) => option.value)
-          : value,
-        question_id: question.id,
-        answer_by: 0,
-      }
-    }));
-    setSavedState(false);
+    if(userId && contributorId) {
+      setSelectedAnswers(prevState => ({
+        ...prevState,
+        [question.name]: {
+          id: question.id,
+          profile_answer_flag: question.profile_answer_flag,
+          reminder_flag: false,
+          application_contributor_id: contributorId,
+          value: question.question_type === 'multi_select'
+            ? value.map((option: { value: string }) => option.value)
+            : value,
+          question_id: question.id,
+          answer_by: userId,
+        }
+      }));
+      setSavedState(false);
+    }
   };
 
   const handlePostRequest = async () => {
     try {
-      if(applicationId && userId) {
+      if(contributorId && userId) {
         const postData = Object.values(selectedAnswers).map(answer => ({
           profile_answer_flag: answer.profile_answer_flag,
-          application_contributor_id: applicationId,
+          application_contributor_id: contributorId,
           value: { answer: answer.value },
           question_id: answer.question_id,
           answer_by: userId,

@@ -1,59 +1,60 @@
 import { Accordion } from '@trussworks/react-uswds'
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion'
-import EmailList from './EmailList'
 import FilterList from '../components/Filter'
-import { useState } from 'react'
+import InboxEmailList from './email-folders/InboxEmailList';
+import DraftEmailList from './email-folders/DraftEmailList';
+import SentEmailList from './email-folders/SentEmailList';
+import ArchivedEmailList from './email-folders/ArchivedEmailList';
+import DeletedEmailList from './email-folders/DeletedEmailList';
 
 const SidebarContent: React.FC = () => {
-  const [focusedEmailId, setFocusedEmailId] = useState<number | null>(null);
-
-  const testItems: AccordionItemProps[] = [
+  const folders: AccordionItemProps[] = [
     {
-      id: 'item1',
+      id: 'filter-sort',
       title: 'Filter/Sort',
       content: <FilterList />,
       expanded: false,
       headingLevel: 'h2',
     },
     {
-      id: 'item2',
+      id: 'inbox-all',
       title: 'Inbox-All',
-      content: <EmailList focusedEmailId={focusedEmailId} setFocusedEmailId={setFocusedEmailId} />,
+      content: <InboxEmailList />,
       expanded: false,
       headingLevel: 'h2',
     },
     {
-      id: 'item3',
+      id: 'draft',
       title: 'Draft',
-      content: <EmailList focusedEmailId={focusedEmailId} setFocusedEmailId={setFocusedEmailId} />,
+      content: <DraftEmailList />,
       expanded: false,
       headingLevel: 'h2',
     },
     {
-      id: 'item4',
+      id: 'sent',
       title: 'Sent',
-      content: <EmailList focusedEmailId={focusedEmailId} setFocusedEmailId={setFocusedEmailId} />,
+      content: <SentEmailList />,
       expanded: false,
       headingLevel: 'h2',
     },
     {
-      id: 'item5',
+      id: 'archived',
       title: 'Archived',
-      content: <EmailList focusedEmailId={focusedEmailId} setFocusedEmailId={setFocusedEmailId} />,
+      content: <ArchivedEmailList />,
       expanded: false,
       headingLevel: 'h2',
     },
     {
-      id: 'item6',
+      id: 'deleted',
       title: 'Deleted',
-      content: <EmailList focusedEmailId={focusedEmailId} setFocusedEmailId={setFocusedEmailId} />,
+      content: <DeletedEmailList />,
       expanded: false,
       headingLevel: 'h2',
     },
   ];
 
   return (
-    <Accordion items={testItems} multiselectable={true} />
+    <Accordion items={folders} multiselectable={true} />
   );
 };
 

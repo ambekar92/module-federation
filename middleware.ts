@@ -48,28 +48,28 @@ const middlewares: { [key: string]: any } = {
 
 export const config = {
   matcher: [
-    // '/home',
-    // '/admin(.*)',
-    // '/assign-a-delegate',
-    // '/entities',
-    // '/evaluation',
-    // '/field-operation',
-    // '/helpdesk',
-    // '/claim-your-business',
-    // '/participation-agreement',
-    // '/users',
-    // '/documents',
-    // '/notifications',
-    // '/profile-settings',
-    // '/messages',
-    // '/additional-information',
-    // '/application',
-    // '/application(.*)', // all sub-routes
-    // '/reviews',
-    // '/firm/application(.*)/firm-summary',
-    // '/firm/application(.*)/documents',
-    // '/dashboard/(.*)',
-    // '/dashboard'
+    '/home',
+    '/admin(.*)',
+    '/assign-a-delegate',
+    '/entities',
+    '/evaluation',
+    '/field-operation',
+    '/helpdesk',
+    '/claim-your-business',
+    '/participation-agreement',
+    '/users',
+    '/documents',
+    '/notifications',
+    '/profile-settings',
+    '/messages',
+    '/additional-information',
+    '/application',
+    '/application(.*)', // all sub-routes
+    '/reviews',
+    '/firm/application(.*)/firm-summary',
+    '/firm/application(.*)/documents',
+    '/dashboard/(.*)',
+    '/dashboard'
   ],
 }
 

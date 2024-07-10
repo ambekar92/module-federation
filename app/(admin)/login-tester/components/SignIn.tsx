@@ -7,7 +7,6 @@ import {
   Header,
   Title,
   Link,
-  Form,
   Fieldset,
   TextInput,
   Label,
@@ -15,6 +14,8 @@ import {
 } from '@trussworks/react-uswds'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { SignInFormData, SignInFormSchema } from './Schema'
+import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
+import { fetcherPOST } from '@/app/services/fetcher'
 
 export default {
   title: 'Page Templates/Sign In',
@@ -45,20 +46,34 @@ export const SignIn = (): React.ReactElement => {
     trigger,
     control,
     handleSubmit,
-    formState: { errors, touchedFields }
+    getValues,
+    formState: { errors, touchedFields },
   } = useForm<SignInFormData>({
     resolver: zodResolver(SignInFormSchema),
     mode: 'onBlur',
-  });
+  })
 
   const onSubmit: SubmitHandler<SignInFormData> = async () => {
     const isValid = await trigger([], { shouldFocus: true })
-
-    if(isValid) {
+    if (isValid) {
       // eslint-disable-next-line no-console
       console.log('Success')
     }
-  };
+  }
+
+  const handleSignIn = async () => {
+    try {
+      const postData = {
+        username: getValues('email'),
+        password: getValues('password'),
+      }
+
+      await fetcherPOST(TESTER_LOGIN_ROUTE, postData)
+    } catch (error: any) {
+      console.error('Network Error: ', error)
+      return
+    }
+  }
 
   return (
     <>
@@ -82,25 +97,34 @@ export const SignIn = (): React.ReactElement => {
               <Grid col={12} tablet={{ col: 8 }} desktop={{ col: 6 }}>
                 <div className="bg-white padding-y-3 padding-x-5 border border-base-lighter">
                   <h1 className="margin-bottom-0">Sign in</h1>
-                  <Form onSubmit={handleSubmit(onSubmit)}>
+                  <form onSubmit={handleSubmit(onSubmit)}>
                     <Fieldset legend="Access your account" legendStyle="large">
                       <Label htmlFor="email">Email address</Label>
                       <Controller
                         name="email"
                         control={control}
-                        render={({field, fieldState: {error}}) => (
+                        render={({ field, fieldState: { error } }) => (
                           <>
                             <TextInput
                               id="email"
-                              type="email" {...field}
-                              validationStatus ={errors['email']? 'error' : touchedFields['email'] ? 'success' :undefined}
+                              type="email"
+                              {...field}
+                              validationStatus={
+                                errors['email']
+                                  ? 'error'
+                                  : touchedFields['email']
+                                    ? 'success'
+                                    : undefined
+                              }
                               required={true}
                             />
-                            {error && <div className="margin-top-1">
-                              <span className="usa-input-helper-text error-message">
-                                {error.message || 'Required Field'}
-                              </span>
-                            </div>}
+                            {error && (
+                              <div className="margin-top-1">
+                                <span className="usa-input-helper-text error-message">
+                                  {error.message || 'Required Field'}
+                                </span>
+                              </div>
+                            )}
                           </>
                         )}
                       />
@@ -113,8 +137,15 @@ export const SignIn = (): React.ReactElement => {
                           <>
                             <TextInput
                               id="password"
-                              type={showPassword ? 'text' : 'password'} {...field}
-                              validationStatus={errors['password'] ? 'error' : touchedFields['password'] ? 'success' : undefined}
+                              type={showPassword ? 'text' : 'password'}
+                              {...field}
+                              validationStatus={
+                                errors['password']
+                                  ? 'error'
+                                  : touchedFields['password']
+                                    ? 'success'
+                                    : undefined
+                              }
                             />
 
                             <button
@@ -124,25 +155,30 @@ export const SignIn = (): React.ReactElement => {
                               aria-controls="password-sign-in"
                               onClick={(): void =>
                                 setShowPassword((showPassword) => !showPassword)
-                              }>
+                              }
+                            >
                               {showPassword ? 'Hide password' : 'Show password'}
                             </button>
-                            {error && <div className="margin-top-1">
-                              <span className="usa-input-helper-text error-message">
-                                {error.message || 'Required Field'}
-                              </span>
-                            </div>}
+                            {error && (
+                              <div className="margin-top-1">
+                                <span className="usa-input-helper-text error-message">
+                                  {error.message || 'Required Field'}
+                                </span>
+                              </div>
+                            )}
                           </>
                         )}
                       />
 
-                      <Button type="submit">Sign in</Button>
+                      <Button type="button" onClick={handleSignIn}>
+                        Sign in
+                      </Button>
 
                       <p>
                         <Link href="javascript:void();">Forgot password?</Link>
                       </p>
                     </Fieldset>
-                  </Form>
+                  </form>
                 </div>
 
                 <p className="text-center">

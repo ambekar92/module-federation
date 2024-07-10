@@ -7,12 +7,12 @@ import { useCallback, useEffect } from 'react';
 import useSWR from 'swr';
 import { setStep, setTotalQuestionnaires } from '../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../redux/hooks';
-import { applicationSteps } from '../../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../../utils/constants';
 import { QuestionnaireListType } from './utils/types';
+import { QuestionnaireProps } from '../../utils/types';
 
-const Questionnaires = () => {
+function Questionnaires({contributorId}: QuestionnaireProps) {
   const dispatch = useApplicationDispatch();
-  const { contributorId } = useApplicationId();
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
@@ -52,7 +52,11 @@ const Questionnaires = () => {
               <CardHeader>
                 <div className="usa-card__body">
                   <h3 key={questionIndex}>
-                    <Link className='text-primary hover:text-primary-dark' href={`/application/questionnaire?index=${questionIndex + 1}`}>
+                    <Link
+                      className='text-primary hover:text-primary-dark'
+                      aria-disabled={!contributorId}
+                      href={`/application/questionnaire/${contributorId}/questionnaire?index=${questionIndex + 1}`}
+                    >
                       {questionnaire.title}
                     </Link>
                   </h3>
@@ -65,8 +69,26 @@ const Questionnaires = () => {
             <CardHeader>
               <div className="usa-card__body">
                 <h3>
-                  <Link className='text-primary hover:text-primary-dark' href={'/application/questionnaire-hubzone-calculator'}>
+                  <Link
+                    aria-disabled={!contributorId}
+                    className='text-primary hover:text-primary-dark'
+                    href={`/application/questionnaire/${contributorId}/hubzone-calculator`}
+                  >
                       HUBZone Calculator
+                  </Link>
+                </h3>
+                <p><b>Status:</b> Not Started</p>
+              </div>
+            </CardHeader>
+          </Card>
+          <Card className='tablet:grid-col-4'>
+            <CardHeader>
+              <div className="usa-card__body">
+                <h3>
+                  <Link className='text-primary hover:text-primary-dark'
+                    aria-disabled={!contributorId}
+                    href={`/application/questionnaire/${contributorId}/individual-contributor-hubzone-business-relationships`}>
+                      HUBZone Business Relationships
                   </Link>
                 </h3>
                 <p><b>Status:</b> Not Started</p>
@@ -76,10 +98,10 @@ const Questionnaires = () => {
         </CardGroup>
       </>
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        <Link className='usa-button usa-button--outline' href={applicationSteps.controlAndOwnership.link}>
+        <Link className='usa-button usa-button--outline' aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.controlAndOwnership.link}`}>
           Previous
         </Link>
-        <Link className='usa-button' href='/application/questionnaire'>
+        <Link className='usa-button' aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.questionnaire.link}`}>
           Next
         </Link>
       </ButtonGroup>

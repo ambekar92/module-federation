@@ -31,9 +31,8 @@ function HeaderPanel() {
           </div>
           <div className="grid-col-2">
             <p className="margin-0 text-bold">Status</p>
-            <div className="margin-top-1">
-              {/* TODO not clear what key maps to this value in Application type  */}
-              <span>Not Started</span>
+            <div className="margin-top-1" style={{textTransform: 'capitalize'}}>
+              <span>{applicationData?.workflow_state}</span>
             </div>
           </div>
           <div className="grid-col-3">

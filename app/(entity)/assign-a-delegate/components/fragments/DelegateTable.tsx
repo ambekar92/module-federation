@@ -1,35 +1,16 @@
-import { DELEGATES_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import { Grid } from '@trussworks/react-uswds'
 import React from 'react'
-import useSWR from 'swr'
-import {
-  selectForm
-} from '../store/formSlice'
+import { selectForm } from '../store/formSlice'
 import { useFormSelector } from '../store/hooks'
 import { DelegatesResponse } from '../utils/types'
 import styles from './DelegateForm.module.scss'
 
 type DelegateTableProps = {
-	inviteSent: boolean
+	delegatesData?: DelegatesResponse[]
 }
 
-const DelegateTable: React.FC<DelegateTableProps> = ({
-  inviteSent
-}) => {
+const DelegateTable: React.FC<DelegateTableProps> = ({ delegatesData }) => {
   const { delegates } = useFormSelector(selectForm);
-  const { applicationId } = useApplicationId();
-
-  const { data, error } = useSWR(
-    (applicationId && inviteSent) ? `${DELEGATES_ROUTE}/${applicationId}` : null,
-		fetcherGET<DelegatesResponse[]>,
-		{ revalidateOnFocus: false }
-  );
-
-  if(error) {
-    return <></>
-  }
 
   return (
     <Grid row className="width-full">
@@ -44,9 +25,9 @@ const DelegateTable: React.FC<DelegateTableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {data
+            {delegatesData
               ? (
-                data.map((delegate, index) => (
+                delegatesData.map((delegate, index) => (
                   <tr key={index}>
                     <td>{delegate.first_name}</td>
                     <td>{delegate.last_name}</td>
@@ -59,7 +40,7 @@ const DelegateTable: React.FC<DelegateTableProps> = ({
                 delegates.map((delegate, index) => (
                   <tr key={index}>
                     <td>{delegate.firstName}</td>
-                    <td>{delegate.firstName}</td>
+                    <td>{delegate.lastName}</td>
                     <td>{delegate.email}</td>
                     <td>Pending</td>
                   </tr>

@@ -4,7 +4,7 @@ import { ZodType, z } from 'zod'
 const ueiValidation = new RegExp(/^[a-zA-Z0-9]{12}$/)
 
 // Bank Account Number must contain only numeric digits ranging from 5-17 digits in length.
-const bankAccountValidation = new RegExp(/^[0-9]{5,17}$/)
+const bankAccountValidation = new RegExp(/^[a-zA-Z0-9]{5,17}$/)
 
 // Cage Code must contain only alphanumberic digits and be 5 characters long.
 const cageCodeValidation = new RegExp(/^[a-zA-Z0-9]{5}$/)

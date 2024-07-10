@@ -3,11 +3,12 @@ import OwnershipLayout from '../components/ownership/OwnershipLayout';
 import Partnership from '../components/ownership/Partnership'
 import { setDisplayStepNavigation } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { fetcherPUT } from '@/app/services/fetcher';
 import { APPLICATION_ROUTE } from '@/app/constants/routes';
+import { QuestionnaireProps } from '../utils/types';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 
-function Ownership() {
+function Ownership({contributorId}: QuestionnaireProps) {
   const dispatch = useApplicationDispatch();
   const { applicationId } = useApplicationId();
 
@@ -40,7 +41,7 @@ function Ownership() {
   }, []);
 
   return (
-    <OwnershipLayout>
+    <OwnershipLayout contributorId={contributorId}>
       <Partnership />
     </OwnershipLayout>
   )
