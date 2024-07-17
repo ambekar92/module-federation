@@ -23,7 +23,7 @@ interface DocumentsState {
 
 const DocumentUploads = () => {
   const { data: session } = useSession();
-  const { contributorId } = useApplicationId();
+  const { contributorId, entityId, userId } = useApplicationId();
   const { data: questions, error } = useSWR(
     contributorId ? `${DOCUMENT_REQUIRED_ROUTE}/${contributorId}` : null,
 		fetcherGET<DocumentUploadType>
@@ -43,7 +43,7 @@ const DocumentUploads = () => {
     }
   }, [questions]);
 
-  const handleFileUpload = async (sectionName: string, subSectionName: string, file: File, replaceIndex: number | null = null) => {
+  const handleFileUpload = async (sectionName: string, subSectionName: string, file: File, questionId: number, replaceIndex: number | null = null) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
@@ -52,7 +52,8 @@ const DocumentUploads = () => {
       formData.append('internal_document', 'false');
       formData.append('hubzone_key', '1');
 
-      const response = await fetcherPOST(`${GET_DOCUMENTS}/?application_contributor_id=${contributorId}`, formData);
+      const response = await fetcherPOST(`${GET_DOCUMENTS}/?application_contributor_id=${contributorId}&entity_id=${entityId}&user_id=${userId}&question_id=${questionId}`, formData
+      );
 
       if (response) {
         const newDocument: DocumentDetails = {
@@ -86,25 +87,25 @@ const DocumentUploads = () => {
     }
   };
 
-  const handleAddNewClick = (sectionName: string, subSectionName: string) => {
+  const handleAddNewClick = (sectionName: string, subSectionName: string, questionId: number) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.onchange = (event: Event) => {
       const target = event.target as HTMLInputElement;
       if (target.files?.length) {
-        handleFileUpload(sectionName, subSectionName, target.files[0]);
+        handleFileUpload(sectionName, subSectionName, target.files[0], questionId);
       }
     };
     input.click();
   };
 
-  const handleReplaceDocumentClick = (sectionName: string, subSectionName: string, index: number) => {
+  const handleReplaceDocumentClick = (sectionName: string, subSectionName: string, questionId: number, index: number) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.onchange = (event: Event) => {
       const target = event.target as HTMLInputElement;
       if (target.files?.length) {
-        handleFileUpload(sectionName, subSectionName, target.files[0], index);
+        handleFileUpload(sectionName, subSectionName, target.files[0], questionId, index);
       }
     };
     input.click();
@@ -160,7 +161,7 @@ const DocumentUploads = () => {
                   {editMode[question.name] ? 'Cancel' : 'Edit'}
                 </Button>
                 {!editMode[question.name] && (
-                  <Button type='button' onClick={() => handleAddNewClick(question.name, question.title)} disabled={isUploading}>
+                  <Button type='button' onClick={() => handleAddNewClick(question.name, question.title, question.id)} disabled={isUploading}>
                     {isUploading ? 'Uploading...' : 'Add New'}
                   </Button>
                 )}
@@ -191,7 +192,7 @@ const DocumentUploads = () => {
                     {editMode[question.name] && (
                       <td>
                         <div className='display-flex flex-justify-center'>
-                          <Button type='button' onClick={() => handleReplaceDocumentClick(question.name, question.title, docIndex)} disabled={isUploading}>
+                          <Button type='button' onClick={() => handleReplaceDocumentClick(question.name, question.title, question.id, docIndex)} disabled={isUploading}>
                             {isUploading ? 'Uploading...' : 'Replace Document'}
                           </Button>
                           <Button unstyled className='text-no-underline display-flex flex-align-center hover:text-no-underline margin-left-2' type='button' onClick={() => handleDeleteDocument(question.name, question.title, docIndex)}>

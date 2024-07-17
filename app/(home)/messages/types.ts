@@ -10,7 +10,8 @@ export type InboxItem = {
   sent_at: string
   total_unread: number | string
   last_message: string
-  read: boolean
+  read: boolean;
+  to: string // currently missing from api response [mdev]
 }
 
 export type InboxResponse = {

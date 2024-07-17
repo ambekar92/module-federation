@@ -26,8 +26,8 @@ function OwnershipQuestions({contributorId}: QuestionnaireProps) {
     <>
       <QAWrapper
         fill
-        mainContent={<Questions url={OWNER_AND_MANAGEMENT} title={'Ownership'} />}
-        // mainContent={<QuestionnaireTemp url={contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : ''} title={'Ownership'} />}
+        // mainContent={<Questions url={OWNER_AND_MANAGEMENT} title={'Ownership'} />}
+        mainContent={<QuestionnaireTemp url={contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : ''} title={'Ownership'} />}
       />
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>

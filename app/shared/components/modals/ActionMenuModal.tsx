@@ -57,7 +57,7 @@ interface ActionMenuModalProps {
 
 const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
   open,
-  
+
   userIdType,
   modalType,
   title,

@@ -1,3 +1,6 @@
+import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
+import { fetcherDELETE, fetcherGET } from '@/app/services/fetcher'
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Alert,
@@ -8,13 +11,17 @@ import {
   Link,
   Radio
 } from '@trussworks/react-uswds'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { DelegateFormSchema } from '../utils/schemas'
-import { DelegateFormInputType } from '../utils/types'
-import DelegateFormInputs from './DelegateFormInputs'
+import useSWR from 'swr'
 import { setDelegates } from '../store/formSlice'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
+import { DelegateFormSchema } from '../utils/schemas'
+import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
+import DelegateFormInputs from './DelegateFormInputs'
+
+type DeleteDelegateType = {
+	id: number
+}
 
 function AddDelegateForm() {
   const [option, setOption] = useState('')
@@ -22,6 +29,18 @@ function AddDelegateForm() {
   const [currentStep, setCurrentStep] = useState(0)
   const steps = ['Add Delegate', 'Invite Modal']
   const { userId, applicationId, contributorId } = useApplicationId();
+
+  const { data: delegatesData, isLoading } = useSWR(
+    (contributorId) ? `${DELEGATES_ROUTE}/${contributorId}` : null,
+		fetcherGET<DelegatesResponse[]>,
+		{ revalidateOnFocus: false }
+  );
+
+  useEffect(() => {
+    if(delegatesData) {
+      setOption('yes');
+    }
+  }, [delegatesData]);
 
   const closeModal = () => {
     setShowModal(false)
@@ -61,11 +80,24 @@ function AddDelegateForm() {
     },
   })
 
-  const onChange = (selectedOption: string) => {
+  const onChange = async (selectedOption: string) => {
     if(selectedOption === 'no') {
       setDelegates([]);
+      try {
+        if(contributorId) {
+          const postData = { id: contributorId }
+          const rs = await fetcherDELETE<DeleteDelegateType>(`${INVITATION_ROUTE}`, postData);
+          console.log(rs)
+        }
+      } catch(error) {
+        console.log('Error Found: '+ error)
+      }
     }
-    setOption(selectedOption)
+    setOption(selectedOption);
+  }
+
+  if(isLoading || !contributorId) {
+    return <h2>Loading...</h2>
   }
 
   return (
@@ -105,6 +137,7 @@ function AddDelegateForm() {
           name="input-radio-question"
           onChange={() => onChange('yes')}
           label="Yes"
+          defaultChecked={delegatesData ? true : false}
         />
         <Radio
           id="input-radio-no"
@@ -131,6 +164,7 @@ function AddDelegateForm() {
             trigger={trigger}
             reset={reset}
             userDetails={{userId, applicationId, contributorId}}
+            delegatesData={delegatesData}
           />
         </Grid>
       )

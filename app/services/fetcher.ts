@@ -81,7 +81,7 @@ export const fetcherPOST = async <T>(url: string, data: any, options?: { headers
   }
 };
 
-// POST fetcher
+// PUT fetcher
 export const fetcherPUT = async <T>(url: string, param: any): Promise<T> => {
   try {
     const response = await axiosInstance.put<ApiResponse<T>>(url, param)
@@ -94,6 +94,20 @@ export const fetcherPUT = async <T>(url: string, param: any): Promise<T> => {
     throw error
   }
 }
+
+// DELETE fetcher
+export const fetcherDELETE = async <T>(url: string, data?: any): Promise<T> => {
+  try {
+    const response = await axiosInstance.delete<ApiResponse<T>>(url, { data });
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`HTTP error, status = ${response.status}`);
+    }
+    return response.data.data;
+  } catch (error) {
+    handleResponseError(error);
+    throw error;
+  }
+};
 
 // API to get notifications list
 async function getNotifications(

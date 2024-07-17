@@ -1,7 +1,6 @@
 import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
-import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
-import { fetcherGET, fetcherPOST, fetcherPUT } from '@/app/services/fetcher'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
+import { INVITATION_ROUTE } from '@/app/constants/routes'
+import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import {
   Button,
@@ -13,7 +12,7 @@ import {
 } from '@trussworks/react-uswds'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Control,
   Controller,
@@ -26,7 +25,6 @@ import {
   UseFormStateReturn,
   UseFormTrigger,
 } from 'react-hook-form'
-import useSWR from 'swr'
 import {
   addOrUpdateDelegate,
   editDelegate,
@@ -61,6 +59,7 @@ interface FormInputInterface {
 		applicationId: number | null,
 		contributorId: number | null
 	}
+	delegatesData: DelegatesResponse[] | undefined
 }
 
 const fieldKeys: (keyof DelegateFormInputType)[] = [
@@ -75,7 +74,7 @@ const DelegateFormInputs = ({
   control, errors, handleSubmit,
   isValid, setValue, getValues,
   trigger, reset, touchedFields,
-  userDetails
+  userDetails, delegatesData
 }: FormInputInterface) => {
   const { userId, applicationId, contributorId } = userDetails
   const dispatch = useFormDispatch();
@@ -83,27 +82,19 @@ const DelegateFormInputs = ({
   const [showForm, setShowForm] = useState(true);
   const [inviteSent, setInviteSent] = useState(false);
   const { data: session } = useSession();
-  const [emailValiadate, setEmailValiadate] = useState(false)
+  const [emailValidate, setEmailValidate] = useState(false);
 
-  const { data: delegatesData, error } = useSWR(
-    (contributorId) ? `${DELEGATES_ROUTE}/${contributorId}` : null,
-		fetcherGET<DelegatesResponse[]>,
-		{ revalidateOnFocus: false }
-  );
-
-  if(error) {
-    return <></>
-  }
-
-  if(delegatesData) {
-    setShowForm(false)
-    setDelegates([{
-      id: delegatesData[0].id,
-      firstName: delegatesData[0].first_name,
-      lastName: delegatesData[0].last_name,
-      email: delegatesData[0].email,
-    }])
-  }
+  useEffect(() => {
+    if (delegatesData) {
+      setShowForm(false);
+      dispatch(setDelegates([{
+        id: delegatesData[0].id,
+        firstName: delegatesData[0].first_name,
+        lastName: delegatesData[0].last_name,
+        email: delegatesData[0].email,
+      }]));
+    }
+  }, [delegatesData]);
 
   const onSubmit: SubmitHandler<DelegateFormInputType> = async () => {
     const isValid = await trigger(['firstName', 'lastName', 'email'], {
@@ -116,10 +107,10 @@ const DelegateFormInputs = ({
         return;
       }
       if(data?.email === session?.user?.email){
-        setEmailValiadate(true);
+        setEmailValidate(true);
         return
       }else{
-        setEmailValiadate(false);
+        setEmailValidate(false);
       }
 
       // Dispatch the thunk to update delegates
@@ -295,7 +286,7 @@ const DelegateFormInputs = ({
                       }
                       onChange={(e) =>field.onChange(e)}
                       validationStatus={
-                        errors[key] || emailValiadate && (key === 'email')
+                        errors[key] || emailValidate && (key === 'email')
                           ? 'error'
                           : touchedFields[key]
                             ? 'success'
@@ -306,12 +297,9 @@ const DelegateFormInputs = ({
                   )}
                 />
                 <div className="usa-input-helper-text margin-top-1">
-                  <span className={
-                    errors[key] && 'text-secondary-dark' ||
-                    (emailValiadate && (key === 'email')) && 'text-secondary-dark'
-                  }>
+                  <span className={(errors[key] && 'text-secondary-dark' || (emailValidate && (key === 'email')) && 'text-secondary-dark') + ''}>
                     {
-                      (emailValiadate && (key === 'email'))
+                      (emailValidate && (key === 'email'))
                         ? 'Email ID should not be same as login user email ID.'
                         : delegateInputDetails[key].fieldHelper
                     }
@@ -352,7 +340,7 @@ const DelegateFormInputs = ({
             ? (
               <Link
                 aria-disabled={!contributorId}
-                href={`/application/questionnaire/${contributorId}/ownership`}
+                href={`/application/${contributorId}/ownership`}
                 className="usa-button"
               >
 								Next

@@ -50,7 +50,12 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
   }
 
   const onSubmit = async () => {
-    const response = await axiosInstance.post(ACCEPT_INVITATION_ROUTE, {'invitation_code': getValues('invitationCode')});
+    const response = await axiosInstance.post(ACCEPT_INVITATION_ROUTE,
+      {
+        invitation_code: getValues('invitationCode'),
+        user_id: session.data?.user?.id+'',
+
+      });
     if (response.status === 200 ) {
       reset({
         invitationCode: '',
@@ -73,16 +78,13 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
       <CustomHeader
         title={`Welcome ${session.data?.user?.name}`}
       ></CustomHeader>
-      <p>
+      <h3>
         Please enter the 12-digit numeric invitation code that has been sent to
         you.
-      </p>
+      </h3>
       {showAlert ? (
         <div className="usa-alert usa-alert--error maxw-full width-full">
-          <div
-            className="usa-alert__body width-full"
-            style={{ maxWidth: '100%' }}
-          >
+          <div className="usa-alert__body maxw-full width-full">
             <h4 className="usa-alert__heading">Error status</h4>
             <p className="usa-alert__text">
               This code does not match the user&apos;s account. Please check to
@@ -126,7 +128,7 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
               )}
             />
             <div className={'usa-input-helper-text'}>
-              <span className={errors['invitationCode'] && 'text-secondary'}>
+              <span className={errors['invitationCode'] && 'text-secondary-dark'}>
                 Invitation Code must contain only numeric digits and be 12
                 digits length.
               </span>

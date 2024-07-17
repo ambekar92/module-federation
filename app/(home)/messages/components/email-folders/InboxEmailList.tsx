@@ -7,7 +7,6 @@ import { mock_inbox_emails, useMockInboxEmails } from '../mock-inbox-emails'
 import EmailListItem from './EmailListItem'
 
 const InboxEmailList = () => {
-  const [focusedEmailId, setFocusedEmailId] = useState<string>('');
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const [loadedEmails, setLoadedEmails] = useState<InboxItem[]>([])
@@ -49,8 +48,7 @@ const InboxEmailList = () => {
         <>
         <EmailListItem email={email} 
         // key={email.uuid} 
-        key={idx}
-        isFocused={focusedEmailId === email.uuid} setFocusedEmailId={setFocusedEmailId} />
+        key={idx}/>
         {idx < (loadedEmails.length-1) && <div className={styles.line}></div>}
         </>
       ))}

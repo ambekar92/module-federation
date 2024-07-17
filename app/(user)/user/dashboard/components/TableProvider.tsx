@@ -1,5 +1,5 @@
 'use client'
-import { USER_TASK_DASHBOARD } from '@/app/constants/routes';
+import { USER_TASK_DASHBOARD_ROUTE } from '@/app/constants/routes';
 import { Show } from '@/app/shared/components/Show';
 import TableHeader from '@/app/shared/components/table-header/TableHeader';
 import TablePagination from '@/app/shared/components/table-pagination/TablePagination';
@@ -53,7 +53,7 @@ const TableProvider = ({ searchParams }: { searchParams: { sortColumn: keyof Tas
 
     
     // no data is returned from the api atm, comment out the below line to test UI [mdev]
-      const {data: tasks, isLoading} = useSWR<Task[]>(`${USER_TASK_DASHBOARD}/${sessionData.data?.user_id}`, fetcherGET)
+      const {data: tasks, isLoading} = useSWR<Task[]>(`${USER_TASK_DASHBOARD_ROUTE}/${sessionData.data?.user_id}`, fetcherGET)
 
       useEffect(() => {
         if (!sessionData.data) return;

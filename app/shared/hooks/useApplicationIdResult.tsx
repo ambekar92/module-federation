@@ -33,25 +33,24 @@ export function useApplicationId(): UseApplicationIdResult {
       if (userId) {
         try {
           const entityData = await getEntityByUserId(userId);
-          if (!entityData || entityData.length === 0) {
-            throw new Error('Entity data not found');
-          }
-          setEntityId(entityData[entityData.length-1].id)
+          if(entityData) {
+            setEntityId(entityData[entityData.length-1].id)
 
-          const applicationData = await getApplicationId(entityData[entityData.length - 1].id);
-          if (!applicationData || applicationData.length === 0) {
-            throw new Error('Application data not found');
-          }
-          // Get ID of the last item returned from applicationData
-          const appId = applicationData[applicationData.length - 1].id;
-          setApplicationId(appId);
+            const applicationData = await getApplicationId(entityData[entityData.length - 1].id);
 
-          // Use id from application to get contributors for application
-          const contributorsData = await getApplicationContributorId(appId);
-          if (contributorsData) {
-            // Get & Set the ID of the last item returned from contributorsData
-            setContributorId(contributorsData[contributorsData.length - 1].id);
-            // console.log(contributorsData[contributorsData.length-1].id)
+            // Get ID of the last item returned from applicationData
+            if(applicationData) {
+              const appId = applicationData[applicationData.length - 1].id;
+              setApplicationId(appId);
+
+              // Use id from application to get contributors for application
+              const contributorsData = await getApplicationContributorId(appId);
+              if (contributorsData) {
+                // Get & Set the ID of the last item returned from contributorsData
+                setContributorId(contributorsData[contributorsData.length - 1].id);
+                // console.log(contributorsData[contributorsData.length-1].id)
+              }
+            }
           }
         } catch (error) {
           // eslint-disable-next-line no-console

@@ -25,7 +25,7 @@ function DocumentUpload({contributorId}: QuestionnaireProps) {
       <ButtonGroup className='display-flex flex-justify margin-top-2 margin-right-2px'>
         <Link className='usa-button usa-button--outline'
 				 aria-disabled={!contributorId}
-				 href={`/application/questionnaire/${contributorId}/individual-contributor-hubzone-business-relationships`}>
+				 href={`/application/questionnaire/${contributorId}/hubzone-calculator`}>
           Previous
         </Link>
         <Link className='usa-button' aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.contributorInvitation.link}`}>

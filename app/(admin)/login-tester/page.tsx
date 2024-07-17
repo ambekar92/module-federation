@@ -1,10 +1,10 @@
 import React from 'react'
-import { SignIn }  from './components/SignIn'
+import { SignIn } from './components/SignIn'
 
-//const RegistrationForm = () =>{
+const page = () => {
+  return (
+    <SignIn />
+  )
+}
 
-//return
-<SignIn/>
-//}
-
-export default SignIn
+export default page

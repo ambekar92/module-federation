@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { InboxResponse } from "../types"
+import { InboxResponse } from "../types";
+import { faker } from "@faker-js/faker";
 
 export const mock_inbox_emails = {
     "links": {
@@ -21,6 +22,7 @@ export const mock_inbox_emails = {
         "uuid": "1",
         "subject": "Welcome to our service!",
         "sender": "service@example.com",
+        "to": "",
         "sent_at": "2023-04-01T12:00:00Z",
         "total_unread": "0",
         "read": false,
@@ -100,11 +102,20 @@ export const mock_inbox_emails = {
       },
       
     ]
-  } as unknown as InboxResponse
+  } as unknown as InboxResponse;
+
+  mockEmails()
 
   export function useMockInboxEmails() {
     const [data, setData] = useState<InboxResponse>(mock_inbox_emails)
     const [isLoading, setIsLoading] = useState(false);
 
     return { data, isLoading}
+  }
+
+  function mockEmails() {
+    for (const e of mock_inbox_emails.results) {
+      e.to = faker.internet.email();
+      e.last_message = faker.lorem.paragraph(30)
+    }
   }

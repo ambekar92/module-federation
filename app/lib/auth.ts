@@ -50,8 +50,8 @@ export const authConfig: NextAuthOptions = {
       };
       try {
         userDetails = await axios.post(OKTA_POST_LOGIN_ROUTE, postData);
-        if (userDetails?.data?.permissions?.[0]?.slug) {
-          token.role = userDetails.data.permissions[0].slug;
+        if (userDetails?.data?.permissions.length) {
+          token.permissions = userDetails.data.permissions;
         }
         if (userDetails?.data?.user_id) {
           session.user.id = userDetails.data.user_id;

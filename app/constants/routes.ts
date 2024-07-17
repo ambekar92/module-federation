@@ -38,4 +38,5 @@ export const FIRM_EVALUATIONS_ASSIGN_USER_ROUTE = API_ROUTE + '/assign-user-to-v
 export const DELEGATES_ROUTE = API_ROUTE + '/delegates'
 export const APPLICATION_ROUTE = API_ROUTE + '/application'
 export const TESTER_LOGIN_ROUTE = API_ROUTE + '/login'
-export const USER_TASK_DASHBOARD = API_ROUTE + '/user-task-dashboard'
+export const USER_TASK_DASHBOARD_ROUTE = API_ROUTE + '/user-task-dashboard';
+export const APPLICATION_NOTES_ROUTE = API_ROUTE + '/application-notes';

@@ -89,7 +89,7 @@ const FormTextInput = ({
             className={
               validationStatus &&
               validationStatus === 'error' &&
-              'text-secondary'
+              'text-secondary-dark'
             }
           >
             {errorMessage && validationStatus === 'error'

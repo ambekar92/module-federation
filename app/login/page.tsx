@@ -5,19 +5,25 @@ import { getSessionServer } from '../lib/auth';
 import styles from './Login.module.scss';
 import LoginButton from './LoginButton';
 import { redirect } from 'next/navigation';
+import {
+  CLAIM_YOUR_BUSINESS, SELECT_INTENDED_PROGRAMS, DASHBOARD, ADMIN_DASHBOARD
+} from '@/app/constants/url'
 import { Role } from '../shared/types/role';
 
 export default async function Login({searchParams}: {searchParams: {next: string}}) {
   const session = await getSessionServer();
   if(session) {
-    switch (session?.permissions?.[0]?.slug) {
+    switch (session?.permissions?.at(-1)?.slug) {
+      case Role.PRIMARY_QUALIFYING_OWNER:
+        // Todo
+        // Need to validate application progress for redirect
+        redirect(SELECT_INTENDED_PROGRAMS);
       case Role.EXTERNAL:
-        redirect('/claim-your-business');
-      case Role.PRIMARY_QUALIFY_OWNER:
+        redirect(CLAIM_YOUR_BUSINESS);
       case Role.CONTRIBUTOR:
-        redirect('/dashboard');
+        redirect(DASHBOARD);
       case Role.ADMIN:
-        redirect('/admin/dashboard');
+        redirect(ADMIN_DASHBOARD);
       default:
         redirect('/');
     }

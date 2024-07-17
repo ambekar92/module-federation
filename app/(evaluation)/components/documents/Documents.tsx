@@ -1,10 +1,36 @@
+'use client'
 import React from 'react'
 import { Table } from '@trussworks/react-uswds'
-import DocumentData from '../utils/documentData.json'
 import styles from './Documents.module.scss'
 import HeightIcon from '@mui/icons-material/Height'
+import useSWR from 'swr'
+import { GET_DOCUMENTS, USER_ROUTE } from '../../../constants/routes'
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
+import { fetcherGET } from '@/app/services/fetcher'
+import { useSession } from 'next-auth/react'
+import { DocumentListResponse } from '../../../shared/types/responses'
 
 function Documents() {
+  const { applicationId } = useApplicationId()
+  const session = useSession()
+  const user_id = session?.data?.user_id
+
+  // Get Documents Data
+  const { data: responseData, error: responseError } =
+    useSWR<DocumentListResponse>(
+      applicationId
+        ? `${GET_DOCUMENTS}/?user_id=${user_id}&application_id=${applicationId}`
+        : null,
+      fetcherGET,
+    )
+
+  // Get User Info
+  const { data: resData, error: resError } = useSWR<any>(
+    applicationId ? `${USER_ROUTE}/${user_id}` : null,
+    fetcherGET,
+    { revalidateOnFocus: false },
+  )
+
   return (
     <>
       <div className="grid-row margin-0">
@@ -54,16 +80,25 @@ function Documents() {
               </tr>
             </thead>
             <tbody>
-              {DocumentData.data.map((item, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{item.document_name}</td>
-                    <td>{item.upload_date}</td>
-                    <td>{item.document_type}</td>
-                    <td>{item.uploaded_by}</td>
-                  </tr>
-                )
-              })}
+              {responseError && (
+                <div>{responseError.response?.data?.errors[0]}</div>
+              )}
+
+              {responseData &&
+                responseData?.data.map((item, index) => {
+                  return (
+                    <tr key={index}>
+                      <td>{item.file_name}</td>
+                      <td>{item.uploaded_at}</td>
+                      <td>{item.document_type}</td>
+                      <td>
+                        {resData
+                          ? `${resData.first_name} ${resData.last_name}`
+                          : ' '}
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </Table>
         </div>

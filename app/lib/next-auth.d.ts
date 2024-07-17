@@ -16,21 +16,32 @@ declare module 'next-auth' {
   }
 }
 
+enum Role {
+  EXTERNAL= 'external_user',
+  PRIMARY_QUALIFYING_OWNER= 'primary_qualifying_owner',
+  CONTRIBUTOR= 'contributor',
+  ADMIN= 'admin',
+  INTERNAL= 'internal_user',
+  SCREENER = 'screener',
+}
+
+export interface IUserPermission {
+  id: number,
+  slug: Role,
+  name: string,
+  description: string,
+  parameters: string
+}
+
 export interface IUserDetails  {
 	okta_id: boolean;
   user_id: number,
-    permissions: {
-      id: number,
-      slug: 'external_user' | 'primary_qualify_owner' | 'contributor' | 'admin',
-      name: string,
-      description: string,
-      parameters: string
-    }[],
+    permissions: IUserPermission[],
     entities: any[]
 }
 
 declare module '@auth/core/jwt' {
   interface JWT extends DefaultJWT {
-    role: 'external_user' | 'primary_qualify_owner' | 'contributor' | 'admin'
+    role: 'external_user' | 'primary_qualifying_owner' | 'contributor' | 'admin'
   }
 }

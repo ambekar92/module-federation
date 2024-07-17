@@ -1,5 +1,5 @@
-import Delegates from './Delegates'
 import Primary from './Primary'
+import AddDelegate from './components/AddDelegate'
 
 const ManageDelegate = () => {
   return (
@@ -8,7 +8,8 @@ const ManageDelegate = () => {
       <hr />
       <Primary />
       <br />
-      <Delegates />
+      <AddDelegate />
+      <br />
     </div>
   )
 }

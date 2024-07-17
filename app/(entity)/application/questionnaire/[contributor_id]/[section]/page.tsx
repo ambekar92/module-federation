@@ -13,11 +13,13 @@ import Questions from '../../../qa-helpers/Questions';
 import applicationStore from '../../../redux/applicationStore';
 import HubMock from '../../../components/questionnaire/HubMock';
 import { useParams } from 'next/navigation';
+import HubzoneResults from '../../../sections/HubzoneResults';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const params = useParams()
   const section = params.section.toString();
+  const contributorId = parseInt(params.contributor_id as string, 10);
   const { data: questionnairesData, error } = useSWR(
     params.contributor_id ? `${QUESTIONNAIRE_LIST_ROUTE}/${params.contributor_id}` : null,
     fetcherGET<QuestionnaireListType>
@@ -43,8 +45,24 @@ const QuestionnairePage: React.FC = () => {
   if(error) {
     return <div>Error: {error.message}</div>;
   }
-  const sectionTitle = section.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
+  const sectionTitle = section.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const allSections = [...questionnairesData.map((item) => item.url), `${contributorId}/individual-contributor-hubzone-business-relationships`, `${contributorId}/hubzone-calculator-supplemental`, `${contributorId}/hubzone-calculator`];
+
+  if(section === 'hubzone-results') {
+    return (
+      <Provider store={applicationStore}>
+        <ApplicationLayout>
+          <QAWrapper
+            fill
+            mainContent={
+              <HubzoneResults contributorId={contributorId} />
+            }
+          />
+        </ApplicationLayout>
+      </Provider>
+    )
+  }
   return (
     <Provider store={applicationStore}>
       <ApplicationLayout>
@@ -52,7 +70,7 @@ const QuestionnairePage: React.FC = () => {
           <QAWrapper
             fill
             mainContent={
-              <HubMock />
+              <HubMock contributorId={params.contributor_id}/>
             }
           />
         ): (
@@ -77,28 +95,24 @@ const QuestionnairePage: React.FC = () => {
           ) : (
             <Link
               className="usa-button usa-button--outline"
-              href={`/application/questionnaire/${
-                [...questionnairesData.map((item) => item.url), `/${params.contributor_id}/individual-contributor-hubzone-business-relationships`, `${params.contributor_id}/hubzone-calculator-supplemental`, `${params.contributor_id}/hubzone-calculator`][currentIndex - 1]
-              }`}
+              href={`/application/questionnaire/${allSections[currentIndex - 1]}`}
             >
               Previous
             </Link>
           )}
-          {currentIndex === [...questionnairesData.map((item) => item.url), 'individual-contributor-hubzone-business-relationships', 'hubzone-calculator-supplemental', 'hubzone-calculator'].length - 1 || section === 'hubzone-calculator' ? (
+          {currentIndex === allSections.length - 1 || section === 'hubzone-calculator' ? (
             <Link
               className="usa-button"
               href={`/application/${params.contributor_id}/document-upload`}
             >
-    					Next
+              Next
             </Link>
           ) : (
             <Link
               className="usa-button"
-              href={`/application/questionnaire/${
-                [...questionnairesData.map((item) => item.url), `/${params.contributor_id}/individual-contributor-hubzone-business-relationships`, `${params.contributor_id}/hubzone-calculator-supplemental`, `${params.contributor_id}/hubzone-calculator`][currentIndex + 1]
-              }`}
+              href={`/application/questionnaire/${allSections[currentIndex + 1]}`}
             >
-    					Next
+              Next
             </Link>
           )}
         </ButtonGroup>

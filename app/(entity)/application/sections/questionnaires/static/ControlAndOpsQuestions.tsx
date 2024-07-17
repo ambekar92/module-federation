@@ -10,6 +10,7 @@ import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps, qaAppLinkPrefix } from '../../../utils/constants';
 import { QuestionnaireProps } from '../../../utils/types';
 import Questions from '../../../qa-helpers/Questions';
+import { QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 
 function ControlAndOpsQuestions({contributorId}: QuestionnaireProps) {
   const dispatch = useApplicationDispatch();
@@ -24,7 +25,11 @@ function ControlAndOpsQuestions({contributorId}: QuestionnaireProps) {
     <>
       <QAWrapper
         fill
-        mainContent={<Questions url={CONTROL_AND_OPERATIONS_ROUTE} title={'Control & Operations'} />}
+        mainContent={<Questions
+          // url={CONTROL_AND_OPERATIONS_ROUTE}
+          url={contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : ''}
+          title={'Control & Operations'}
+        />}
       />
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>

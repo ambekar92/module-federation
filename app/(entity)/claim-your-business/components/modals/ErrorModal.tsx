@@ -53,7 +53,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
               heading={headingMsg}
               headingLevel="h4"
             >
-              <ul>
+              <ul className='padding-left-1'>
                 <li>
                   If you claimed the business using another email account,
                   please log in using that account.

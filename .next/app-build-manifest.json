@@ -1,5 +1,10 @@
 {
   "pages": {
+    "/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/loading.js"
+    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -11,45 +16,16 @@
       "static/chunks/main-app.js",
       "static/chunks/app/error.js"
     ],
-    "/loading": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/loading.js"
-    ],
     "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/(entity)/claim-your-business/page": [
+    "/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/(entity)/claim-your-business/page.css",
-      "static/chunks/app/(entity)/claim-your-business/page.js"
-    ],
-    "/(evaluation)/firm/[application_id]/documents/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(evaluation)/firm/[application_id]/documents/page.css",
-      "static/chunks/app/(evaluation)/firm/[application_id]/documents/page.js"
-    ],
-    "/(evaluation)/firm/application/[application_id]/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(evaluation)/firm/application/[application_id]/layout.css",
-      "static/chunks/app/(evaluation)/firm/application/[application_id]/layout.js"
-    ],
-    "/(evaluation)/firm/application/[application_id]/documents/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(evaluation)/firm/application/[application_id]/documents/page.css",
-      "static/chunks/app/(evaluation)/firm/application/[application_id]/documents/page.js"
-    ],
-    "/(entity)/assign-a-delegate/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(entity)/assign-a-delegate/page.css",
-      "static/chunks/app/(entity)/assign-a-delegate/page.js"
+      "static/css/app/login/page.css",
+      "static/chunks/app/login/page.js"
     ]
   }
 }

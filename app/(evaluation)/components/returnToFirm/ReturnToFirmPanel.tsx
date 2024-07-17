@@ -1,7 +1,18 @@
+"use client"
 import React, { useState, useEffect } from 'react'
 import ReturnToFirmDataTable from './ReturnToFirmDataTable'
+import { useSession } from 'next-auth/react'
 
 function ReturnToFirmPanel() {
+//   const { session } = useSession();
+
+
+//   useEffect(() => {
+// console.log(">> session", session?.data);
+//   },[session])
+  
+  
+
   return (
     <div className='grid-container'>
       <li className="usa-card tablet-lg:grid-col-6 widescreen:grid-col-4">

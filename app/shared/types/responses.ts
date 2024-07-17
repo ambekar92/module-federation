@@ -75,3 +75,10 @@ export type ApplicationContributor = {
 }
 
 export type ApplicationContributorType = ApplicationContributor[]
+
+export type DocumentListResponse = {
+	id: number,
+	file_name: number,
+	uploaded_at: number,
+	document_type: number
+}

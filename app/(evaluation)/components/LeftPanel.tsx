@@ -13,7 +13,7 @@ import { useApplicationData } from '../firm/useApplicationData'
 
 function LeftPanel() {
   const [showModal, setShowModal] = useState(false)
-const {applicationData} = useApplicationData();
+  const { applicationData } = useApplicationData();
 
   const [actionModalProps, setActionModalProps] = useState({
     title: '',
@@ -58,34 +58,34 @@ const {applicationData} = useApplicationData();
     setShowModal(false)
   }
 
-  const {data: navItems , isLoading} = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`, fetcherGET);
+  const {data: navItems , isLoading, error} = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`, fetcherGET);
 
   useEffect(() => {
     const sectionItemsMap = new Map<string, QuestionnaireItem[]>();
-    if (navItems) {
+    if (navItems && Array.isArray(navItems)) {
       for (const item of navItems) {
         if (!sectionItemsMap.has(item.section)) {
           sectionItemsMap.set(item.section, [])
-        } 
-        sectionItemsMap.get(item.section)!.push(item)
+        }
+				sectionItemsMap.get(item.section)!.push(item)
       }
+      const sectionItems = Array.from(sectionItemsMap.entries()).map(([sectionName, items]) => ({section: sectionName, child: items}))
+      setQuestionnaireItems(sectionItems);
     }
-    const sectionItems = Array.from(sectionItemsMap.entries()).map(([sectionName, items]) => ({section: sectionName, child: items})) // [sectionName, [items]]
-    setQuestionnaireItems(sectionItems);
   }, [navItems])
 
   useEffect(() => {
-    if (!navItems) return;
+    if (!navItems || !Array.isArray(navItems)) {return;}
     const currentSection = navItems.find(item => item.url.includes(params.section_questions));
     if (currentSection) {
       setActiveSection(currentSection.section);
       setActiveTitle(currentSection.title);
     }
-  }, [pathname])
+  }, [pathname, navItems])
 
   useEffect(() => {
-    if (activeSection || activeTitle) return;
-    if (!navItems) return;
+    if (activeSection || activeTitle) {return;}
+    if (!navItems || !Array.isArray(navItems)) {return;}
     const currentSection = navItems.find(item => item.url.includes(params.section_questions));
     if (currentSection) {
       setActiveSection(currentSection.section);
@@ -139,6 +139,13 @@ const {applicationData} = useApplicationData();
     }
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <h2>{error}</h2>;
+  }
   return (
     <>
       <ActionMenuModal
@@ -171,7 +178,7 @@ const {applicationData} = useApplicationData();
           {' '}
           <span className="text-bold margin-right-1">Certification</span>{' '}
           {/* TODO not clear what key maps to this value in Application type*/}
-          <span>{'N/A'}</span>{' '} 
+          <span>{'N/A'}</span>{' '}
         </div>
         <div className="margin-top-1 margin-bottom-3">
           {' '}
@@ -202,19 +209,19 @@ const {applicationData} = useApplicationData();
         <nav aria-label="Side navigation">
           {isLoading && <div>Loading...</div>}
           {!isLoading && <ul className="usa-sidenav">
-            
+
             {[...questionnaireItems, ...MenuData].map((item, index) => {
               if (item.child.length > 0) {
                 return (
                   <ul key={index}>
                     <li style={{listStyle: 'none'}} className="usa-sidenav__item">
-                      <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`../${item.child[0].url}`} className={item.section === activeSection ? "usa-current" : ''}>{item.section}</Link>
+                      <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`../${item.child[0].url}`} className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
                       <ul className="usa-sidenav__sublist">
                         {item.child.map((childItem, index1) => {
                           return (
                             <div key={index1}>
                               <li className="usa-sidenav__item">
-                                <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`../${childItem.url}`} className={childItem.title === activeTitle ? "usa-current" : ''}>{childItem.title}</Link>
+                                <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`../${childItem.url}`} className={childItem.title === activeTitle ? 'usa-current' : ''}>{childItem.title}</Link>
                               </li>
                             </div>
                           )
@@ -227,7 +234,7 @@ const {applicationData} = useApplicationData();
                 return (
                   <ul key={index}>
                     <li style={{listStyle: 'none'}} className="usa-sidenav__item">
-                      <Link onClick={(e) => onNavLinkClick(e, item as unknown as QuestionnaireItem)} href='#' className={item.section === activeSection ? "usa-current" : ''}>{item.section}</Link>
+                      <Link onClick={(e) => onNavLinkClick(e, item as unknown as QuestionnaireItem)} href='#' className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
                     </li>
                   </ul>
                 )

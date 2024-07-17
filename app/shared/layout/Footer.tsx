@@ -6,12 +6,12 @@ import styles from './layout.module.scss'
 import { StyleSetting } from './Navbar'
 
 export default function Footer() {
-  const [styleSettings, setStyleSettings] = useState<StyleSetting>({
-    bg: '',
-    textColor: '',
-    logo: SBA_LOGO_CIRCLE_URL,
-    hoverColor: ''
-  })
+  // const [styleSettings, setStyleSettings] = useState<StyleSetting>({
+  //   bg: '',
+  //   textColor: '',
+  //   logo: SBA_LOGO_CIRCLE_URL,
+  //   hoverColor: ''
+  // })
 
   const lineItemStyle =
     'mobile-lg:grid-col-6 desktop:grid-col-auto usa-footer__primary-content'
@@ -23,16 +23,23 @@ export default function Footer() {
     e.preventDefault(); // Prevent default link behavior
   };
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      setStyleSettings({
-        bg: 'bg-primary-darker',
-        textColor: 'text-white',
-        logo: SBA_LOGO_CIRCLE_URL,
-        hoverColor: 'hover:text-primary'
-      })
-    }
-  }, [status])
+  // useEffect(() => {
+  //   if (status === 'authenticated') {
+  //     setStyleSettings({
+  //       bg: 'bg-primary-darker',
+  //       textColor: 'text-white',
+  //       logo: SBA_LOGO_CIRCLE_URL,
+  //       hoverColor: 'hover:text-primary'
+  //     })
+  //   }
+  // }, [status])
+
+  const styleSettings = {
+    hoverColor: '',
+    bg: 'bg-primary-darker',
+    textColor: 'text-white',
+    logo: SBA_LOGO_CIRCLE_URL,
+  }
 
   return (
     <div className={styles.layoutFooter}>

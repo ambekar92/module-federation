@@ -1,22 +1,24 @@
 import {
+  Button,
   Header,
   Icon,
   Menu,
   NavMenuButton,
   PrimaryNav,
   Title,
+  NavDropDownButton,
 } from '@trussworks/react-uswds'
-import { signOut, useSession } from 'next-auth/react'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import {
-  SBA_LOGO_SQUARE_WHITE_URL
-} from '../../constants/icons'
+import { SBA_LOGO_SQUARE_WHITE_URL } from '../../constants/icons'
 import { Notification } from './components/navbarNotification'
-import styles from './layout.module.scss'
+import styles from './layout.module.scss';
+import Cookies from 'js-cookie';
 
 //note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
 import { ADMIN_BANNER_ROUTE } from '../../constants/routes'
+import { usePathname } from 'next/navigation'
 
 export interface StyleSetting {
   bg: string
@@ -29,11 +31,17 @@ export interface adminNavBar {
   id: string
   url: string
 }
+
+const selectedBottomRedBorder = '3px solid #CC0000';
+
+
 const Navigation = () => {
   const adminBanner = ADMIN_BANNER_ROUTE
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const [navDropdownOpen, setNavDropdownOpen] = useState([false, false])
-  const [selectedNameId, setSelectedNameId] = useState('')
+  const [navDropdownOpen, setNavDropdownOpen] = useState([false, false, false])
+  const [openProfile, setOpenProfile] = useState([false, false])
+  const [selectedNameId, setSelectedNameId] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const styleSettings = {
     hoverColor: '',
@@ -41,10 +49,15 @@ const Navigation = () => {
     textColor: 'text-white',
     logo: SBA_LOGO_SQUARE_WHITE_URL,
   }
-
-  const { status } = useSession()
-
-  const selectedBottomRedBorder = '3px solid #CC0000'
+  const session = useSession();
+  const path = usePathname()
+  
+  useEffect(() => {
+    const emailPasswordAuthToken = Cookies.get('email_password_auth_token');
+    if (session.status === 'authenticated' || !!emailPasswordAuthToken) {
+      setIsAuthenticated(true)
+    }
+  }, [session, path])
 
   useEffect(() => {
     const pathname = window.location.pathname
@@ -88,19 +101,27 @@ const Navigation = () => {
         setSelectedNameId('') // Default to Home if no match
     }
   }, [])
-
+  const mockToggle = (): void => {
+    /* mock submit fn */
+  }
   const toggleMobileNav = (): void => {
     setMobileNavOpen((prevOpen) => !prevOpen)
   }
 
   const handleToggleNavDropdown = (index: number): void => {
     setNavDropdownOpen((prevNavDropdownOpen) => {
-      const newOpenState = Array(prevNavDropdownOpen.length).fill(false)
+      const newOpenState = Array(prevNavDropdownOpen.length).fill(true)
       newOpenState[index] = !prevNavDropdownOpen[index]
       return newOpenState
     })
   }
-
+  const handleToggleProfileDropdown =(index: number): void => {
+    setOpenProfile((openProfile) => {
+      const newOpenStateProfile = Array(openProfile.length).fill(true)
+      newOpenStateProfile[index] = !openProfile[index]
+      return newOpenStateProfile
+    })
+  }
   const profileDropdown = [
     <Link key="one" href="/user/1">
       Profile
@@ -108,6 +129,7 @@ const Navigation = () => {
     <Link
       key="two"
       onClick={() => {
+        Cookies.remove('email_password_auth_token')
         signOut({ callbackUrl: '/home' })
       }}
       href=""
@@ -116,9 +138,14 @@ const Navigation = () => {
     </Link>,
   ]
   const notAuthenticatedLogin = [
-    <a key="primaryNav_2" className="usa-button" style={{backgroundColor: '#D83933'}} href="/login">
+    <Link
+      key="primaryNav_2"
+      className="usa-button"
+      style={{ backgroundColor: '#D83933' }}
+      href="/login"
+    >
       <span className={styleSettings.textColor}>Login</span>
-    </a>,
+    </Link>,
   ]
   const primaryNavItems = [
     <React.Fragment key="primaryNav_0">
@@ -156,7 +183,7 @@ const Navigation = () => {
         type="button"
         className="usa-button__base usa-nav__link"
         onClick={(): void => {
-          handleToggleNavDropdown(1)
+          handleToggleProfileDropdown(1)
         }}
       >
         <span
@@ -165,24 +192,68 @@ const Navigation = () => {
           User Profile{' '}
           <Icon.ExpandMore
             className="top-2px"
-            style={{ rotate: navDropdownOpen[1] ? '180deg' : '' }}
+            style={{ rotate: openProfile[1] ? '180deg' : '' }}
           />
         </span>
       </button>
       <Menu
         id="extended-nav-section-three"
         items={profileDropdown}
-        isOpen={navDropdownOpen[1]}
+        isOpen={openProfile[1]}
       />
     </React.Fragment>,
   ]
 
-  const unAuthenticatedNavBar = [
-    { id: 'Home', url: '/' },
-    { id: 'Should I Apply?', url: '/should-i-apply/ownership' },
-    { id: 'Resources', url: '/resources' },
-    { id: 'HUBZone Calculator', url: '/' },
+  const unAuthenticatedItems = [
+    <React.Fragment key="primaryNav_3">
+      <Link className="usa-nav_link" href="/home">
+        <span>Home</span>
+      </Link>
+    </React.Fragment>,
+    <React.Fragment key="primaryNav_3">
+      <Link className="usa-nav_link" href="/should-i-apply/ownership">
+        <span>Should I Apply?</span>
+      </Link>
+    </React.Fragment>,
+    <React.Fragment key="primaryNav_2">
+
+      <NavDropDownButton
+        menuId="extended-nav-section-resources"
+        isOpen={navDropdownOpen[2]}
+        label="Resources"
+        onToggle={() => handleToggleNavDropdown(2)}
+      />
+      <Menu
+        id="extended-nav-section-resources"
+        items={[
+          <Link key={0} href="/resources">
+            Resources
+          </Link>,
+          <Link key={1} href="/resources/get-ready">
+            Prepare for Application
+          </Link>,
+          <Link key={2} href="https://calculator.demo.sba-one.net/">
+            HUBZone Calculatr
+          </Link>,
+          <Link key={3} href="https://sbaone.atlassian.net/wiki/spaces/UCPUKB/overview/">
+            Knowledge Base
+          </Link>,
+        ]}
+        isOpen={navDropdownOpen[2]}
+      />
+    </React.Fragment>,
+    <React.Fragment key="primaryNav_3">
+      <a className="usa-nav_link" href="https://www.sba.gov/federal-contracting/contracting-assistance-programs">
+        <span>Our Programs</span>
+      </a>
+    </React.Fragment>,
+    <React.Fragment key="primaryNav_3">
+      <a className="usa-nav_link" href="https://sbaone.atlassian.net/servicedesk/customer/portal/12">
+        <span>Get Help</span>
+      </a>
+    </React.Fragment>,
   ]
+
   const authenticatedNavBar = [
     { id: 'Home', url: '/' },
     { id: 'Message', url: '/messages' },
@@ -206,7 +277,7 @@ const Navigation = () => {
       >
         <div
           className={
-            'usa-nav-container display-flex flex-justify-between flex-align-center maxw-full'
+            'usa-nav-container display-flex flex-align-center flex-justify maxw-full'
           }
         >
           <div
@@ -226,7 +297,7 @@ const Navigation = () => {
               className="usa-menu-btn margin-left-auto"
             />
           </div>
-          {status === 'authenticated' ? (
+          {isAuthenticated ? (
             <PrimaryNav
               aria-label="Primary navigation"
               items={primaryNavItems}
@@ -234,12 +305,15 @@ const Navigation = () => {
               mobileExpanded={mobileNavOpen}
             ></PrimaryNav>
           ) : (
-            <PrimaryNav
-              aria-label="Primary navigation"
-              items={notAuthenticatedLogin}
-              onToggleMobileNav={toggleMobileNav}
-              mobileExpanded={mobileNavOpen}
-            ></PrimaryNav>
+            <div className='hi padding-0 margin-left-auto flex-align-self-center' style={{ position: 'relative' }}>
+              <PrimaryNav
+                className='padding-0 margin-top-1'
+                aria-label="Primary navigation"
+                items={notAuthenticatedLogin}
+                onToggleMobileNav={toggleMobileNav}
+                mobileExpanded={mobileNavOpen}
+              ></PrimaryNav>{' '}
+            </div>
           )}
         </div>
       </Header>
@@ -250,38 +324,17 @@ const Navigation = () => {
       >
         <div className="usa-nav float-left">
           <ul className="usa-nav__primary float-left usa-accordion">
-
-            {status === 'authenticated' && adminBanner === 'admin'
-              ? adminNavBar.map((header: any, index: number) => (
-                <li
-                  key={index}
-                  className="usa-nav__primary-item"
-                  style={{
-                    borderBottom:
-                        selectedNameId === header.id
-                          ? selectedBottomRedBorder
-                          : '',
-                  }}
-                  onClick={() => setSelectedNameId(header.id)}
-                >
-                  <a className="usa-nav__link" href={header.url}>
-                    <span className={` ${styleSettings.hoverColor}`}>
-                      {' '}
-                      {header.id}
-                    </span>
-                  </a>
-                </li>
-              ))
-              : status === 'authenticated'
-                ? authenticatedNavBar.map((header: any, index: number) => (
+            {
+              isAuthenticated && adminBanner === 'admin' ? (
+                adminNavBar.map((header: any, index: number) => (
                   <li
                     key={index}
                     className="usa-nav__primary-item"
                     style={{
                       borderBottom:
-                          selectedNameId === header.id
-                            ? selectedBottomRedBorder
-                            : '',
+                        selectedNameId === header.id
+                          ? selectedBottomRedBorder
+                          : '',
                     }}
                     onClick={() => setSelectedNameId(header.id)}
                   >
@@ -293,15 +346,16 @@ const Navigation = () => {
                     </a>
                   </li>
                 ))
-                : unAuthenticatedNavBar.map((header: any, index: number) => (
+              ) : isAuthenticated ? (
+                authenticatedNavBar.map((header: any, index: number) => (
                   <li
                     key={index}
                     className="usa-nav__primary-item"
                     style={{
                       borderBottom:
-                          selectedNameId === header.id
-                            ? selectedBottomRedBorder
-                            : '',
+                        selectedNameId === header.id
+                          ? selectedBottomRedBorder
+                          : '',
                     }}
                     onClick={() => setSelectedNameId(header.id)}
                   >
@@ -312,7 +366,17 @@ const Navigation = () => {
                       </span>
                     </a>
                   </li>
-                ))}
+                ))
+              ) : (
+                <PrimaryNav
+                  aria-label="Primary navigation"
+                  items=
+                    {unAuthenticatedItems}
+                  onToggleMobileNav={toggleMobileNav}
+                  mobileExpanded={mobileNavOpen}
+                ></PrimaryNav>
+              )
+            }
           </ul>
         </div>
         <div className="usa-nav float-right">
@@ -334,5 +398,4 @@ const Navigation = () => {
     </>
   )
 }
-
 export default Navigation

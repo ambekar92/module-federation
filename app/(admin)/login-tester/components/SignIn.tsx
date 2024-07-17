@@ -1,21 +1,24 @@
 'use client'
-import React from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  GridContainer,
-  Grid,
-  Header,
-  Title,
-  Link,
-  Fieldset,
-  TextInput,
-  Label,
-  Button,
-} from '@trussworks/react-uswds'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { SignInFormData, SignInFormSchema } from './Schema'
 import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
 import { fetcherPOST } from '@/app/services/fetcher'
+import { zodResolver } from '@hookform/resolvers/zod'
+import {
+  Button,
+  Fieldset,
+  Grid,
+  GridContainer,
+  Header,
+  Label,
+  Link,
+  TextInput,
+  Title,
+} from '@trussworks/react-uswds'
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/navigation'
+import React from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { LoginResponse } from '../types'
+import { SignInFormData, SignInFormSchema } from './Schema'
 
 export default {
   title: 'Page Templates/Sign In',
@@ -41,7 +44,8 @@ const returnToTop = (
 )
 
 export const SignIn = (): React.ReactElement => {
-  const [showPassword, setShowPassword] = React.useState(false)
+  const [showPassword, setShowPassword] = React.useState(false);
+  const router = useRouter()
   const {
     trigger,
     control,
@@ -51,16 +55,7 @@ export const SignIn = (): React.ReactElement => {
   } = useForm<SignInFormData>({
     resolver: zodResolver(SignInFormSchema),
     mode: 'onBlur',
-  })
-
-  const onSubmit: SubmitHandler<SignInFormData> = async () => {
-    const isValid = await trigger([], { shouldFocus: true })
-    if (isValid) {
-      // eslint-disable-next-line no-console
-      console.log('Success')
-    }
-  }
-
+  });
   const handleSignIn = async () => {
     try {
       const postData = {
@@ -68,7 +63,9 @@ export const SignIn = (): React.ReactElement => {
         password: getValues('password'),
       }
 
-      await fetcherPOST(TESTER_LOGIN_ROUTE, postData)
+      const response = await fetcherPOST<LoginResponse>(TESTER_LOGIN_ROUTE, postData);
+      Cookies.set('email_password_auth_token', JSON.stringify(response.user))
+      router.push('/claim-your-business');
     } catch (error: any) {
       console.error('Network Error: ', error)
       return
@@ -97,7 +94,7 @@ export const SignIn = (): React.ReactElement => {
               <Grid col={12} tablet={{ col: 8 }} desktop={{ col: 6 }}>
                 <div className="bg-white padding-y-3 padding-x-5 border border-base-lighter">
                   <h1 className="margin-bottom-0">Sign in</h1>
-                  <form onSubmit={handleSubmit(onSubmit)}>
+                  <form onSubmit={handleSubmit(handleSignIn)}>
                     <Fieldset legend="Access your account" legendStyle="large">
                       <Label htmlFor="email">Email address</Label>
                       <Controller
@@ -170,12 +167,12 @@ export const SignIn = (): React.ReactElement => {
                         )}
                       />
 
-                      <Button type="button" onClick={handleSignIn}>
+                      <Button className='margin-top-3' type="submit">
                         Sign in
                       </Button>
 
                       <p>
-                        <Link href="javascript:void();">Forgot password?</Link>
+                        <Link href="#">Forgot password?</Link>
                       </p>
                     </Fieldset>
                   </form>
@@ -183,7 +180,7 @@ export const SignIn = (): React.ReactElement => {
 
                 <p className="text-center">
                   {'Don\'t have an account? '}
-                  <Link href="javascript:void();">Create your account now</Link>
+                  <Link href="#">Create your account now</Link>
                   .
                 </p>
               </Grid>

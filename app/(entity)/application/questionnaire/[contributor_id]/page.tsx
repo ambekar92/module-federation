@@ -55,51 +55,6 @@ const QuestionnaireListPage: React.FC<QuestionnaireListPageProps> = ({ params: {
               </CardHeader>
             </Card>
           ))}
-          <Card className='tablet:grid-col-4'>
-            <CardHeader>
-              <div className="usa-card__body">
-                <h3>
-                  <Link
-                    className='text-primary hover:text-primary-dark'
-                    href={`/application/questionnaire/${contributor_id}/hubzone-calculator-supplemental`}
-                  >
-                  HUBZone Calculator Supplemental
-                  </Link>
-                </h3>
-                <p><b>Status:</b> Not Started</p>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card className='tablet:grid-col-4'>
-            <CardHeader>
-              <div className="usa-card__body">
-                <h3>
-                  <Link
-                    className='text-primary hover:text-primary-dark'
-                    href={`/application/questionnaire/${contributor_id}/individual-contributor-hubzone-business-relationships`}
-                  >
-                  	HUBZone Business Relationships
-                  </Link>
-                </h3>
-                <p><b>Status:</b> Not Started</p>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card className='tablet:grid-col-4'>
-            <CardHeader>
-              <div className="usa-card__body">
-                <h3>
-                  <Link
-                    className='text-primary hover:text-primary-dark'
-                    href={`/application/questionnaire/${contributor_id}/hubzone-calculator`}
-                  >
-                  	HUBZone Calculator
-                  </Link>
-                </h3>
-                <p><b>Status:</b> Not Started</p>
-              </div>
-            </CardHeader>
-          </Card>
         </CardGroup>
 
         <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>

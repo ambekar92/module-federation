@@ -1,9 +1,9 @@
 'use client'
-import React, { useState } from 'react'
-import { FIRM_EVALUATIONS_ADD_NOTE_ROUTE } from '@/app/constants/routes'
+import { APPLICATION_NOTES_ROUTE } from '@/app/constants/routes'
 import { fetcherPOST } from '@/app/services/fetcher'
-import styles from '../Evaluation.module.scss'
 import { useParams } from 'next/navigation'
+import { useState } from 'react'
+import styles from '../Evaluation.module.scss'
 
 function Notes() {
   const [subject, setSubject] = useState('')
@@ -13,12 +13,12 @@ function Notes() {
   const handlePostRequest = async () => {
     try {
       const postData = {
-        process_id: params.application_id,
+        application_id: params.application_id,
         subject: subject,
         description: description,
       }
 
-      await fetcherPOST(`${FIRM_EVALUATIONS_ADD_NOTE_ROUTE}`, postData)
+      await fetcherPOST(`${APPLICATION_NOTES_ROUTE}`, postData)
     } catch (error: any) {
       console.error('Network Error: ', error)
       return

@@ -6,8 +6,11 @@ import DraftEmailList from './email-folders/DraftEmailList';
 import SentEmailList from './email-folders/SentEmailList';
 import ArchivedEmailList from './email-folders/ArchivedEmailList';
 import DeletedEmailList from './email-folders/DeletedEmailList';
+import { useParams } from 'next/navigation';
 
 const SidebarContent: React.FC = () => {
+  const params = useParams<{messageId: string}>();
+
   const folders: AccordionItemProps[] = [
     {
       id: 'filter-sort',
@@ -20,7 +23,7 @@ const SidebarContent: React.FC = () => {
       id: 'inbox-all',
       title: 'Inbox-All',
       content: <InboxEmailList />,
-      expanded: false,
+      expanded: params?.messageId ? true : false,
       headingLevel: 'h2',
     },
     {

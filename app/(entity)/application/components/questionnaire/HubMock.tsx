@@ -1,8 +1,11 @@
 import { useSession } from 'next-auth/react';
+import { QuestionnaireProps } from '../../utils/types';
 
-function HubMock() {
+function HubMock({contributorId}: any) {
   const session = useSession();
   const accessToken = session?.data?.user?.accessToken;
+  const userId = session?.data?.user.id;
+
   return (
     <div style={{lineHeight: 1.5}}>
       <h2>HUBZone Calculator</h2>
@@ -18,7 +21,7 @@ function HubMock() {
       <p>You can always check your eligibility by visiting the HUBZone Calculator located on the Unified Certification Platform homepage.</p>
 
       <div className='display-flex flex-justify-end margin-top-5'>
-        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`http://localhost:3001/firm?wt=${accessToken}`}>
+        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`http://localhost:3001/firm?wt=${accessToken}&application_contributor_id=${contributorId}&user_id=${userId}`}>
 					Start
         </a>
       </div>

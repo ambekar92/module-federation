@@ -1,17 +1,34 @@
+'use client'
 import { Grid } from '@trussworks/react-uswds'
-import { Dispatch, SetStateAction, useState } from 'react'
+import moment from 'moment'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import InitialsCircle from '../../../../(admin)/admin/users/components/AccountCircle'
 import { InboxItem } from '../../types'
 import styles from '../Messages.module.scss'
-import moment from 'moment'
 
-const EmailListItem = ({ email, isFocused, setFocusedEmailId }: { email: InboxItem, isFocused: boolean, setFocusedEmailId: Dispatch<SetStateAction<string>> }) => {
+const EmailListItem = ({ email}: { email: InboxItem}) => {
     const [read, setRead] = useState<boolean>(email.read);
+    const router = useRouter();
+    const params = useParams<{ messageId: string }>();
+
+    useEffect(() => {
+        if (!params || !params.messageId) return;
+        if (params.messageId === email.uuid) {
+            setRead(true);
+        }
+
+    }, [params?.messageId])
+
+    function onMessageClick() {
+        setRead(true);
+        router.push(`/messages/${email.uuid}`)
+    }
     return (
         <div
             className={'cursor-pointer position-relative'}
-            onClick={() => { setFocusedEmailId(email.uuid); setRead(true) }}>
-            <div className={isFocused ? styles['email-focused'] : ''} style={{overflow: 'hidden'}}>
+            onClick={onMessageClick}>
+            <div className={params.messageId === email.uuid ? styles['email-focused'] : ''} style={{overflow: 'hidden'}}>
                 <Grid row className="flex-align-center">
                     <Grid col={3} className="display-flex">
                         <Grid col={2}>
