@@ -24,9 +24,11 @@ interface ValidateBusinessFormProps {
 }
 
 function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
-  const [open, setOpen] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [isPostSuccessful, setPostSuccessful] = useState(false);
+  const [ open, setOpen ] = useState(false);
+  const [ errorMsg, setErrorMsg ] = useState('');
+  const [ isPostSuccessful, setPostSuccessful ] = useState(false);
+  const [ applicationId, setApplicationId ] = useState<number | undefined>();
+
   const handleClose = () => {
     setOpen(false);
     if(errorMsg !== '') {
@@ -73,7 +75,11 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
 
         <Show>
           <Show.When isTrue={open && errorMsg === ''}>
-            <ConfirmModal handleClose={handleClose} handleOpen={handleOpen} open={open} setErrorMsg={setErrorMsg} setPostSuccessful={setPostSuccessful} business={samData} />
+            <ConfirmModal
+              handleClose={handleClose} handleOpen={handleOpen} open={open}
+              setErrorMsg={setErrorMsg} setPostSuccessful={setPostSuccessful}
+              business={samData} setApplicationId={setApplicationId}
+            />
           </Show.When>
         </Show>
 
@@ -137,9 +143,18 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
                 Back
               </Link>
               {isPostSuccessful ? (
-                <Link href="/select-intended-programs" className="usa-button usa-button">
-									Continue
-                </Link>
+                applicationId ? (
+                  <Link href={`/application/select-intended-programs/${applicationId}`} className="usa-button usa-button">
+										Continue
+                  </Link>
+                ): (
+                  <Button
+                    disabled
+                    type='button'
+                  >
+                		Continue
+                  </Button>
+                )
               ): (
                 <Button
                   onClick={handleOpen}

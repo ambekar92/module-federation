@@ -272,6 +272,17 @@ input.usa-input.usa-input--success.icon:-internal-autofill-selected {
   color: #cc0000;
 }
 
+.attestation-checkbox label {
+  color: white;
+}
+.attestation-checkbox label::before {
+  box-shadow: 0 0 0 2px white;
+}
+.attestation-checkbox .usa-checkbox__input:checked + [class*=__label]::before {
+  background-color: #E41D3D;
+  box-shadow: 0 0 0 2px #E41D3D;
+}
+
 .usa-label {
   color: #0f0f0f;
   font-size: 20px;

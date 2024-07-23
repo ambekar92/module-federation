@@ -35,8 +35,22 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.next();
     }
   },
+  '/login-tester': async (request: NextRequest) => {
+    if (process.env.NODE_ENV !== 'production') {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}/login`);
+    }
+  },
+  '/tester-login': async (request: NextRequest) => {
+    if (process.env.NODE_ENV !== 'production') {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}/login`);
+    }
+  },
   // protect all routes except /login
-  'regex:^(?!(/login$|/login-tester$)).*$': async (request: NextRequest) => {
+  'regex:^(?!(/login$|/login-tester$|/tester-login$)).*$': async (request: NextRequest) => {
     const {email_password_auth_token, token, originalUrl} = await getData(request);
     if (!token && !email_password_auth_token) {
       return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
@@ -64,18 +78,19 @@ export const config = {
     // '/additional-information',
     // '/application',
     // '/application(.*)', // all sub-routes
-    // '/reviews',
-    // '/firm/application(.*)/firm-summary',
-    // '/firm/application(.*)/documents',
+    // '/firm(.*)', // all sub-routes
     // '/dashboard/(.*)',
-    // '/dashboard'
+    // '/dashboard',
+    // '/login-tester',
+    // '/tester-login'
   ],
 }
 
 export const middleware = createMiddleware(middlewares);
 
 
-function isRole(permissions: IUserPermission[], role: Role) {
+export function isRole(permissions: IUserPermission[], role: Role) {
+  if (!permissions) return false;
   return permissions.some(permission => permission.slug === role);
 }
 

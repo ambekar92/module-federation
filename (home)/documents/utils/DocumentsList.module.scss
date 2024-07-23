@@ -1,0 +1,115 @@
+@use 'colors' as *;
+
+.menuText {
+  font-size: 14px;
+  margin-left: 6px;
+}
+.sortTypeGrid{
+  margin-top: -96px;
+}
+
+.mainMenu{
+  margin: 18px 14px;
+  .mainMenuButton{
+    border-radius: 32px;
+    width: 100%;
+    padding: 0px 62px;
+    p{
+      margin: 12px 0px 12px 8px;
+    }
+  }
+  .mainMenuButton:hover{
+    background-color: rgb(114 179 233);
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  .mainMenu{
+    margin: 10px 14px 0px 14px;
+  }
+  .sortTypeGrid{
+    margin-top: 0px;
+  }
+}
+
+
+
+
+.documents-list {
+  margin: 15px;
+  padding-top: 10px;
+
+  .cardSelected {
+    background-color: #f0f0f0;
+    border: 1px solid #d9d2d2;
+    cursor: pointer;
+
+    .card-headerText {
+      span {
+        font-size: 17px;
+        font-weight: 600;
+      }
+    }
+
+    .subText {
+      margin: 0px;
+      padding-left: 16px;
+      font-weight: 600;
+    }
+
+    .subTextModified {
+      margin: 2px 0px 8px 0px;
+      padding-left: 16px;
+    }
+
+  }
+
+  .card {
+    border: 1px solid #d9d2d2;
+    cursor: pointer;
+
+    .card-headerText {
+      span {
+        font-size: 17px;
+        font-weight: 600;
+      }
+    }
+
+    .subText {
+      margin: 0px;
+      padding-left: 16px;
+      font-weight: 600;
+    }
+
+    .subTextModified {
+      margin: 2px 0px 8px 0px;
+      padding-left: 16px;
+    }
+  }
+
+  .documents-header {
+    margin-bottom: 68px;
+
+    li {
+      margin: 0px;
+    }
+
+    input {
+      outline: 1px solid white;
+      border: 1px solid #000;
+      width: 100%;
+      margin-right: -3px;
+    }
+  }
+
+  .tableSortIcon{
+    float: right;
+    padding-top: 4px;
+  }
+  .table-th{
+    padding-right: 8px;
+  }
+
+}
+

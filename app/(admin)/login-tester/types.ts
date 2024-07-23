@@ -1,6 +1,8 @@
+import { Role } from "@/app/shared/types/role";
+
 type Permission = {
     id: number;
-    slug: string;
+    slug: Role;
     name: string;
     description: string;
     parameters: string;

@@ -4,6 +4,10 @@ import OktaProvider from 'next-auth/providers/okta';
 import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken';
 import { OKTA_POST_LOGIN_ROUTE } from '../constants/routes';
 import { IUserDetails } from './next-auth';
+import { SessionType } from '../login/types';
+import { useSession } from 'next-auth/react';
+import Cookies from 'js-cookie';
+import { LoginResponseUser } from '../(admin)/login-tester/types';
 
 export const authConfig: NextAuthOptions = {
   providers: [
@@ -75,5 +79,44 @@ export const authConfig: NextAuthOptions = {
 }
 export async function getSessionServer() {
   const session = await getServerSession(authConfig)
+  return session;
+}
+
+/**
+ * Custom hook to retrieve and unify session details from two authentication sources.
+ *
+ * This function attempts to obtain the session details from Okta's authentication system first.
+ * If Okta's session is not available, it falls back to using a session based on an email and password
+ * authentication token stored in cookies. The function then constructs a unified session object
+ * that conforms to the SessionType interface, regardless of the authentication method used.
+ *
+ * @returns {SessionType} A session object containing details about the current user session.
+ */
+export function useSessionUCMS(): SessionType {
+  const oktaSession = useSession() as unknown as SessionType;
+  const emailPasswordAuthCookie = Cookies.get('email_password_auth_token');
+  const email_password_auth_token = emailPasswordAuthCookie
+    ? JSON.parse(emailPasswordAuthCookie) as LoginResponseUser
+    : null;
+  const session: SessionType = oktaSession.data ? oktaSession : {
+    data: {
+      user: {
+        name: '',
+        email: '',
+        accessToken: email_password_auth_token?.access || '',
+        okta_id: '',
+        id: email_password_auth_token?.user_id || 0
+      },
+      expires: '',
+      csrfToken: email_password_auth_token?.refresh || '',
+      user_id: email_password_auth_token?.user_id || 0,
+      permissions: email_password_auth_token?.permissions || [],
+      entities: [],
+      refresh: email_password_auth_token?.refresh || '',
+      access: email_password_auth_token?.access || ''
+    },
+    status: email_password_auth_token ? 'authenticated' :'unauthenticated'
+  };
+
   return session;
 }

@@ -35,13 +35,13 @@ const getPages = (dirs) => {
     processDir(rootDir, dir);
   });
 
-  fs.writeFileSync('site-map.json', JSON.stringify(pagePaths, null, 2));
+  fs.writeFileSync('./static-data/site-map.json', JSON.stringify(pagePaths, null, 2));
 };
 
 const appDirectories = [
-  'login', '(admin)', '(entity)',
-  '(evaluation)', '(field_operation)',
-  '(helpdesk)', '(home)', '(user)'
+  '(admin)', '(entity)',
+  '(evaluation)', '(home)',
+  '(user)', 'lib', 'login'
 ];
 
 getPages(appDirectories);

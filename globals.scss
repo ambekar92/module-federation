@@ -1,0 +1,210 @@
+@use 'constants' as *;
+@use '../styles' as *;
+@import '@trussworks/react-uswds/lib/uswds.css';
+@import '@trussworks/react-uswds/lib/index.css';
+
+.dark {
+  $blues-surface-subtle: $blue-600;
+  $blues-border-lighter: $blue-500;
+  $grays-text-icons-body: $gray-0;
+  $grays-text-icons-title: $gray-0;
+  $blues-surface-darker: $blue-100;
+  $grays-surface-subtle: $gray-950;
+}
+
+$line-height-base-px: 1.5;
+$line-height-tight-px: 1.35;
+
+.layout {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 24px); // Accounts for usa banner
+
+	// The main element will fill remaining space to ensure full page height
+	.grid-container-widescreen {
+		flex-grow: 1;
+		width: 100%;
+    max-width: 100%;
+	}
+}
+
+.line-height {
+	&-base {line-height: $line-height-base-px;}
+	&-tight {line-height: $line-height-tight-px;}
+}
+
+/* Extra-extra-extra-small text */
+.text-size-3xs { font-size: 0.75rem; }
+
+/* Extra-extra-small text */
+.text-size-2xs { font-size: 0.875rem; }
+
+/* Extra-small text */
+.text-size-xs { font-size: 1rem; }
+
+/* Small text */
+.text-size-sm { font-size: 1.125rem; }
+
+/* Base text size */
+.text-size-base { font-size: 1.25rem; }
+
+/* Medium text */
+.text-size-md { font-size: 1.375rem; }
+
+/* Large text */
+.text-size-lg { font-size: 1.5rem; }
+
+/* Extra-large text */
+.text-size-xl { font-size: 1.75rem; }
+
+/* Extra-extra-large text */
+.text-size-2xl { font-size: 2rem; }
+
+/* Extra-extra-extra-large text */
+.text-size-3xl { font-size: 2.25rem; }
+
+/* Even larger text */
+.text-size-4xl { font-size: 2.5rem; }
+
+/* Very large text */
+.text-size-5xl { font-size: 3rem; }
+
+/* Optional: Responsive text sizes for different breakpoints */
+@media screen and (max-width: 768px) {
+.text-size-xl, .text-size-2xl, .text-size-3xl, .text-size-4xl, .text-size-5xl {
+		font-size: 1.25rem; /* Smaller size for mobile devices */
+}
+}
+
+.usa-banner__inner.usa-banner__inner {
+	margin-left: 0;
+}
+@mixin logo_sm {
+  width: 10.5rem;
+  max-width: 25%;
+  aspect-ratio: 1;
+}
+
+@mixin logo_lg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  filter: grayscale(100%) invert(100%) opacity(20%);
+}
+
+@mixin wrapper {
+  display: flex;
+  align-items: center;
+  height: 80vh;
+  top: $navbar-height;
+  position: relative;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  width: 100vw;
+}
+
+@mixin container {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  position: relative;
+  text-align: center;
+  width: 41.8312rem;
+  max-width: 70%;
+  aspect-ratio: 1.29/1;
+}
+
+@mixin home-button {
+  text-decoration: none;
+  color: $green-700;
+  margin-top: 1.875rem;
+  border-radius: 0.25rem;
+  height: fit-content;
+  border: 2px solid #000000;
+  width: Hug (10.125rem) px;
+  height: Hug (2.75rem) px;
+  padding: 0.625rem 1.25rem 0.625rem 1.25rem;
+  gap: 1.25rem;
+  border-radius: 0.25rem;
+  opacity: 0rem;
+}
+
+.not-found {
+  @include wrapper;
+
+  .logo_sm {
+    @include logo_sm;
+    align-self: flex-start;
+  }
+  .container {
+    @include container;
+  }
+  .message {
+    font-size: 1.5rem;
+  }
+
+  .logo_bg {
+    @include logo_lg;
+  }
+  .button {
+    @include home-button;
+  }
+}
+
+.error-boundary {
+  @include wrapper;
+
+  .logo_sm {
+    @include logo_sm;
+  }
+  .container {
+    @include container;
+  }
+  .status {
+    color: $blue-600;
+    font-size: 8rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .message {
+    font-size: 1.5rem;
+  }
+
+  .logo_bg {
+    @include logo_lg;
+  }
+
+  .button {
+    @include home-button;
+  }
+}
+
+.main-children-wrapper {
+  margin-top: $navbar-height;
+}
+
+input:not([disabled]):focus, select:not([disabled]):focus, textarea:not([disabled]):focus, button:not([disabled]):focus{
+  outline: 0px solid #2491ff !important;
+  outline-offset: 0rem;
+}
+
+iframe:focus, [href]:focus, [tabindex]:focus, [contentEditable=true]:focus {
+  outline: 0px solid #2491ff !important;
+  outline-offset: 0rem;
+}
+
+.usa-input-group {
+  height: fit-content !important;
+}
+
+li.usa-card {
+  list-style: none;
+}

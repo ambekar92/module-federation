@@ -55,3 +55,17 @@ input.usa-input.usa-input--success.icon:-internal-autofill-selected {
     color: $reds-text-icon-icon-light;
   }
 }
+
+.attestation-checkbox {
+	label {
+		color: white;
+
+		&::before {
+			box-shadow: 0 0 0 2px white;
+		}
+	}
+	.usa-checkbox__input:checked + [class*=__label]::before {
+		background-color: #E41D3D;
+		box-shadow: 0 0 0 2px #E41D3D;
+	}
+}

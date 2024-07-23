@@ -1,10 +1,11 @@
-import { useSession } from 'next-auth/react';
-import { QuestionnaireProps } from '../../utils/types';
+import { useSessionUCMS } from '@/app/lib/auth';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 
-function HubMock({contributorId}: any) {
-  const session = useSession();
+function HubMock() {
+  const session = useSessionUCMS();
   const accessToken = session?.data?.user?.accessToken;
   const userId = session?.data?.user.id;
+  const { applicationId, contributorId } = useApplicationId()
 
   return (
     <div style={{lineHeight: 1.5}}>
@@ -21,7 +22,7 @@ function HubMock({contributorId}: any) {
       <p>You can always check your eligibility by visiting the HUBZone Calculator located on the Unified Certification Platform homepage.</p>
 
       <div className='display-flex flex-justify-end margin-top-5'>
-        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`http://localhost:3001/firm?wt=${accessToken}&application_contributor_id=${contributorId}&user_id=${userId}`}>
+        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`http://localhost:3001/firm?wt=${accessToken}&application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}`}>
 					Start
         </a>
       </div>

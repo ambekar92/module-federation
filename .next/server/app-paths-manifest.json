@@ -1,5 +1,6 @@
 {
-  "/not-found": "app/not-found.js",
-  "/login/page": "app/login/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
+  "/(entity)/application/questionnaire/[contributor_id]/page": "app/(entity)/application/questionnaire/[contributor_id]/page.js",
+  "/(entity)/application/questionnaire/[contributor_id]/[section]/page": "app/(entity)/application/questionnaire/[contributor_id]/[section]/page.js",
+  "/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page": "app/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page.js",
+  "/(evaluation)/firm/business-plan/questionnaire/[application_id]/page": "app/(evaluation)/firm/business-plan/questionnaire/[application_id]/page.js"
 }

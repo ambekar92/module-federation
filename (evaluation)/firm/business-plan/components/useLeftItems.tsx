@@ -1,0 +1,29 @@
+import { useEffect, useState } from 'react';
+import { NavItem, Params, QuestionnaireItem } from '../../../types/types';
+import { useParams } from 'next/navigation';
+import useSWR from 'swr'
+import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
+import { fetcherGET } from '@/app/services/fetcher';
+
+export function useLeftItems() {
+  const [questionnaireItems, setQuestionnaireItems] = useState<NavItem[]>([]);
+  const params = useParams<Params>();
+
+  const { data: navItems, isLoading, error } = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`, fetcherGET);
+
+  useEffect(() => {
+    const sectionItemsMap = new Map<string, QuestionnaireItem[]>();
+    if (navItems && Array.isArray(navItems)) {
+      for (const item of navItems) {
+        if (!sectionItemsMap.has(item.section)) {
+          sectionItemsMap.set(item.section, [])
+        }
+          sectionItemsMap.get(item.section)!.push(item)
+      }
+      const sectionItems = Array.from(sectionItemsMap.entries()).map(([sectionName, items]) => ({ section: sectionName, child: items }))
+      setQuestionnaireItems(sectionItems);
+    }
+  }, [navItems])
+
+  return {navItems: [...questionnaireItems], isLoading, error}
+}

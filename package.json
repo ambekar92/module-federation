@@ -3,14 +3,15 @@
    "version": "0.1.0",
    "private": true,
    "scripts": {
-      "dev": "npm run get-pages && next dev",
-      "build": "next build && npm run get-pages",
+      "dev": "next dev",
+      "build": "next build",
       "start": "next start",
       "lint": "next lint",
       "test": "jest --watch",
       "coverage": "yarn test --coverage --watchAll",
       "test:ci": "jest --ci",
-      "get-pages": "node getPages.js"
+      "get-pages": "node getPages.js",
+			"print-fs": "node getFileStructure.js"
    },
    "dependencies": {
       "@emotion/react": "^11.11.4",

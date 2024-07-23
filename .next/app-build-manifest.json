@@ -1,10 +1,5 @@
 {
   "pages": {
-    "/loading": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/loading.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -16,16 +11,45 @@
       "static/chunks/main-app.js",
       "static/chunks/app/error.js"
     ],
+    "/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/loading.js"
+    ],
     "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
-    "/login/page": [
+    "/(evaluation)/firm/business-plan/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/login/page.css",
-      "static/chunks/app/login/page.js"
+      "static/chunks/app/(evaluation)/firm/business-plan/layout.js"
+    ],
+    "/(evaluation)/firm/business-plan/questionnaire/[application_id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(evaluation)/firm/business-plan/questionnaire/[application_id]/page.js"
+    ],
+    "/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page.js"
+    ],
+    "/(entity)/application/questionnaire/[contributor_id]/[section]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(entity)/application/questionnaire/[contributor_id]/[section]/page.js"
+    ],
+    "/(evaluation)/firm/business-plan/questionnaire/[application_id]/[section]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(evaluation)/firm/business-plan/questionnaire/[application_id]/[section]/page.js"
+    ],
+    "/(entity)/application/questionnaire/[contributor_id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(entity)/application/questionnaire/[contributor_id]/page.js"
     ]
   }
 }

@@ -9,19 +9,19 @@ import {
 } from '@trussworks/react-uswds'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
-import { useSession } from 'next-auth/react'
 import { InvitationCodeFormSchema } from '../../utils/schemas'
 import { InvitationCodeInputType } from '../../utils/types'
 import CustomHeader from '../../../../shared/components/forms/CustomHeader'
 import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/routes'
 import { axiosInstance } from '@/app/services/fetcher'
+import { useSessionUCMS } from '@/app/lib/auth'
 
 interface invitationCodeFormProps {
   submitForm: () => void
 }
 
 function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
-  const session = useSession()
+  const session = useSessionUCMS()
   const [showAlert, setShowAlert] = useState(false)
 
   //mock value for testing error alert prompt

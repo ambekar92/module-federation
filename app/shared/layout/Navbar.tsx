@@ -1,22 +1,22 @@
 import {
-  Button,
   Header,
   Icon,
   Menu,
+  NavDropDownButton,
   NavMenuButton,
   PrimaryNav,
-  Title,
-  NavDropDownButton,
+  Title
 } from '@trussworks/react-uswds'
-import { signIn, signOut, useSession } from 'next-auth/react'
+import Cookies from 'js-cookie'
+import { signOut } from 'next-auth/react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { SBA_LOGO_SQUARE_WHITE_URL } from '../../constants/icons'
 import { Notification } from './components/navbarNotification'
-import styles from './layout.module.scss';
-import Cookies from 'js-cookie';
+import styles from './layout.module.scss'
 
 //note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
+import { useSessionUCMS } from '@/app/lib/auth'
 import { ADMIN_BANNER_ROUTE } from '../../constants/routes'
 import { usePathname } from 'next/navigation'
 
@@ -34,7 +34,6 @@ export interface adminNavBar {
 
 const selectedBottomRedBorder = '3px solid #CC0000';
 
-
 const Navigation = () => {
   const adminBanner = ADMIN_BANNER_ROUTE
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
@@ -49,9 +48,9 @@ const Navigation = () => {
     textColor: 'text-white',
     logo: SBA_LOGO_SQUARE_WHITE_URL,
   }
-  const session = useSession();
+  const session = useSessionUCMS();
   const path = usePathname()
-  
+
   useEffect(() => {
     const emailPasswordAuthToken = Cookies.get('email_password_auth_token');
     if (session.status === 'authenticated' || !!emailPasswordAuthToken) {
@@ -383,7 +382,7 @@ const Navigation = () => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
               <a aria-disabled={true} tabIndex={-1} href="">
-                {status !== 'authenticated' ? (
+                {session.status !== 'authenticated' ? (
                   ''
                 ) : (
                   <span className={` ${styleSettings.hoverColor}`}>

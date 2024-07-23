@@ -1,0 +1,92 @@
+[
+	{
+		"name": "revenue",
+		"question": "Is your company generating revenue?",
+		"yesId": "revenue-yes",
+		"noId": "revenue-no",
+		"options": ["Yes", "No"],
+		"noAlert": "SBA requires two years of revenue to show that you are ready for the 8(a) Business Development Program. However, SBA may waive this requirement if you can provide other evidence that your company is ready for the program. Click <a href='/'>here</a> to learn more.",
+		"questionSection": "readiness",
+		"listItems": []
+	},
+	{
+		"name": "qualityGoods",
+		"question": "Do you have a track record of delivering quality goods and services on time and within budget?",
+		"yesId": "qualityGoods-yes",
+		"noId": "qualityGoods-no",
+		"options": ["Yes", "No"],
+		"noAlert": "The best way to show that your company is ready for the 8(a) Business Development Program is to have a track record of successful performance",
+		"questionSection": "readiness",
+		"listItems": []
+	},
+	{
+		"name": "electronicPayments",
+		"question": "Can you invoice and receive payments electronically?",
+		"yesId": "electronicPayments-yes",
+		"noId": "electronicPayments-no",
+		"options": ["Yes", "No"],
+		"noAlert": "You will be required to invoice and receive payments electronically",
+		"questionSection": "readiness",
+		"listItems": []
+	},
+	{
+		"name": "coverCosts",
+		"question": "Can you cover your costs <i>(hire personnel, purchase equipment, cover overhead expenses, etc.)</i> prior to receiving your first payment?",
+		"yesId": "coverCosts-yes",
+		"noId": "coverCosts-no",
+		"options": ["Yes", "No"],
+		"noAlert": "You'll need to have sufficient capital to cover contract start-up costs before you receive your first payment. Check out <a href='/'>SBA's Fund Your Business</a> for helpful resources",
+		"questionSection": "readiness",
+		"listItems": []
+	},
+	{
+		"name": "usBusiness",
+		"question": "Do you own and control a small business located in the U.S.?",
+		"yesId": "usBusiness-yes",
+		"noId": "usBusiness-no",
+		"options": ["Yes", "No"],
+		"noAlert": "You must own and control a small business in the U.S. to participate in the 8(a) Business Development Program",
+		"questionSection": "eligibility",
+		"listItems": []
+	},
+	{
+		"name": "financialLimits",
+		"question": "Are you under the financial limits?",
+		"yesId": "financialLimits-yes",
+		"noId": "financialLimits-no",
+		"options": ["Yes", "No"],
+		"noAlert": "You must be economically-disadvantaged to participate in the 8(a) Business Development Program",
+		"questionSection": "eligibility",
+		"listItems": ["Annual personal income: $400,000 per year", "Net worth: $850,000 <i>(Value of everything you own minus the value of everything you owe: $850,000 not including the value of your home, company, or retirement accounts)</i>", "Total assets: $6.5 million <i>(Not including retirement accounts)</i>"]
+	},
+	{
+		"name": "financialStatements",
+		"question": "Can you provide reliable annual financial statements (Balance Sheet and Income Statement)?",
+		"yesId": "financialStatements-yes",
+		"noId": "financialStatements-no",
+		"options": ["Yes", "No"],
+		"noAlert": "SBA needs to review reliable financial statements to determine if your company is ready for the 8(a) Business Development Program",
+		"questionSection": "eligibility",
+		"listItems": []
+	},
+	{
+		"name": "usCitizen",
+		"question": "Are you a U.S. citizen?",
+		"yesId": "usCitizen-yes",
+		"noId": "usCitizen-no",
+		"options": ["Yes", "No"],
+		"noAlert": "You must be a U.S. citizen to participate in the 8(a) Business Development Program",
+		"questionSection": "eligibility",
+		"listItems": []
+	},
+	{
+		"name": "disadvantagedGroup",
+		"question": "Can you provide detail of how your social disadvantage has hurt your business? <a href='/'>More Information</a>",
+		"yesId": "disadvantagedGroup-yes",
+		"noId": "disadvantagedGroup-no",
+		"options": ["Yes", "No"],
+		"noAlert": "You must be socially disadvantaged to participate in the 8(a) Business Development Program",
+		"questionSection": "eligibility",
+		"listItems": ["Native American", "Black American", "Hispanic American", "Asian Pacific American", "Subcontinent Asian American", "I believe I am socially disadvantaged for another reason"]
+	}
+]

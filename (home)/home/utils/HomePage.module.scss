@@ -1,0 +1,90 @@
+.hero-para {
+	font-family: 'Source Sans 3';
+	font-weight: 300;
+	font-size: 22px;
+}
+
+.arrow-box {
+	position: relative;
+	min-height: 240px;
+	max-height: 272px;
+	background-color: #a9aeb1;
+	z-index: 0;
+
+	&_number, &_number-modified {
+			position: absolute;
+			top: 12px; 
+			color: white;
+			font-size: 32px;
+			font-weight: 700;
+	}
+
+	&_number { left: 24px; }
+	&_number-modified { left: 36px; }
+
+	&_text {
+			margin-top: -1.5rem;
+			padding: 1rem 0 0;
+			display: flex;
+			justify-content: center;
+			height: 136px;
+			max-height: 50%;
+
+			div {
+					max-width: 90%;
+					padding-right: 1rem;
+
+					h3, p { margin-top: 0; }
+
+					h3 { margin-bottom: 0.5rem; }
+
+					p {
+							text-transform: uppercase;
+							line-height: 32px;
+					}
+			}
+	}
+}
+
+.arrow-box-content {
+	position: absolute;
+	top: 50%; left: 50%;
+	transform: translate(-50%, -50%);
+	background-color: white;
+	width: calc(100% - 4px);
+	height: calc(100% - 4px);
+	z-index: 1;
+
+	img {
+			height: 136px;
+			max-height: 50%;
+			padding: 2px 0 0.25rem;
+	}
+}
+
+%clip-path-one { clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%); }
+%clip-path-two { clip-path: polygon(90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%); }
+%clip-path-three { clip-path: polygon(100% 0, 100% 50%, 100% 100%, 0% 100%, 10% 50%, 0% 0%); }
+
+.arrow-box-one {
+	@extend %clip-path-one;
+	.arrow-box-content { @extend %clip-path-one; }
+}
+
+.arrow-box-two {
+	@extend %clip-path-two;
+	.arrow-box-content { @extend %clip-path-two; }
+	.arrow-box_text {
+		padding-left: 2rem;
+		padding-right: 1.5rem;
+	}
+}
+
+.arrow-box-three {
+	@extend %clip-path-three;
+	.arrow-box-content { @extend %clip-path-three; }
+	.arrow-box_text {
+		padding-left: 1rem;
+		padding-right: 1.5rem;
+	}
+}

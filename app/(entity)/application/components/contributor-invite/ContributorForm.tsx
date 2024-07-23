@@ -10,6 +10,10 @@ import { Contributor } from './types';
 import InviteContributorModal from './InviteContributorModal';
 import { UserApplicationInfo, convertOwnerToContributor, useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
 import { QuestionnaireProps } from '../../utils/types';
+import useSWR from 'swr';
+import { fetcherGET } from '@/app/services/fetcher';
+import { INVITATION_ROUTE } from '@/app/constants/routes';
+import { InvitationType } from '@/app/services/types/application';
 
 function ContributorForm({contributorId}: QuestionnaireProps) {
   const { updateUserApplicationInfo } = useUserApplicationInfo();
@@ -20,6 +24,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { isAddingContributor, contributors, operators } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
+  const { data: invitationData, error: invitationError } = useSWR(`${INVITATION_ROUTE}/${contributorId}`, fetcherGET<InvitationType[]>);
 
   const syncOwnersWithContributors = () => {
     const userApplicationInfo = localStorage.getItem('userApplicationInfo');
@@ -34,6 +39,28 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
       }
     }
   };
+
+  useEffect(() => {
+    dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
+    dispatch(setIsAddingContributor(false));
+
+    if (invitationData) {
+      const apiContributors: Contributor[] = invitationData
+        .filter((item: InvitationType) => item.invitation_status !== 'removed')
+        .map((item: InvitationType) => ({
+          firstName: item.first_name,
+          lastName: item.last_name,
+          emailAddress: item.email,
+          contributorRole: item.application_role.name === 'spouse-of-qualifying-owner'
+            ? 'role_spouse'
+            : item.application_role.name === 'delegate'
+              ? 'role_other'
+              : 'role_other' as 'role_owner' | 'role_other' | 'role_spouse',
+        }));
+
+      dispatch(setContributors(apiContributors));
+    }
+  }, [dispatch, invitationData]);
 
   useEffect(() => {
     syncOwnersWithContributors();
@@ -80,12 +107,20 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
       if (editingIndex !== null) {
         updatedContributors = contributors.map((contributor, index) => {
           if (index === editingIndex) {
-            return { ...newContributor, contributorRole: contributor.contributorRole }; // Preserve role type
+            return { ...newContributor, contributorRole: contributor.contributorRole };
           }
           return contributor;
         });
         setEditingIndex(null);
       } else {
+        // Check for duplicates
+        const isDuplicate = contributors.some(
+          c => c.emailAddress === newContributor.emailAddress && c.contributorRole === newContributor.contributorRole
+        );
+        if (isDuplicate) {
+          alert('A contributor with this email and role already exists.');
+          return;
+        }
         updatedContributors = [...contributors, newContributor];
       }
 
@@ -191,11 +226,18 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
       setShowModal(true);
     }
   }
+
+  if(invitationError) {
+    console.log(invitationError);;
+  }
   return (
     <>
+		  <div>
+        <h1>Contributor Invitations</h1>
+      </div>
       <InviteContributorModal
+        contributors={contributors}
         open={showModal}
-        handleSend={closeModal}
         handleCancel={closeModal}
         contributorId={contributorId}
       />

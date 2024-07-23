@@ -1,0 +1,965 @@
+[
+  {
+    "parent": "(admin)",
+    "route": "app/(admin)",
+    "children": {
+      "/admin/configuration/components": [
+        "Card.module.scss",
+        "Card.tsx",
+        "Ucp.tsx"
+      ],
+      "/admin/configuration/utils": [
+        "constants.ts",
+        "types.ts"
+      ],
+      "/admin/configuration": [
+        "page.tsx"
+      ],
+      "/admin/dashboard": [
+        "page.tsx"
+      ],
+      "/admin/document-categories/__tests__": [
+        "DocumentCategories.test.tsx"
+      ],
+      "/admin/document-categories/components": [
+        "DocumentCategories.module.scss",
+        "DocumentCategoriesTable.tsx",
+        "Search.tsx",
+        "TableHeader.tsx",
+        "TablePagination.tsx"
+      ],
+      "/admin/document-categories/utils": [
+        "fetch.ts"
+      ],
+      "/admin/document-categories": [
+        "page.tsx",
+        "tmp.ts"
+      ],
+      "/admin/document-types/__tests__": [
+        "DocumentTypes.test.tsx"
+      ],
+      "/admin/document-types/components": [
+        "AddDocumentForm.tsx",
+        "Alerts.tsx",
+        "DeleteUser.module.scss",
+        "DeleteUserModal.tsx",
+        "DocumentTypes.module.scss",
+        "DocumentTypesTable.tsx",
+        "Search.tsx",
+        "TableHeader.tsx",
+        "TablePagination.tsx"
+      ],
+      "/admin/document-types/utils": [
+        "fetch.ts"
+      ],
+      "/admin/document-types": [
+        "page.tsx",
+        "tmp.ts"
+      ],
+      "/admin/users/[id]/activities/__tests__": [
+        "UserActivityList.test.tsx"
+      ],
+      "/admin/users/[id]/activities/components": [
+        "UserActivity.module.scss",
+        "UserActivityList.tsx"
+      ],
+      "/admin/users/[id]/activities": [
+        "page.tsx",
+        "types.ts"
+      ],
+      "/admin/users/components/__tests__": [
+        "CustomTable.test.tsx"
+      ],
+      "/admin/users/components/utils": [
+        "types.ts"
+      ],
+      "/admin/users/components": [
+        "AccountCircle.tsx",
+        "AddNewUsersForm.tsx",
+        "Alerts.tsx",
+        "CustomTable.tsx",
+        "CustomTableHeader.tsx",
+        "DeleteUser.module.scss",
+        "DeleteUserForm.tsx",
+        "UCPRolesPermission.tsx"
+      ],
+      "/admin/users": [
+        "page.tsx"
+      ],
+      "/admin": [
+        "page.tsx"
+      ],
+      "/login-tester/components": [
+        "Schema.ts",
+        "SignIn.tsx"
+      ],
+      "/login-tester": [
+        "page.tsx",
+        "types.ts"
+      ],
+      "/tester-login/components": [
+        "RegistrationForm.tsx",
+        "schema.ts"
+      ],
+      "/tester-login": [
+        "page.tsx"
+      ],
+      "/types": [
+        ".gitkeep"
+      ],
+      "/utility": [
+        ".gitkeep"
+      ]
+    }
+  },
+  {
+    "parent": "(entity)",
+    "route": "app/(entity)",
+    "children": {
+      "/application/[contributor_id]/[section]": [
+        "page.tsx"
+      ],
+      "/application/components/contributor-invite/__tests__": [
+        "ContributorForm.test.tsx"
+      ],
+      "/application/components/contributor-invite": [
+        "ContributorForm.tsx",
+        "InviteContributorModal.tsx",
+        "types.ts"
+      ],
+      "/application/components/control-and-operations": [
+        "ControlOperationsForm.tsx",
+        "ControlOperationsTable.tsx",
+        "constants-types.ts",
+        "schema.ts"
+      ],
+      "/application/components/delegate/store": [
+        "formSlice.ts",
+        "hooks.ts",
+        "store.ts"
+      ],
+      "/application/components/delegate/utils": [
+        "helpers.ts",
+        "schemas.ts",
+        "types.ts"
+      ],
+      "/application/components/delegate": [
+        "AddDelegateForm.tsx",
+        "DelegateFormInputs.tsx",
+        "DelegateTable.tsx",
+        "InviteModal.tsx"
+      ],
+      "/application/components/document-uploads/__tests__": [
+        "DocumentMockload.test.tsx"
+      ],
+      "/application/components/document-uploads/utils": [
+        "mockHelpers.ts",
+        "types.ts"
+      ],
+      "/application/components/document-uploads": [
+        "DocumentMockload.tsx",
+        "DocumentUploads.tsx",
+        "documentUploadFetcher.ts"
+      ],
+      "/application/components/ownership/__tests__": [
+        "OwnershipLayout.test.tsx",
+        "Partnership.test.tsx"
+      ],
+      "/application/components/ownership/individual": [
+        "IndividualForm.tsx",
+        "constants.ts",
+        "schema.ts"
+      ],
+      "/application/components/ownership/organization": [
+        "OrganizationForm.tsx",
+        "constants.ts",
+        "schema.ts"
+      ],
+      "/application/components/ownership/shared": [
+        "ActionButtons.tsx",
+        "ContactInfo.tsx",
+        "GoneByAnotherName.tsx",
+        "OwnersList.tsx",
+        "OwnershipPercent.tsx",
+        "SocialDisadvantages.tsx",
+        "types.ts"
+      ],
+      "/application/components/ownership": [
+        "OwnershipLayout.tsx",
+        "Partnership.tsx",
+        "helpers.ts"
+      ],
+      "/application/components/questionnaire/utils": [
+        "helpers.ts",
+        "types.ts"
+      ],
+      "/application/components/questionnaire": [
+        "HubMock.tsx",
+        "QuestionContent.tsx",
+        "Questionnaires.tsx",
+        "Sidebar.tsx"
+      ],
+      "/application/components": [
+        "ApplicationLayout.tsx",
+        "ApplicationStepIndicator.tsx"
+      ],
+      "/application/qa-helpers": [
+        "QuestionRenderer.tsx",
+        "Questions.tsx"
+      ],
+      "/application/questionnaire/[contributor_id]/[section]": [
+        "page.tsx"
+      ],
+      "/application/questionnaire/[contributor_id]": [
+        "page.tsx"
+      ],
+      "/application/redux": [
+        "applicationSlice.ts",
+        "applicationStore.ts",
+        "hooks.ts"
+      ],
+      "/application/sections/questionnaires/static": [
+        "ControlAndOpsQuestions.tsx",
+        "HubzoneCalculator.tsx",
+        "HubzoneRelationships.tsx",
+        "OwnershipQuestions.tsx"
+      ],
+      "/application/sections/questionnaires": [
+        "QuestionnairePage.tsx",
+        "QuestionnaireTemp.tsx"
+      ],
+      "/application/sections": [
+        "ContributorInvitation.tsx",
+        "ControlAndOperations.tsx",
+        "DocumentUpload.tsx",
+        "EligiblePrograms.tsx",
+        "HubzoneResults.tsx",
+        "Ownership.tsx",
+        "Sign.tsx"
+      ],
+      "/application/utils": [
+        "constants.ts",
+        "form-data.json",
+        "types.ts",
+        "useUserApplicationInfo.ts"
+      ],
+      "/assign-a-delegate/components/fragments": [
+        "AddDelegateForm.tsx",
+        "DelegateForm.module.scss",
+        "DelegateFormInputs.tsx",
+        "DelegateTable.tsx",
+        "InviteModal.tsx"
+      ],
+      "/assign-a-delegate/components/store": [
+        "formSlice.test.ts",
+        "formSlice.ts",
+        "hooks.ts",
+        "store.ts"
+      ],
+      "/assign-a-delegate/components/utils": [
+        "helpers.ts",
+        "schemas.ts",
+        "types.ts"
+      ],
+      "/assign-a-delegate/components": [
+        "AddDelegate.tsx"
+      ],
+      "/assign-a-delegate": [
+        "page.tsx"
+      ],
+      "/claim-your-business/components/forms": [
+        "CMBForm.tsx",
+        "CMBInputs.tsx",
+        "InvitationCodeForm.tsx"
+      ],
+      "/claim-your-business/components/layout": [
+        "CMBFormHeader.tsx",
+        "CMBFormSummaryBoxes.tsx",
+        "CMBLanding.tsx"
+      ],
+      "/claim-your-business/components/modals": [
+        "ConfirmModal.tsx",
+        "ErrorModal.tsx",
+        "SuccessModal.tsx"
+      ],
+      "/claim-your-business/components/validation": [
+        "ValidateBusinessForm.tsx",
+        "ValidationTable.tsx"
+      ],
+      "/claim-your-business/components": [
+        "ClaimMyBusiness.module.scss",
+        "ClaimMyBusiness.tsx"
+      ],
+      "/claim-your-business/utils": [
+        "data.ts",
+        "helpers.ts",
+        "schemas.ts",
+        "types.ts"
+      ],
+      "/claim-your-business": [
+        "page.tsx"
+      ],
+      "/entities/__tests__": [
+        "EntitiesTest.tsx"
+      ],
+      "/entities/components": [
+        "Entities.module.scss",
+        "EntitiesTable.tsx",
+        "Search.tsx",
+        "TableHeader.tsx",
+        "TablePagination.tsx"
+      ],
+      "/entities/utils": [
+        "fetch.ts"
+      ],
+      "/entities": [
+        "page.tsx",
+        "tmp.ts"
+      ],
+      "/firm-profile/[entity_id]/__tests__": [
+        "Associated.test.tsx",
+        "Delegates.test.tsx",
+        "Primary.test.tsx"
+      ],
+      "/firm-profile/[entity_id]/components/fragments": [
+        "AddDelegateForm.tsx",
+        "DelegateForm.module.scss",
+        "DelegateFormInputs.tsx",
+        "DelegateTable.tsx",
+        "InviteModal.tsx"
+      ],
+      "/firm-profile/[entity_id]/components/store": [
+        "formSlice.test.ts",
+        "formSlice.ts",
+        "hooks.ts",
+        "store.ts"
+      ],
+      "/firm-profile/[entity_id]/components/utils": [
+        "helpers.ts",
+        "schemas.ts",
+        "types.ts"
+      ],
+      "/firm-profile/[entity_id]/components": [
+        "AddDelegate.tsx"
+      ],
+      "/firm-profile/[entity_id]": [
+        "Associated.tsx",
+        "Delegates.tsx",
+        "Primary.tsx",
+        "page.tsx"
+      ],
+      "/select-intended-programs/__tests__": [
+        "ProgramsTest.tsx"
+      ],
+      "/select-intended-programs/components": [
+        "Programs.tsx"
+      ],
+      "/select-intended-programs": [
+        "page.tsx"
+      ],
+      "/": [
+        ".DS_Store"
+      ]
+    }
+  },
+  {
+    "parent": "(evaluation)",
+    "route": "app/(evaluation)",
+    "children": {
+      "/components/documents": [
+        "Documents.module.scss",
+        "Documents.tsx"
+      ],
+      "/components/firm-summary": [
+        "FirmSummary.tsx",
+        "NaicsCodes.tsx",
+        "SamInfo.tsx",
+        "VaCert.tsx"
+      ],
+      "/components/returnToFirm/Editor": [
+        "QuillEditorReact.js"
+      ],
+      "/components/returnToFirm/Modals": [
+        "ConfirmationModal.tsx",
+        "EditFormModal.tsx",
+        "FinalizeReturnToFirm.tsx"
+      ],
+      "/components/returnToFirm/utils": [
+        "validate.js"
+      ],
+      "/components/returnToFirm": [
+        "ReturnToFirm.module.scss",
+        "ReturnToFirmDataTable.tsx",
+        "ReturnToFirmPanel.tsx",
+        "firmData.json"
+      ],
+      "/components/reviews": [
+        "AnalystDocument.tsx",
+        "Notes.tsx",
+        "RequestInformation.tsx"
+      ],
+      "/components/utils": [
+        "actionMenuData.json",
+        "documentData.json",
+        "menuData.json"
+      ],
+      "/components": [
+        ".gitkeep",
+        "ApplicationWelcomeCard.tsx",
+        "Evaluation.module.scss",
+        "HeaderPanel.tsx",
+        "LeftPanel.tsx",
+        "MainAppPanel.tsx",
+        "RightPanel.tsx"
+      ],
+      "/firm/application/[application_id]/[section_questions]": [
+        "AnswerValue.tsx",
+        "page.tsx"
+      ],
+      "/firm/application/[application_id]/documents": [
+        "page.tsx"
+      ],
+      "/firm/application/[application_id]/evaluation": [
+        "page.tsx"
+      ],
+      "/firm/application/[application_id]/firm-summary": [
+        "page.tsx"
+      ],
+      "/firm/application/[application_id]/reviews": [
+        "page.tsx"
+      ],
+      "/firm/application/[application_id]": [
+        "layout.tsx"
+      ],
+      "/firm": [
+        "useApplicationData.ts"
+      ],
+      "/types": [
+        "types.ts"
+      ]
+    }
+  },
+  {
+    "parent": "(home)",
+    "route": "app/(home)",
+    "children": {
+      "/components/participation-agreement-form": [
+        "ParticipationAgreement.tsx",
+        "ParticipationAgreementForm.module.scss",
+        "ParticipationAgreementForm.tsx",
+        "types.ts"
+      ],
+      "/components/participation-agreement-modal": [
+        "ParticipationAgreementModal.module.scss",
+        "ParticipationAgreementModal.tsx"
+      ],
+      "/documents": [
+        "page.tsx"
+      ],
+      "/home/components/cards": [
+        "ArrowCards.tsx",
+        "ProgramCards.tsx",
+        "StatCards.tsx",
+        "constants.ts"
+      ],
+      "/home/components/header": [
+        "HeaderCarousel.tsx"
+      ],
+      "/home/utils": [
+        "HomePage.module.scss",
+        "constants.ts"
+      ],
+      "/home": [
+        "HomePage.tsx",
+        "page.tsx"
+      ],
+      "/messages/[messageId]": [
+        "page.tsx"
+      ],
+      "/messages/__tests__": [
+        "EmailList.test.tsx"
+      ],
+      "/messages/components/email-folders": [
+        "ArchivedEmailList.tsx",
+        "DeletedEmailList.tsx",
+        "DraftEmailList.tsx",
+        "EmailListItem.tsx",
+        "InboxEmailList.tsx",
+        "SentEmailList.tsx"
+      ],
+      "/messages/components": [
+        "EmailContent.tsx",
+        "EmailSearch.tsx",
+        "Filter.tsx",
+        "MainContent.tsx",
+        "Messages.module.scss",
+        "SidebarContent.tsx",
+        "mock-inbox-emails.tsx"
+      ],
+      "/messages": [
+        "constants.tsx",
+        "layout.tsx",
+        "page.tsx",
+        "types.ts"
+      ],
+      "/notifications": [
+        "page.tsx"
+      ],
+      "/participation-agreement": [
+        "page.tsx"
+      ],
+      "/resources/components": [
+        "LandingPage.tsx"
+      ],
+      "/resources/get-ready": [
+        "Steps.tsx",
+        "page.tsx",
+        "steps.module.scss"
+      ],
+      "/resources/utils": [
+        "constant.ts",
+        "types.ts"
+      ],
+      "/resources": [
+        "page.tsx"
+      ],
+      "/should-i-apply/components": [
+        "NavBar.module.scss",
+        "NavBar.tsx"
+      ],
+      "/should-i-apply/eligibility": [
+        "Form.tsx",
+        "constants.ts",
+        "page.tsx",
+        "schema.ts"
+      ],
+      "/should-i-apply/match": [
+        "Form.tsx",
+        "constants.ts",
+        "page.tsx",
+        "schema.ts"
+      ],
+      "/should-i-apply/ownership": [
+        "Form.tsx",
+        "constants.ts",
+        "page.tsx",
+        "schema.ts"
+      ],
+      "/should-i-apply/readiness": [
+        "Form.tsx",
+        "constants.ts",
+        "page.tsx",
+        "schema.ts"
+      ],
+      "/should-i-apply/results/components": [
+        "Programs.tsx",
+        "WhatsNext.tsx"
+      ],
+      "/should-i-apply/results": [
+        "page.tsx"
+      ],
+      "/should-i-apply/utils": [
+        "determineCompleteness.ts"
+      ],
+      "/should-i-apply": [
+        "layout.tsx",
+        "page.tsx",
+        "schema.ts"
+      ],
+      "/should-i-apply-legacy/__tests__": [
+        "NaicsSearch.test.tsx",
+        "SIAQuestionSections.test.tsx"
+      ],
+      "/should-i-apply-legacy/check-eligibility": [
+        "page.tsx"
+      ],
+      "/should-i-apply-legacy/components/utils": [
+        "fetch.ts",
+        "helpers.ts",
+        "naicsCodes.json",
+        "questions.json",
+        "schema.ts",
+        "types.ts"
+      ],
+      "/should-i-apply-legacy/components": [
+        "NaicsSearch.tsx",
+        "Ownership.tsx",
+        "SIAQuestion.tsx",
+        "SIAQuestionSections.tsx",
+        "ShoudIApplyForm.module.scss",
+        "ShouldIApplyForm.tsx"
+      ],
+      "/should-i-apply-legacy": [
+        "page.tsx"
+      ],
+      "/survey/customer-experience/components": [
+        "Questionnaire.tsx",
+        "form-data.ts"
+      ],
+      "/survey/customer-experience/fragments": [
+        "CustomerExperienceSurvey.tsx"
+      ],
+      "/survey/customer-experience/utils": [
+        "helpers.ts"
+      ],
+      "/survey/customer-experience": [
+        "page.tsx"
+      ]
+    }
+  },
+  {
+    "parent": "(user)",
+    "route": "app/(user)",
+    "children": {
+      "/components": [
+        "SearchBar.tsx",
+        "UsersList.module.scss",
+        "UsersList.tsx"
+      ],
+      "/dashboard/archive/[[...entityId]]": [
+        "page.tsx"
+      ],
+      "/dashboard/components/delete-withdraw-confirmation-modal": [
+        "DeleteWithdrawConfirmationModal.module.scss",
+        "DeleteWithdrawConfirmationModal.tsx"
+      ],
+      "/dashboard/components": [
+        "ApplicationCard.tsx",
+        "ClientFirmUserDashboard.tsx",
+        "FirmApplicationCard.tsx"
+      ],
+      "/dashboard/utils": [
+        "FirmDashboard.module.scss",
+        "helpers.ts",
+        "mockData.ts",
+        "types.ts"
+      ],
+      "/dashboard": [
+        "page.tsx"
+      ],
+      "/user/[userId]/components/user-details/fragments": [
+        "FormInputs.tsx",
+        "FormOptions.tsx",
+        "UserDetailForm.tsx"
+      ],
+      "/user/[userId]/components/user-details/utils": [
+        "data.ts",
+        "helpers.ts",
+        "schemas.ts",
+        "types.ts"
+      ],
+      "/user/[userId]/components/user-details": [
+        "UserDetails.tsx"
+      ],
+      "/user/[userId]/components": [
+        ".gitkeep"
+      ],
+      "/user/[userId]": [
+        "page.tsx"
+      ],
+      "/user/dashboard/components": [
+        "FirmInfoCell.tsx",
+        "Header.tsx",
+        "HeaderOverview.tsx",
+        "Metrics.tsx",
+        "OpenAssignments.tsx",
+        "Productivity.tsx",
+        "ProductivityProvider.tsx",
+        "Reporting.tsx",
+        "TableProvider.tsx",
+        "Welcome.tsx",
+        "supervisorContext.tsx"
+      ],
+      "/user/dashboard": [
+        "WorkloadDashboard.module.scss",
+        "mockData.ts",
+        "page.tsx",
+        "types.ts"
+      ],
+      "/user/list": [
+        "constants.ts",
+        "page.tsx",
+        "types.ts"
+      ],
+      "/user/profile-settings/[userId]/components/profile-details/fragments/edit-name-modal": [
+        "EditNameModal.module.scss",
+        "EditNameModal.tsx"
+      ],
+      "/user/profile-settings/[userId]/components/profile-details/fragments": [
+        "ProfileDetailForm.tsx",
+        "ProfileSettings.module.scss"
+      ],
+      "/user/profile-settings/[userId]/components/profile-details": [
+        "ProfileDetails.tsx"
+      ],
+      "/user/profile-settings/[userId]": [
+        "page.tsx"
+      ],
+      "/user/profile-settings/__tests__": [
+        "ProfileSettings.test.tsx"
+      ]
+    }
+  },
+  {
+    "parent": "api",
+    "route": "app/api",
+    "children": {
+      "/auth/[...nextauth]": [
+        "route.ts"
+      ],
+      "/auth/utils": [
+        "generateCsrfToken.ts",
+        "handleCsrf.ts"
+      ],
+      "/auth": [
+        "csrf.ts",
+        "next-auth.d.ts"
+      ],
+      "/confluence": [
+        "route.ts"
+      ],
+      "/kafka/consume": [
+        "route.ts"
+      ],
+      "/kafka/produce": [
+        "route.ts"
+      ],
+      "/kafka": [
+        "consume.ts",
+        "consumer.ts",
+        "producer.ts",
+        "topics.ts",
+        "utils.ts"
+      ]
+    }
+  },
+  {
+    "parent": "constants",
+    "route": "app/constants",
+    "children": {
+      "/": [
+        "icons.ts",
+        "image.ts",
+        "questionnaires.ts",
+        "routes.ts",
+        "sba-programs.ts",
+        "url.ts",
+        "usa-states.ts"
+      ]
+    }
+  },
+  {
+    "parent": "lib",
+    "route": "app/lib",
+    "children": {
+      "/": [
+        "auth.ts",
+        "next-auth.d.ts"
+      ]
+    }
+  },
+  {
+    "parent": "login",
+    "route": "app/login",
+    "children": {
+      "/": [
+        "Login.module.scss",
+        "LoginButton.tsx",
+        "page.tsx"
+      ]
+    }
+  },
+  {
+    "parent": "sandbox",
+    "route": "app/sandbox",
+    "children": {
+      "/ThemeToggleButton": [
+        "ThemeToggleButton.tsx"
+      ],
+      "/api/test-csrf": [
+        "route.ts"
+      ],
+      "/confluence": [
+        "ConfluencePageContent.tsx",
+        "page.tsx"
+      ],
+      "/popwebnotifications": [
+        "page.tsx"
+      ],
+      "/": [
+        "Kafka.tsx",
+        "QAFormExample.tsx",
+        "WebSocket.tsx",
+        "readme.md"
+      ]
+    }
+  },
+  {
+    "parent": "services",
+    "route": "app/services",
+    "children": {
+      "/types": [
+        "application.ts"
+      ],
+      "/": [
+        "application-fetcher.ts",
+        "fetcher.ts",
+        "ownership-fetcher.ts",
+        "qa-fetcher.ts"
+      ]
+    }
+  },
+  {
+    "parent": "shared",
+    "route": "app/shared",
+    "children": {
+      "/components/UCMSAlert": [
+        "UCMSAlert.tsx"
+      ],
+      "/components/carousel": [
+        "Carousel.tsx"
+      ],
+      "/components/documents-list/__tests__": [
+        "DocumentsList.test.tsx"
+      ],
+      "/components/documents-list/utils": [
+        "types.ts"
+      ],
+      "/components/documents-list": [
+        "DocumentHeader.tsx",
+        "DocumentsList.module.scss",
+        "DocumentsList.tsx",
+        "DocumentsListFilesCard.tsx",
+        "DocumentsListFilesTable.tsx",
+        "DocumentsListFoldersCard.tsx",
+        "DocumentsListFoldersTable.tsx",
+        "filesData.json",
+        "foldersData.json"
+      ],
+      "/components/forms": [
+        "CustomHeader.tsx",
+        "QAWrapper.tsx",
+        "StepsIndicator.tsx",
+        "constant.tsx",
+        "forms.module.scss"
+      ],
+      "/components/inputs": [
+        "InputHelperText.tsx"
+      ],
+      "/components/modals": [
+        "ActionMenuModal.tsx"
+      ],
+      "/components/notification-menu": [
+        "NotificationMenu.module.scss",
+        "NotificationMenu.tsx"
+      ],
+      "/components/notifications/__tests__": [
+        "NotificationList.test.tsx"
+      ],
+      "/components/notifications": [
+        "NotificationHeader.tsx",
+        "NotificationList.module.scss",
+        "NotificationLists.tsx",
+        "notificationData.json"
+      ],
+      "/components/ownership": [
+        "ProgramCard.tsx"
+      ],
+      "/components/table-header": [
+        "TableHeader.module.scss",
+        "TableHeader.tsx"
+      ],
+      "/components/table-pagination": [
+        "TablePagination.tsx"
+      ],
+      "/components/user-profile-menu": [
+        "UserProfileMenu.tsx"
+      ],
+      "/components/user-session-management-modal": [
+        "UserSessionModal.module.scss",
+        "UserSessionModal.tsx"
+      ],
+      "/components": [
+        "CustomTable.tsx",
+        "CustomTableHeader.tsx",
+        "Show.tsx"
+      ],
+      "/form-builder/form-controls/document-upload": [
+        "DocumentUpload.module.scss",
+        "DocumentUpload.tsx"
+      ],
+      "/form-builder/form-controls": [
+        "Date.tsx",
+        "Dropdown.tsx",
+        "Input.tsx",
+        "TextArea.tsx",
+        "ToggleButtonGroup.tsx"
+      ],
+      "/form-builder/questionnaire-types": [
+        "answer.ts",
+        "question-types.ts",
+        "question.ts",
+        "rule.ts"
+      ],
+      "/form-builder": [
+        "form-control.tsx",
+        "types.ts"
+      ],
+      "/hooks": [
+        "useApplicationIdResult.tsx",
+        "usePreferredTheme.ts",
+        "useUpdateApplicationProgress.tsx"
+      ],
+      "/layout/components": [
+        "navbarNotification.module.scss",
+        "navbarNotification.tsx",
+        "notificationData.json"
+      ],
+      "/layout": [
+        "BannerComponent.tsx",
+        "Footer.tsx",
+        "Navbar.tsx",
+        "Navigation.tsx",
+        "SEO.tsx",
+        "layout.module.scss"
+      ],
+      "/questionnaire/inputs": [
+        "AddressInput.tsx",
+        "BooleanInput.tsx",
+        "GridQuestion.tsx",
+        "HiddenTextInput.tsx",
+        "MultiSelect.tsx",
+        "NumberInput.tsx",
+        "QaDateInput.tsx",
+        "QaGrid.tsx",
+        "QaGridInputs.tsx",
+        "QaTextInput.tsx",
+        "QaTextarea.tsx",
+        "ReadOnly.tsx",
+        "SelectInput.tsx",
+        "index.ts",
+        "types.ts"
+      ],
+      "/questionnaire": [
+        "GridQuestion.tsx"
+      ],
+      "/types": [
+        "questionnaireTypes.tsx",
+        "responses.ts",
+        "role.ts"
+      ],
+      "/utility": [
+        "HttpError.ts",
+        "SEO.tsx",
+        "capitalizeAndSplit.ts",
+        "cookies.ts",
+        "getApplicationContributorId.ts",
+        "getApplicationId.ts",
+        "getEntityByUserId.ts",
+        "getTheme.ts",
+        "helpers.ts",
+        "pushNotification.ts"
+      ]
+    }
+  }
+]

@@ -1,9 +1,8 @@
 'use client'
+import { useSender } from '@/app/services/queries/communication-service/useSender';
+import { useThreads } from '@/app/services/queries/communication-service/useThreads';
 import { Card } from '@trussworks/react-uswds';
-import { useParams } from 'next/navigation'
-import React, { CSSProperties, useEffect, useState } from 'react';
-import { mock_inbox_emails } from './mock-inbox-emails';
-import { InboxItem } from '../types';
+import { CSSProperties } from 'react';
 
 const flexStyles: CSSProperties  = {
     display: 'flex',
@@ -16,33 +15,28 @@ const flexStyles: CSSProperties  = {
 }
 
 const EmailContent = () => {
-    const params = useParams<{messageId: string}>();
-    const [email, setEmail] = useState<InboxItem | null>(null);
-
-    useEffect(() => {
-        if (!params.messageId) return;
-        const found = mock_inbox_emails.results.find(e => e.uuid === params.messageId);
-        if (!found) return;
-        setEmail(found);
-    }, [params.messageId])
+   
+    const {data} = useThreads();
+    const {data: sender} = useSender();
 
 
   return (
     <Card style={{height: '100vh'}}>
         <div>
+            {/* commenting To field out temporarily till api is finalized */}
+            {/* <div style={flexStyles}>
+                <strong>To:</strong><span className='text-base'>{data?.[0]?.messages?.[0]?.sender.display_name}</span>
+            </div> */}
             <div style={flexStyles}>
-                <strong>To:</strong><span className='text-base'>{email?.to}</span>
+                <strong>From:</strong><span className='text-base'>{sender?.email}</span>
             </div>
             <div style={flexStyles}>
-                <strong>From:</strong><span className='text-base'>{email?.sender}</span>
-            </div>
-            <div style={flexStyles}>
-                <strong>Subject:</strong><span className='text-base'>{email?.subject}</span>
+                <strong>Subject:</strong><span className='text-base'>{data?.[0]?.subject}</span>
             </div>
         </div>
         <div style={{padding: '1rem'}}>
             <p>
-                {email?.last_message}
+                {data?.[0]?.messages?.[0]?.content}
             </p>
         </div>
     </Card>

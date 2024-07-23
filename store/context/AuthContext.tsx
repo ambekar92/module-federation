@@ -1,10 +1,10 @@
+import { useSessionUCMS } from '@/app/lib/auth'
+import { SessionType } from '@/app/login/types'
 import React, { createContext, useContext } from 'react'
-import { useSession } from 'next-auth/react'
-import { Session } from 'next-auth'
 
 interface AuthContextType {
   isAuthenticated: boolean
-  session: Session | null
+  session: SessionType | null
 }
 
 interface AuthProps {
@@ -14,7 +14,7 @@ interface AuthProps {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: AuthProps) => {
-  const { data: session, status } = useSession()
+  const session  = useSessionUCMS()
 
   const isAuthenticated = !!session
 
