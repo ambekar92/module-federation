@@ -10,16 +10,6 @@ input.usa-input.icon {
   width: 100%;
 }
 
-input.usa-input, select.usa-select {
-  display: flex;
-  min-height: 56px;
-  padding: 8px 16px;
-  align-items: center;
-  gap: 8px;
-  align-self: stretch;
-  border-radius: 8px;
-  outline: thin solid --grays-border-disabled;
-}
 
 input:not([disabled]):focus {
   outline: thin solid $bright-blue;
@@ -67,5 +57,106 @@ input.usa-input.usa-input--success.icon:-internal-autofill-selected {
 	.usa-checkbox__input:checked + [class*=__label]::before {
 		background-color: #E41D3D;
 		box-shadow: 0 0 0 2px #E41D3D;
+	}
+}
+
+// QA Grid Questions
+.grid_questions {
+	#grid_question {
+		&--email_owner_and_management_partnership, 
+		&--type_of_owner_owner_and_management_partnership,
+		&--title_owner_and_management_partnership,
+		&--phone_number_owner_and_management_partnership,
+		&--individual_contributor_eight_a_social_disadvantage_owner_and_management_partnership,
+		&--email_owner_and_management_llc, 
+		&--type_of_owner_owner_and_management_llc,
+		&--title_owner_and_management_llc,
+		&--phone_number_owner_and_management_llc,
+		&--individual_contributor_eight_a_social_disadvantage_owner_and_management_llc,
+		&--email_owner_and_management_corporation, 
+		&--type_of_owner_owner_and_management_corporation,
+		&--title_owner_and_management_corporation,
+		&--phone_number_owner_and_management_corporation,
+		&--individual_contributor_eight_a_social_disadvantage_owner_and_management_corporation,
+		&--email_owner_and_management_sole_proprietorship, 
+		&--type_of_owner_owner_and_management_sole_proprietorship,
+		&--title_owner_and_management_sole_proprietorship,
+		&--phone_number_owner_and_management_sole_proprietorship,
+		&--individual_contributor_eight_a_social_disadvantage_owner_and_management_sole_proprietorship {
+			width: 100%;
+		}
+
+		// Specific styles
+		&--type_of_owner_owner_and_management_partnership,
+		&--email_owner_and_management_partnership,
+		&--title_owner_and_management_partnership,
+		&--phone_number_owner_and_management_partnership,
+		&--first_name_owner_and_management_partnership,
+		&--last_name_owner_and_management_partnership,
+		&--gender_owner_and_management_parntership,
+		&--veteran_status_owner_and_management_partnership,
+		&--citizenship_owner_and_management_partnership,
+		&--ownership_percentage_owner_and_management_partnership,
+		&--type_of_owner_owner_and_management_llc,
+		&--email_owner_and_management_llc,
+		&--title_owner_and_management_llc,
+		&--phone_number_owner_and_management_llc,
+		&--first_name_owner_and_management_llc,
+		&--last_name_owner_and_management_llc,
+		&--gender_owner_and_management_llc,
+		&--veteran_status_owner_and_management_llc,
+		&--citizenship_owner_and_management_llc,
+		&--ownership_percentage_owner_and_management_llc,
+		&--type_of_owner_owner_and_management_corporation,
+		&--email_owner_and_management_corporation,
+		&--title_owner_and_management_corporation,
+		&--phone_number_owner_and_management_corporation,
+		&--first_name_owner_and_management_corporation,
+		&--last_name_owner_and_management_corporation,
+		&--gender_owner_and_management_corporation,
+		&--veteran_status_owner_and_management_corporation,
+		&--citizenship_owner_and_management_corporation,
+		&--ownership_percentage_owner_and_management_corporation,
+		&--type_of_owner_owner_and_management_sole_proprietorship,
+		&--email_owner_and_management_sole_proprietorship,
+		&--title_owner_and_management_sole_proprietorship,
+		&--phone_number_owner_and_management_sole_proprietorship,
+		&--first_name_owner_and_management_sole_proprietorship,
+		&--last_name_owner_and_management_sole_proprietorship,
+		&--gender_owner_and_management_sole_proprietorship,
+		&--veteran_status_owner_and_management_sole_proprietorship,
+		&--citizenship_owner_and_management_sole_proprietorship,
+		&--ownership_percentage_owner_and_management_sole_proprietorship {
+			input {
+				max-width: 100%;
+			}
+			select {
+				max-width: 100%;
+			}
+		}
+		&--citizenship_owner_and_management_partnership,
+		&--citizenship_owner_and_management_llc,
+		&--citizenship_owner_and_management_corporation,
+		&--citizenship_owner_and_management_sole_proprietorship {
+			.usa-radio {
+				background-color: #f0f0f0;
+			}
+		}
+	}
+}
+
+.grid-table {
+	max-width: 100%;
+	overflow-x: scroll;
+	table-layout: auto !important;
+}
+
+.control-questions {
+	input, select {
+		width: 100%;
+		max-width: 100%;
+	}
+	.usa-radio {
+		background-color: #f0f0f0;
 	}
 }

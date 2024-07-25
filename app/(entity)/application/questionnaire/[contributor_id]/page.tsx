@@ -1,15 +1,18 @@
 'use client';
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
-import { fetcherGET } from '@/app/services/fetcher';
+import { fetcherGET } from '@/app/services/fetcher-legacy';
 import { ButtonGroup, Card, CardGroup, CardHeader } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import useSWR from 'swr';
 import ApplicationLayout from '../../components/ApplicationLayout';
 import { QuestionnaireListType } from '../../components/questionnaire/utils/types';
 import applicationStore from '../../redux/applicationStore';
+import { setStep } from '../../redux/applicationSlice';
+import { applicationSteps } from '../../utils/constants';
+import { useApplicationDispatch } from '../../redux/hooks';
 
 interface QuestionnaireListPageProps {
   params: {
@@ -18,11 +21,16 @@ interface QuestionnaireListPageProps {
 }
 
 const QuestionnaireListPage: React.FC<QuestionnaireListPageProps> = ({ params: { contributor_id } }) => {
-  const params = useParams()
+  const params = useParams();
+  const dispatch = useApplicationDispatch();
   const { data: questionnairesData, error } = useSWR(
     params.contributor_id ? `${QUESTIONNAIRE_LIST_ROUTE}/${params.contributor_id}` : null,
     fetcherGET<QuestionnaireListType>
   );
+
+  useEffect(() => {
+    dispatch(setStep(applicationSteps.questionnaire.stepIndex));
+  }, [dispatch]);
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -33,41 +41,45 @@ const QuestionnaireListPage: React.FC<QuestionnaireListPageProps> = ({ params: {
   }
 
   return (
-    <Provider store={applicationStore}>
-      <ApplicationLayout>
-        <h3>Please answer the questions about your business or firm in each section below. When all sections are complete, review and sign the application.</h3>
+    <ApplicationLayout>
+      <h3>Please answer the questions about your business or firm in each section below. When all sections are complete, review and sign the application.</h3>
 
-        <CardGroup>
-          {questionnairesData.map((questionnaire, questionIndex) => (
-            <Card key={questionIndex} className='tablet:grid-col-4'>
-              <CardHeader>
-                <div className="usa-card__body">
-                  <h3 key={questionIndex}>
-                    <Link
-                      className='text-primary hover:text-primary-dark'
-                      href={`/application/questionnaire/${questionnaire.url}`}
-                    >
-                      {questionnaire.title}
-                    </Link>
-                  </h3>
-                  <p><b>Status:</b> {questionnaire.status}</p>
-                </div>
-              </CardHeader>
-            </Card>
-          ))}
-        </CardGroup>
+      <CardGroup>
+        {questionnairesData.map((questionnaire, questionIndex) => (
+          <Card key={questionIndex} className='tablet:grid-col-4'>
+            <CardHeader>
+              <div className="usa-card__body">
+                <h3 key={questionIndex}>
+                  <Link
+                    className='text-primary hover:text-primary-dark'
+                    href={`/application/questionnaire/${questionnaire.url}`}
+                  >
+                    {questionnaire.title}
+                  </Link>
+                </h3>
+                <p><b>Status:</b> {questionnaire.status}</p>
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
+      </CardGroup>
 
-        <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-          <Link className='usa-button usa-button--outline' href={`/application/${contributor_id}/eligible-programs`}>
-          	Previous
-          </Link>
-          <Link className='usa-button' href={`/application/questionnaire/${questionnairesData[0].url}`}>
-          	Next
-          </Link>
-        </ButtonGroup>
-      </ApplicationLayout>
-    </Provider>
+      <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
+        <Link className='usa-button usa-button--outline' href={`/application/${contributor_id}/eligible-programs`}>
+          Previous
+        </Link>
+        <Link className='usa-button' href={`/application/questionnaire/${questionnairesData[0].url}`}>
+          Next
+        </Link>
+      </ButtonGroup>
+    </ApplicationLayout>
   );
 };
 
-export default QuestionnaireListPage;
+const QuestionnaireListPageContainer: React.FC<QuestionnaireListPageProps> = (props) => (
+  <Provider store={applicationStore}>
+    <QuestionnaireListPage {...props} />
+  </Provider>
+);
+
+export default QuestionnaireListPageContainer;

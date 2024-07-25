@@ -1,6 +1,5 @@
 'use client'
 import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
-import { fetcherPOST } from '@/app/services/fetcher'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,
@@ -19,6 +18,7 @@ import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoginResponse } from '../types'
 import { SignInFormData, SignInFormSchema } from './Schema'
+import { fetcherPOST } from '@/app/services/fetcher-legacy'
 
 export default {
   title: 'Page Templates/Sign In',

@@ -1,5 +1,5 @@
 import { APPLICATION_CONTRIBUTOR_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 import { ApplicationContributorType } from '../types/responses'
 
 const getApplicationContributorId = async(applicationId: number) => {

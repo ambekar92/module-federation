@@ -27,7 +27,7 @@ function DocumentUpload({contributorId}: QuestionnaireProps) {
 
   return (
     <>
-      <DocumentUploads />
+      <DocumentUploads contributorId={contributorId} />
       <ButtonGroup className='display-flex flex-justify margin-top-2 margin-right-2px'>
         <Link
           className='usa-button usa-button--outline'

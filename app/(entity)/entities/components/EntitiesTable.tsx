@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from 'react'
 import { Table } from '@trussworks/react-uswds'
 import useSWR from 'swr'
+import { fetcherGET } from '@/app/services/fetcher';
 import { entitiesFetcherGET } from '../utils/fetch'
-import { entities } from '../tmp'
 import TableHeader from './TableHeader'
 import TablePagination from './TablePagination'
 import { ENTITIES_ROUTE } from '@/app/constants/routes'
-
+import { EntitiesType } from '@/app/services/types/application';
 const PAGE_SIZE = 50
 
 interface IDocument {
@@ -18,7 +18,7 @@ interface IDocument {
   entity_structure: string
   sam_extract_code: string
 }
-
+const entities: any[] = [];
 const EntitiesTable = async ({
   searchParams,
 }: {
@@ -81,11 +81,8 @@ const EntitiesTable = async ({
   const [data, setData] = useState([] as any | IDocument[])
   const [shouldFetch, setShouldFetch] = useState(true)
 
-  const { data: responseData, error: responseError, isLoading } = useSWR(
-    () =>  ENTITIES_ROUTE,
-    entitiesFetcherGET,
-  )
-
+  const { data: responseData, error: responseError, isLoading } = useSWR(`${ENTITIES_ROUTE}`, fetcherGET<EntitiesType[]>);
+  
   const convertToTableData = (dataToConvert: any | IDocument[]) => {
     const convertedData = [] as IDocument[]
     dataToConvert.forEach((item: any, index: number) => {

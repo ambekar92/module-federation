@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useApplicationId } from './useApplicationIdResult';
-import { fetcherPUT } from '@/app/services/fetcher';
+import { fetcherPUT } from '@/app/services/fetcher-legacy';
 import { APPLICATION_ROUTE } from '@/app/constants/routes';
 
 export const useUpdateApplicationProgress = (progress: string) => {

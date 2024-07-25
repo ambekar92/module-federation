@@ -1,6 +1,6 @@
 import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { fetcherGET, fetcherPOST, fetcherPUT } from '@/app/services/fetcher'
+import { fetcherGET, fetcherPOST, fetcherPUT } from '@/app/services/fetcher-legacy'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import {
   Button,

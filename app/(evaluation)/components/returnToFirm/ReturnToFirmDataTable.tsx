@@ -1,13 +1,18 @@
 'use client'
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Button, Grid, Table } from '@trussworks/react-uswds'
 import firmData from './firmData.json'
 import styles from './ReturnToFirm.module.scss'
 import ConfirmationModal from './Modals/ConfirmationModal'
 import EditFormModal from './Modals/EditFormModal'
 import CloseFormModal from './Modals/CloseFormModal'
-import FinalizeReturnToFirm from './Modals/FinalizeReturnToFirm'
 import { useSession } from 'next-auth/react'
+
+const FinalizeReturnToFirm = dynamic(
+  () => import('./Modals/FinalizeReturnToFirm'),
+  { ssr: false }
+)
 
 const ReturnToFirmDataTable: React.FC = () => {
   const sessionData = useSession()

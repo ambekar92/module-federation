@@ -2,7 +2,6 @@ import { Grid } from '@trussworks/react-uswds'
 import React from 'react'
 import { selectForm } from '../store/formSlice'
 import { useFormSelector } from '../store/hooks'
-import { DelegatesResponse } from '../utils/types'
 import styles from './DelegateForm.module.scss'
 
 const DelegateTable: React.FC = () => {
@@ -27,7 +26,7 @@ const DelegateTable: React.FC = () => {
                   <td>{delegate.firstName}</td>
                   <td>{delegate.lastName}</td>
                   <td>{delegate.email}</td>
-                  <td>Pending</td>
+                  <td>{delegate.status ? delegate.status : 'Pending'}</td>
                 </tr>
               ))
             }

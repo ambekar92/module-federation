@@ -1,55 +1,46 @@
 {
   "pages": {
-    "/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
-    ],
     "/error": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/error.js"
-    ],
-    "/loading": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/loading.js"
     ],
     "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/not-found.js"
     ],
+    "/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/layout.css",
+      "static/chunks/app/layout.js"
+    ],
+    "/loading": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/loading.js"
+    ],
+    "/(user)/user/[userId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/(user)/user/[userId]/page.js"
+    ],
+    "/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/login/page.css",
+      "static/chunks/app/login/page.js"
+    ],
     "/(evaluation)/firm/business-plan/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(evaluation)/firm/business-plan/layout.js"
     ],
-    "/(evaluation)/firm/business-plan/questionnaire/[application_id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(evaluation)/firm/business-plan/questionnaire/[application_id]/page.js"
-    ],
     "/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page.js"
-    ],
-    "/(entity)/application/questionnaire/[contributor_id]/[section]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(entity)/application/questionnaire/[contributor_id]/[section]/page.js"
-    ],
-    "/(evaluation)/firm/business-plan/questionnaire/[application_id]/[section]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(evaluation)/firm/business-plan/questionnaire/[application_id]/[section]/page.js"
-    ],
-    "/(entity)/application/questionnaire/[contributor_id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(entity)/application/questionnaire/[contributor_id]/page.js"
     ]
   }
 }

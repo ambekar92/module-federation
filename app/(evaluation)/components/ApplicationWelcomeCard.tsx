@@ -1,8 +1,8 @@
 'use client'
-import { COMPLETE_EVALUATION_TASK } from '@/app/constants/routes';
-import { axiosInstance } from '@/app/services/fetcher';
-import { Button } from '@trussworks/react-uswds';
-import { useApplicationData } from '../firm/useApplicationData';
+import { COMPLETE_EVALUATION_TASK } from '@/app/constants/routes'
+import { axiosInstance } from '@/app/services/fetcher'
+import { Button } from '@trussworks/react-uswds'
+import { useApplicationData } from '../firm/useApplicationData'
 
 const ApplicationWelcomeCard = () => {
     const {applicationData} = useApplicationData()

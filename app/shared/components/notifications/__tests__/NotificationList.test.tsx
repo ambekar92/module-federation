@@ -1,4 +1,4 @@
-import { axiosInstance, fetcherGET } from '@/app/services/fetcher'
+import { axiosInstance, fetcherGET } from '@/app/services/fetcher-legacy'
 
 jest.mock('../../../../services/fetcher', () => ({
   axiosInstance: {

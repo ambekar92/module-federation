@@ -1,15 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Grid,
-  GridContainer,
-  Icon,
-  Label
-} from '@trussworks/react-uswds'
-import { useState } from 'react'
+import { Grid, GridContainer, Icon, Label } from '@trussworks/react-uswds'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { FormSchema } from '../utils/schemas'
 import { UserFormInputs, UserProfileType } from '../utils/types'
 import FormInputs from './FormInputs'
+import { formatDateFromNumber } from '@/app/(user)/dashboard/utils/helpers'
 
 interface userDetailFormProps {
   userProfileData: UserProfileType
@@ -21,26 +17,26 @@ function UserDetailForm({ userProfileData }: userDetailFormProps) {
   const handleOpenEdit = () => setOpenEdit(true)
 
   const [userData, setUserData] = useState<{
-    title: string
     role: string
     status: string
-    address: string
-    address2: string
-    city: string
-    state: string
-    zip: string
-    phone: string
-  }>({
-    title: userProfileData.title,
-    role: userProfileData.role,
-    status: userProfileData.status,
-    address: userProfileData.address,
-    address2: userProfileData.address2,
-    city: userProfileData.city,
-    state: userProfileData.state,
-    zip: userProfileData.zip,
-    phone: userProfileData.phone,
-  })
+    dateJoined: string
+    firstName: string
+    lastLogin: string
+    email: string
+  }>()
+
+  useEffect(() => {
+    if (Object.keys(userProfileData).length > 0) {
+      setUserData({
+        role: userProfileData.prbac_role[0].name,
+        status: userProfileData.is_active ? 'Active' : ' In Active',
+        dateJoined: formatDateFromNumber(userProfileData.date_joined),
+        firstName: userProfileData.first_name + ' ' + userProfileData.last_name,
+        lastLogin: formatDateFromNumber(userProfileData.last_login),
+        email: userProfileData.email,
+      })
+    }
+  }, [userProfileData])
 
   const {
     control,
@@ -50,15 +46,12 @@ function UserDetailForm({ userProfileData }: userDetailFormProps) {
     resolver: zodResolver(FormSchema),
     mode: 'onBlur',
     defaultValues: {
-      title: userProfileData.title,
       role: userProfileData.role,
       status: userProfileData.status,
-      address: userProfileData.address,
-      address2: userProfileData.address2,
-      city: userProfileData.city,
-      state: userProfileData.state,
-      zip: userProfileData.zip,
-      phone: userProfileData.phone,
+      dateJoined: userProfileData.date_joined,
+      firstName: userProfileData.first_name + ' ' + userProfileData.last_name,
+      lastLogin: userProfileData.last_login,
+      email: userProfileData.email,
     },
   })
 
@@ -97,25 +90,19 @@ function UserDetailForm({ userProfileData }: userDetailFormProps) {
             <Label className="text-bold" htmlFor="name-label">
               Name
             </Label>
-            {userProfileData.name}
+            {userData?.firstName}
           </Grid>
           <Grid mobile={{ col: 12 }} desktop={{ col: 3 }}>
             <Label className="text-bold" htmlFor="name-label">
               Email
             </Label>
-            {userProfileData.email}
-          </Grid>
-          <Grid mobile={{ col: 12 }} desktop={{ col: 2 }}>
-            <Label className="text-bold" htmlFor="name-label">
-              Created
-            </Label>
-            {userProfileData.created}
+            {userData?.email}
           </Grid>
           <Grid mobile={{ col: 12 }} desktop={{ col: 3 }}>
             <Label className="text-bold" htmlFor="name-label">
               Last Login
             </Label>
-            {userProfileData.lastLogin}
+            {userData?.lastLogin}
           </Grid>
         </Grid>
         {openEdit ? (
@@ -132,57 +119,21 @@ function UserDetailForm({ userProfileData }: userDetailFormProps) {
           <Grid row col={12} className="padding-bottom-3">
             <Grid mobile={{ col: 12 }} desktop={{ col: 4 }}>
               <Label className="text-bold" htmlFor="name-label">
-                Title
-              </Label>
-              {userData.title}
-            </Grid>
-            <Grid mobile={{ col: 12 }} desktop={{ col: 3 }}>
-              <Label className="text-bold" htmlFor="name-label">
                 Role
               </Label>
-              {userData.role}
+              {userData?.role}
             </Grid>
-            <Grid mobile={{ col: 12 }} desktop={{ col: 2 }}>
+            <Grid mobile={{ col: 12 }} desktop={{ col: 3 }}>
               <Label className="text-bold" htmlFor="name-label">
                 Status
               </Label>
-              {userData.status}
+              {userData?.status}
             </Grid>
             <Grid mobile={{ col: 12 }} desktop={{ col: 3 }}>
               <Label className="text-bold" htmlFor="name-label">
-                Phone
+                Date Joined
               </Label>
-              {userData.phone}
-            </Grid>
-            <Grid mobile={{ col: 12 }} desktop={{ col: 4 }}>
-              <Label className="text-bold" htmlFor="name-label">
-                Address
-              </Label>
-              {userData.address}
-            </Grid>
-            <Grid mobile={{ col: 12 }} desktop={{ col: 3 }}>
-              <Label className="text-bold" htmlFor="name-label">
-                Address2
-              </Label>
-              {userData.address2}
-            </Grid>
-            <Grid mobile={{ col: 12 }} desktop={{ col: 2 }}>
-              <Label className="text-bold" htmlFor="name-label">
-                City
-              </Label>
-              {userData.city}
-            </Grid>
-            <Grid mobile={{ col: 12 }} desktop={{ col: 1 }}>
-              <Label className="text-bold" htmlFor="name-label">
-                State
-              </Label>
-              {userData.state}
-            </Grid>
-            <Grid mobile={{ col: 12 }} desktop={{ col: 2 }}>
-              <Label className="text-bold" htmlFor="name-label">
-                Zip
-              </Label>
-              {userData.zip}
+              {userData?.dateJoined}
             </Grid>
           </Grid>
         )}

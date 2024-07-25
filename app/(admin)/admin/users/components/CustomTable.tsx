@@ -2,7 +2,6 @@
 import React, { FC, useState, useRef, useEffect } from 'react'
 import { Table, Grid, Icon, Button, Pagination } from '@trussworks/react-uswds'
 import { TableHeader } from './CustomTableHeader'
-import InitialsCircle from './AccountCircle'
 import CustomAlert from './Alerts'
 import ModalsDeleteUser from './DeleteUserForm'
 import styles from './DeleteUser.module.scss'
@@ -10,7 +9,8 @@ import styles from './DeleteUser.module.scss'
 import useSWR from 'swr'
 import { users, CustomTableProps } from '../components/utils/types'
 import { USER_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { Avatar } from '@mui/material'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 
 const CustomTable: FC<CustomTableProps> = ({
   headers,
@@ -114,9 +114,7 @@ const CustomTable: FC<CustomTableProps> = ({
                     <td key={`${tableRow.id}`}>
                       <Grid row>
                         <Grid className="margin-left-2">
-                          <InitialsCircle
-                            name={`${tableRow.first_name} ${tableRow.last_name}`}
-                          />
+                          <Avatar>{`${tableRow.first_name} ${tableRow.last_name}`}</Avatar> 
                         </Grid>
                         <Grid className="margin-left-2 margin-top-2">
                           {tableRow.first_name} {tableRow.last_name}

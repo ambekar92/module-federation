@@ -1,15 +1,17 @@
-import axios from 'axios';
+// this file is no longer needed since the config object is create in the route.ts [...nextauth].ts file
+import Cookies from 'js-cookie';
 import { NextAuthOptions, getServerSession } from 'next-auth';
 import OktaProvider from 'next-auth/providers/okta';
+import { useSession } from 'next-auth/react';
+import { LoginResponseUser } from '../(admin)/login-tester/types';
 import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken';
 import { OKTA_POST_LOGIN_ROUTE } from '../constants/routes';
-import { IUserDetails } from './next-auth';
 import { SessionType } from '../login/types';
-import { useSession } from 'next-auth/react';
-import Cookies from 'js-cookie';
-import { LoginResponseUser } from '../(admin)/login-tester/types';
+import { IUserDetails } from './next-auth';
+import { axiosInstance } from '../services/axiosInstance';
 
-export const authConfig: NextAuthOptions = {
+
+  export  const authConfig: NextAuthOptions = {
   providers: [
     OktaProvider({
       clientId: process.env.OKTA_OAUTH2_CLIENT_ID!,
@@ -53,7 +55,13 @@ export const authConfig: NextAuthOptions = {
         csrfToken: session.csrfToken
       };
       try {
-        userDetails = await axios.post(OKTA_POST_LOGIN_ROUTE, postData);
+        userDetails = await axiosInstance.post(OKTA_POST_LOGIN_ROUTE, postData);
+        if (userDetails?.data?.permissions.length) {
+          token.permissions = userDetails.data.permissions;
+        }
+        if (userDetails?.data?.permissions.length) {
+          token.permissions = userDetails.data.permissions;
+        }
         if (userDetails?.data?.permissions.length) {
           token.permissions = userDetails.data.permissions;
         }
@@ -63,22 +71,23 @@ export const authConfig: NextAuthOptions = {
         if (userDetails?.data?.okta_id && typeof userDetails.data.okta_id === 'string') {
           session.user.okta_id = userDetails.data.okta_id;
         }
+        if (userDetails.data.access) {
+          session.access = userDetails.data.access;
+        }
       } catch (error) {
         console.error('Error making POST request:', error);
       }
-
       const userSession = {...session, ...(userDetails.data || {})};
       // FOR TESTING to ensure we are not spreading an undefined object
       // console.log('Final Session Object:');
       // console.log(JSON.stringify(userSession, null, 2));
-
       return userSession;
     },
-
   },
-}
-export async function getSessionServer() {
-  const session = await getServerSession(authConfig)
+  }
+
+  export async function getSessionServer() {
+  const session = await getServerSession(authConfig);
   return session;
 }
 
@@ -102,7 +111,7 @@ export function useSessionUCMS(): SessionType {
     data: {
       user: {
         name: '',
-        email: '',
+        email: email_password_auth_token?.email || '',
         accessToken: email_password_auth_token?.access || '',
         okta_id: '',
         id: email_password_auth_token?.user_id || 0
@@ -115,7 +124,7 @@ export function useSessionUCMS(): SessionType {
       refresh: email_password_auth_token?.refresh || '',
       access: email_password_auth_token?.access || ''
     },
-    status: email_password_auth_token ? 'authenticated' :'unauthenticated'
+    status: email_password_auth_token ? 'authenticated' : 'unauthenticated'
   };
 
   return session;

@@ -1,4 +1,4 @@
-import { Role } from "@/app/shared/types/role";
+import { Role } from '@/app/shared/types/role';
 
 type Permission = {
     id: number;
@@ -7,23 +7,24 @@ type Permission = {
     description: string;
     parameters: string;
   };
-  
+
   type Entity = {
     entity_id: number;
     type: string;
     structure: string;
     user_id: number;
   };
-  
-  export type LoginResponseUser = {
+
+export type LoginResponseUser = {
     user_id: number;
+		email: string;
     permissions: Permission[];
     entities: Entity[];
     refresh: string;
     access: string;
   };
-  
-  export type LoginResponse = {
+
+export type LoginResponse = {
     message: string;
     user: LoginResponseUser;
   };

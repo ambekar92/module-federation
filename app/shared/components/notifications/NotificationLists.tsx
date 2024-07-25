@@ -1,18 +1,17 @@
 'use client'
-import React from 'react'
-import { useState, useEffect, useRef } from 'react'
-import styles from './NotificationList.module.scss'
+import { Grid } from '@trussworks/react-uswds'
+import { useEffect, useRef, useState } from 'react'
 import NotificationHeader from './NotificationHeader'
-import { Grid, GridContainer } from '@trussworks/react-uswds'
+import styles from './NotificationList.module.scss'
 // Icons
-import AccountCircle from '@mui/icons-material/AccountCircle'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 
 //API
-import Service from '../../../services/fetcher';
+import Service from '../../../services/fetcher-legacy';
 
 // Data
+import { Avatar } from '@mui/material'
 import notificationData from './notificationData.json'
 
 const NotificationLists = () => {
@@ -65,9 +64,9 @@ const NotificationLists = () => {
                   col={2}
                   className="display-flex flex-justify-center flex-align-center"
                 >
-                  <AccountCircle
+                  <Avatar
                     className={`height-6 width-6 ${styles['icons-account']}`}
-                  />
+                  ></Avatar>
                 </Grid>
                 <Grid col={9}>
                   <h4 className="margin-0">{item.title}</h4>

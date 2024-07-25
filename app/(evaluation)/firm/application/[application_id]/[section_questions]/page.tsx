@@ -1,7 +1,7 @@
 'use client'
 import { Params, QuestionnaireItem } from '@/app/(evaluation)/types/types'
 import { API_ROUTE, QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 import { MainQuestionObject } from '@/app/shared/form-builder/questionnaire-types/question'
 import { QuestionType } from '@/app/shared/form-builder/questionnaire-types/question-types'
 import { Button } from '@trussworks/react-uswds'

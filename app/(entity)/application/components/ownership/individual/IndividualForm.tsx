@@ -40,7 +40,7 @@ const IndividualForm = ({handleAddOwner, editedItem}: Props) => {
               control={methods.control}
               render={({ field }) =>
                 <Select
-                  className='height-7 radius-lg' id={'prefix'}
+                  id={'prefix'}
                   value={field.value}
                   name={'prefix'}
                   onChange={field.onChange}

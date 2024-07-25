@@ -1,4 +1,4 @@
-import { Role } from "../shared/types/role";
+import { Role } from '../shared/types/role';
 
 type Permission = {
     id: number;
@@ -7,7 +7,7 @@ type Permission = {
     description: string;
     parameters: string;
   };
-  
+
   type User = {
     name: string;
     email: string;
@@ -15,19 +15,19 @@ type Permission = {
     okta_id: string;
     id: number;
   };
-  
+
   type Data = {
     user: User;
     expires: string;
     csrfToken: string;
     user_id: number;
     permissions: Permission[];
-    entities: any[]; 
+    entities: any[];
     refresh: string;
     access: string;
   };
-  
-  export type SessionType = {
+
+export type SessionType = {
     data: Data;
     status: 'loading' | 'authenticated' | 'unauthenticated';
   };

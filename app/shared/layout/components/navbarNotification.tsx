@@ -4,12 +4,11 @@ import { useState, useEffect, useRef } from 'react'
 import styles from './navbarNotification.module.scss'
 import { Grid, GridContainer } from '@trussworks/react-uswds'
 // Icons
-import AccountCircle from '@mui/icons-material/AccountCircle'
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 
 //API
-import Service from '../../../services/fetcher';
+import Service from '../../../services/fetcher-legacy';
 
 // Data
 import notificationData from './notificationData.json'
@@ -21,7 +20,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import EmailIcon from '@mui/icons-material/Email';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import PushPinIcon from '@mui/icons-material/PushPin';
-import { IconButton } from '@mui/material'
+import { Avatar, IconButton } from '@mui/material'
 import FilterListIcon from '@mui/icons-material/FilterList';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import CloseIcon from '@mui/icons-material/Close';
@@ -266,9 +265,9 @@ export const Notification: React.FC = () => {
                   col={2}
                   className="display-flex flex-justify-center flex-align-center"
                 >
-                  <AccountCircle
+                  <Avatar
                     className={`height-6 width-6 ${styles['icons-account']}`}
-                  />
+                  ></Avatar>
                 </Grid>
                 <Grid col={9}>
                   <h4 className={`margin-0 ${styles['title-description']}`}>{item.title}</h4>

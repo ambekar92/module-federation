@@ -60,9 +60,9 @@ export const MultiSelectInput = ({
           control: (baseStyles, state) => ({
             ...baseStyles,
             marginTop: '0.5rem',
-            borderRadius: '8px',
+            borderRadius: '0px',
             minHeight: '2.45rem',
-            height: '56px',
+            height: '40px',
             borderColor: '#565c65',
             outline: state.isFocused ? '3px solid #0f73ff' : '',
             cursor: 'pointer'

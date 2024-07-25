@@ -1,5 +1,5 @@
 import { ENTITIES_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 import { EntitiesType } from '../types/responses'
 
 const getEntityByUserId = async(userId: number) => {

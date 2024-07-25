@@ -2,7 +2,7 @@
 import QuestionRenderer from '@/app/(entity)/application/qa-helpers/QuestionRenderer'
 import { Params } from '@/app/(evaluation)/types/types'
 import { ANSWER_ROUTE, API_ROUTE, QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes'
-import { fetcherGET, fetcherPOST } from '@/app/services/fetcher'
+import { fetcherGET, fetcherPOST } from '@/app/services/fetcher-legacy'
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import Link from 'next/link'
@@ -66,7 +66,7 @@ const BusinessPlanPage = () => {
   function onContinue() {
     const current = navItems?.find(q => q.title === title);
     if (!current || !navItems) { setShowNextButton(false); return; }
-    const currIdx = navItems?.indexOf(current);    
+    const currIdx = navItems?.indexOf(current);
     if (currIdx === (navItems.length - 1)) { return; }
     const next = navItems[currIdx + 1].url;
     router.push(`../${next}`);
@@ -75,7 +75,7 @@ const BusinessPlanPage = () => {
   function onPrevious() {
     const current = navItems?.find(q => q.title === title);
     if (!current || !navItems) { setShowPreviousButton(false); return; }
-    const currIdx = navItems?.indexOf(current);   
+    const currIdx = navItems?.indexOf(current);
     if (currIdx === (navItems.length + 1)) { return; }
     const next = navItems[currIdx - 1].url;
     router.push(`../${next}`);
@@ -88,9 +88,9 @@ const BusinessPlanPage = () => {
         setTitle(currentSection.title);
       }
       const current = navItems?.find(item => item.url.includes(params.section_questions));
-      const currIdx = navItems?.indexOf(current); 
+      const currIdx = navItems?.indexOf(current);
       currIdx === 0 ? setShowPreviousButton(false) : setShowPreviousButton(true)
-    }    
+    }
   }, [navItems, data, params.section_questions]);
 
   return (

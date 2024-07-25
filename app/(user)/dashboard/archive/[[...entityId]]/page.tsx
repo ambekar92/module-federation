@@ -1,7 +1,6 @@
 'use client'
-import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { ApplicationResponse, applicationFetcherGet } from '@/app/services/application-fetcher'
+import { useApplication } from '@/app/services/queries/useApplication'
 import { faEllipsisVertical, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -9,10 +8,9 @@ import {
   Collection
 } from '@trussworks/react-uswds'
 import { Fragment, ReactElement, useState } from 'react'
-import useSWR from 'swr'
-import styles from '../../utils/FirmDashboard.module.scss';
 import FirmApplicationCard from '../../components/FirmApplicationCard'
 import DeleteWithdrawConfirmationModal from '../../components/delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
+import styles from '../../utils/FirmDashboard.module.scss'
 
 interface FirmUserDashboardPageProps {
   params: {
@@ -28,10 +26,7 @@ const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {enti
     useState<boolean>(false)
   const [confirmationType, setConfirmationType] = useState<string | undefined>('');
 
-  const url = entityId ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}` :
-    session.data?.user?.id ? `${FIRM_APPLICATIONS_ROUTE}?user_id=${session.data?.user?.id}` : '';
-
-  const { data, error } = useSWR<ApplicationResponse>(url, applicationFetcherGet);
+  const { data, error } = useApplication();
 
   // is this needed?
   const applicationDeleteOrWithdraw = async (event: any, id: number) => {

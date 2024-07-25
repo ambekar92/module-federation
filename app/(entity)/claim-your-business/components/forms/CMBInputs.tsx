@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { VALIDATE_SAM_ENTITY_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher';
+import { fetcherGET } from '@/app/services/fetcher-legacy';
 import {
   Button,
   ButtonGroup,
@@ -24,6 +24,8 @@ import {
 import { ClaimBusinessInputs, CmbResponseType } from '../../utils/types';
 import Styles from '../ClaimMyBusiness.module.scss';
 import InputHelperText from '@/app/shared/components/inputs/InputHelperText';
+import Tooltip from '@/app/shared/components/tooltip/Tooltip';
+import { toolTipCmbInputs } from '@/app/constants/tooltips';
 
 interface IClaimInputs {
   claimFormComplete: (responseData: CmbResponseType) => void;
@@ -135,9 +137,12 @@ const ClaimInputs = ({
       <form onSubmit={handleSubmit(handleBusinessClaim)} className={Styles.form}>
         {fieldKeys.map((key) => (
           <div key={key} data-testid={`input-${key}`}>
-            <Label htmlFor={`input-${key}`} requiredMarker={claimBusinessInputDetails[key].required}>
-              {claimBusinessInputDetails[key].displayName}
-            </Label>
+            <Grid row className='margin-top-2'>
+              <Label htmlFor={`input-${key}`} className='margin-top-0' requiredMarker={claimBusinessInputDetails[key].required}>
+                {claimBusinessInputDetails[key].displayName}
+              </Label>
+              {toolTipCmbInputs[key] !== '' && <Tooltip text={toolTipCmbInputs[key]}/>}
+            </Grid>
             <Controller
               name={key}
               control={control}

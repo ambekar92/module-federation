@@ -1,18 +1,18 @@
 import { useEffect } from 'react';
-import { useApplicationDispatch } from '../redux/hooks';
-import {
-  setOwnershipPercentageTotal,
-  setOwners,
-  setContributors,
-  setOperators
-} from '../redux/applicationSlice';
 import { Contributor } from '../components/contributor-invite/types';
 import { Operator } from '../components/control-and-operations/schema';
-import { Owner } from '../components/ownership/shared/types';
+import { OwnerType } from '../hooks/useOwnershipApplicationInfo';
+import {
+  setContributors,
+  setOperators,
+  setOwners,
+  setOwnershipPercentageTotal
+} from '../redux/applicationSlice';
+import { useApplicationDispatch } from '../redux/hooks';
 
 export type UserApplicationInfo = {
   totalPercent: number;
-  owners: Owner[];
+  owners: OwnerType[];
   contributors: Contributor[];
   operators: Operator[];
 };
@@ -64,18 +64,11 @@ export const useUserApplicationInfo = () => {
   return { updateUserApplicationInfo };
 };
 
-export const convertOwnerToContributor = (owner: Owner): Contributor => {
-  if (owner.ownerType === 'individual') {
-    return {
-      contributorRole: 'role_owner',
-      firstName: owner.firstName,
-      lastName: owner.lastName,
-      emailAddress: owner.contactInfo.email,
-    };
-  } else {
-    return {
-      contributorRole: 'role_owner',
-      emailAddress: owner.contactInfo.email,
-    };
-  }
+export const convertOwnerToContributor = (owner: OwnerType): Contributor => {
+  return {
+    contributorRole: owner.isEligibleOwner ? 'role_owner_eligible' : 'role_owner',
+    firstName: owner.firstName,
+    lastName: owner.lastName,
+    emailAddress: owner.emailAddress,
+  };
 };

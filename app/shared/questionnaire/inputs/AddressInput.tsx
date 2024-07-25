@@ -59,7 +59,6 @@ export const AddressInput = ({ question, inputId, handleChange, isSubQuestion, s
         <Select
           id="state"
           name="state"
-          className='height-7 radius-lg'
           required
           value={currentValue.state || ''}
           onChange={(e) => handleAddressChange('state', e.target.value)}

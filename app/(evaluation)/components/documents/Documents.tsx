@@ -1,12 +1,12 @@
 'use client'
-import { fetcherGET } from '@/app/services/fetcher'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 import { Documents as Document, DocumentsType } from '@/app/services/types/document'
 import HeightIcon from '@mui/icons-material/Height'
 import { Table } from '@trussworks/react-uswds'
+import { useParams } from 'next/navigation'
 import useSWR from 'swr'
 import { GET_DOCUMENTS } from '../../../constants/routes'
 import styles from './Documents.module.scss'
-import { useParams } from 'next/navigation';
 
 function Documents() {
   const { application_id } = useParams();

@@ -1,10 +1,12 @@
 'use client'
 import ActionMenuModal from '@/app/shared/components/modals/ActionMenuModal'
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ActionMenuData from '../utils/actionMenuData.json'
-
+import { useSessionUCMS } from '@/app/lib/auth';
+import { Role } from '@/app/shared/types/role';
 
 const ActionsDropdown = () => {
+  const sessionData = useSessionUCMS()
   const [showModal, setShowModal] = useState(false);
   const [actionModalProps, setActionModalProps] = useState({
     title: '',
@@ -12,6 +14,7 @@ const ActionsDropdown = () => {
     userIdType: '',
     modalType: 'default',
     description: '',
+    inputDescription: '',
     steps: [],
     id: 0,
     table: {
@@ -56,6 +59,7 @@ const ActionsDropdown = () => {
         userIdType: modalProp?.userIdType || '',
         modalType: modalProp?.modalType || 'default',
         description: modalProp?.description || '',
+        inputDescription: modalProp?.inputDescription || '',
         steps: modalProp?.steps || [],
         id: modalProp?.id,
         table: {
@@ -82,33 +86,44 @@ const ActionsDropdown = () => {
     }
   }
 
+  const filteredActions = useMemo(() => {
+    const userPermissions: Role[] = sessionData.data?.permissions?.map(p => p.slug) || [];
+
+    return ActionMenuData.data.filter(action => {
+      if (action.permissions.length === 0) {return true;}
+
+      return action.permissions.some(permission =>
+        userPermissions.includes(permission as Role)
+      );
+    });
+  }, [sessionData.data?.permissions]);
+
   return (
     <div>
-        <div className="usa-combo-box margin-bottom-4">
-          <select
-            className="usa-select"
-            name="sort"
-            id="sort"
-            data-placeholder="sort"
-            onChange={handleActionSelect}
-          >
-            <option>Actions</option>
-            {ActionMenuData.data.map((item, index) => {
-              return (
-                <option key={`action-menu-option-${index}`} value={item.id}>
-                  {item.optionLabel}
-                </option>
-              )
-            })}
-          </select>
-        </div>
-        <ActionMenuModal
+      <div className="usa-combo-box margin-bottom-4">
+        <select
+          className="usa-select"
+          name="sort"
+          id="sort"
+          data-placeholder="sort"
+          onChange={handleActionSelect}
+        >
+          <option>Actions</option>
+          {filteredActions.map((item, index) => (
+            <option key={`action-menu-option-${index}`} value={item.id}>
+              {item.optionLabel}
+            </option>
+          ))}
+        </select>
+      </div>
+      <ActionMenuModal
         open={showModal}
         title={actionModalProps.title}
         actionLabel={actionModalProps.actionLabel}
         userIdType={actionModalProps.userIdType}
         modalType={actionModalProps.modalType}
         description={actionModalProps.description}
+        inputDescription={actionModalProps.inputDescription}
         steps={actionModalProps.steps}
         id={actionModalProps.id}
         table={actionModalProps.table as any}

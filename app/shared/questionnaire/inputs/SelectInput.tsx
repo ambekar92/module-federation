@@ -11,7 +11,6 @@ export const SelectInput = ({ question, inputId, handleChange, isSubQuestion, se
         {question.title}
       </Label>
       <Select
-        className='height-7 radius-lg'
         id={inputId}
         name={question.name}
         value={currentValue}

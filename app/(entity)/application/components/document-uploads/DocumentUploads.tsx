@@ -1,6 +1,6 @@
 import { DOCUMENT_REQUIRED_ROUTE, GET_DOCUMENTS } from '@/app/constants/routes';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { fetcherDELETE, fetcherGET, fetcherPOST } from '@/app/services/fetcher';
+import { fetcherGET, fetcherPOST, fetcherDELETE } from '@/app/services/fetcher-legacy';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { Button, ButtonGroup, Icon, Table } from '@trussworks/react-uswds';
 import { useEffect, useState } from 'react';
@@ -21,9 +21,9 @@ interface DocumentsState {
   };
 }
 
-const DocumentUploads = () => {
+const DocumentUploads = ({ contributorId }: {contributorId: number}) => {
   const { data: session } = useSessionUCMS();
-  const { contributorId, entityId, userId } = useApplicationId();
+  const { entityId, userId } = useApplicationId();
   const [documentsToDelete, setDocumentsToDelete] = useState<{[key: string]: number[]}>({});
   const [isSaving, setIsSaving] = useState(false);
   const { data: questions, error } = useSWR(

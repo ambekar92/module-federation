@@ -33,7 +33,7 @@ export const USER_PRODUCTIVITY_ROUTE =
   API_ROUTE + '/user-productivity-dashboard'
 export const FIRM_EVALUATIONS_ADD_NOTE_ROUTE =
   API_ROUTE + '/upsert-viewflow-note'
-export const FIRM_EVALUATIONS_ASSIGN_USER_ROUTE = API_ROUTE + '/assign-user-to-viewflow'
+export const ASSIGN_USER_TO_VIEWFLOW_ROUTE = API_ROUTE + '/assign-user-to-viewflow'
 export const DELEGATES_ROUTE = API_ROUTE + '/delegates'
 export const APPLICATION_ROUTE = API_ROUTE + '/application'
 export const TESTER_LOGIN_ROUTE = API_ROUTE + '/login'

@@ -3,17 +3,17 @@ import { CustomTable } from '@/app/shared/components/CustomTable';
 import { Button, ButtonGroup, Grid, GridContainer, Label, TextInput } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { selectApplication, setContributors, setIsAddingContributor, setOperators, setStep } from '../../redux/applicationSlice';
+import { selectApplication, setContributors, setIsAddingContributor, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
 import { applicationSteps, qaAppLinkPrefix } from '../../utils/constants';
 import { Contributor } from './types';
 import InviteContributorModal from './InviteContributorModal';
-import { UserApplicationInfo, convertOwnerToContributor, useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
+import { convertOwnerToContributor, useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
 import { QuestionnaireProps } from '../../utils/types';
 import useSWR from 'swr';
-import { fetcherGET } from '@/app/services/fetcher';
+import fetcher from '@/app/services/fetcher';
 import { INVITATION_ROUTE } from '@/app/constants/routes';
-import { InvitationType } from '@/app/services/types/application';
+import { InvitationType } from '@/app/services/types/application-service/Application';
 
 function ContributorForm({contributorId}: QuestionnaireProps) {
   const { updateUserApplicationInfo } = useUserApplicationInfo();
@@ -22,28 +22,52 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
   const [emailAddress, setEmailAddress] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const { isAddingContributor, contributors, operators } = useApplicationSelector(selectApplication);
+  const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
-  const { data: invitationData, error: invitationError } = useSWR(`${INVITATION_ROUTE}/${contributorId}`, fetcherGET<InvitationType[]>);
+  const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(`${INVITATION_ROUTE}/${contributorId}`, fetcher);
 
   const syncOwnersWithContributors = () => {
-    const userApplicationInfo = localStorage.getItem('userApplicationInfo');
-    if (userApplicationInfo) {
-      const { owners } = JSON.parse(userApplicationInfo) as UserApplicationInfo;
+    const ownerApplicationInfoString = localStorage.getItem('ownerApplicationInfo');
+    const operatorApplicationInfoString = localStorage.getItem('operatorApplicationInfo');
+
+    if (ownerApplicationInfoString && operatorApplicationInfoString) {
+      const { owners } = JSON.parse(ownerApplicationInfoString);
+      const { operators } = JSON.parse(operatorApplicationInfoString);
+
+      let updatedContributors = [...contributors];
+
       if (owners) {
         const ownerContributors = owners.map(convertOwnerToContributor);
-        const nonOwnerContributors = contributors.filter(c => c.contributorRole !== 'role_owner');
-        const updatedContributors = [...ownerContributors, ...nonOwnerContributors];
-        dispatch(setContributors(updatedContributors));
-        updateUserApplicationInfo({ contributors: updatedContributors });
+        updatedContributors = updatedContributors.filter(c => c.contributorRole !== 'role_owner');
+        updatedContributors = [...ownerContributors, ...updatedContributors];
       }
+
+      if (operators) {
+        const operatorContributors = operators.map((operator: { firstName: any; lastName: any; email: any; }) => ({
+          contributorRole: 'role_other' as const,
+          firstName: operator.firstName,
+          lastName: operator.lastName,
+          emailAddress: operator.email
+        }));
+        updatedContributors = updatedContributors.filter(c => c.contributorRole !== 'role_other');
+        updatedContributors = [...updatedContributors, ...operatorContributors];
+      }
+
+      dispatch(setContributors(updatedContributors));
     }
   };
 
   useEffect(() => {
+    syncOwnersWithContributors();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
     dispatch(setIsAddingContributor(false));
+  }, [dispatch]);
 
+  useEffect(() => {
     if (invitationData) {
       const apiContributors: Contributor[] = invitationData
         .filter((item: InvitationType) => item.invitation_status !== 'removed')
@@ -58,28 +82,23 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
               : 'role_other' as 'role_owner' | 'role_other' | 'role_spouse',
         }));
 
-      dispatch(setContributors(apiContributors));
+      // Merge the current contributors with the new API contributors
+      const mergedContributors = [...contributors];
+      apiContributors.forEach(apiContributor => {
+        const existingIndex = mergedContributors.findIndex(
+          c => c.emailAddress === apiContributor.emailAddress && c.contributorRole === apiContributor.contributorRole
+        );
+        if (existingIndex === -1) {
+          mergedContributors.push(apiContributor);
+        } else {
+          mergedContributors[existingIndex] = apiContributor;
+        }
+      });
+      console.log(mergedContributors)
+      dispatch(setContributors(mergedContributors));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, invitationData]);
-
-  useEffect(() => {
-    syncOwnersWithContributors();
-  }, []);
-
-  useEffect(() => {
-    dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
-    dispatch(setIsAddingContributor(false));
-    const userApplicationInfo = localStorage.getItem('userApplicationInfo');
-    if (userApplicationInfo) {
-      const { contributors, operators } = JSON.parse(userApplicationInfo) as UserApplicationInfo;
-      if (contributors) {
-        dispatch(setContributors(contributors));
-      }
-      if (operators) {
-        dispatch(setOperators(operators));
-      }
-    }
-  }, [dispatch]);
 
   const handleAddNew = () => {
     dispatch(setIsAddingContributor(true));
@@ -137,14 +156,33 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
     }
   };
 
-  const handleDeleteContributor = (index: number) => {
-    const updatedContributors = contributors.filter((_, i) => i !== index);
-    dispatch(setContributors(updatedContributors));
-    updateUserApplicationInfo({ contributors: updatedContributors });
+  const handleDeleteContributor = (roleIndex: number, role: string) => {
+		interface Accumulator {
+			result: Contributor[];
+			roleIndex: number;
+		}
+
+		const updatedContributors = contributors.reduce((acc: Accumulator, contributor: Contributor) => {
+		  if ((role === 'role_owner' && (contributor.contributorRole === 'role_owner' || contributor.contributorRole === 'role_owner_eligible')) ||
+					contributor.contributorRole === role) {
+		    if (acc.roleIndex !== roleIndex) {
+		      acc.result.push(contributor);
+		    }
+		    acc.roleIndex++;
+		  } else {
+		    acc.result.push(contributor);
+		  }
+		  return acc;
+		}, { result: [], roleIndex: 0 } as Accumulator).result;
+
+		dispatch(setContributors(updatedContributors));
+		updateUserApplicationInfo({ contributors: updatedContributors });
   };
 
   const handleEditOwner = (index: number) => {
-    const owners = contributors.filter(contributor => contributor.contributorRole === 'role_owner');
+    const owners = contributors.filter(contributor =>
+      contributor.contributorRole === 'role_owner' || contributor.contributorRole === 'role_owner_eligible'
+    );
     const owner = owners[index];
     setFirstName(owner.firstName || '');
     setLastName(owner.lastName || '');
@@ -175,6 +213,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
 
   const roleDisplayName = (role: string) => {
     switch (role) {
+      case 'role_owner_eligible':
       case 'role_owner':
         return 'Owner';
       case 'role_spouse':
@@ -193,7 +232,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
   ];
 
   const ownerTableRows = contributors
-    .filter(contributor => contributor.contributorRole === 'role_owner')
+    .filter(contributor => contributor.contributorRole === 'role_owner' || contributor.contributorRole === 'role_owner_eligible')
     .map((contributor, index) => ({
       id: index,
       Name: `${contributor.firstName} ${contributor.lastName}`,
@@ -210,12 +249,14 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
       Email: contributor.emailAddress,
     }));
 
-  const operatorTableRows = operators.map((operator, index) => ({
-    id: index,
-    Name: `${operator.firstName} ${operator.lastName}`,
-    Role: roleDisplayName('role_other'),
-    Email: operator.emailAddress,
-  }));
+  const operatorTableRows = contributors
+    .filter(contributor => contributor.contributorRole === 'role_other')
+    .map((contributor, index) => ({
+      id: index,
+      Name: `${contributor.firstName} ${contributor.lastName}`,
+      Role: roleDisplayName(contributor.contributorRole),
+      Email: contributor.emailAddress,
+    }));
 
   const closeModal = () => {
     setShowModal(false)
@@ -228,8 +269,10 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
   }
 
   if(invitationError) {
+    // eslint-disable-next-line no-console
     console.log(invitationError);;
   }
+
   return (
     <>
 		  <div>
@@ -326,7 +369,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
             editable={true}
             remove={true}
             onEdit={handleEditOwner}
-            onDelete={handleDeleteContributor}
+            onDelete={(index) => handleDeleteContributor(index, 'role_owner')}
           />
         </>
       )}
@@ -341,7 +384,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
             editable={true}
             remove={true}
             onEdit={handleEditSpouse}
-            onDelete={handleDeleteContributor}
+            onDelete={(index) => handleDeleteContributor(index, 'role_spouse')}
           />
         </>
       )}
@@ -365,7 +408,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
             editable={true}
             remove={true}
             onEdit={handleEditOther}
-            onDelete={handleDeleteContributor}
+            onDelete={(index) => handleDeleteContributor(index, 'role_other')}
           />
         </>
       )}

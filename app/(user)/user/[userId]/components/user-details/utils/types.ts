@@ -25,20 +25,21 @@ export type ValidFieldNames =
   | 'phone'
 
 export type UserProfileType = {
+  last_name: string
+  prbac_role: any
+  is_active: any
+  date_joined: string
+  first_name: string
+  last_login: string
+  lastName: string
+  firstName: string
   userId: string
   name: string
-  title: string
   role: string
   status: string
-  created: string
   lastLogin: string
-  address: string
-  address2: string
-  city: string
-  state: string
-  zip: string
+
   email: string
-  phone: string
 }
 
 export type UserFormInputs = z.infer<typeof FormSchema>

@@ -1,10 +1,11 @@
 import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
+import { fetcherDELETE, fetcherGET } from '@/app/services/fetcher-legacy'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
-import { fetcherDELETE, fetcherGET } from '@/app/services/fetcher'
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Alert,
+  Button,
   ButtonGroup,
   Grid,
   GridContainer,
@@ -38,7 +39,7 @@ function AddDelegateForm() {
 		fetcherGET<DelegatesResponse[]>,
 		{ revalidateOnFocus: false }
   );
-  const isDelegate = delegatesData && delegatesData[delegatesData.length - 1].invitation_status !== 'removed';
+  const isDelegate = delegatesData && delegatesData.length >= 1 && delegatesData[delegatesData.length - 1].invitation_status !== 'removed';
 
   useEffect(() => {
     if(isDelegate) {
@@ -61,7 +62,7 @@ function AddDelegateForm() {
   }
 
   const handlePrevious = () => {
-    steps[currentStep] === 'Add Delegate' && setOption('')
+    steps[currentStep] === 'Add Delegate' && setShowModal(false)
     steps[currentStep] === 'Invite Sent' && setShowModal(true)
     currentStep > 0 && setCurrentStep(currentStep - 1)
   }
@@ -183,16 +184,23 @@ function AddDelegateForm() {
         <Grid row className="margin-top-2 flex-justify-end" col={12}>
           <hr className="width-full" />
           <ButtonGroup className="display-flex">
-            <Link
-              aria-disabled={!contributorId}
-              href={buildRoute(APPLICATION_STEP_ROUTE, {
-                contributorId: contributorId,
-                stepLink: '/ownership'
-              })}
-              className="float-right usa-button"
-            >
-              Next
-            </Link>
+            {contributorId
+              ? (
+                <Link
+                  href={buildRoute(APPLICATION_STEP_ROUTE, {
+                    contributorId: contributorId,
+                    stepLink: '/ownership'
+                  })}
+                  className="float-right usa-button"
+                >
+									Next
+                </Link>
+              ): (
+                <Button type='button' disabled>
+									Next
+                </Button>
+              )
+            }
           </ButtonGroup>
         </Grid>
       )}

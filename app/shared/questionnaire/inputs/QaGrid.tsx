@@ -1,5 +1,5 @@
 import { ANSWER_ROUTE } from '@/app/constants/routes';
-import { fetcherPOST } from '@/app/services/fetcher';
+import { fetcherPOST } from '@/app/services/fetcher-legacy';
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid, Icon, Label, Table } from '@trussworks/react-uswds';
 import { useEffect, useState } from 'react';
@@ -59,34 +59,36 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
     return Object.keys(newErrors).length === 0;
   };
 
+  const saveAnswer = (rows: GridRow[]) => {
+    if (userId && contributorId) {
+      const answer = {
+        profile_answer_flag: question.profile_answer_flag,
+        application_contributor_id: contributorId,
+        value: { answer: rows },
+        question_id: question.id,
+        answer_by: userId,
+        reminder_flag: false,
+      };
+      fetcherPOST(ANSWER_ROUTE, [answer]).catch((error) => {
+        console.error('Error saving answer:', error);
+      });
+    }
+  };
+
   const handleAddRow = () => {
     if (validateAllFields()) {
-      setGridRows([...gridRows, currentRow]);
+      const newRows = [...gridRows, currentRow];
+      setGridRows(newRows);
       setCurrentRow({});
       setErrors({});
+      saveAnswer(newRows);
     }
   };
 
   const handleDeleteRow = (index: number) => {
     const updatedRows = gridRows.filter((_, i) => i !== index);
     setGridRows(updatedRows);
-  };
-
-  const handleSaveAnswer = () => {
-    if (userId && contributorId) {
-      const answer = {
-        profile_answer_flag: question.profile_answer_flag,
-        application_contributor_id: contributorId,
-        value: { answer: gridRows },
-        question_id: question.id,
-        answer_by: userId,
-        reminder_flag: false,
-      };
-      console.log(answer)
-      fetcherPOST(ANSWER_ROUTE, [answer]).catch((error) => {
-        console.error('Error saving answer:', error);
-      });
-    }
+    saveAnswer(updatedRows);
   };
 
   const renderInput = (gridQuestion: Question) => {
@@ -237,11 +239,6 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
           </tbody>
         </Table>
       )}
-      <ButtonGroup className='display-flex flex-justify-end'>
-        <Button type='button' onClick={handleSaveAnswer}>
-					Save Answer
-        </Button>
-      </ButtonGroup>
     </div>
   );
 };

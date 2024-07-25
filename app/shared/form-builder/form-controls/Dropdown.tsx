@@ -28,7 +28,7 @@ import {
         control={control}
         name={name}
         render={({ field, fieldState: { error } }) => (
-          <FormGroup error={!!error} className="bg-white radius-sm padding-4">
+          <FormGroup error={!!error} className="bg-white radius-sm">
             <>
               <Label
                 error={!!error}

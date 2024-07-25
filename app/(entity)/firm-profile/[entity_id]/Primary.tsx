@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 import useSWR from 'swr'
 import { Table } from '@trussworks/react-uswds'
 import { ENTITIES_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 
 const Primary = () => {
   const leftColStyles: CSSProperties = {

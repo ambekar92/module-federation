@@ -1,41 +1,30 @@
 'use client'
-import { NOTES_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/fetcher'
+import { useCreateNote } from '@/app/services/mutations/useCreateNote'
+import { Note } from '@/app/services/types/notes'
 import Input from '@/app/shared/form-builder/form-controls/Input'
 import TextArea from '@/app/shared/form-builder/form-controls/TextArea'
 import { Button, ButtonGroup, ModalRef } from '@trussworks/react-uswds'
 import { useParams } from 'next/navigation'
-import { RefObject, useState } from 'react'
+import { RefObject } from 'react'
 import { FieldValues, SubmitHandler, useFormContext } from 'react-hook-form'
 import { KeyedMutator } from 'swr'
-import { Note, Params } from '../../types/types'
+import { Params } from '../../types/types'
 import { NoteType } from './schema'
 
-const NotesForm = ({ modalRef, mutate, createText='Create', showCancelBtn=true }: 
+const NotesForm = ({ modalRef, createText='Create', showCancelBtn=true }: 
     {modalRef?: RefObject<ModalRef>, mutate: KeyedMutator<Note[]>, createText?: string, showCancelBtn?: boolean}) => {
     const { handleSubmit, reset, clearErrors } = useFormContext();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const params = useParams<Params>();
     const session = useSessionUCMS();
+    const {trigger, isMutating} = useCreateNote();
 
     function onNoteSave(note: NoteType) {
-        setIsLoading(true);
-        try {
-            axiosInstance.post(NOTES_ROUTE, { ...note, application_id: params.application_id, user_id: session.data.user_id }).then(res => {
-                reset();
-                if (modalRef) {
-                    modalRef.current?.toggleModal();
-                }
-                mutate()
-            })
-
-        } catch (e) {
-            console.error('failed to save note')
-        } finally {
-            setIsLoading(false);
-        }
-        
+        trigger({...note, application_id: Number(params.application_id), user_id: session.data.user_id})
+        reset();
+        if (modalRef){
+            modalRef.current?.toggleModal();
+        }        
     }
 
     function onCancel() {
@@ -49,12 +38,12 @@ const NotesForm = ({ modalRef, mutate, createText='Create', showCancelBtn=true }
     return (
         <form onSubmit={handleSubmit(onNoteSave as SubmitHandler<FieldValues>)}>
             <Input<NoteType> name="subject" label="Subject" hint='Note subject' required={true} />
-            <TextArea<NoteType> name='description' label='Description' />
+            <TextArea<NoteType> name='description' label='Description' required={true} />
             <ButtonGroup style={{ display: 'flex', gap: '3rem' }}>
                 <Button type='submit'
-                    disabled={isLoading}
+                    disabled={isMutating}
                     onClick={handleSubmit(onNoteSave as SubmitHandler<FieldValues>)} >
-                    {createText}
+                    {isMutating ? 'Saving...' : createText}
                 </Button>
                 {showCancelBtn && <Button unstyled type='button'
                     onClick={onCancel}>

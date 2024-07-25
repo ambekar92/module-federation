@@ -3,7 +3,7 @@ import { NavItem, Params, QuestionnaireItem } from '../../../types/types';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr'
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher';
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 
 export function useLeftItems() {
   const [questionnaireItems, setQuestionnaireItems] = useState<NavItem[]>([]);

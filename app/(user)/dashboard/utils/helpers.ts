@@ -16,15 +16,13 @@ export function daysFromNow(dateNumber: number): number {
 }
 
 export function formatDateFromNumber(dateNumber: string): string {
-  const dateNumberInt = parseInt(dateNumber)
-  const year = Math.floor(dateNumberInt / 10000);
-  const month = Math.floor((dateNumberInt % 10000) / 100);
-  const day = dateNumberInt % 100;
+  const date = new Date(dateNumber);
 
-  const paddedMonth = month.toString().padStart(2, '0');
-  const paddedDay = day.toString().padStart(2, '0');
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate();
 
-  return `${paddedMonth}/${paddedDay}/${year}`;
+  return `${month}/${day}/${year} `;
 }
 
 export function calculateApplicationExpirationDate(dateString: string, returnDate?: boolean): number | string {

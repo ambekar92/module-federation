@@ -12,8 +12,9 @@ const cageCodeValidation = new RegExp(/^[a-zA-Z0-9]{5}$/)
 // TIN must contain only numeric digits and be 9 digits length.
 const tinValidation = new RegExp(/^[0-9]{9}$/)
 
-// Invitation Code must contain only numeric digits and be 12 digits length.
-const invitationCodeValidation = new RegExp(/^[0-9]{12}$/)
+// Invitation Code only takes alphanumeric text without special characters
+const invitationCodeValidation = new RegExp(/^[a-zA-Z0-9]+$/);
+// new RegExp(/^[0-9]{12}$/)
 
 export type FormData = {
   uei: string

@@ -1,14 +1,12 @@
-import { useState } from 'react'
-import styles from './NotificationMenu.module.scss'
-import { Icon, Button, Card } from '@trussworks/react-uswds'
-import { Badge, Divider, IconButton } from '@mui/material'
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined'
 import NotificationsIcon from '@mui/icons-material/Notifications'
+import { Avatar, Badge, Divider, IconButton } from '@mui/material'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
-import AccountCircle from '@mui/icons-material/AccountCircle'
-import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined'
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined'
+import { useState } from 'react'
+import styles from './NotificationMenu.module.scss'
 
 const NotificationMenu = () => {
 
@@ -60,7 +58,7 @@ const NotificationMenu = () => {
         {tempNotifications.map((notification, index) => (
           <MenuItem key={index}>
             <div className={styles.menuItem}>
-              <AccountCircle className={styles.profileImg} />
+              <Avatar className={styles.profileImg} ></Avatar>
             </div>
             <div>
               <div className={styles.title}>

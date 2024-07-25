@@ -208,3 +208,12 @@ iframe:focus, [href]:focus, [tabindex]:focus, [contentEditable=true]:focus {
 li.usa-card {
   list-style: none;
 }
+
+.usa-modal__content {
+  padding-top: 0rem !important;
+}
+.usa-modal__main {
+  padding-inline: 3rem !important;
+  margin: 0rem !important;
+  max-width: 100% !important;
+}

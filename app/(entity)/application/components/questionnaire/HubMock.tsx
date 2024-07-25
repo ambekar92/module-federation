@@ -22,7 +22,7 @@ function HubMock() {
       <p>You can always check your eligibility by visiting the HUBZone Calculator located on the Unified Certification Platform homepage.</p>
 
       <div className='display-flex flex-justify-end margin-top-5'>
-        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`http://localhost:3001/firm?wt=${accessToken}&application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}`}>
+        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`http://localhost:3001?wt=${accessToken}&application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}`}>
 					Start
         </a>
       </div>

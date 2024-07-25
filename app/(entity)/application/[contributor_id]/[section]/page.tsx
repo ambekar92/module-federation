@@ -33,19 +33,19 @@ const ApplicationPage: React.FC<ApplicationPageProps> = () => {
   const section = params.section as string | undefined;
 
   switch (section) {
-    case 'ownership-test':
+    case 'ownership':
       content = <OwnershipQuestions contributorId={contributorId} />;
       break;
-    case 'control-and-ops-test':
+    case 'control-and-operations':
       content = <ControlAndOpsQuestions contributorId={contributorId} />;
       break;
-    case 'ownership':
+    case 'ownership-test':
       content = <Ownership contributorId={contributorId} />;
       break;
     case 'eligible-programs':
       content = <EligiblePrograms contributorId={contributorId} />;
       break;
-    case 'control-and-operations':
+    case 'control-and-ops-test':
       content = <ControlAndOperations contributorId={contributorId}  />;
       break;
     case 'contributor-invite':

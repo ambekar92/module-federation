@@ -1,5 +1,5 @@
 import { Question } from '@/app/shared/types/questionnaireTypes';
-import { Button, ButtonGroup, Grid, Label, Select as UsSelect, TextInput as UsTextInput, Table, Icon, CharacterCount, DatePicker } from '@trussworks/react-uswds';
+import { CharacterCount, DatePicker, Label, Select as UsSelect, TextInput as UsTextInput } from '@trussworks/react-uswds';
 import Select from 'react-select';
 
 export const TextInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
@@ -62,7 +62,6 @@ export const SelectInput: React.FC<{ question: Question; value: string; onChange
         name={question.name}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className='height-7 radius-lg'
       >
         <option value="">- Select -</option>
         {question.answer_choice && 'options' in question.answer_choice && question.answer_choice.options.map((option, idx) => (
@@ -95,9 +94,9 @@ export const MultiSelectInput: React.FC<{ question: Question; value: string[]; o
           control: (baseStyles) => ({
             ...baseStyles,
             marginTop: '0.5rem',
-            borderRadius: '8px',
+            borderRadius: '0px',
             minHeight: '2.45rem',
-            height: '56px',
+            height: '40px',
             borderColor: '#565c65',
             cursor: 'pointer'
           })

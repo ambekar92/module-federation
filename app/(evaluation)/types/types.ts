@@ -1,3 +1,5 @@
+import { Role } from "@/app/shared/types/role"
+
 export type QuestionnaireItem = {
     section: string,
     title: string,
@@ -23,7 +25,15 @@ export type Note = {
     id: number,
     subject: string,
     updated_at: string,
-    user_id: number
+    user_id: {
+        first_name: string,
+        last_name: string,
+        id: number,
+        role: {
+            id:number,
+            name: string
+        }
+    }
 }
 
  

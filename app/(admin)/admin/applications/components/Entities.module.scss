@@ -1,0 +1,27 @@
+@use 'colors' as *;
+
+.tableHeadCell {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    cursor: pointer;
+}
+
+  .table thead tr:first-child th:first-child { 
+    overflow: hidden;
+    border-top-left-radius: 10px; 
+    padding: 15px;
+    border-color: white !important;
+    border-bottom-color: 1px solid black !important;
+  }
+  .table thead tr:first-child th:not(:first-child):not(:last-child) {
+    border-color:  white !important;
+  }
+  .table thead tr:first-child th:last-child { 
+    border-top-right-radius: 10px;
+    overflow: hidden;
+    border-color: white !important;
+  }
+  .table th, .table td { 
+    border: 1px solid black !important;
+}

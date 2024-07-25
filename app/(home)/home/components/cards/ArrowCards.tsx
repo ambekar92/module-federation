@@ -1,4 +1,5 @@
 import { Grid } from '@trussworks/react-uswds'
+import {Link} from '@trussworks/react-uswds'
 import Styles from '../../utils/HomePage.module.scss';
 import { arrowCardData } from './constants';
 
@@ -9,6 +10,9 @@ function ArrowCards() {
         {arrowCardData.map((data, index) => (
           <Grid key={index} col={4} className={`margin-x-0 ${Styles[data.class]} ${Styles['arrow-box']} maxh-full`}>
             <div className={Styles['arrow-box-content']}>
+              <Link  href={`${data.link}`}
+              variant="unstyled" className=""
+           >
               {/* <span className={Styles['arrow-box_number']}>{index+1}</span> */}
               <img
                 src={'/images/image-placeholder.png'}
@@ -19,7 +23,7 @@ function ArrowCards() {
                   backgroundPosition: 'top',
                   backgroundSize: 'cover',
                 }}
-              />
+              /></Link>
 
               <div className={Styles['arrow-box_text']}>
                 <div className='padding-top-2'>

@@ -3,19 +3,22 @@ export const arrowCardData = [
     title: 'Should I Apply?',
     img: '/images/should-i-apply.jpg',
     text: 'See if your business qualifies for certification',
-    class: 'arrow-box-one'
+    class: 'arrow-box-one',
+    link: '/should-i-apply/ownership'
   },
   {
     title: 'Prepare for Application',
     img: '/images/prepare.jpg',
     text: 'Get your business ready for certification',
-    class: 'arrow-box-two'
+    class: 'arrow-box-two',
+    link: '/resources/get-ready'
   },
   {
     title: 'Create An Account',
     img: '/images/create-account.jpg',
     text: 'Start your certification experience',
-    class: 'arrow-box-three'
+    class: 'arrow-box-three',
+    link: '/login'
   },
 ]
 
@@ -37,26 +40,32 @@ export const informationCardData = [
 export const programCardData = [
   {
     subTitle: '8(a)',
-    title: '8(a) Business Development'
+    title: '8(a) Business Development',
+    link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program',
   },
   {
     subTitle: 'HUBZone',
-    title: 'HUBZone'
+    title: 'HUBZone',
+    link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',
   },
   {
     subTitle: 'VOSB',
-    title: 'Veteran-Owned'
+    title: 'Veteran-Owned',
+    link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/veteran-contracting-assistance-programs',
   },
   {
     subTitle: 'WOSB',
-    title: 'Women-Owned'
+    title: 'Women-Owned',
+    link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program',
   },
   {
     subTitle: 'MPP',
-    title: 'Mentor-Protégé Program'
+    title: 'Mentor-Protégé Program',
+    link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/sba-mentor-protege-program',
   },
   {
     subTitle: 'Entity-Owned',
-    title: 'Entity-Owned'
+    title: 'Entity-Owned',
+    link: '/login',
   },
 ]

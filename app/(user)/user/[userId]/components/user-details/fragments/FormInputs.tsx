@@ -31,15 +31,8 @@ interface FormInputInterface {
 }
 
 const fieldKeys: (keyof UserFormInputs)[] = [
-  'title',
   'role',
-  'phone',
   'status',
-  'address',
-  'address2',
-  'city',
-  'state',
-  'zip',
 ]
 
 const FormInputs = ({
@@ -79,11 +72,7 @@ const FormInputs = ({
             key={key}
             mobile={{ col: 12 }}
             desktop={{
-              col:
-                (key === 'city' && 4) ||
-                (key === 'state' && 4) ||
-                (key === 'zip' && 4) ||
-                6,
+              col:6,
             }}
           >
             <Label
@@ -110,11 +99,7 @@ const FormInputs = ({
                           : 'maxw-full width-full'
                       }
                       onChange={(e) =>
-                        field.onChange(
-                          key === 'zip' || key === 'phone'
-                            ? filterText(e.target.value, true)
-                            : e,
-                        )
+                        field.onChange(e)
                       }
                       validationStatus={
                         errors[key]
@@ -131,8 +116,8 @@ const FormInputs = ({
                       id={`select-${key}`}
                       className={
                         errors[key]
-                          ? 'icon maxw-full width-full height-7'
-                          : 'maxw-full width-full height-7'
+                          ? 'icon maxw-full width-full'
+                          : 'maxw-full width-full'
                       }
                       validationStatus={
                         errors[key]
@@ -144,9 +129,7 @@ const FormInputs = ({
                     >
                       {key === 'role'
                         ? roleOptions
-                        : key === 'state'
-                          ? stateOptions
-                          : statusOptions}
+                        : statusOptions}
                     </Select>
                   )}
                 </>

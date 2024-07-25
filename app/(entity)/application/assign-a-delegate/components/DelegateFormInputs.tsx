@@ -1,8 +1,7 @@
-import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
 import { INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher'
+import { fetcherPOST } from '@/app/services/fetcher-legacy'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import {
   Button,
@@ -36,10 +35,11 @@ import {
 } from '../store/formSlice'
 import { useFormDispatch, useFormSelector } from '../store/hooks'
 import { delegateInputDetails } from '../utils/helpers'
-import { DelegateFormInputType, DelegatesResponse, FormDelegateType } from '../utils/types'
+import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
 import Styles from './DelegateForm.module.scss'
 import DelegateTable from './DelegateTable'
 import InviteModal from './InviteModal'
+import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
 
 interface FormInputInterface {
   showModal: boolean
@@ -79,7 +79,7 @@ const DelegateFormInputs = ({
 }: FormInputInterface) => {
   const { userId, applicationId, contributorId } = userDetails
   const dispatch = useFormDispatch();
-  const { delegates, editingDelegate } = useFormSelector(selectForm);
+  const { delegates } = useFormSelector(selectForm);
   const [showForm, setShowForm] = useState(true);
   const [inviteSent, setInviteSent] = useState(false);
   const { data: session } = useSessionUCMS();
@@ -102,6 +102,7 @@ const DelegateFormInputs = ({
           firstName: delegatesData[delegatesData.length - 1].first_name,
           lastName: delegatesData[delegatesData.length - 1].last_name,
           email: delegatesData[delegatesData.length - 1].email,
+          status: delegatesData[delegatesData.length - 1].invitation_status
         }]));
       }
     } else {
@@ -124,16 +125,17 @@ const DelegateFormInputs = ({
         alert('You must be signed in to continue.');
         return;
       }
-      if(data?.email === session?.user?.email){
+      if(!validateEmail(data.email, session?.user?.email)){
         setEmailValidate(true);
-        return
-      }else{
+        return;
+      } else{
         setEmailValidate(false);
       }
 
       dispatch(
         addOrUpdateDelegate({
           ...data,
+          status: ''
         }),
       )
 
@@ -153,29 +155,17 @@ const DelegateFormInputs = ({
           throw new Error('Entity data not found');
         }
 
-        if(delegatesData || editingDelegate) {
-          const putData = {
-            id: userId,
-            email: data.email,
-            first_name: data.firstName,
-            last_name: data.lastName,
-          };
-          await fetcherPUT(INVITATION_ROUTE, putData);
-          // const response = await fetcherPUT(INVITATION_ROUTE, putData);
-          // console.log(response)
-        } else {
-          const postData = {
-            application_id: applicationId,
-            email: data.email,
-            entity_id: entityData[entityData.length - 1].id,
-            application_role_id: 5,
-            first_name: data.firstName,
-            last_name: data.lastName
-          };
-          await fetcherPOST(INVITATION_ROUTE, postData);
-          // const response = await fetcherPOST(INVITATION_ROUTE, postData);
-          // console.log(response)
-        }
+        const postData = {
+          application_id: applicationId,
+          email: data.email,
+          entity_id: entityData[entityData.length - 1].id,
+          application_role_id: 5,
+          first_name: data.firstName,
+          last_name: data.lastName
+        };
+        // await fetcherPOST(INVITATION_ROUTE, postData);
+        const response = await fetcherPOST(INVITATION_ROUTE, postData);
+        console.log(response)
       } catch (error) {
         console.log(error);
       }
@@ -193,10 +183,15 @@ const DelegateFormInputs = ({
       closeModal();
       setInviteSent(true);
     } catch (error) {
+      closeModal();
       // console.log('Error in POST request:', error);
       alert('An error has occurred.');
     }
   };
+
+  const validateEmail = (email: string, userEmail: string | undefined | null) => {
+    return email !== userEmail;
+  }
 
   const handleCancel = () => {
     closeModal()
@@ -222,10 +217,10 @@ const DelegateFormInputs = ({
     if(!delegate) {return;}
 
     Object.entries(delegate).forEach(([key, value]) => {
-      if (key !== 'id') {
+      if (key !== 'id' && key !== 'status') {
         setValue(
-          key as keyof FormDelegateType,
-          typeof value !== 'string' ? '' : value,
+					key as keyof DelegateFormInputType,
+					typeof value !== 'string' ? '' : value,
         )
       }
     })
@@ -274,10 +269,10 @@ const DelegateFormInputs = ({
                 mobile={{ col: 12 }}
                 desktop={{
                   col:
-                    (key === 'firstName' && 6) ||
-                    (key === 'lastName' && 6) ||
-                    (key === 'email' && 12) ||
-                    12,
+										(key === 'firstName' && 6) ||
+										(key === 'lastName' && 6) ||
+										(key === 'email' && 12) ||
+										12,
                 }}
                 className={`${key === 'lastName' && 'padding-left-2'} ${Styles.lastName}`}
               >
@@ -297,13 +292,23 @@ const DelegateFormInputs = ({
                       type="text"
                       maxLength={delegateInputDetails[key].maxlength}
                       className={
-                        errors[key]
+                        errors[key] || (key === 'email' && emailValidate)
                           ? 'icon maxw-full width-full'
                           : 'maxw-full width-full'
                       }
-                      onChange={(e) =>field.onChange(e)}
+                      onChange={(e) => field.onChange(e)}
+                      onBlur={(e) => {
+                        field.onBlur();
+                        if (key === 'email') {
+                          const isValid = validateEmail(e.target.value, session?.user?.email);
+                          setEmailValidate(!isValid);
+                          if (!isValid) {
+                            setValue('email', e.target.value, { shouldValidate: true });
+                          }
+                        }
+                      }}
                       validationStatus={
-                        errors[key] || emailValidate && (key === 'email')
+                        errors[key] || (key === 'email' && emailValidate)
                           ? 'error'
                           : touchedFields[key]
                             ? 'success'
@@ -355,16 +360,25 @@ const DelegateFormInputs = ({
         <ButtonGroup className="display-flex">
           {inviteSent
             ? (
-              <Link
-                aria-disabled={!contributorId}
-                href={buildRoute(APPLICATION_STEP_ROUTE, {
-                  contributorId: contributorId,
-                  stepLink: '/ownership'
-                })}
-                className="usa-button"
-              >
-								Next
-              </Link>
+              <>
+                {contributorId
+                  ? (
+                    <Link
+                      href={buildRoute(APPLICATION_STEP_ROUTE, {
+                        contributorId: contributorId,
+                        stepLink: '/ownership'
+                      })}
+                      className="float-right usa-button"
+                    >
+											Next
+                    </Link>
+                  ): (
+                    <Button type='button' disabled>
+											Next
+                    </Button>
+                  )
+                }
+              </>
             )
             : (
               <Button

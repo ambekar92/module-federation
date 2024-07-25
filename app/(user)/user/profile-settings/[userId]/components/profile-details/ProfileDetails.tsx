@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import ProfileDetailForm from './fragments/ProfileDetailForm'
 
 //API
-import Service from '../../../../../../services/fetcher'
+import Service from '../../../../../../services/fetcher-legacy'
 
 interface ProfileDetailProps {
   userId: string

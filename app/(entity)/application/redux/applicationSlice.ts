@@ -1,8 +1,9 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { RootState } from './applicationStore';
 import { Contributor } from '../components/contributor-invite/types';
-import { Owner, OwnershipType } from '../components/ownership/shared/types';
 import { Operator } from '../components/control-and-operations/schema';
+import { OwnershipType } from '../components/ownership/shared/types';
+import { OwnerType } from '../hooks/useOwnershipApplicationInfo';
+import { RootState } from './applicationStore';
 
 interface ApplicationState {
   currentStep: number;
@@ -14,7 +15,7 @@ interface ApplicationState {
 	ownershipPercentageTotal: number;
 	displayStepNavigation: boolean,
 	isAddingContributor: boolean,
-  owners: Owner[],
+  owners: OwnerType[],
 	operators: Operator[],
 	showControlOperationsForm: boolean,
 	contributors: Contributor[],
@@ -76,7 +77,7 @@ const applicationSlice = createSlice({
     setContributors(state, action: PayloadAction<Contributor[]>) {
       state.contributors = action.payload;
     },
-    setOwners(state, action: PayloadAction<Owner[]>) {
+    setOwners(state, action: PayloadAction<OwnerType[]>) {
       state.owners = action.payload;
     },
     setOperators(state, action: PayloadAction<Operator[]>) {

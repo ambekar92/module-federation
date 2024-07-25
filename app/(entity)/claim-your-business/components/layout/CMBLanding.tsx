@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
-import { ButtonGroup, Button } from '@trussworks/react-uswds'
+import { toolTipCmbInvitationInfo } from '@/app/constants/tooltips'
+import Tooltip from '@/app/shared/components/tooltip/Tooltip'
+import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import Link from 'next/link'
+import { useState } from 'react'
 import CustomHeader from '../../../../shared/components/forms/CustomHeader'
 import InvitationCodeForm from '../forms/InvitationCodeForm'
 
@@ -33,7 +35,12 @@ function ClaimBusinessLanding({
               className="usa-alert__body width-full"
               style={{ maxWidth: '100%' }}
             >
-              <h4 className="usa-alert__heading">Have an Invitation Code?</h4>
+              <h4 className="usa-alert__heading">
+								Have an Invitation Code?
+                <span className='text-normal'>
+                  <Tooltip text={toolTipCmbInvitationInfo}/>
+                </span>
+              </h4>
               <p className="usa-alert__text">
                 If you have been emailed an invitation code please click the
                 link to enter.
@@ -56,6 +63,7 @@ function ClaimBusinessLanding({
               SAM.gov
             </Link>{' '}
             account to verify your identity.
+            <Tooltip text={toolTipCmbInvitationInfo}/>
           </p>
           <ul>
             <li>

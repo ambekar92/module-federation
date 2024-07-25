@@ -3,6 +3,7 @@
     {
       "id": 1,
       "optionLabel": "Screener: Accept for Review",
+			"permissions": [""],
       "title": "Accept for Review",
       "actionLabel": "Confirm",
       "modalType": "default",
@@ -31,10 +32,12 @@
     {
       "id": 2,
       "optionLabel": "Close Application",
+			"permissions": ["screener_common_app", "analyst_high_criteria", "analyst_high_criteria", "supervisor_high_criteria", "supervisor_low_criteria"],
       "title": "Close This Application",
       "actionLabel": "Close Application",
       "modalType": "textarea",
-      "description": "Description field for Analyst text.",
+      "description": "Closing this application will end the review process. The applicant will be notified, and they will be allowed to re-apply at anytime",
+      "inputDescription": "Please, provide more information regarding why you wish to close this application*",
       "steps": [],
       "table": {
         "step": -1,
@@ -58,11 +61,13 @@
     },
     {
       "id": 3,
-      "optionLabel": "Return Application",
-      "title": "Return This Application",
+      "optionLabel": "Return to Analyst",
+			"permissions": ["supervisor_high_criteria", "supervisor_low_criteria"],
+      "title": "Return to Analyst",
       "actionLabel": "De-escalate",
       "modalType": "textarea",
-      "description": "Description field for Analyst text.",
+      "description": "By clicking 'De-escalate', you are returning this application to the person it was assigned to before you",
+      "inputDescription": "Please, provide more information regarding why you are returning this application.",
       "steps": [],
       "table": {
         "step": -1,
@@ -87,6 +92,7 @@
     {
       "id": 4,
       "optionLabel": "Make Recommendation",
+			"permissions": ["analyst_low_criteria", "analyst_high_criteria"],
       "title": "Make Recommendation",
       "actionLabel": "Complete Recommendation",
       "modalType": "step",
@@ -125,6 +131,7 @@
     {
       "id": 5,
       "optionLabel": "Make an Approval",
+			"permissions": ["approver_8a_aabd", "approver_8a_delegate"],
       "title": "Make an Approval",
       "actionLabel": "Sign and Submit",
       "modalType": "step",
@@ -163,6 +170,7 @@
     {
       "id": 6,
       "optionLabel": "Complete Review",
+			"permissions": ["supervisor_high_criteria", "supervisor_low_criteria"],
       "title": "Complete Review",
       "actionLabel": "Sign and Submit",
       "modalType": "step",
@@ -201,6 +209,7 @@
     {
       "id": 7,
       "optionLabel": "Request Expert Opinion",
+			"permissions": ["analyst_low_criteria", "analyst_high_criteria", "supervisor_low_criteria", "supervisor_high_criteria"],
       "title": "Request Expert Opinion",
       "actionLabel": "Submit",
       "modalType": "requestExpert",
@@ -224,55 +233,8 @@
     },
     {
       "id": 8,
-      "optionLabel": "Confirm Veteran Status",
-      "title": "Confirm Veteran Status",
-      "actionLabel": "Submit",
-      "modalType": "confirmVeteranStatus",
-      "description": "Provide more information.",
-      "steps": [],
-      "table": {
-        "step": -1,
-        "tableHeader": [],
-        "tableRows": []
-      },
-      "upload": false,
-      "uploadStep": -1,
-      "notes": {
-        "step": -1,
-        "rows": []
-      },
-      "approvalLetter": {
-        "step": -1,
-        "rows": []
-      }
-    },
-    {
-      "id": 9,
-      "optionLabel": "Change Tier",
-      "title": "Change Tier",
-      "actionLabel": "Submit",
-      "modalType": "textarea",
-      "description": "Provide more information.",
-      "steps": [],
-      "table": {
-        "step": -1,
-        "tableHeader": [],
-        "tableRows": []
-      },
-      "upload": false,
-      "uploadStep": -1,
-      "notes": {
-        "step": -1,
-        "rows": []
-      },
-      "approvalLetter": {
-        "step": -1,
-        "rows": []
-      }
-    },
-    {
-      "id": 10,
-      "optionLabel": "Expert: Provide Opinion",
+      "optionLabel": "Provide Opinion",
+			"permissions": ["analyst_contributor_ogc", "analyst_contributor_oss"],
       "title": "Provide Opinion",
       "actionLabel": "Submit",
       "modalType": "textarea",
@@ -294,19 +256,24 @@
         "rows": []
       }
     },
-    {
-      "id": 11,
-      "optionLabel": "Analyst: Reassign User",
-      "title": "Reassign User",
-      "actionLabel": "Submit",
-      "userIdType": "analyst_id",
-      "modalType": "reassign",
-      "description": "Provide more information.",
+		{
+      "id": 9,
+      "optionLabel": "Return to Reviewer",
+			"permissions": ["approver_8a_aabd", "approver_8a_delegate"],
+      "title": "Return to Reviewer",
+      "actionLabel": "De-escalate",
+      "modalType": "textarea",
+      "description": "By clicking 'De-escalate', you are returning this application to the person it was assigned to before you",
+      "inputDescription": "Please, provide more information regarding why you are returning this application.",
       "steps": [],
       "table": {
         "step": -1,
         "tableHeader": [],
         "tableRows": []
+      },
+      "signature": {
+        "step": -1,
+        "description": ""
       },
       "upload": false,
       "uploadStep": -1,
@@ -319,69 +286,24 @@
         "rows": []
       }
     },
-    {
-      "id": 12,
-      "optionLabel": "Reviewer: Reassign User",
-      "title": "Reassign User",
-      "actionLabel": "Submit",
-      "userIdType": "supervisor_id",
-      "modalType": "reassign",
-      "description": "Provide more information.",
+		{
+      "id": 10,
+      "optionLabel": "Return to Screener",
+			"permissions": ["analyst_low_criteria", "analyst_high_criteria"],
+      "title": "Return to Screener",
+      "actionLabel": "De-escalate",
+      "modalType": "textarea",
+      "description": "By clicking 'De-escalate', you are returning this application to the person it was assigned to before you",
+      "inputDescription": "Please, provide more information regarding why you are returning this application.",
       "steps": [],
       "table": {
         "step": -1,
         "tableHeader": [],
         "tableRows": []
       },
-      "upload": false,
-      "uploadStep": -1,
-      "notes": {
+      "signature": {
         "step": -1,
-        "rows": []
-      },
-      "approvalLetter": {
-        "step": -1,
-        "rows": []
-      }
-    },
-    {
-      "id": 13,
-      "optionLabel": "Screener: Reassign Case",
-      "title": "Reassign Case",
-      "actionLabel": "Submit",
-      "userIdType": "pre_screener_id",
-      "modalType": "reassign",
-      "description": "Provide more information.",
-      "steps": [],
-      "table": {
-        "step": -1,
-        "tableHeader": [],
-        "tableRows": []
-      },
-      "upload": false,
-      "uploadStep": -1,
-      "notes": {
-        "step": -1,
-        "rows": []
-      },
-      "approvalLetter": {
-        "step": -1,
-        "rows": []
-      }
-    },
-    {
-      "id": 14,
-      "optionLabel": "Approver: Reassign Approver",
-      "title": "Reassign Approver",
-      "actionLabel": "Submit",
-      "userIdType": "approver_id",
-      "modalType": "reassign",
-      "description": "Provide more information.",
-      "steps": [],
-      "table": {
-        "step": -1,
-        "tableHeader": [],
-        "tableRows": []
+        "description": ""
       },
       "upload": false,
       "uploadStep": -1,

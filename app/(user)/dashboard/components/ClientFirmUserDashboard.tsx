@@ -1,34 +1,50 @@
 'use client'
 import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
+import { useSessionUCMS } from '@/app/lib/auth'
 import { Application } from '@/app/services/types/application'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
+import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Button,
   Collection
 } from '@trussworks/react-uswds'
-import { Session } from 'next-auth'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import styles from '../utils/FirmDashboard.module.scss'
 import { humanizeText } from '../utils/helpers'
 import ApplicationCard from './ApplicationCard'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
 
-export interface ClientFirmUserDashboardProps {
-	session: Session | null;
-}
-
-export default function ClientFirmUserDashboard({ session }: ClientFirmUserDashboardProps) {
+export default function ClientFirmUserDashboard() {
+  const { data: session, status } = useSessionUCMS();
   const [clickedId, setClickedId] = useState<number | null>(null)
   const [actionButton, setActionButton] = useState<ReactElement>()
   const [openConfirmationModal, setOpenConfirmationModal] = useState<boolean>(false)
   const [confirmationType, setConfirmationType] = useState<string | undefined>('')
-  const { userId, entityId: entity_id } = useApplicationId()
+  const [userId, setUserId] = useState<number | null>(null);
+  const [entityId, setEntityId] = useState<number | null>(null);
 
-  const url = entity_id ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entity_id}` :
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user_id) {
+      setUserId(session.user_id);
+    }
+  }, [session, status]);
+
+  useEffect(() => {
+    async function fetchEntityData() {
+      if (userId) {
+        const entityData = await getEntityByUserId(userId);
+        if (entityData && entityData.length > 0) {
+          setEntityId(entityData[entityData.length - 1].id);
+        }
+      }
+    }
+    fetchEntityData();
+  }, [userId]);
+
+  const url = entityId ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}` :
     userId ? `${FIRM_APPLICATIONS_ROUTE}?user_id=${userId}` : null;
 
   const { data, error } = useSWR(url, fetcherGET<Application[]>)
@@ -83,7 +99,7 @@ export default function ClientFirmUserDashboard({ session }: ClientFirmUserDashb
     setClickedId(id);
   };
 
-  const handleActionButtonClick = (event: any) => {
+  const handleActionButtonClick = (event: React.MouseEvent) => {
     const type = (event.currentTarget as HTMLElement).dataset.type
 
     setConfirmationType(type)
@@ -106,25 +122,27 @@ export default function ClientFirmUserDashboard({ session }: ClientFirmUserDashb
     <>
       <div>
         <h1>Welcome, {session?.user?.name}</h1>
-        <p><i>{data[data.length - 1].sam_entity.legal_business_name ? data[data.length - 1].sam_entity.legal_business_name : ''}</i></p>
+        <p><i>{data[data.length - 1]?.sam_entity?.legal_business_name || ''}</i></p>
       </div>
 
       <h2 className='text-size-2xl'>Applications</h2>
-      <span className='text-size-lg'><strong>{humanizeText(data[0].workflow_state)}</strong></span>
-      {data && !!data.length && <div>
-        <Collection>
-          <ApplicationCard
-            data={data}
-            clickedId={clickedId} actionButton={actionButton}
-            applicationDeleteOrWithdraw={applicationDeleteOrWithdraw}
-          />
-        </Collection>
-      </div>}
-      {(!data || !data.length) && <div> No applications found.
-      </div>}
+      <span className='text-size-lg'><strong>{humanizeText(data[0]?.workflow_state || '')}</strong></span>
+      {data && data.length > 0 && (
+        <div>
+          <Collection>
+            <ApplicationCard
+              data={data}
+              clickedId={clickedId}
+              actionButton={actionButton}
+              applicationDeleteOrWithdraw={applicationDeleteOrWithdraw}
+            />
+          </Collection>
+        </div>
+      )}
+      {(!data || data.length === 0) && <div>No applications found.</div>}
       {openConfirmationModal && (
         <DeleteWithdrawConfirmationModal
-          entityId={entity_id}
+          entityId={entityId}
           openConfirmationModal={openConfirmationModal}
           confirmationType={confirmationType}
           clickedId={clickedId}

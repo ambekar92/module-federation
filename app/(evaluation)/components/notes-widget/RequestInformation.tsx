@@ -1,19 +1,29 @@
 import React from 'react'
 import styles from '../Evaluation.module.scss'
 import { Checkbox } from '@trussworks/react-uswds'
+import useSWR from 'swr'
+import { REASON_CODE_ROUTE, ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
+import { fetcherGET } from '@/app/services/fetcher'
 
 function RequestInformation() {
+  const { data: reasonCodes, error } = useSWR(REASON_CODE_ROUTE, fetcherGET<ReasonCode[] | []>);
+
+  if(error) {
+    console.log(error);
+  }
+
   return (
     <>
       <div className="margin-top-2">
         <p className={`${styles['text']}`}>Ownership & Management</p>
-        <p className='margin-top-0 text-bold'>RequestInformation</p>
-        <p className={`${styles['subtext']}`}>use this form for simple requests for information and/or documents from the firm.
+        <p className='margin-top-0 text-bold'>Request Information</p>
+        <p className={`${styles['subtext']}`}>
+					Use this form for simple requests for information and/or documents from the firm.
           The firms responses will be attached to the relative section.
         </p>
 
         <div>
-          <p className={`${styles['field-title']}`}>What's your reason? *</p>
+          <p className={`${styles['field-title']}`}>What&apos;s your reason? *</p>
           <div className="usa-combo-box">
             <select
               className={`usa-select ${styles['dropdown-text']}`}
@@ -21,7 +31,10 @@ function RequestInformation() {
               id="type"
               data-placeholder="sort"
             >
-              <option>Pre determined selection of stuffs :-)</option>
+              <option defaultChecked>---</option>
+              {reasonCodes && reasonCodes.map(code => (
+                <option value={code.action_type} key={code.id}>{code.title}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -33,7 +46,7 @@ function RequestInformation() {
             id="input-type-textarea"
             name="input-type-textarea"
           ></textarea>
-          <p className={`${styles['field-title-textarea']}`}>Select "Boilerplate" Information</p>
+          <p className={`${styles['field-title-textarea']}`}>Select &quot;Boilerplate&quot; Information</p>
         </div>
 
         <div className='margin-top-4'>
@@ -58,7 +71,6 @@ function RequestInformation() {
             <button className="usa-button usa-button--active " type="button">Create Request</button>
           </div>
         </div>
-
 
       </div>
     </>

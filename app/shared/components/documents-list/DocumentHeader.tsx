@@ -7,7 +7,7 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { Button } from '@trussworks/react-uswds'
 import Image from 'next/image'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './DocumentsList.module.scss'
 
 //Icons
@@ -30,8 +30,8 @@ import DocumentsListFilesTable from './DocumentsListFilesTable'
 
 //API
 import { useSessionUCMS } from '@/app/lib/auth'
-import Service from '../../../services/fetcher'
-import { DocumentsType } from '@/app/services/types/document'
+import Service from '../../../services/fetcher-legacy'
+import { DocumentsType } from './utils/types'
 
 function DocumentHeader() {
   const { data: session, status } = useSessionUCMS();

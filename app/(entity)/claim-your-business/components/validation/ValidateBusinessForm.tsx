@@ -8,7 +8,7 @@ import {
   Link,
   SummaryBox,
   SummaryBoxContent,
-  SummaryBoxHeading
+  SummaryBoxHeading,
 } from '@trussworks/react-uswds';
 import { useEffect, useState } from 'react';
 import {
@@ -19,6 +19,8 @@ import ConfirmModal from '../modals/ConfirmModal';
 import ErrorModal from '../modals/ErrorModal';
 import SuccessModal from '../modals/SuccessModal';
 import ValidationTable from './ValidationTable';
+import { toolTipCmbValidation } from '@/app/constants/tooltips';
+import Tooltip from '@/app/shared/components/tooltip/Tooltip';
 interface ValidateBusinessFormProps {
   samData: CmbResponseType
 }
@@ -93,6 +95,9 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
             <SummaryBox style={{ marginBottom: '1.25rem' }}>
               <SummaryBoxHeading headingLevel="h3">
                 Verify your business(es)
+                <span className='text-normal'>
+                  <Tooltip text={toolTipCmbValidation}/>
+                </span>
               </SummaryBoxHeading>
               <SummaryBoxContent>
                 <p>

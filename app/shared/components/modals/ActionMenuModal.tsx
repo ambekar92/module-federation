@@ -1,10 +1,10 @@
 'use client'
 
 import {
-  FIRM_EVALUATIONS_ASSIGN_USER_ROUTE,
+  ASSIGN_USER_TO_VIEWFLOW_ROUTE,
   USER_ROUTE,
 } from '@/app/constants/routes'
-import { fetcherGET, fetcherPUT } from '@/app/services/fetcher'
+import { fetcherGET, fetcherPUT } from '@/app/services/fetcher-legacy'
 import {
   Button,
   ButtonGroup,
@@ -29,6 +29,7 @@ interface ActionMenuModalProps {
   modalType: string
   title: string
   description: string
+  inputDescription: string
   actionLabel: string
   steps?: string[]
   id: number
@@ -63,6 +64,7 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
   title,
   actionLabel,
   description,
+  inputDescription,
   steps = [],
   id,
   table = {
@@ -123,7 +125,7 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
         [userIdType]: parseInt(assignedUser),
       }
 
-      await fetcherPUT(`${FIRM_EVALUATIONS_ASSIGN_USER_ROUTE}`, postData)
+      await fetcherPUT(`${ASSIGN_USER_TO_VIEWFLOW_ROUTE}`, postData)
     } catch (error: any) {
       console.error('Network Error: ', error)
       return
@@ -158,8 +160,9 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
           id="action-modal"
         >
           <ModalHeading id="action-modal-heading">
-            <Label htmlFor="action-modal" className="text-bold">
-              <h2>{title}</h2>
+            <Label htmlFor="action-modal">
+              <h2 className="text-bold">{title}</h2>
+              <p>{inputDescription}</p>
             </Label>
           </ModalHeading>
 

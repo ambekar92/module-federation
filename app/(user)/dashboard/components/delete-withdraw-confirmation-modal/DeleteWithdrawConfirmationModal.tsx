@@ -1,6 +1,6 @@
 'use client'
 import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
-import { fetcherPUT } from '@/app/services/fetcher'
+import { fetcherPUT } from '@/app/services/fetcher-legacy'
 import { Application } from '@/app/services/types/application'
 import {
   Button,
@@ -15,10 +15,10 @@ import styles from './DeleteWithdrawConfirmationModal.module.scss'
 interface ModalProps {
   confirmationType: string | undefined,
   openConfirmationModal: boolean,
-	entityId: number | null | undefined
-	clickedId: number | null,
-	applicationData: Application[],
-	resetClickedId: () => void,
+	entityId?: number | null | undefined
+	clickedId?: number | null,
+	applicationData?: Application[],
+	resetClickedId?: () => void,
 }
 
 const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
@@ -33,9 +33,12 @@ const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
 
   const handleBtnClick = async () => {
     try {
-      const application = applicationData.filter(app => (
+      const application = applicationData?.filter(app => (
         app.id === clickedId
       ))
+      if (!application) {
+        return
+      }
 
       const putData = {
         application_id: application[0].id,
@@ -48,7 +51,7 @@ const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
       console.log(adverb)
       await fetcherPUT(`${UPDATE_APPLICATION_STATE}`, putData);
       alert(`Success! Your application has been ${adverb}.`)
-      resetClickedId()
+      resetClickedId && resetClickedId()
     } catch (error: any) {
       console.log(error)
 			 alert('There was an error processing your request.');

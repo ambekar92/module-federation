@@ -24,7 +24,17 @@ enum Role {
   INTERNAL= 'internal_user',
   SCREENER = 'screener',
 	REVIEWER = 'reviewer',
-	ANALYST = 'analyst'
+	ANALYST = 'analyst',
+	APPROVER = 'approver',
+	SCREENER_COMMON = 'screener_common_app',
+	ANALYST_LOW = 'analyst_low_tier',
+	ANALYST_HIGH = 'analyst_high_tier',
+	REVIEWER_LOW = 'reviewer_low_tier',
+	REVIEWER_HIGH = 'reviewer_high_tier',
+	APPROVER_AABD = 'approver_8a_aabd',
+	APPROVER_DELEGATE = 'approver_8a_delegate',
+	ANALYST_OGC = 'analyst_contributor_ogc',
+	ANALYST_OSS = 'analyst_contributor_oss'
 }
 
 export interface IUserPermission {
@@ -39,7 +49,8 @@ export interface IUserDetails  {
 	okta_id: boolean;
   user_id: number,
     permissions: IUserPermission[],
-    entities: any[]
+    entities: any[],
+    access: string
 }
 
 declare module '@auth/core/jwt' {

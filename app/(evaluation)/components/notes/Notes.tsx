@@ -1,20 +1,16 @@
 'use client'
-import { NOTES_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { useNotes } from '@/app/services/queries/useNotes'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Accordion, Modal, ModalRef, ModalToggleButton, Table } from '@trussworks/react-uswds'
 import moment from 'moment'
-import { useParams } from 'next/navigation'
 import React, { useRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import useSWR from 'swr'
-import { Note, Params } from '../../types/types'
 import NotesForm from '../notes-form/NotesForm'
 import { NoteType, schema } from '../notes-form/schema'
+import { stripHtmlTags } from '@/app/shared/utility/stripHtmlTags'
 
 function Notes() {
-    const params = useParams<Params>();
-    const { data, error, isLoading, mutate } = useSWR<Note[]>(`${NOTES_ROUTE}?application_id=${params.application_id}`, fetcherGET);
+    const { data, error, isLoading, mutate } = useNotes();
     const modalRef = useRef<ModalRef>(null)
     const methods = useForm<NoteType>({
         resolver: zodResolver(schema),
@@ -43,6 +39,7 @@ function Notes() {
                 </thead>
                 <tbody>
                     {data && data.length > 0 && data.map(note => (<React.Fragment key={note.id}>
+                        
                         <tr>
                             <td>{note.subject}</td>
                             <td>{note.id}</td>
@@ -54,9 +51,9 @@ function Notes() {
                                 <Accordion
                                     items={[{
                                         title: <span style={{ fontSize: '.8rem' }}>View Note</span>,
-                                        content: note.description,
+                                        content: stripHtmlTags(note.description),
                                         expanded: false,
-                                        id: note.id.toString(),
+                                        id: note?.id?.toString(),
                                         headingLevel: 'h1'
                                     }]} />
                             </td>

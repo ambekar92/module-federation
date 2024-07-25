@@ -7,7 +7,7 @@ export enum Role {
   ADMIN = 'ucms_admin',
   INTERNAL = 'internal_user',
   SCREENER = 'screener',
-  SCREENER_COMMON_APP = 'SCREENER_COMMON_APP',
+  SCREENER_COMMON_APP = 'screen_common_app',
   ANALYST = 'analyst',
   ANALYST_HIGH_TIER = 'analyst_high_criteria',
   ANALYST_LOW_TIER = 'analyst_low_criteria',

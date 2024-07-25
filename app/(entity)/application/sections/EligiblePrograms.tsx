@@ -1,8 +1,9 @@
 'use client';
-import { ELIGIBLE_APPLY_PROGRAMS_ROUTE, CREATING_APPLICATION_ROUTE } from '@/app/constants/routes';
-import { ProgramOption, sbaProgramOptions } from '@/app/constants/sba-programs';
-import { fetcherPUT, fetcherPOST } from '@/app/services/fetcher';
+import { CREATING_APPLICATION_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE } from '@/app/constants/routes';
+import { ProgramOption } from '@/app/constants/sba-programs';
+import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher-legacy';
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
@@ -11,7 +12,6 @@ import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps, calculateEligiblePrograms, qaAppLinkPrefix } from '../utils/constants';
 import { QuestionnaireProps } from '../utils/types';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 
 function EligiblePrograms({contributorId}: QuestionnaireProps) {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
@@ -53,15 +53,23 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
     dispatch(setStep(applicationSteps.eligiblePrograms.stepIndex));
     dispatch(setDisplayStepNavigation(false));
 
-    // Fetch owner data from local storage
-    const userApplicationInfo = localStorage.getItem('userApplicationInfo');
-    if (userApplicationInfo) {
-      const { owners } = JSON.parse(userApplicationInfo);
-      // Calculate eligible programs based on owner data
-      const programs = calculateEligiblePrograms(owners);
-      setEligiblePrograms(programs);
+    const ownerApplicationInfo = localStorage.getItem('ownerApplicationInfo');
+    if (ownerApplicationInfo) {
+      const parsedInfo = JSON.parse(ownerApplicationInfo);
+      if (parsedInfo && Array.isArray(parsedInfo.owners)) {
+        const mappedOwners = parsedInfo.owners.map((owner: any) => ({
+          ...owner,
+          isVeteran: owner.veteranStatus.toLowerCase(),
+        }));
+        const programs = calculateEligiblePrograms(mappedOwners);
+        setEligiblePrograms(programs);
+      } else {
+        console.error('Invalid owner application info structure');
+        setEligiblePrograms([]);
+      }
     } else {
-      setEligiblePrograms(sbaProgramOptions);
+      console.log('No owner application info found');
+      setEligiblePrograms([]);
     }
   }, [dispatch]);
 
@@ -88,7 +96,7 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
           : 'To which programs would you like to apply today?'
         }
       </h1>
-      {eligiblePrograms.length > 0 ? <p>You appear to be eligible for the program(s) below for which you&apos;d like to apply.</p> : null}
+      {eligiblePrograms.length > 0 ? <h3>You appear to be eligible for the program(s) below select which you&apos;d like to apply to.</h3> : null}
       <Grid row gap>
         {eligiblePrograms.map((program, index) => (
           <Grid key={index} className='margin-bottom-2' desktop={{ col: 6 }} tablet={{ col: 12 }} mobile={{ col: 12 }}>

@@ -1,5 +1,5 @@
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
-import { fetcherGET } from '@/app/services/fetcher';
+import { fetcherGET } from '@/app/services/fetcher-legacy';
 import { ButtonGroup, Card, CardGroup, CardHeader } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useCallback, useEffect } from 'react';

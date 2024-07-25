@@ -1,6 +1,6 @@
 import { USER_PRODUCTIVITY_ROUTE } from '@/app/constants/routes';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { fetcherGET } from '@/app/services/fetcher';
+import { fetcherGET } from '@/app/services/fetcher-legacy';
 import { Show } from '@/app/shared/components/Show';
 import { Card } from '@trussworks/react-uswds';
 import useSWR from 'swr';

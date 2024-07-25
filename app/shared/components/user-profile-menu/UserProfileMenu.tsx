@@ -1,6 +1,5 @@
 import { signOut } from 'next-auth/react'
-import AccountCircle from '@mui/icons-material/AccountCircle'
-import { IconButton, Menu, MenuItem } from '@mui/material'
+import { Avatar, IconButton, Menu, MenuItem } from '@mui/material'
 import React, { useState } from 'react'
 
 const UserProfileMenu = () => {
@@ -26,7 +25,7 @@ const UserProfileMenu = () => {
         onClick={handleProfileMenuOpen}
         color="inherit"
       >
-        <AccountCircle />
+        <Avatar></Avatar>
       </IconButton>
       <Menu
         anchorEl={anchorEl}

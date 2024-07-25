@@ -12,7 +12,7 @@ export const homeCarouselData = [
     para: 'SBA offers six certification programs, and two [designation required] programs, to help you stand out, find contracts, and grow your business.',
     backgroundImg: '',
     linkText: 'Learn More',
-    linkHref: '/',
+    linkHref: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs',
     ariaLabel: 'SBA Programs'
   },
   {
@@ -20,7 +20,7 @@ export const homeCarouselData = [
     para: 'The HUBZone Calculator is a tool designed to help applicants determine their eligibility for the HUBZone certification.',
     backgroundImg: '',
     linkText: 'Launch Calculator',
-    linkHref: '/hubzone',
+    linkHref: 'https://calculator.demo.sba-one.net/',
     ariaLabel: 'Hubzone Calculator'
   },
 ]

@@ -43,7 +43,7 @@ function BusinessPlanLeftPanel() {
         <nav aria-label="Side navigation">
           {isLoading && <div>Loading...</div>}
           {!isLoading && <ul className="usa-sidenav">
-            <h3 className='text-primary bg-white height-full margin-y-0 padding-y-2 padding-left-2'>Table of Contents </h3>
+            <h3 className='text-primary bg-white height-full margin-y-0 padding-y-2 padding-left-2'>Table of Contents</h3>
             {navItems.map((item, index) => {
               if (item.child.length > 0) {
                 return (

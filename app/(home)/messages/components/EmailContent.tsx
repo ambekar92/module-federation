@@ -16,13 +16,14 @@ const flexStyles: CSSProperties  = {
 
 const EmailContent = () => {
    
-    const {data} = useThreads();
+    const {data, isLoading} = useThreads();
     const {data: sender} = useSender();
 
 
   return (
     <Card style={{height: '100vh'}}>
-        <div>
+        {data && <><div>
+            
             {/* commenting To field out temporarily till api is finalized */}
             {/* <div style={flexStyles}>
                 <strong>To:</strong><span className='text-base'>{data?.[0]?.messages?.[0]?.sender.display_name}</span>
@@ -38,7 +39,11 @@ const EmailContent = () => {
             <p>
                 {data?.[0]?.messages?.[0]?.content}
             </p>
-        </div>
+            
+        </div> </>}
+        {
+            !data && !isLoading && <p>This message no longer exists...</p>
+        }
     </Card>
   )
 }

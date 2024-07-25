@@ -1,8 +1,7 @@
 'use client'
 import { API_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { fetcherGET, fetcherPOST } from '@/app/services/fetcher'
-import { ApplicationEligibilityType } from '@/app/services/types/application'
+import { fetcherGET, fetcherPOST } from '@/app/services/fetcher-legacy'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import { Button, Grid } from '@trussworks/react-uswds'
 import Link from 'next/link'
@@ -13,6 +12,7 @@ import {
   sbaProgramOptions,
 } from '../../../../constants/sba-programs'
 import ProgramCard from '../../../../shared/components/ownership/ProgramCard'
+import { ApplicationEligibilityType } from '@/app/services/types/application-service/Application'
 
 const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`;
 
@@ -82,7 +82,6 @@ function Programs({applicationId}: {applicationId: number}) {
     try {
       if(applicationId) {
         const postData = {
-          application_id: applicationId,
           application_type_id: 1,
           program_id: program.id
         }

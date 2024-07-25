@@ -1,7 +1,7 @@
 'use client'
 
 import { INVITATION_ROUTE } from '@/app/constants/routes'
-import { fetcherPOST } from '@/app/services/fetcher'
+import { fetcherPOST } from '@/app/services/fetcher-legacy'
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import {
   Button,
@@ -37,9 +37,11 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
       case 'role_spouse':
         return 4;
       case 'role_owner':
+        return 3;
+      case 'role_owner_eligible':
         return 2;
       default:
-        return 2;
+        return 6;
     }
   }
   const sendInvitations = async () => {

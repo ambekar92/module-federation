@@ -1,7 +1,7 @@
 'use client'
 import { FIRM_APPLICATIONS_ROUTE, FIRM_EVALUATIONS_ROUTE } from '@/app/constants/routes';
-import { APPLICATION_STEP_ROUTE, buildRoute, DASHBOARD } from '@/app/constants/url';
-import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher';
+import { APPLICATION_STEP_ROUTE, DASHBOARD, buildRoute } from '@/app/constants/url';
+import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher-legacy';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';

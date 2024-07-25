@@ -1,13 +1,12 @@
 'use client'
 
-import { SamEntity } from "@/app/services/types/application";
+import { SamEntity } from "@/app/services/types/application-service/Application";
 import { useApplicationData } from "../firm/useApplicationData";
 
 function HeaderPanel() {
-  
-  const { applicationData, isLoading} = useApplicationData();
+  const { applicationData} = useApplicationData();
   const samEntity = applicationData?.sam_entity ?? null;
- 
+
   return (
     <>
       <div className="grid-container margin-top-2">
@@ -94,6 +93,6 @@ function HeaderPanel() {
 export default HeaderPanel;
 
 function getAddress(samEntity: SamEntity | null) {
-  if (!samEntity) return 'N/A'
+  if (!samEntity) {return 'N/A'}
   return `${samEntity.physical_address_1} ${samEntity.physical_address_2} ${samEntity.physical_city} ${ samEntity.mailing_address_state_or_province} ${samEntity.physical_zip_code_5}`
 }

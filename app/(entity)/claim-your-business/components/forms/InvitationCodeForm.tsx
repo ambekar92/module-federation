@@ -1,20 +1,23 @@
-import React, { useState } from 'react'
+import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/routes'
+import { tooltipCmbInvite } from '@/app/constants/tooltips'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { axiosInstance } from '@/app/services/fetcher'
+import Tooltip from '@/app/shared/components/tooltip/Tooltip'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  ButtonGroup,
   Button,
+  ButtonGroup,
+  Grid,
   Label,
   SummaryBox,
   SummaryBoxContent,
   TextInput,
 } from '@trussworks/react-uswds'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import CustomHeader from '../../../../shared/components/forms/CustomHeader'
 import { InvitationCodeFormSchema } from '../../utils/schemas'
 import { InvitationCodeInputType } from '../../utils/types'
-import CustomHeader from '../../../../shared/components/forms/CustomHeader'
-import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/routes'
-import { axiosInstance } from '@/app/services/fetcher'
-import { useSessionUCMS } from '@/app/lib/auth'
 
 interface invitationCodeFormProps {
   submitForm: () => void
@@ -23,9 +26,6 @@ interface invitationCodeFormProps {
 function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
   const session = useSessionUCMS()
   const [showAlert, setShowAlert] = useState(false)
-
-  //mock value for testing error alert prompt
-  const validInvitationCode = '123456789012'
 
   const {
     control,
@@ -79,7 +79,7 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
         title={`Welcome ${session.data?.user?.name}`}
       ></CustomHeader>
       <h3>
-        Please enter the 12-digit numeric invitation code that has been sent to
+        Please enter the invitation code that has been sent to
         you.
       </h3>
       {showAlert ? (
@@ -96,13 +96,16 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
       <SummaryBox className="bg:lightBlue">
         <SummaryBoxContent>
           <form>
-            <Label
-              className="text-bold"
-              htmlFor="invitationCode"
-              requiredMarker={true}
-            >
+            <Grid row>
+              <Label
+                className="text-bold margin-top-0"
+                htmlFor="invitationCode"
+                requiredMarker={true}
+              >
               Invitation Code
-            </Label>
+              </Label>
+              <Tooltip text={tooltipCmbInvite}/>
+            </Grid>
             <Controller
               name="invitationCode"
               control={control}
@@ -114,7 +117,7 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
                   maxLength={12}
                   className={errors['invitationCode'] ? 'icon width-full' : ''}
                   onChange={(e) =>
-                    field.onChange(filterText(e.target.value, true))
+                    field.onChange(filterText(e.target.value, false))
                   }
                   validationStatus={
                     errors['invitationCode']
@@ -129,8 +132,7 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
             />
             <div className={'usa-input-helper-text'}>
               <span className={errors['invitationCode'] && 'text-secondary-dark'}>
-                Invitation Code must contain only numeric digits and be 12
-                digits length.
+                Invitation Code must contain only alphanumeric digits.
               </span>
             </div>
             <ButtonGroup

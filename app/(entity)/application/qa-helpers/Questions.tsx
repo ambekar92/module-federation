@@ -1,5 +1,6 @@
 import { ANSWER_ROUTE } from '@/app/constants/routes';
-import { fetcherGET, fetcherPOST } from '@/app/services/fetcher';
+import { fetcherPOST } from '@/app/services/fetcher-legacy';
+import fetcher from '@/app/services/fetcher';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import React, { useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ interface QuestionnaireProps {
 
 const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) => {
   const dispatch = useApplicationDispatch();
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcherGET);
+  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const { userId } = useApplicationId();
 

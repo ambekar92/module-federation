@@ -1,6 +1,6 @@
 'use client';
 import { QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher';
+import { fetcherGET } from '@/app/services/fetcher-legacy';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';

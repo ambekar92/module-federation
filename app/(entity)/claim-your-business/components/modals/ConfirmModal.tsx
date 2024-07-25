@@ -1,6 +1,6 @@
 import { ENTITY_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { fetcherPOST } from '@/app/services/fetcher'
+import { fetcherPOST } from '@/app/services/fetcher-legacy'
 import { Box } from '@mui/material'
 import Modal from '@mui/material/Modal'
 import { Button, ButtonGroup, Icon } from '@trussworks/react-uswds'
