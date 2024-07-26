@@ -11,7 +11,9 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useState, useCallback, useEffect } from 'react'
 
+
 const Search = () => {
+
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -33,6 +35,7 @@ const Search = () => {
 
   const handleChangeSearch = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
     const params = new URLSearchParams()
     if (searchTerm1) {params.set('q', searchTerm1)}
     if (searchTerm2) {params.set('uei', searchTerm2)}

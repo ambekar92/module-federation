@@ -81,7 +81,7 @@ function ControlAndOpsQuestions({contributorId}: QuestionnaireProps) {
             <div>
               <h1>Control & Operations</h1>
               <h3 className="light" style={{ fontSize: '22px', fontWeight: 'lighter', lineHeight: '1.5' }}>
-          			Please enter the following information about any individual who is on the legal management team of the company, but is not an owner.
+          			Please enter the following information about any individual who is on the management team of the company, but is not an owner.
               </h3>
             </div>
             <div>

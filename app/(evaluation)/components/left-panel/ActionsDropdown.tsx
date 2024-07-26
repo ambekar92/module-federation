@@ -1,12 +1,14 @@
 'use client'
 import ActionMenuModal from '@/app/shared/components/modals/ActionMenuModal'
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import ActionMenuData from '../utils/actionMenuData.json'
 import { useSessionUCMS } from '@/app/lib/auth';
 import { Role } from '@/app/shared/types/role';
+import RequestExpertModal from '../modals/RequestExpertModal';
 
 const ActionsDropdown = () => {
-  const sessionData = useSessionUCMS()
+  const sessionData = useSessionUCMS();
+  const selectRef = useRef<HTMLSelectElement>(null);
   const [showModal, setShowModal] = useState(false);
   const [actionModalProps, setActionModalProps] = useState({
     title: '',
@@ -42,9 +44,20 @@ const ActionsDropdown = () => {
     setShowModal(false)
   }
 
+  const resetModalType = () => {
+    setActionModalProps(prevState => ({
+      ...prevState,
+      modalType: 'default'
+    }));
+  };
+
   const handleCancel = () => {
-    setShowModal(false)
-  }
+    setShowModal(false);
+    resetModalType();
+    if (selectRef.current) {
+      selectRef.current.selectedIndex = 0;
+    }
+  };
 
   const handleActionSelect = (e: any) => {
     /*eslint-disable eqeqeq*/
@@ -88,6 +101,7 @@ const ActionsDropdown = () => {
 
   const filteredActions = useMemo(() => {
     const userPermissions: Role[] = sessionData.data?.permissions?.map(p => p.slug) || [];
+    // const userPermissions = ['analyst_low_criteria']
 
     return ActionMenuData.data.filter(action => {
       if (action.permissions.length === 0) {return true;}
@@ -98,6 +112,39 @@ const ActionsDropdown = () => {
     });
   }, [sessionData.data?.permissions]);
 
+  const renderModal = () => {
+    switch (actionModalProps.modalType) {
+      case 'requestExpert':
+        return <RequestExpertModal handleCancel={handleCancel} open={showModal} />
+      case 'default':
+      case 'textarea':
+      case 'confirmVeteranStatus':
+      case 'reassign':
+        return (
+          <ActionMenuModal
+            open={showModal}
+            title={actionModalProps.title}
+            actionLabel={actionModalProps.actionLabel}
+            userIdType={actionModalProps.userIdType}
+            modalType={actionModalProps.modalType}
+            description={actionModalProps.description}
+            inputDescription={actionModalProps.inputDescription}
+            steps={actionModalProps.steps}
+            id={actionModalProps.id}
+            table={actionModalProps.table as any}
+            signature={actionModalProps.signature}
+            upload={actionModalProps.upload}
+            uploadStep={actionModalProps.uploadStep}
+            notes={actionModalProps.notes as any}
+            approvalLetter={actionModalProps.approvalLetter as any}
+            handleAction={handleAction}
+            handleCancel={handleCancel} process_id={0}
+          />
+        )
+      default:
+        return null
+    }
+  }
   return (
     <div>
       <div className="usa-combo-box margin-bottom-4">
@@ -107,8 +154,9 @@ const ActionsDropdown = () => {
           id="sort"
           data-placeholder="sort"
           onChange={handleActionSelect}
+          ref={selectRef}
         >
-          <option>Actions</option>
+          <option value="">Actions</option>
           {filteredActions.map((item, index) => (
             <option key={`action-menu-option-${index}`} value={item.id}>
               {item.optionLabel}
@@ -116,24 +164,7 @@ const ActionsDropdown = () => {
           ))}
         </select>
       </div>
-      <ActionMenuModal
-        open={showModal}
-        title={actionModalProps.title}
-        actionLabel={actionModalProps.actionLabel}
-        userIdType={actionModalProps.userIdType}
-        modalType={actionModalProps.modalType}
-        description={actionModalProps.description}
-        inputDescription={actionModalProps.inputDescription}
-        steps={actionModalProps.steps}
-        id={actionModalProps.id}
-        table={actionModalProps.table as any}
-        signature={actionModalProps.signature}
-        upload={actionModalProps.upload}
-        uploadStep={actionModalProps.uploadStep}
-        notes={actionModalProps.notes as any}
-        approvalLetter={actionModalProps.approvalLetter as any}
-        handleAction={handleAction}
-        handleCancel={handleCancel} process_id={0}      />
+      {renderModal()}
     </div>
   )
 }

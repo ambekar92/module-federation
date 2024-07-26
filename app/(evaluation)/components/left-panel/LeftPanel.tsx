@@ -22,13 +22,12 @@ function LeftPanel() {
     // as opposed to the dynamically generated questionnaire items under param [section_questions].
     const segment = params.section_questions ?? selectedSegment;
     if (!navItems || !Array.isArray(navItems)) {return;}
-    let currentSection = navItems.map(nav => nav.child).flat().find(item => item.url.includes(segment));
+    const currentSection = navItems.map(nav => nav.child).flat().find(item => item.url.includes(segment));
     if (currentSection) {
       setActiveSection(currentSection.section);
       setActiveTitle(currentSection.title);
     }
   }, [pathname, navItems])
-
 
   function onNavLinkClick(e: any, item: QuestionnaireItem) {
     e.preventDefault();
@@ -49,18 +48,17 @@ function LeftPanel() {
         {obj && Object.entries(obj).map(([key, value]) => (
           <li key={key} className="display-inline">
             {/* Temporary fix for program name display */}
-            {value.programs.name == 'eight_a' ?
-                '8(a)'
-            : value.programs.name == 'hubzone' ?
-              'HUBZone'
-            : value.programs.name.toUpperCase().replace(/_/g, '')
+            {value.programs.name === 'eight_a' ?
+              '8(a)'
+              : value.programs.name === 'hubzone' ?
+                'HUBZone'
+                : value.programs.name.toUpperCase().replace(/_/g, '')
             } {' '}
           </li>
         ))}
       </ul>
     );
   };
-
 
   return (
     <>
@@ -86,39 +84,40 @@ function LeftPanel() {
       <div className="grid-container">
         <nav aria-label="Side navigation">
           {isLoading && <div>Loading...</div>}
-          {!isLoading && <ul className="usa-sidenav">
-
-            {navItems.map((item, index) => {
-              if (item.child.length > 0) {
-                return (
-                  <ul key={index}>
-                    <li style={{listStyle: 'none'}} className="usa-sidenav__item">
-                      <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`../${item.child[0].url}`} className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
-                      {item.child.length > 1 && <ul className="usa-sidenav__sublist">
-                        {item.child.map((childItem, index1) => {
-                          return (
-                            <div key={index1}>
-                              <li className="usa-sidenav__item">
-                                <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`../${childItem.url}`} className={childItem.title === activeTitle ? 'usa-current' : ''}>{childItem.title}</Link>
-                              </li>
-                            </div>
-                          )
-                        })}
-                      </ul>}
-                    </li>
-                  </ul>
-                )
-              } else {
-                return (
-                  <ul key={index}>
-                    <li style={{listStyle: 'none'}} className="usa-sidenav__item">
-                      <Link onClick={(e) => onNavLinkClick(e, item as unknown as QuestionnaireItem)} href='#' className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
-                    </li>
-                  </ul>
-                )
-              }
-            })}
-          </ul>}
+          {!isLoading && (
+            <ul className="usa-sidenav">
+              {navItems.map((item, index) => {
+                if (item.child.length > 0) {
+                  return (
+                    <ul key={index}>
+                      <li style={{listStyle: 'none'}} className="usa-sidenav__item">
+                        <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`../${item.child[0].url}`} className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
+                        {item.child.length > 1 && <ul className="usa-sidenav__sublist">
+                          {item.child.map((childItem, index1) => {
+                            return (
+                              <div key={index1}>
+                                <li className="usa-sidenav__item">
+                                  <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`../${childItem.url}`} className={childItem.title === activeTitle ? 'usa-current' : ''}>{childItem.title}</Link>
+                                </li>
+                              </div>
+                            )
+                          })}
+                        </ul>}
+                      </li>
+                    </ul>
+                  )
+                } else {
+                  return (
+                    <ul key={index}>
+                      <li style={{listStyle: 'none'}} className="usa-sidenav__item">
+                        <Link onClick={(e) => onNavLinkClick(e, item as unknown as QuestionnaireItem)} href='#' className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
+                      </li>
+                    </ul>
+                  )
+                }
+              })}
+            </ul>
+          )}
         </nav>
       </div>
     </>

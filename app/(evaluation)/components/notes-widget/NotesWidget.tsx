@@ -15,7 +15,7 @@ function NotesWidget() {
 
   return (
     <FormProvider {...methods}>
-      <NotesForm mutate={mutate} createText='Add Note' />
+      <NotesForm mutate={mutate} createText='Add Note' richTextEditorSize='sm' />
     </FormProvider>
   )
 }

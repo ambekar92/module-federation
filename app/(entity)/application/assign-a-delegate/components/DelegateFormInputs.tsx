@@ -84,6 +84,7 @@ const DelegateFormInputs = ({
   const [inviteSent, setInviteSent] = useState(false);
   const { data: session } = useSessionUCMS();
   const [emailValidate, setEmailValidate] = useState(false);
+  const [inviteId, setInviteId] = useState<number>();
 
   useEffect(() => {
     if (delegatesData) {
@@ -164,8 +165,12 @@ const DelegateFormInputs = ({
           last_name: data.lastName
         };
         // await fetcherPOST(INVITATION_ROUTE, postData);
-        const response = await fetcherPOST(INVITATION_ROUTE, postData);
-        console.log(response)
+        const response: DelegatesResponse = await fetcherPOST(INVITATION_ROUTE, postData);
+        if(response.id) {
+          setInviteId(response.id)
+        } else {
+          setInviteId(userId);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -175,8 +180,15 @@ const DelegateFormInputs = ({
   const handleSend = async () => {
     handleNext();
     try {
+      if(!inviteId) {
+        console.log('No changes to invitation found');
+        closeModal();
+        setInviteSent(true);
+        return
+      }
+
       const postData = {
-        invitation_id: userId
+        invitation_id: inviteId
       };
 
       await fetcherPOST(SEND_INVITATION_DELEGATE, postData);

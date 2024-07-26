@@ -1,7 +1,12 @@
 .format {
     outline: none;
     border: none;
-    margin-right: .5rem
+    margin-right: .5rem;
+    border: 1px solid #1a4480;
+    border-radius: 3px;
+    background-color: white;
+    padding-inline: 1rem;
+
 } 
 
 .is-active {

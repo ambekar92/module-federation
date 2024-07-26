@@ -3,13 +3,13 @@ import styles from '../Evaluation.module.scss'
 import { Checkbox } from '@trussworks/react-uswds'
 import useSWR from 'swr'
 import { REASON_CODE_ROUTE, ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
-import { fetcherGET } from '@/app/services/fetcher'
+import { fetcherGET } from '@/app/services/fetcher-legacy'
 
 function RequestInformation() {
   const { data: reasonCodes, error } = useSWR(REASON_CODE_ROUTE, fetcherGET<ReasonCode[] | []>);
 
   if(error) {
-    console.log(error);
+    console.error(error);
   }
 
   return (

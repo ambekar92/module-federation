@@ -1,4 +1,5 @@
 import { ProgramOption, sbaProgramOptions } from '@/app/constants/sba-programs';
+import { OwnerType } from '../hooks/useOwnershipApplicationInfo';
 
 export const applicationLinks = [
   '/ownership',
@@ -41,7 +42,7 @@ export const applicationSteps = {
   }
 }
 
-export const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
+export const calculateEligiblePrograms = (owners: OwnerType[]): ProgramOption[] => {
   return sbaProgramOptions.filter(program => {
     return owners.some(owner => {
       let updatedDisadvantages = owner.socialDisadvantages.length > 0
@@ -60,10 +61,9 @@ export const calculateEligiblePrograms = (owners: any[]): ProgramOption[] => {
         }
       };
 
-      manageDisadvantage(owner.gender === 'f', 'female');
-      manageDisadvantage(owner.isVeteran === 'veteran' || owner.isVeteran === 'service_disabled_veteran', 'veteran');
-      manageDisadvantage(owner.isVeteran === 'service_disabled_veteran', 'disabledVeteran');
-      manageDisadvantage(owner.maritalStatus === 'unmarried' && owner.isVeteran === 'not_applicable', 'unmarried-not-veteran')
+      manageDisadvantage(owner.gender === 'Female', 'female');
+      manageDisadvantage(owner.veteranStatus === 'Veteran' || owner.veteranStatus === 'Service-Disabled Veteran', 'veteran');
+      manageDisadvantage(owner.veteranStatus === 'Service-Disabled Veteran', 'disabledVeteran');
 
       return program.disadvantages.some(disadvantage => updatedDisadvantages.includes(disadvantage));
     });

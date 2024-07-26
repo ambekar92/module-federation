@@ -1,8 +1,27 @@
+'use client'
 import { CardActionArea } from '@mui/material'
 import { Button, Card } from '@trussworks/react-uswds'
 import React from 'react'
+import ReactGA from "react-ga4";
+import {REACT_GA_REPORT} from '../../../../constants/routes'
 
 const WhatsNext = () => {
+    ReactGA.initialize(`${REACT_GA_REPORT}`);
+
+      const handleClickAppPrep = () => {
+        ReactGA.event({
+          category: "Should I apply - result - prepare for application",
+          action: "Clicked Next Button",
+        });
+    
+      };
+      const handleClickHubZone = () => {
+        ReactGA.event({
+          category: "Should I apply - result - HUBZone Calculator",
+          action: "Clicked Next Button",
+        });
+    
+      };
     return (
         <div>
             <h2>What's Next</h2>
@@ -17,7 +36,7 @@ const WhatsNext = () => {
                 </div>
                 <div className='padding-bottom-2'>
                     <CardActionArea >
-                        <Button style={{ float: 'right', paddingInline: '3rem' }} type='button' outline>Next</Button>
+                        <Button style={{ float: 'right', paddingInline: '3rem' }} type='button' onClick={handleClickAppPrep} outline>Next</Button>
                     </CardActionArea>
                 </div>
             </Card>
@@ -32,7 +51,7 @@ const WhatsNext = () => {
                 </div>
                 <div className='padding-bottom-2'>
                     <CardActionArea >
-                        <Button style={{ float: 'right', paddingInline: '3rem' }} type='button' outline>Next</Button>
+                        <Button style={{ float: 'right', paddingInline: '3rem' }} type='button' onClick={handleClickHubZone} outline>Next</Button>
                     </CardActionArea>
                 </div>
             </Card>

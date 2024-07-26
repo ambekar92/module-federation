@@ -79,21 +79,21 @@ function Programs({applicationId}: {applicationId: number}) {
         return [...prev, program]
       }
     })
-    try {
-      if(applicationId) {
-        const postData = {
-          application_type_id: 1,
-          program_id: program.id
-        }
+    // try {
+    //   if(applicationId) {
+    //     const postData = {
+    //       application_type_id: 1,
+    //       program_id: program.id
+    //     }
 
-        // const rs = await fetcherPOST(`${APPLICATION_ELIGIBILITY_ROUTE}/intent`, postData)
-        // console.log(rs);
-        // console.log(postData);
-        await fetcherPOST(`${APPLICATION_ELIGIBILITY_ROUTE}/`, postData)
-      }
-    } catch(error) {
-      console.log('PUT Error: ' + error)
-    }
+    //     // const rs = await fetcherPOST(`${APPLICATION_ELIGIBILITY_ROUTE}/intent`, postData)
+    //     // console.log(rs);
+    //     // console.log(postData);
+    //     await fetcherPOST(`${APPLICATION_ELIGIBILITY_ROUTE}/`, postData)
+    //   }
+    // } catch(error) {
+    //   console.log('PUT Error: ' + error)
+    // }
   }
 
   const handleCardClick = (program: ProgramOption) => {

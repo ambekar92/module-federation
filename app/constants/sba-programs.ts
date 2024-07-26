@@ -29,6 +29,12 @@ export const sbaProgramOptions: ProgramOption[] = [
       'black_american',
       'minority',
       'race',
+      'Race',
+      'Native American',
+      'Hispanic American',
+      'Black American',
+      'Asian Pacific American',
+      'Ethnic Origin'
     ],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program',
@@ -40,7 +46,7 @@ export const sbaProgramOptions: ProgramOption[] = [
     description: `Women-Owned Small Business (WOSB) Program: The WOSB Program aims to empower and foster the
 		growth of women-owned businesses. It offers opportunities for female entrepreneurs to
 		compete for federal contracts and receive support to enhance their business capabilities.`,
-    disadvantages: ['female', 'gender', 'woman'],
+    disadvantages: ['female', 'gender', 'woman', 'Gender'],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program#id-program-eligibility-requirements',
     registration: 'wosb',
@@ -52,7 +58,7 @@ export const sbaProgramOptions: ProgramOption[] = [
 		is a subset of the WOSB Program focused specifically on economically-disadvantaged women
 		entrepreneurs. Benefits include additional contracting opportunities and resources to
 		support business growth and success.`,
-    disadvantages: ['gender', 'woman', 'female'],
+    disadvantages: ['gender', 'woman', 'female', 'Gender'],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program#id-program-eligibility-requirements',
     registration: 'edwosb',
@@ -79,7 +85,10 @@ export const sbaProgramOptions: ProgramOption[] = [
     disadvantages: [
       'long_term_isolated_residence', 'unmarried-not-veteran', 'gender', 'woman', 'female',
       'ethnic_origin', 'asian_pacific_american', 'native_american', 'hispanic_american',
-  		'black_american', 'minority', 'race', 'disabledVeteran', 'veteran'
+  		'black_american', 'minority', 'race', 'disabledVeteran', 'veteran',
+      'Race', 'Native American', 'Hispanic American', 'Black American', 'Asian Pacific American',
+      'Long term residence in an environment isolated from mainstream of American society.', 'Other',
+      'Religion', 'Ethnic Origin', 'Identifiable Disibility'
     ],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',

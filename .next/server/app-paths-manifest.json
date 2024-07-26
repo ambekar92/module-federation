@@ -1,6 +1,4 @@
 {
-  "/(user)/user/[userId]/page": "app/(user)/user/[userId]/page.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/kafka/produce/route": "app/api/kafka/produce/route.js",
-  "/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page": "app/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page.js"
+  "/(evaluation)/firm/application/[application_id]/[section_questions]/page": "app/(evaluation)/firm/application/[application_id]/[section_questions]/page.js"
 }

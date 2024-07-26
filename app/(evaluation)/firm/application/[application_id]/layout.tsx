@@ -12,10 +12,10 @@ const layout = ({children}: PropsWithChildren) => {
   
   return (
     <div className="grid-row">
-        <div className="grid-col-3 bg-white">
+        <div className="grid-col-2 bg-white">
           <LeftPanel />
         </div>
-        <div className={`${hideRightPanel ? 'grid-col-9' : 'grid-col-6'} bg-gray-5 padding-2`}>
+        <div className={`${hideRightPanel ? 'grid-col-9' : 'grid-col-7'} bg-gray-5 padding-2`}>
           {children}
         </div>
         {!hideRightPanel && <div className="grid-col-3 bg-white">

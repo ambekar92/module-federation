@@ -36,7 +36,7 @@ function ControlAndOperations({contributorId}: QuestionnaireProps) {
       <div>
         <h1>Control & Operations</h1>
         <h3 className="light" style={{ fontSize: '22px', fontWeight: 'lighter', lineHeight: '1.5' }}>
-          Please enter the following information about any individual who is on the legal management team of the company, but is not an owner.
+          Please enter the following information about any individual who is on the management team of the company, but is not an owner.
         </h3>
       </div>
       <div>
@@ -53,7 +53,7 @@ function ControlAndOperations({contributorId}: QuestionnaireProps) {
       </div>
 
       <div className="flex-fill" style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
-        <GridContainer containerSize="widescreen" className={`width-full padding-y-2 margin-top-2 
+        <GridContainer containerSize="widescreen" className={`width-full padding-y-2 margin-top-2
         ${operators.length > 0 && 'bg-base-lightest'} ${showControlOperationsForm && 'bg-base-lightest'}`}>
           <ControlOperationsForm />
           <ControlOperationsTable />

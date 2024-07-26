@@ -13,7 +13,10 @@ import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { SBA_LOGO_SQUARE_WHITE_URL } from '../../constants/icons'
 import { Notification } from './components/navbarNotification'
+import {adminNavBar}  from './utils/constant'
 import styles from './layout.module.scss'
+import ReactGA from "react-ga4";
+import {REACT_GA_REPORT} from '../../constants/routes'
 
 //note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
 import { useSessionUCMS } from '@/app/lib/auth'
@@ -30,10 +33,7 @@ interface MenuItem {
   id: string
   url: string
 }
-export interface adminNavBar {
-  id: string
-  url: string
-}
+
 
 const selectedBottomRedBorder = '3px solid #CC0000'
 
@@ -48,6 +48,25 @@ const Navigation = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [items, setItems] = useState<MenuItem[]>([])
 
+  ReactGA.initialize(`${REACT_GA_REPORT}`);
+
+  const handleClickGetHelp = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault(); 
+    ReactGA.event({
+      category: "Engagement",
+      action: "Clicked Get Help from Navbar",
+      label: "Main Navigation"
+    });
+  }
+
+  const handleClickOurProgram = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault(); 
+    ReactGA.event({
+      category: "Engagement",
+      action: "Clicked Our Program from Navbar",
+      label: "Main Navigation"
+    });
+  }
   const ClientSideBusinessName = dynamic(() => Promise.resolve(() => (
     <div className="usa-nav float-right">
       <ul className="usa-nav__primary usa-accordion">
@@ -279,7 +298,7 @@ const Navigation = () => {
       />
     </React.Fragment>,
     <React.Fragment key="primaryNav_3">
-      <a
+      <a onClick={handleClickOurProgram}
         className="usa-nav_link"
         href="https://www.sba.gov/federal-contracting/contracting-assistance-programs"
       >
@@ -287,20 +306,13 @@ const Navigation = () => {
       </a>
     </React.Fragment>,
     <React.Fragment key="primaryNav_3">
-      <a
+      <a onClick={handleClickGetHelp}
         className="usa-nav_link"
         href="https://sbaone.atlassian.net/servicedesk/customer/portal/12"
       >
         <span>Get Help</span>
       </a>
     </React.Fragment>,
-  ]
-
-  const adminNavBar = [
-    { id: 'Home', url: '/' },
-    { id: 'System Configuration', url: '/admin/configuration' },
-    { id: 'Entities', url: '/entities' },
-    { id: 'Users', url: '/users' },
   ]
 
   return (

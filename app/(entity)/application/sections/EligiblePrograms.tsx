@@ -58,8 +58,7 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
       const parsedInfo = JSON.parse(ownerApplicationInfo);
       if (parsedInfo && Array.isArray(parsedInfo.owners)) {
         const mappedOwners = parsedInfo.owners.map((owner: any) => ({
-          ...owner,
-          isVeteran: owner.veteranStatus.toLowerCase(),
+          ...owner
         }));
         const programs = calculateEligiblePrograms(mappedOwners);
         setEligiblePrograms(programs);

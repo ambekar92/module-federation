@@ -2,9 +2,9 @@
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { assignUserToViewflow } from '@/app/services/api/evaluation-service/assignUserToViewflow';
-import { useCreateNote } from '@/app/services/mutations/useCreateNote';
+import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote';
 import { useUsers } from '@/app/services/queries/user-service/useUser';
-import { NoteBase } from '@/app/services/types/evaluation-service/Note';
+import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, ButtonGroup, ComboBoxOption, Modal, ModalFooter, ModalRef } from '@trussworks/react-uswds';
 import { useParams } from 'next/navigation';
@@ -59,7 +59,7 @@ const ReassignUser = ({modalRef}: Props ) => {
       return;
     }
     const firmName = applicationData?.sam_entity.legal_business_name;
-    const notePayload: NoteBase = {
+    const notePayload: CreateNotePayload = {
       application_id: Number(params.application_id),
       description: formData.comments,
       subject: `${firmName}_Reviewer_reassignment`,

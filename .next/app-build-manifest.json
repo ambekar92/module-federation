@@ -1,15 +1,5 @@
 {
   "pages": {
-    "/error": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/error.js"
-    ],
-    "/not-found": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/not-found.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -21,26 +11,26 @@
       "static/chunks/main-app.js",
       "static/chunks/app/loading.js"
     ],
-    "/(user)/user/[userId]/page": [
+    "/error": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(user)/user/[userId]/page.js"
+      "static/chunks/app/error.js"
     ],
-    "/login/page": [
+    "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/login/page.css",
-      "static/chunks/app/login/page.js"
+      "static/chunks/app/not-found.js"
     ],
-    "/(evaluation)/firm/business-plan/layout": [
+    "/(evaluation)/firm/application/[application_id]/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(evaluation)/firm/business-plan/layout.js"
+      "static/css/app/(evaluation)/firm/application/[application_id]/layout.css",
+      "static/chunks/app/(evaluation)/firm/application/[application_id]/layout.js"
     ],
-    "/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page": [
+    "/(evaluation)/firm/application/[application_id]/[section_questions]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/(evaluation)/firm/business-plan/[application_id]/[section_questions]/page.js"
+      "static/chunks/app/(evaluation)/firm/application/[application_id]/[section_questions]/page.js"
     ]
   }
 }

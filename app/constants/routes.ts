@@ -45,3 +45,4 @@ export const THREADS_ROUTE = API_ROUTE + '/threads';
 export const TASK_TIMERS_ROUTE = API_ROUTE + '/task-timers'; // this route does not exist, it is a placeholder
 export const AUDIT_ROUTE = API_ROUTE + '/audit'; // this route does not exist, it is a placeholder [mdev]
 export const COMPLETE_EVALUATION_TASK = API_ROUTE + '/complete-evaluation-task';
+export const REACT_GA_REPORT = process.env.UCP_TRACKING_ID

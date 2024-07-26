@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import { CardLayoutProps } from '../utils/types'
 import {
   Grid,
@@ -8,6 +8,7 @@ import {
   Link,
 } from '@trussworks/react-uswds'
 import styles from './Card.module.scss'
+
 
 export const CardLayout: FC<CardLayoutProps> = ({
   bodyDescription,

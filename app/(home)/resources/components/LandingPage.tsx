@@ -2,8 +2,22 @@
 import React  from 'react'
 import { Grid, Button } from '@trussworks/react-uswds'
 import Link from 'next/link';
+import ReactGA from "react-ga4";
+import {REACT_GA_REPORT} from '../../../constants/routes'
+
 
 export const LandingPage: React.FC = () => {
+  ReactGA.initialize(`${REACT_GA_REPORT}`);
+
+  const handleClickResourceLearnMore = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault(); 
+    ReactGA.event({
+      category: "Engagement",
+      action: "Clicked Learn More from Resource",
+      label: "Resource"
+    });
+  }
+
   return (
     <div>
       <section
@@ -47,8 +61,8 @@ export const LandingPage: React.FC = () => {
       >
         <Grid className="display-flex flex-align-center flex-justify margin-left-3" >
           <h2 style={{fontWeight:700, fontSize:'32px'}} className="margin-bottom-0">Knowledge Base</h2>
-          <Link href="https://sbaone.atlassian.net/wiki/spaces/UCPUKB/overview">
-            <Button type='submit'outline>Learn More</Button></Link>
+          <Link onClick={handleClickResourceLearnMore} href="https://sbaone.atlassian.net/wiki/spaces/UCPUKB/overview">
+            <Button  type='button' outline  >Learn More</Button></Link>
         </Grid>
         <Grid className='margin-left-3 padding-bottom-1'><p style={{fontFamily: 'Source Sans Pro', fontSize: '20px', fontWeight:400}}>The Knowledge Base provides you with all the latest resources and updates regarding the Unified Certification Platform to assist you in the application and certification renewal process.</p></Grid>
       </section>
