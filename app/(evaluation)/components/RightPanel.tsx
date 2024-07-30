@@ -1,4 +1,5 @@
 import React from 'react'
+import styles from './Evaluation.module.scss';
 import NotesWidget from './notes-widget/NotesWidget'
 import RequestInformation from './notes-widget/RequestInformation'
 import AnalystDocument from './notes-widget/AnalystDocument'
@@ -7,14 +8,14 @@ import { Accordion } from '@trussworks/react-uswds'
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion'
 
 function RightPanel() {
-  const testItems: AccordionItemProps[] = [
+  const rightPanel: AccordionItemProps[] = [
     {
-      id: 'item1',
-      title: 'RFI / RTFs',
+      id: 'rft',
+      title: 'Request for Information',
       content: (
-        <div>
+        <>
           <RequestInformation />
-        </div>
+        </>
       ),
       expanded: false,
       headingLevel: 'h2',
@@ -27,7 +28,7 @@ function RightPanel() {
           <NotesWidget />
         </div>
       ),
-      expanded: true,
+      expanded: false,
       headingLevel: 'h2',
     },
     {
@@ -45,7 +46,7 @@ function RightPanel() {
   return (
     <>
       <div className="padding-2 margin-top-2">
-        <Accordion items={testItems} multiselectable={true} />
+        <Accordion className={styles['accordion']} items={rightPanel} multiselectable={true} />
       </div>
     </>
   )

@@ -2,9 +2,12 @@
 
 import { SamEntity } from "@/app/services/types/application-service/Application";
 import { useApplicationData } from "../firm/useApplicationData";
+import { useParams } from "next/navigation";
+import { ApplicationFilterType } from "@/app/services/queries/application-service/applicationFilters";
 
 function HeaderPanel() {
-  const { applicationData} = useApplicationData();
+  const params = useParams<{application_id: string}>();
+  const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
   const samEntity = applicationData?.sam_entity ?? null;
 
   return (

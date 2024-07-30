@@ -1,91 +1,34 @@
-// external user and supervisor user task dashboard
-export type Task = {
-    legal_business_name: string,
-    uei: string,
-    entity_id: number,
-    application_type_id: number,
-    application_id: number,
-    days_in_queue: number,
-    assignment_date: string,
-    status: string,
-    due_on: string, //  currently missing from the API response [mdev]
-    // applicable to external users only
-    submitted_on?: string, //  currently missing from the API response [mdev]
-
-    // applicable to supervisor users only
-    assigned_to: string, //  currently missing from the API response [mdev]
-}
+import { UserTaskDashboard } from "@/app/services/types/evaluation-service/UserTaskDashboard";
 
 export interface IColumn {
     val: string,
-    label: string
+    label: string,
+    sortable: boolean
 }
 
-export enum UserColumns {
-    'Firm Name', 'Certification', 'Application Type', 'Days in Queue', 'Due On', 'Submitted On', 'Status'
-}
-export enum SupervisorColumns {
-    'Firm Name', 'Certification', 'Application Type', 'Days in Queue', 'Due On', 'Status', 'Assigned to', 'Take Action'
-
-}
-
-export const userColumns = [
+const columns: IColumn[] = [
     {
         val: 'legal_business_name',
-        label: 'Firm Name'
-    },
-    {
-        val: 'certification',
-        label: 'Certification'
-    },
-    {
-        val: 'applicationType',
-        label: 'Application Type'
-    },
-    {
-        val: 'days_in_queue',
-        label: 'Days in Queue'
-    },
-    
-    {
-        val: 'due_on',
-        label: 'Due On'
-    },
-    
-    {
-        val: 'submitted_on',
-        label: 'Submitted On',
-    },
-    {
-        val: 'status',
-        label: 'Status'
-        
-    }
-]
-
-export const supervisorColumns = [
-    {
-        val: 'firmName',
         label: 'Firm Name',
         sortable: true
     },
     {
-        val: 'certification',
-        label: 'Certification',
+        val: 'certifications',
+        label: 'Certifications',
         sortable: true
     },
     {
-        val: 'applicationType',
+        val: 'application_type_name',
         label: 'Application Type',
         sortable: true
     },
     {
-        val: 'daysInQueue',
+        val: 'days_in_queue',
         label: 'Days in Queue',
         sortable: true
     },
     {
-        val: 'dueOn',
+        val: 'due_on',
         label: 'Due On',
         sortable: true
     },
@@ -104,8 +47,20 @@ export const supervisorColumns = [
         label: 'Take Action',
         sortable: false
     }
+];
 
-]
+export const userColumns = [...columns.slice(0, -2), {
+    val: 'submitted_on',
+    label: 'Submitted On',
+    sortable: true
+}, ...columns.slice(-1) ];
+
+export const supervisorColumns = [...columns.slice(0, -2), {
+    val: 'assigned_to',
+    label: 'Assigned to',
+    sortable: true
+}, ...columns.slice(-1) ];
+
 
 export interface IProductivity {
     completed_tasks_current_month: number,
@@ -113,5 +68,7 @@ export interface IProductivity {
     completed_tasks_current_fiscal_year: number,
     average_processing_time_seconds: number,
 }
+
+export type DashboardSearchParams =  { sortColumn: keyof UserTaskDashboard, sortOrder: 'asc' | 'desc', page: string, application_id?: string } 
 
 export const PAGE_SIZE = 20;

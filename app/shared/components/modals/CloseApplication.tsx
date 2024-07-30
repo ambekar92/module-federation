@@ -26,22 +26,11 @@ const CloseApplication: React.FC<CloseApplicationProps> = ({
   handleAction,
   handleCancel,
 }) => {
-  // const { applicationId } = useApplicationId();
-  // const { session, status } = useSessionUCMS();
-  // const [userId, setUserId] = useState<number | null>(null);
   const [description, setDescription] = useState("");
-
-  // useEffect(() => {
-  //   if (status === 'authenticated' && session?.user_id) {
-  //     setUserId(session.user_id);
-  //   }
-  // }, [session, status]);
 
   const handleActionSubmit = async () => {
     handleAction(description)
   }
-
-
 
   return (
     <>

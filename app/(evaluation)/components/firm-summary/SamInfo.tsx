@@ -1,11 +1,14 @@
 'use client'
-import { SamEntity } from '@/app/services/types/application'
 import { Table } from '@trussworks/react-uswds'
 import moment from 'moment'
 import { useApplicationData } from '../../firm/useApplicationData'
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import { useParams } from 'next/navigation'
+import { SamEntity } from '@/app/services/types/application-service/Application'
 
 function SamInfo() {
-  const {applicationData} =useApplicationData();
+  const params = useParams<{application_id: string}>();
+  const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
   const samEntity = applicationData?.sam_entity ?? null;
   
   return (

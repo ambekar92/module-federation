@@ -2,7 +2,6 @@
 import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
 import { fetcherGET } from '@/app/services/fetcher-legacy'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { Application } from '@/app/services/types/application'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -16,6 +15,7 @@ import styles from '../utils/FirmDashboard.module.scss'
 import { humanizeText } from '../utils/helpers'
 import ApplicationCard from './ApplicationCard'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
+import { Application } from '@/app/services/types/application-service/Application'
 
 export default function ClientFirmUserDashboard() {
   const { data: session, status } = useSessionUCMS();

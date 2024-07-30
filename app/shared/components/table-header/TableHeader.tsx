@@ -28,7 +28,7 @@ const TableHeader = ({ defaultSortColumn, columns }: { defaultSortColumn: string
     searchParamsState.set('sortColumn', colName);
     searchParamsState.set('sortOrder', sortOrder);
     const q = searchParamsState.toString();
-    router.push(`${pathName}?${q}`)
+    router.push(`${pathName}?${q}`, {scroll: false})
   }
 
   return (

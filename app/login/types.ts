@@ -1,6 +1,6 @@
 import { Role } from '../shared/types/role';
 
-type Permission = {
+export type Permission = {
     id: number;
     slug: Role;
     name: string;

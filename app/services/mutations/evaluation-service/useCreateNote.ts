@@ -3,12 +3,14 @@ import useSWRMutation from "swr/mutation";
 import { useNotes } from "../../queries/evaluation-service/useNotes";
 import { createNote } from "../../api/evaluation-service/createNote";
 
-export function useCreateNote() {
+export function useCreateNote(shouldMutate = true) {
     const {mutate} = useNotes();
 
     return useSWRMutation(NOTES_ROUTE, createNote, {
         onSuccess: () => {
-            mutate()
+            if (shouldMutate) {
+                mutate();
+            }
         },
         onError: (error) => {
             console.error('failed to save note', error)

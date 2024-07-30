@@ -1,5 +1,5 @@
 import { ANSWER_ROUTE } from '@/app/constants/routes';
-import { fetcherPOST } from '@/app/services/fetcher-legacy';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
@@ -13,7 +13,7 @@ import QuestionRenderer from './QuestionRenderer';
 interface QuestionnaireProps {
   url: string;
   title: string;
-	contributorId: number;
+  contributorId: number;
 }
 
 const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) => {
@@ -27,7 +27,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) 
     dispatch(setDisplayStepNavigation(false));
   }, [dispatch]);
 
-  const handleAnswerChange = (question: Question, value: any) => {
+  const handleAnswerChange = async (question: Question, value: any) => {
     if (userId && contributorId) {
       setSelectedAnswers(prevState => ({
         ...prevState,
@@ -44,7 +44,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) 
         }
       }));
 
-      // Save the answer immediately
+      // Saves the answer immediately
       const answer = {
         profile_answer_flag: question.profile_answer_flag,
         application_contributor_id: contributorId,
@@ -57,40 +57,20 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) 
         reminder_flag: false
       };
 
-      fetcherPOST(ANSWER_ROUTE, [answer])
-        .catch(error => {
-          // eslint-disable-next-line no-console
-          console.error('Error saving answer:', error);
-        });
+      try {
+        await axiosInstance.post(ANSWER_ROUTE, [answer]);
+      } catch (error) {
+        // Error caught haha -KJ
+      }
     }
   };
 
-  // const handlePostRequest = async () => {
-  //   try {
-  //     if (contributorId && userId) {
-  //       const postData = Object.values(selectedAnswers).map(answer => ({
-  //         profile_answer_flag: answer.profile_answer_flag,
-  //         application_contributor_id: contributorId,
-  //         value: { answer: answer.value },
-  //         question_id: answer.question_id,
-  //         answer_by: userId,
-  //         reminder_flag: answer.reminder_flag
-  //       }));
+  if (error) {return <h3>Error: {error.message}</h3>;}
+  if (!data || isLoading) {return <h3>Loading...</h3>;}
 
-  //       await fetcherPOST(ANSWER_ROUTE, postData);
-  //     } else {
-  //       const customError = 'Application ID or user ID not found';
-  //       alert(customError);
-  //       throw customError;
-  //     }
-  //   } catch (error: any) {
-  //     console.error('Error in POST request:', error);
-  //     throw error;
-  //   }
-  // };
-
-  if (error) {return <div>Error: {error.message}</div>;}
-  if (!data || isLoading) {return <div>Loading...</div>;}
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    return <h3>This questionnaire was not found.</h3>;
+  }
 
   const sortedAndFilteredQuestions = data
     .filter(question => question.question_ordinal !== null)
@@ -109,6 +89,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) 
       }
     }
   }
+
   return (
     <>
       <h2>{title}</h2>

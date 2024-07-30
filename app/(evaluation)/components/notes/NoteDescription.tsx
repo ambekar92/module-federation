@@ -5,7 +5,8 @@ import React from 'react'
 const NoteDescription = ({content}: any) => {
     const editor = useEditor({
         extensions: extensions,
-        content: content
+        content: content,
+        editable: false,
         
     }, [content])
   return (

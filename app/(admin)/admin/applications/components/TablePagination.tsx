@@ -35,13 +35,14 @@ const TablePagination = ({ total }: { total: number }) => {
   }
 
   return (
-    <Pagination
+    <div> <Pagination
       maxSlots={5}
       onClickPrevious={handleOnPrevious}
       onClickNext={handleOnNext}
       onClickPageNumber={(e, p) => updatePageSearchParam(e, p)}
       currentPage={parseInt(searchParamsState.get('page') ?? '1') ?? 1}
       pathname={'#'} totalPages={total} />
+     </div>
   )
 }
 

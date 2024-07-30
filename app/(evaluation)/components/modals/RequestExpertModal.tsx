@@ -16,6 +16,8 @@ import fetcher from '@/app/services/fetcher'
 import { USER_ROUTE } from '@/app/constants/routes'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
 import { useApplicationData } from '../../firm/useApplicationData'
+import { useParams } from 'next/navigation'
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 
 interface RequestExpertModalProps {
   open: boolean
@@ -46,7 +48,8 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
   const [notes, setNotes] = useState('')
   const { data: userData, error } = useSWR<User[]>(`${USER_ROUTE}`, fetcher)
   const { trigger, isMutating } = useCompleteEvalTask();
-  const { applicationData } = useApplicationData()
+  const params = useParams<{application_id: string}>();
+  const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
 
   const filteredUsers = useMemo(() => {
     if (!userData) {return [];}

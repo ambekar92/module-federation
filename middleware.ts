@@ -2,15 +2,28 @@
 // https://github.com/nextauthjs/next-auth/issues/7732#issuecomment-1577104038
 
 import { getToken } from 'next-auth/jwt';
-import { MiddlewareConfig, createMiddleware } from 'next-easy-middlewares';
+import createMiddleware from 'next-easy-middlewares';
 import { NextRequest, NextResponse } from 'next/server';
 import { IUserPermission } from './app/lib/next-auth';
 import { LoginResponseUser } from './app/(admin)/login-tester/types';
 import { Role } from './app/shared/types/role';
+import { Permission } from './app/login/types';
+
+async function handleProtectedRoute(request: NextRequest) {
+  const {email_password_auth_token, token, originalUrl} = await getData(request);
+  const path = request.nextUrl.pathname;
+  if (path === '/login' || path === '/login-tester' || path === '/tester-login') {
+    return NextResponse.next();
+  }
+  if (!token && !email_password_auth_token) {
+    return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`);
+  } else {
+    return NextResponse.next();
+  }
+}
 
 const middlewares: { [key: string]: any } = {
-  // only primary_qualifying_owner and contributor  can access this route
-  '/dashboard/:path*': async (request: NextRequest) => {
+  '/dashboard/:path*': [async (request: NextRequest) => {
     const {email_password_auth_token, permissions, token, originalUrl} = await getData(request)
     if (!token && !email_password_auth_token) {
       return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
@@ -21,9 +34,8 @@ const middlewares: { [key: string]: any } = {
     } else {
       return NextResponse.next();
     }
-  },
-  '/admin/dashboard': async (request: NextRequest) => {
-    // only admin  can access this route
+  }],
+  '/admin/dashboard': [async (request: NextRequest) => {
     const {email_password_auth_token, permissions, token, originalUrl} = await getData(request)
     if (!token && !email_password_auth_token) {
       return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
@@ -34,30 +46,24 @@ const middlewares: { [key: string]: any } = {
     } else {
       return NextResponse.next();
     }
-  },
-  '/login-tester': async (request: NextRequest) => {
+  }],
+  '/login-tester': [async (request: NextRequest) => {
     if (process.env.NODE_ENV !== 'production') {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(`${request.nextUrl.origin}/login`);
     }
-  },
-  '/tester-login': async (request: NextRequest) => {
+  }],
+  '/tester-login': [async (request: NextRequest) => {
     if (process.env.NODE_ENV !== 'production') {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(`${request.nextUrl.origin}/login`);
     }
-  },
-  // protect all routes except /login
-  'regex:^(?!(/login$|/login-tester$|/tester-login$)).*$': async (request: NextRequest) => {
-    const {email_password_auth_token, token, originalUrl} = await getData(request);
-    if (!token && !email_password_auth_token) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
-    }
-    else return NextResponse.next();
-  }
-} as MiddlewareConfig;
+  }],
+  '/': [handleProtectedRoute],
+  '/:path*': [handleProtectedRoute]
+};
 
 export const config = {
   matcher: [
@@ -80,7 +86,6 @@ export const config = {
     '/application(.*)', // all sub-routes
     '/firm(.*)', // all sub-routes
     '/dashboard/(.*)',
-    '/dashboard',
     '/login-tester',
     '/tester-login'
   ],
@@ -88,9 +93,8 @@ export const config = {
 
 export const middleware = createMiddleware(middlewares);
 
-
-export function isRole(permissions: IUserPermission[], role: Role) {
-  if (!permissions) return false;
+export function isRole(permissions:  Permission[], role: Role) {
+  if (!permissions) {return false;}
   return permissions.some(permission => permission.slug === role);
 }
 

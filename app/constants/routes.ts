@@ -27,22 +27,25 @@ export const UPDATE_APPLICATION_STATE = API_ROUTE + '/update-application-state'
 export const APPLICATION_CONTRIBUTOR_ROUTE = API_ROUTE + '/application-contributors'
 export const QUESTIONNAIRE_LIST_ROUTE = API_ROUTE + '/questionnaire-list';
 export const ANSWER_ROUTE = API_ROUTE + '/answer'
-
+export const RTF_ITEMS_ROUTE = API_ROUTE + '/rtf-items';
+export const DRAFT_RTF_ITEMS_ROUTE = API_ROUTE + '/draft-rtf-items';
 export const ACCEPT_INVITATION_ROUTE = API_ROUTE + '/accept-invitation'
 export const USER_PRODUCTIVITY_ROUTE =
   API_ROUTE + '/user-productivity-dashboard'
 export const FIRM_EVALUATIONS_ADD_NOTE_ROUTE =
   API_ROUTE + '/upsert-viewflow-note'
-export const ASSIGN_USER_TO_VIEWFLOW_ROUTE = API_ROUTE + '/assign-user-to-viewflow'
+export const ASSIGN_USER_TO_VIEWFLOW_ROUTE = FIRM_EVALUATIONS_ROUTE + '/assign-user-to-viewflow'
 export const DELEGATES_ROUTE = API_ROUTE + '/delegates'
 export const APPLICATION_ROUTE = API_ROUTE + '/application'
 export const TESTER_LOGIN_ROUTE = API_ROUTE + '/login'
-export const USER_TASK_DASHBOARD_ROUTE = API_ROUTE + '/user-task-dashboard';
+export const USER_TASK_DASHBOARD_ROUTE = '/user-task-dashboard';
 export const APPLICATION_NOTES_ROUTE = API_ROUTE + '/application-notes';
-export const NOTES_ROUTE = API_ROUTE + '/notes';
+export const NOTES_ROUTE = '/notes';
 export const MESSAGES_ROUTE = API_ROUTE + '/messages';
 export const THREADS_ROUTE = API_ROUTE + '/threads';
 export const TASK_TIMERS_ROUTE = API_ROUTE + '/task-timers'; // this route does not exist, it is a placeholder
 export const AUDIT_ROUTE = API_ROUTE + '/audit'; // this route does not exist, it is a placeholder [mdev]
-export const COMPLETE_EVALUATION_TASK = API_ROUTE + '/complete-evaluation-task';
+export const COMPLETE_EVALUATION_TASK_ROUTE = API_ROUTE + '/complete-evaluation-task';
 export const REACT_GA_REPORT = process.env.UCP_TRACKING_ID
+
+export const CLOSE_APPLICATION_ROUTE = API_ROUTE + '/close-application';

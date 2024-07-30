@@ -1,12 +1,12 @@
 'use client'
+import { UserTaskDashboard } from '@/app/services/types/evaluation-service/UserTaskDashboard';
 import { SizeProp } from '@fortawesome/fontawesome-svg-core';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import styles from '../WorkloadDashboard.module.scss';
-import { Task } from '../types';
 
-const FirmInfoCell = ({task}:{task: Task}) => {
+const FirmInfoCell = ({task}:{task: UserTaskDashboard}) => {
   const [copied, setCopied] = useState<boolean>(false);
   const [size, setSize] = useState<SizeProp | undefined>('1x')
 

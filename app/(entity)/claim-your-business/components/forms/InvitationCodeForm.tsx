@@ -1,7 +1,7 @@
 import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/routes'
 import { tooltipCmbInvite } from '@/app/constants/tooltips'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/fetcher'
+import { axiosInstance } from '@/app/services/axiosInstance'
 import Tooltip from '@/app/shared/components/tooltip/Tooltip'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {

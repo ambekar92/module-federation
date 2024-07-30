@@ -18,11 +18,14 @@ import { useApplicationDispatch, useApplicationSelector } from '../../../redux/h
 import { applicationSteps } from '../../../utils/constants';
 import { QuestionnaireProps } from '../../../utils/types';
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
+import { useParams } from 'next/navigation';
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 
 function OwnershipQuestions({contributorId}: QuestionnaireProps) {
+  const params = useParams<{application_id: string}>();
   const dispatch = useApplicationDispatch();
   const { owners } = useApplicationSelector(selectApplication);
-  const { applicationData } = useApplicationData();
+  const { applicationData } = useApplicationData(ApplicationFilterType.id, params.application_id);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const { userId } = useApplicationId();
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';

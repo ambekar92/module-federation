@@ -5,5 +5,5 @@ import { NoteListItem } from "../../types/evaluation-service/Note";
 
 export function useNotes() {
     const params = useParams<{application_id: string}>();
-    return useSWR<NoteListItem[]>(`${NOTES_ROUTE}?application_id=${params.application_id}`)
+    return useSWR<NoteListItem[]>(params.application_id ?`${NOTES_ROUTE}?application_id=${params.application_id}`: null)
 }

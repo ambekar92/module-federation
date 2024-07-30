@@ -3,17 +3,18 @@ import { Link } from '@trussworks/react-uswds'
 import { useParams, usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useApplicationData } from '../../firm/useApplicationData'
-import { Params, QuestionnaireItem } from '../../types/types'
+import { QuestionnaireItem } from '../../types/types'
 import ActionsDropdown from './ActionsDropdown'
 import { useLeftItems } from './useLeftItems'
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 
 function LeftPanel() {
-  const { applicationData } = useApplicationData();
+  const params = useParams<{application_id: string, section_questions: any}>();
+  const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
   const {isLoading, navItems, error} = useLeftItems()
   const [activeSection, setActiveSection] = useState<string>('');
   const [activeTitle, setActiveTitle] = useState('');
   const router = useRouter();
-  const params = useParams<Params>();
   const pathname = usePathname();
   const selectedSegment = useSelectedLayoutSegment()
 

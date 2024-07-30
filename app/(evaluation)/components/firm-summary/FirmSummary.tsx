@@ -8,6 +8,8 @@ import { useApplicationData } from '../../firm/useApplicationData'
 import NaicsCodes from './NaicsCodes'
 import SamInfo from './SamInfo'
 import VaCert from './VaCert'
+import { useParams } from 'next/navigation'
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 
 const accordionItems: AccordionItemProps[] = [
   {
@@ -66,7 +68,8 @@ const accordionItems: AccordionItemProps[] = [
 ]
 
 function FirmSummary() {
-  const { applicationData, isLoading} = useApplicationData();
+  const params = useParams<{application_id: string}>();
+  const {applicationData, isLoading} = useApplicationData(ApplicationFilterType.id, params.application_id)
   const appication = applicationData?.application_type ?? null;
   return (
     <>

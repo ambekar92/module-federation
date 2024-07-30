@@ -23,7 +23,7 @@ interface IDocument {
   owner_user_id: string
   sam_entity_id: number
 }
-const entities:any=[]
+const entities: any = []
 const EntitiesTable = async ({
   searchParams,
 }: {
@@ -73,17 +73,30 @@ const EntitiesTable = async ({
                           : searchParams.sortColumn === 'sam_extract_code' &&
                               searchParams.sortOrder === 'desc'
                             ? b.sam_extract_code.localeCompare(
-                              a.sam_extract_code,
-                            )
+                                a.sam_extract_code,
+                              )
                             : 0,
       )
       .filter((item: any) => {
-        const searchTerm = searchParams.q?.toLowerCase() ?? ''
+        const searchTerm1 = searchParams.q?.toLowerCase() ?? ''
         const ueiTerm = searchParams.uei?.toLowerCase() ?? ''
-        return (
+        if (searchTerm1 || ueiTerm) {
+          if (searchTerm1) {
+            return item.legal_business_name.toLowerCase().includes(searchTerm1)
+          } else if (ueiTerm) {
+            return item.uei.toLowerCase().includes(ueiTerm)
+          } else {
+            return true
+          }
+        }
+        if (searchTerm1 !== null && ueiTerm!== null) {
+          const searchTerm = searchParams.q?.toLowerCase() ?? ''
+          const ueiTerm = searchParams.uei?.toLowerCase() ?? ''
           item.legal_business_name.toLowerCase().includes(searchTerm) &&
-          item.uei.toLowerCase().includes(ueiTerm)
-        )
+            item.uei.toLowerCase().includes(ueiTerm)
+        } else {
+          return true
+        }
       })
   }
 
@@ -114,17 +127,7 @@ const EntitiesTable = async ({
     () => shouldFetch && ENTITIES_ROUTE,
     fetcher,
   )
-  const sortedData = useCallback(() => {
-    if (responseData) {
-      setData([...sortData(convertToTableData(responseData))])
-    }
-    if (responseError) {
-      //use dummy data if API endpoint is down
-      setShouldFetch(false)
-      setData([...sortData(convertToTableData(entities))])
-    }
-  }, [data, sortData])
-  // useEffect(() => {
+  // const sortedData = useCallback(() => {
   //   if (responseData) {
   //     setData([...sortData(convertToTableData(responseData))])
   //   }
@@ -133,7 +136,17 @@ const EntitiesTable = async ({
   //     setShouldFetch(false)
   //     setData([...sortData(convertToTableData(entities))])
   //   }
-  // }, [responseData, responseError])
+  // }, [data, sortData])
+  useEffect(() => {
+    if (responseData) {
+      setData([...sortData(convertToTableData(responseData))])
+    }
+    if (responseError) {
+      //use dummy data if API endpoint is down
+      setShouldFetch(false)
+      setData([...sortData(convertToTableData(entities))])
+    }
+  }, [responseData, responseError])
 
   useEffect(() => {
     responseData
@@ -142,19 +155,18 @@ const EntitiesTable = async ({
   }, [searchParams])
 
   const formatDate = (isoString: string) => {
-    const date = new Date(isoString);
-    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
-  };
+    const date = new Date(isoString)
+    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`
+  }
 
-  const router = useRouter()
   interface entitiesId {
     item: {
-      sam_entity_id: string;
-    };
+      sam_entity_id: string
+    }
   }
-  const handleClick = ({item}:entitiesId) => {
-    window.location.href = `/admin/entities/${item}`;
-  };
+  const handleClick = ({ item }: entitiesId) => {
+    window.location.href = `/admin/entities/${item}`
+  }
   return (
     <>
       {' '}
@@ -165,7 +177,11 @@ const EntitiesTable = async ({
           </Alert>
         </div>
       ) : (
-        <Table className={`${styles['table']} usa-table--striped`} bordered fullWidth={true} >
+        <Table
+          className={`${styles['table']} usa-table--striped`}
+          bordered
+          fullWidth={true}
+        >
           <TableHeader />
           <tbody>
             {data
@@ -173,12 +189,18 @@ const EntitiesTable = async ({
                 (parseInt(searchParams.page) - 1) * PAGE_SIZE,
                 (parseInt(searchParams.page) - 1) * PAGE_SIZE + PAGE_SIZE,
               )
-              .map((item: any, index:number) => (
-                <tr key={index} onClick={() =>{handleClick(item.sam_entity_id)}} style={{ cursor: 'pointer' }} >
+              .map((item: any, index: number) => (
+                <tr
+                  key={index}
+                  onClick={() => {
+                    handleClick(item.sam_entity_id)
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <td>{item.legal_business_name}</td>
                   <td>{item.uei}</td>
                   <td>{item.dba_name}</td>
-                  <td>{item.deleted_at === null? 'Active': 'Inactive'}</td>
+                  <td>{item.deleted_at === null ? 'Active' : 'Inactive'}</td>
                   <td>{formatDate(item.updated_at)}</td>
                 </tr>
               ))}
@@ -186,7 +208,9 @@ const EntitiesTable = async ({
         </Table>
       )}
       {Math.ceil(data?.length / PAGE_SIZE) > 1 && (
-        <div className="display-flex flex-column flex-align-end"><TablePagination total={Math.ceil(data?.length / PAGE_SIZE)} /></div>
+        <div className="display-flex flex-column flex-align-end">
+          <TablePagination total={Math.ceil(data?.length / PAGE_SIZE)} />
+        </div>
       )}
     </>
   )
