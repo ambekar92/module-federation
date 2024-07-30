@@ -46,6 +46,7 @@ import TipTap from './Tiptap';
           <FormGroup error={!!error} className="bg-white radius-sm">
             <>
               <Label
+                style={{maxWidth: 'fit-content'}}
                 error={!!error}
                 htmlFor={`${name}-combobox`}
                 requiredMarker={props.required}

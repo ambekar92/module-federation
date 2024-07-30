@@ -1,11 +1,11 @@
-import ReturnToFirmPanel from './returnToFirm/ReturnToFirmPanel'
-import ApplicationWelcomeCard from './ApplicationWelcomeCard'
+import ApplicationPanelLanding from './landing/ApplicationPanelLanding'
+import ReturnToBusinessPanel from './return-to-business/ReturnToBusinessPanel'
 
 function MainAppPanel() {
   return (
     <>
-      <ApplicationWelcomeCard />
-      <ReturnToFirmPanel />
+      <ApplicationPanelLanding />
+      <ReturnToBusinessPanel />
     </>
   )
 }

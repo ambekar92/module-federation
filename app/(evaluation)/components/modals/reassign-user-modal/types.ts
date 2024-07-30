@@ -3,6 +3,7 @@ import { z } from "zod";
 export enum ReassignType {
     REASSIGN_SCREENER,
     REASSIGN_ANALYST,
+    REASSIGN_APPROVER,
 }
 
 export const schema = z.object({

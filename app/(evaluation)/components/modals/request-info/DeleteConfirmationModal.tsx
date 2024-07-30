@@ -25,10 +25,11 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
       aria-labelledby="delete-confirmation-modal"
       aria-describedby="delete-confirmation-modal"
       isInitiallyOpen
+      isLarge
       renderToPortal={false}
       className='padding-x-4 padding-top-3'
     >
-      <ModalHeading>Are you sure you want to delete this Request for Information?</ModalHeading>
+      <ModalHeading>Are you sure you want to delete this Return to Business?</ModalHeading>
       <ModalFooter className='margin-top-5'>
         <ButtonGroup>
           <Button type="button" onClick={onDelete} >

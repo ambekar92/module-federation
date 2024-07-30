@@ -1,12 +1,12 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { Table, Alert } from '@trussworks/react-uswds'
-import useSWR from 'swr'
 import { APPLICATION_ROUTE } from '@/app/constants/routes'
+import fetcher from '@/app/services/fetcher'
+import { Alert, Table } from '@trussworks/react-uswds'
+import { useEffect, useState } from 'react'
 import TableHeader from '../components/TableHeader'
-import TablePagination from './TablePagination'
 import styles from './Entities.module.scss'
-import  fetcher  from '@/app/services/fetcher'
+import TablePagination from './TablePagination'
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
 const PAGE_SIZE = 8
 
 interface IApplication {
@@ -57,13 +57,13 @@ const ApplicationTable = async ({
                   : searchParams.sortColumn === 'legal_business_name' &&
                       searchParams.sortOrder === 'desc'
                     ? b.tax_identifier_number.localeCompare(
-                        a.tax_identifier_number,
-                      )
+                      a.tax_identifier_number,
+                    )
                     : searchParams.sortColumn === 'tax_identifier_number' &&
                         searchParams.sortOrder === 'asc'
                       ? a.tax_identifier_number.localeCompare(
-                          b.tax_identifier_number,
-                        )
+                        b.tax_identifier_number,
+                      )
                       : searchParams.sortColumn === 'tax_identifier_number' &&
                           searchParams.sortOrder === 'desc'
                         ? b.dba_name.localeCompare(a.dba_name)
@@ -96,7 +96,7 @@ const ApplicationTable = async ({
   const [data, setData] = useState([] as any | IApplication[])
   const [shouldFetch, setShouldFetch] = useState(true)
 
-  const { data: responseData, error: responseError, isLoading } = useSWR(`${APPLICATION_ROUTE}`, fetcher);
+  const { data: responseData, error: responseError, isLoading } = useFetchOnce(`${APPLICATION_ROUTE}`, fetcher);
 
   const convertToTableData = (dataToConvert: any | IApplication[]) => {
     const convertedData = [] as IApplication[]
@@ -177,11 +177,11 @@ const ApplicationTable = async ({
           )}
         </tbody>
       </Table>     )}
-      {Math.ceil(data?.length / PAGE_SIZE) > 1 && (
-        <div className="display-flex flex-column flex-align-end">
-          <TablePagination total={Math.ceil(data?.length / PAGE_SIZE)} />
-        </div>
-      )} 
+    {Math.ceil(data?.length / PAGE_SIZE) > 1 && (
+      <div className="display-flex flex-column flex-align-end">
+        <TablePagination total={Math.ceil(data?.length / PAGE_SIZE)} />
+      </div>
+    )}
 
     </>
   )

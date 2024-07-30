@@ -18,6 +18,8 @@ import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTas
 import { useApplicationData } from '../../firm/useApplicationData'
 import { useParams } from 'next/navigation'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote'
 
 interface RequestExpertModalProps {
   open: boolean
@@ -48,8 +50,10 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
   const [notes, setNotes] = useState('')
   const { data: userData, error } = useSWR<User[]>(`${USER_ROUTE}`, fetcher)
   const { trigger, isMutating } = useCompleteEvalTask();
+  const { trigger: triggerNote, isMutating: isMutatingNote } = useCreateNote();
   const params = useParams<{application_id: string}>();
   const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const sessionData = useSessionUCMS()
 
   const filteredUsers = useMemo(() => {
     if (!userData) {return [];}
@@ -80,18 +84,23 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
       const payload = {
         process_id: 1,
         data: {
-          approved: true,
-          tier: applicationData.application_tier,
           request_ogc_expert: isOgcExpert,
           request_oss_expert: isOssExpert,
-          notes: notes,
-          selected_office: selectedOffice,
-          selected_contributor: selectedContributor
+          approved: true,
+          tier: applicationData.application_tier
         }
       };
 
+      const notePayload =  {
+        application_id: applicationData.id,
+        subject: 'Request for Expert',
+        description: notes,
+        user_id: sessionData.data.user_id || 0
+      }
+
       try {
         await trigger(payload);
+        await triggerNote(notePayload);
         console.log('Task completed successfully');
         handleCancel();
       } catch (error) {
@@ -199,7 +208,7 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
 
       <ModalFooter>
         <ButtonGroup>
-          <Button type="button" onClick={onSubmit} disabled={!selectedContributor || isMutating}>
+          <Button type="button" onClick={onSubmit} disabled={!selectedContributor || isMutating || isMutatingNote}>
             {isMutating ? 'Submitting...' : 'Submit'}
           </Button>
           <Button type="button" outline onClick={handleCancel}>

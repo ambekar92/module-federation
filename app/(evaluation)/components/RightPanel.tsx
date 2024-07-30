@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './Evaluation.module.scss';
 import NotesWidget from './notes-widget/NotesWidget'
-import RequestInformation from './notes-widget/RequestInformation'
+import ReturnToBusinessForm from './return-to-business/ReturnToBusinessForm'
 import AnalystDocument from './notes-widget/AnalystDocument'
 
 import { Accordion } from '@trussworks/react-uswds'
@@ -11,10 +11,10 @@ function RightPanel() {
   const rightPanel: AccordionItemProps[] = [
     {
       id: 'rft',
-      title: 'Request for Information',
+      title: 'Return to Business',
       content: (
         <>
-          <RequestInformation />
+          <ReturnToBusinessForm />
         </>
       ),
       expanded: false,
@@ -24,9 +24,7 @@ function RightPanel() {
       id: 'item2',
       title: 'Notes',
       content: (
-        <div>
           <NotesWidget />
-        </div>
       ),
       expanded: false,
       headingLevel: 'h2',

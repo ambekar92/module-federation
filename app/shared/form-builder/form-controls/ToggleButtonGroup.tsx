@@ -7,6 +7,7 @@ type Props<T extends FieldValues, U> = {
     options: Option<U>[];
     label: string;
     hint?:string;
+    style?: React.CSSProperties;
 } & Partial<Pick<HTMLInputElement, 'disabled' | 'required'>>;
 
 const ToggleButtonGroup = <T extends FieldValues, U extends string | number>({
@@ -14,6 +15,7 @@ const ToggleButtonGroup = <T extends FieldValues, U extends string | number>({
     options,
     label,
     hint,
+    style,
     ...props
 }: Props<T, U>) => {
     const { control } = useFormContext<T>();
@@ -22,7 +24,7 @@ const ToggleButtonGroup = <T extends FieldValues, U extends string | number>({
             name={name}
             control={control}
             render={({ field, fieldState: { error } }) => (
-                <FormGroup error={!!error} className="bg-white radius-sm padding-4">
+                <FormGroup error={!!error} className="bg-white radius-sm">
                     <Label
                         style={{maxWidth: 'fit-content'}}
                         htmlFor={name}
@@ -39,8 +41,8 @@ const ToggleButtonGroup = <T extends FieldValues, U extends string | number>({
                         </ErrorMessage>
                     )}
                     <div
-                        className="padding-x-2 padding-bottom-1"
-                        style={{ width: 'fit-content', minWidth: '20rem', maxWidth: '60%' }}
+                        className="padding-bottom-1"
+                        style={style}
                     >
                         {options?.map((opt) => (
                             <Radio

@@ -17,6 +17,11 @@ import CompleteReview from '../modals/actionDropdownModal/CompleteReview'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
 import MakeApproval from '../modals/actionDropdownModal/MakeApproval'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
+import { FIRM_APPLICATIONS_ROUTE } from '@/constants/routes'
+import { fetcherPUT } from '@/services/fetcher'
+import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote';
+import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note';
 
 const ActionsDropdown = () => {
   const sessionData = useSessionUCMS()
@@ -33,6 +38,7 @@ const ActionsDropdown = () => {
   )
   const { trigger: triggerClose } = useCloseApplicationTask()
   const { trigger: triggerReview } = useCompleteEvalTask()
+  const { trigger: triggerChangeTier } = useCreateNote();
   const reassignScreenerRef = useRef<ModalRef>(null)
 
   useEffect(() => {
@@ -42,6 +48,44 @@ const ActionsDropdown = () => {
   }, [sessionData, sessionData.status])
 
   const [selectedValue, setSelectedValue] = useState('')
+
+  // Change Tier
+  const [showChangeTierModal, setShowChangeTierModal] = useState(false)
+  const [changeTierProps, setChangeTierProps] = useState({
+    title: 'Change Tier',
+  })
+
+  const handleChangeTierCancel = () => {
+    setShowChangeTierModal(false)
+  }
+
+  const handleChangeTierPostRequest = async (description:any) => {
+    setShowChangeTierModal(false)
+    setSelectedValue('Actions')    
+
+    try {
+      const putData = {
+        application_id: Number(params.application_id) || 0,
+        signed_by_id: userId || 0,
+        application_tier: applicationData?.tier || "0",
+      };
+
+      const notePayload: CreateNotePayload = {
+        application_id: Number(params.application_id) || 0,
+        description: description,
+        subject: `Change Tier`,
+        user_id: userId || 0
+      }
+
+      await triggerChangeTier(notePayload);      
+      await fetcherPUT(FIRM_APPLICATIONS_ROUTE, putData);
+
+    } catch (error: any) {
+      console.error('Failed to complete evaluation task', error)
+      console.error('Network Error: ', error)
+      return
+    }
+  }
 
   // Make an Approval
   const [showMakeApprovalModal, setShowMakeApprovalModal] = useState(false)
@@ -242,6 +286,10 @@ const ActionsDropdown = () => {
         setShowMakeApprovalModal(true)
         setSelectedValue(e.target.value)
       }
+      if (e.target.value === 'Change Tier') {
+        setShowChangeTierModal(true)
+        setSelectedValue(e.target.value)
+      }
     }
   }
 
@@ -313,6 +361,7 @@ const ActionsDropdown = () => {
           <option value="Close Application">Close Application</option>
           <option value="Complete Review">Complete Review</option>
           <option value="Make an Approval">Make an Approval</option>
+          <option value="Change Tier">Change Tier</option>
           {filteredActions.map((item, index) => (
             <option key={`action-menu-option-${index}`} value={item.id}>
               {item.optionLabel}
@@ -345,6 +394,13 @@ const ActionsDropdown = () => {
         title={makeApprovalProps.title}
         handleAction={handleMakeApprovalPostRequest}
         handleCancel={handleMakeApprovalCancel}
+      />
+      <ChangeTierModal
+        open={showChangeTierModal}
+        title={changeTierProps.title}
+        handleAction={handleChangeTierPostRequest}
+        handleCancel={handleChangeTierCancel}
+        description={''}
       />
     </div>
   )

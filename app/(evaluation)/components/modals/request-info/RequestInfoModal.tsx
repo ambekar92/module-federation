@@ -3,11 +3,16 @@ import { Modal, ModalHeading, ModalFooter, ButtonGroup, Button, Label } from '@t
 import styles from '../../Evaluation.module.scss';
 import { ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes';
 
+interface ReasonState {
+  id: number | null;
+  title: string;
+}
+
 interface RequestInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  reason: string;
-  setReason: (reason: string) => void;
+  reason: ReasonState;
+  setReason: (reason: ReasonState) => void;
   explanation: string;
   setExplanation: (explanation: string) => void;
   reasonCodes: ReasonCode[] | undefined;
@@ -24,9 +29,19 @@ const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
   reasonCodes,
   onSave
 }) => {
-  if(!isOpen) {
-    return null
+  if (!isOpen) {
+    return null;
   }
+
+  const handleReasonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = Number(e.target.value);
+    const selectedReason = reasonCodes?.find(code => code.id === selectedId);
+    setReason({
+      id: selectedId,
+      title: selectedReason?.title || ''
+    });
+  };
+
   return (
     <Modal
       id="request-info-modal"
@@ -38,7 +53,6 @@ const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
       renderToPortal={false}
     >
       <ModalHeading>Edit This Request for Information</ModalHeading>
-
       <div>
         <Label htmlFor='reason-code' requiredMarker className={`${styles['field-title']}`}>What&apos;s your reason?</Label>
         <div className="usa-combo-box margin-top-05">
@@ -46,19 +60,18 @@ const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
             className={`usa-select ${styles['dropdown-text']}`}
             name="reason-code"
             id="reason-code"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            value={reason.id || ''}
+            onChange={handleReasonChange}
           >
             <option value="">Select Reason</option>
             {reasonCodes && reasonCodes.map(code => (
-              <option value={code.action_type} key={code.id}>{code.title}</option>
+              <option value={code.id} key={code.id}>{code.title}</option>
             ))}
           </select>
         </div>
       </div>
-
       <div className='margin-top-4'>
-        <Label htmlFor='description-analyst' className={`${styles['field-title']}`}>Description field for Analyst text</Label>
+        <Label htmlFor='description-analyst' className={`${styles['field-title']}`}>Description (Optional)</Label>
         <textarea
           className={`${styles['textarea-field']}`}
           id="description-analyst"

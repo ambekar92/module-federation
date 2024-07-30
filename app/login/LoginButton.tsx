@@ -14,7 +14,7 @@ const LoginButton = ({
       type="button"
       onClick={() => {
         localStorage.clear()
-        signIn()
+        signIn('okta')
       }}
     >
       {action}

@@ -39,7 +39,7 @@ const ApplicationWelcomeCard = () => {
         data: {
           approved: true,
           create_return_to_firm_note: false,
-          tier: applicationData?.tier || 1,
+          tier: applicationData?.application_tier || 1,
         },
       }
       const response = await trigger(postData)
