@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { CharacterCount, DatePicker, Label, Select as UsSelect, TextInput as UsTextInput } from '@trussworks/react-uswds';
 import Select from 'react-select';

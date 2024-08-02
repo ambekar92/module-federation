@@ -8,6 +8,7 @@ import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTas
 import { useParams } from 'next/navigation';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 
 const ApplicationPanelLanding = () => {
   const params = useParams<{application_id: string}>();
@@ -42,6 +43,8 @@ const ApplicationPanelLanding = () => {
         },
       }
       const response = await trigger(postData)
+      // Todo - need to validate the response to display error message or redirect on success
+      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-screening'
     } catch (error: any) {
       console.error('Network Error: ', error)
       return
@@ -64,11 +67,11 @@ const ApplicationPanelLanding = () => {
     switch (userRole) {
       case 'reviewer':
       case 'analyst':
-        return 'Smiley was monstrous proud of his frog, and well he might be, for fellers that had <br /> traveled and been everywheres, all said he laid over any frog that ever they see.';
+        return 'Smiley was monstrous proud of his frog, and well he might be, for fellers that had traveled and been everywhere, all said he laid over any frog that ever they see.';
       case 'screener':
         return 'To begin this application review, please click “Start Review” below. Once you begin, the task timer will start tracking the amount of time you spend on this application. Return to this landing page to view any created and/or sent “Return to Business” items.'
       case 'default':
-        return 'Smiley was monstrous proud of his frog, and well he might be, for fellers that had <br /> traveled and been everywheres, all said he laid over any frog that ever they see.';
+        return 'Smiley was monstrous proud of his frog, and well he might be, for fellers that had traveled and been everywhere, all said he laid over any frog that ever they see.';
     }
   }
 
@@ -80,7 +83,7 @@ const ApplicationPanelLanding = () => {
       case 'screener':
         return 'Start Review';
       default:
-        return 'Complete Task';
+        return 'Complete Screening';
     }
   }
 

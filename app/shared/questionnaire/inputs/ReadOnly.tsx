@@ -8,12 +8,12 @@ export const ReadOnly = ({ question, inputId, isSubQuestion, selectedAnswers }: 
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         <span>{question.title}</span>
       </Label>
       <TextInput
         type='text'
-        id={inputId}
+        id={question.name}
         name={question.name}
         value={currentValue}
         disabled={true}

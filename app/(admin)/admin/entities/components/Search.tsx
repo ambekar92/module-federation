@@ -63,7 +63,6 @@ const Search = () => {
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOption = event.target.value
-
     if (selectedOption === 'searchTerm1') {
       setFlag1(true)
       setInputName(searchTerm1)

@@ -29,14 +29,6 @@ function HubzoneCalculator({contributorId}: QuestionnaireProps) {
         }
       />
       <hr className='margin-y-0 border-base-lightest'/>
-      <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        <Link className='usa-button usa-button--outline' href={`/application/questionnaire/${contributorId}?index=${totalQuestionnaires || 15}`}>
-          Previous
-        </Link>
-        <Link className='usa-button' href={`/application/questionnaire/${contributorId}/individual-contributor-hubzone-business-relationships`}>
-          Next
-        </Link>
-      </ButtonGroup>
     </>
   );
 };

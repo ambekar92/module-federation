@@ -7,11 +7,11 @@ export const SelectInput = ({ question, inputId, handleChange, isSubQuestion, se
   return (
     question.answer_choice && 'options' in question.answer_choice &&
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         {question.title}
       </Label>
       <Select
-        id={inputId}
+        id={question.name}
         name={question.name}
         value={currentValue}
         onChange={(e) => handleChange(question, e.target.value)}

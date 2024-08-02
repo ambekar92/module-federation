@@ -1,7 +1,7 @@
+import { APPLICATION_ROUTE } from '@/app/constants/routes';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import { useEffect } from 'react';
 import { useApplicationId } from './useApplicationIdResult';
-import { fetcherPUT } from '@/app/services/fetcher-legacy';
-import { APPLICATION_ROUTE } from '@/app/constants/routes';
 
 export const useUpdateApplicationProgress = (progress: string) => {
   const { applicationId } = useApplicationId();
@@ -14,7 +14,7 @@ export const useUpdateApplicationProgress = (progress: string) => {
             application_id: applicationId,
             progress
           };
-          await fetcherPUT(APPLICATION_ROUTE, postData);
+          await axiosInstance.put(APPLICATION_ROUTE, postData);
         } else {
           throw new Error('Application ID not found');
         }

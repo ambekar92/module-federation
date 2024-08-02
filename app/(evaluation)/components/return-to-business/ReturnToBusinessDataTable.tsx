@@ -1,11 +1,9 @@
 'use client'
-import { DRAFT_RTF_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/routes'
+import { RTF_ITEMS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
-import fetcher from '@/app/services/fetcher'
 import { IRTFItems } from '@/app/services/types/evaluation-service/RTFItems'
-import { REASON_CODE_ROUTE, ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
+import { ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
 import { Button, Grid, Table } from '@trussworks/react-uswds'
 import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
@@ -24,11 +22,14 @@ export interface ReasonState {
   title: string;
 }
 
-const ReturnToBusinessDataTable: React.FC = () => {
+interface ReturnToBusinessDataTableProps {
+  draftData: IRTFItems[] | null;
+  reasonCodes: ReasonCode[] | null;
+}
+
+const ReturnToBusinessDataTable: React.FC<ReturnToBusinessDataTableProps> = ({ draftData, reasonCodes }) => {
   const sessionData = useSessionUCMS()
   const params = useParams<{application_id: string}>()
-  const { data: draftData, error } = useFetchOnce<IRTFItems[]>(`${DRAFT_RTF_ITEMS_ROUTE}/${params.application_id}`, fetcher)
-  const { data: reasonCodes, error: reasonError } = useFetchOnce<ReasonCode[]>(REASON_CODE_ROUTE, fetcher)
   const [tableData, setTableData] = useState<IRTFItems[]>([])
   const [rowId, setRowId] = useState<number | null>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -125,7 +126,6 @@ const ReturnToBusinessDataTable: React.FC = () => {
     // Pending finalize logic here
   }
 
-  if (error || reasonError) {return <div>Failed to load data</div>}
   if (!draftData || !reasonCodes) {return <div>Loading...</div>}
 
   return (

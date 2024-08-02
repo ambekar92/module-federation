@@ -1,19 +1,22 @@
 'use client';
+import { INVITATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
+import fetcher from '@/app/services/fetcher';
+import { InvitationType } from '@/app/services/types/application-service/Application';
 import { CustomTable } from '@/app/shared/components/CustomTable';
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
+import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid, GridContainer, Label, TextInput } from '@trussworks/react-uswds';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { selectApplication, setContributors, setIsAddingContributor, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
 import { applicationSteps, qaAppLinkPrefix } from '../../utils/constants';
-import { Contributor } from './types';
-import InviteContributorModal from './InviteContributorModal';
-import { convertOwnerToContributor, useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
+import { convertOperatorAnswerToContributors, convertOwnerAnswerToContributors } from '../../utils/convertToContributor';
 import { QuestionnaireProps } from '../../utils/types';
-import useSWR from 'swr';
-import fetcher from '@/app/services/fetcher';
-import { INVITATION_ROUTE } from '@/app/constants/routes';
-import { InvitationType } from '@/app/services/types/application-service/Application';
+import { useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
+import InviteContributorModal from './InviteContributorModal';
+import { Contributor } from './types';
 
 function ContributorForm({contributorId}: QuestionnaireProps) {
   const { updateUserApplicationInfo } = useUserApplicationInfo();
@@ -24,51 +27,69 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
-  const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(`${INVITATION_ROUTE}/${contributorId}`, fetcher);
-
-  const syncOwnersWithContributors = () => {
-    const ownerApplicationInfoString = localStorage.getItem('ownerApplicationInfo');
-    const operatorApplicationInfoString = localStorage.getItem('operatorApplicationInfo');
-
-    if (ownerApplicationInfoString && operatorApplicationInfoString) {
-      const { owners } = JSON.parse(ownerApplicationInfoString);
-      const { operators } = JSON.parse(operatorApplicationInfoString);
-
-      let updatedContributors = [...contributors];
-
-      if (owners) {
-        const ownerContributors = owners.map(convertOwnerToContributor);
-        updatedContributors = updatedContributors.filter(c => c.contributorRole !== 'role_owner');
-        updatedContributors = [...ownerContributors, ...updatedContributors];
-      }
-
-      if (operators) {
-        const operatorContributors = operators.map((operator: { firstName: any; lastName: any; email: any; }) => ({
-          contributorRole: 'role_other' as const,
-          firstName: operator.firstName,
-          lastName: operator.lastName,
-          emailAddress: operator.email
-        }));
-        updatedContributors = updatedContributors.filter(c => c.contributorRole !== 'role_other');
-        updatedContributors = [...updatedContributors, ...operatorContributors];
-      }
-
-      dispatch(setContributors(updatedContributors));
-    }
-  };
+  const { entityId, applicationId } = useApplicationId();
+  const prevInvitationDataRef = useRef<InvitationType[] | null>(null);
+  const { data: invitationData, error: invitationError } = useFetchOnce<InvitationType[]>(`${INVITATION_ROUTE}/${contributorId}`, fetcher);
+  const { data: ownerData } = useFetchOnce<Question[]>(`${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management`, fetcher);
+  const { data: operatorData } = useFetchOnce<Question[]>(`${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation`, fetcher);
 
   useEffect(() => {
-    syncOwnersWithContributors();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (ownerData && ownerData[0].answer && Array.isArray(ownerData[0].answer) && ownerData[0].answer.length > 0) {
+      const ownerContributors = convertOwnerAnswerToContributors(ownerData[0].answer);
+      dispatch((dispatch, getState) => {
+        const currentState = selectApplication(getState());
+        const updatedContributors = [...currentState.contributors];
+
+        ownerContributors.forEach(newOwner => {
+          const existingIndex = updatedContributors.findIndex(c =>
+            c.emailAddress === newOwner.emailAddress &&
+						(c.contributorRole === 'role_owner' || c.contributorRole === 'role_owner_eligible')
+          );
+          if (existingIndex === -1) {
+            updatedContributors.push(newOwner);
+          } else {
+            updatedContributors[existingIndex] = { ...updatedContributors[existingIndex], ...newOwner };
+          }
+        });
+
+        dispatch(setContributors(updatedContributors));
+      });
+    }
+  }, [ownerData, dispatch]);
+
+  useEffect(() => {
+    if (operatorData && operatorData[0].answer && Array.isArray(operatorData[0].answer) && operatorData[0].answer.length > 0) {
+      const operatorContributors = convertOperatorAnswerToContributors(operatorData[0].answer);
+      dispatch((dispatch, getState) => {
+        const currentState = selectApplication(getState());
+        const updatedContributors = [...currentState.contributors];
+
+        operatorContributors.forEach(newOperator => {
+          const existingIndex = updatedContributors.findIndex(c =>
+            c.emailAddress === newOperator.emailAddress && c.contributorRole === 'role_other'
+          );
+          if (existingIndex === -1) {
+            updatedContributors.push(newOperator);
+          } else {
+            updatedContributors[existingIndex] = { ...updatedContributors[existingIndex], ...newOperator };
+          }
+        });
+
+        dispatch(setContributors(updatedContributors));
+      });
+    }
+  }, [operatorData, dispatch]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
     dispatch(setIsAddingContributor(false));
   }, [dispatch]);
 
+  // Converts Invitation data users into contributors
   useEffect(() => {
-    if (invitationData) {
+    if (invitationData && invitationData !== prevInvitationDataRef.current) {
+      prevInvitationDataRef.current = invitationData;
+
       const apiContributors: Contributor[] = invitationData
         .filter((item: InvitationType) => item.invitation_status !== 'removed')
         .map((item: InvitationType) => ({
@@ -82,22 +103,28 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
               : 'role_other' as 'role_owner' | 'role_other' | 'role_spouse',
         }));
 
-      // Merge the current contributors with the new API contributors
-      const mergedContributors = [...contributors];
-      apiContributors.forEach(apiContributor => {
-        const existingIndex = mergedContributors.findIndex(
-          c => c.emailAddress === apiContributor.emailAddress && c.contributorRole === apiContributor.contributorRole
-        );
-        if (existingIndex === -1) {
-          mergedContributors.push(apiContributor);
-        } else {
-          mergedContributors[existingIndex] = apiContributor;
-        }
+      dispatch((dispatch, getState) => {
+        const currentState = selectApplication(getState());
+        const currentContributors = currentState.contributors;
+        const mergedContributors = [...currentContributors];
+        apiContributors.forEach(apiContributor => {
+          const existingIndex = mergedContributors.findIndex(
+            c => c.emailAddress === apiContributor.emailAddress && c.contributorRole === apiContributor.contributorRole
+          );
+          if (existingIndex === -1) {
+            mergedContributors.push(apiContributor);
+          } else {
+            mergedContributors[existingIndex] = {
+              ...mergedContributors[existingIndex],
+              ...apiContributor
+            };
+          }
+        });
+
+        console.log(mergedContributors);
+        dispatch(setContributors(mergedContributors));
       });
-      console.log(mergedContributors)
-      dispatch(setContributors(mergedContributors));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, invitationData]);
 
   const handleAddNew = () => {
@@ -119,7 +146,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
         firstName,
         lastName,
         emailAddress,
-        contributorRole: 'role_spouse', // Default to spouse role
+        contributorRole: 'role_spouse',
       };
 
       let updatedContributors;
@@ -146,7 +173,6 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
       dispatch(setContributors(updatedContributors));
       updateUserApplicationInfo({ contributors: updatedContributors });
 
-      // Reset form fields
       setFirstName('');
       setLastName('');
       setEmailAddress('');
@@ -227,7 +253,6 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
 
   const tableHeaders = [
     { id: 'Name', headerName: 'Legal Name' },
-    // { id: 'PrincipalType', headerName: 'Principal Type'},
     { id: 'Email', headerName: 'Email' },
   ];
 
@@ -283,6 +308,8 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
         open={showModal}
         handleCancel={closeModal}
         contributorId={contributorId}
+        applicationId={applicationId}
+        entityId={entityId}
       />
       <h3 className="margin-y-0">Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</h3>
       <hr className="margin-y-3 width-full border-base-lightest" />

@@ -16,7 +16,7 @@ import { stripHtmlTags } from '../../../../shared/utility/stripHtmlTags';
 import { subjectSuffixMap, titleMap, userRolesOptionsMap } from './maps';
 import { ReassignType, ReassignUserType, schema } from './types';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
-
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 
 type Props = {
     modalRef: RefObject<ModalRef>,
@@ -30,19 +30,19 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
   const {applicationData} = useApplicationData(ApplicationFilterType.id, applicationId);
   const {data, isLoading} = useUsers('role_slug', userRolesOptionsMap[reassignType]);
   const [userOptions, setUserOptions] = useState<ComboBoxOption[] | null>(null);
-  
+
   const methods = useForm<ReassignUserType>({
     defaultValues: {
-        user: '',
-        comments: '',
+      user: '',
+      comments: '',
     },
     resolver: zodResolver(schema),
   });
 
   useEffect(() => {
-    if (isLoading || !data) return;
-      const opts= data.map(user => ({value: user.id, label: `${user.first_name} ${user.last_name}`})) as unknown as ComboBoxOption[];
-      setUserOptions(opts);
+    if (isLoading || !data) {return;}
+    const opts= data.map(user => ({value: user.id, label: `${user.first_name} ${user.last_name}`})) as unknown as ComboBoxOption[];
+    setUserOptions(opts);
   }, [data]);
 
   function onSubmit(formData: ReassignUserType) {
@@ -53,6 +53,8 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
 
     reassign(formData).then(() => {
       postNote(formData).catch(() => console.error('failed to post note'));
+      // Todo - need to validate the response to display error message or redirect on success
+      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=reassignment-complete'
     }).catch(() => {console.error('failed to reassign')}).finally(() => {
       onClose();
     });
@@ -93,31 +95,31 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
   }
 
   return (
-    <Modal 
-        isLarge={true}
-        forceAction={true}
-        ref={modalRef} 
-        id="reassign-user-modal" 
-        aria-labelledby="reassign-user-modal" 
-        aria-describedby="reassign-user-modal">
-        <FormProvider {...methods}>
-          <form>
-            <h1> {titleMap[reassignType]} </h1>
-           {userOptions && <Combobox<ReassignUserType> name='user' required={true} label='Select User' options={userOptions}/>}
-            <RichText<ReassignUserType> name='comments' label='Provide more information' required={true} itemId={Math.random()} />
-            <ModalFooter>
-              <ButtonGroup>
-                <Button type='submit' onClick={methods.handleSubmit(onSubmit)} disabled={isMutating}>
+    <Modal
+      isLarge={true}
+      forceAction={true}
+      ref={modalRef}
+      id="reassign-user-modal"
+      aria-labelledby="reassign-user-modal"
+      aria-describedby="reassign-user-modal">
+      <FormProvider {...methods}>
+        <form>
+          <h1> {titleMap[reassignType]} </h1>
+          {userOptions && <Combobox<ReassignUserType> name='user' required={true} label='Select User' options={userOptions}/>}
+          <RichText<ReassignUserType> name='comments' label='Provide more information' required={true} itemId={Math.random()} />
+          <ModalFooter>
+            <ButtonGroup>
+              <Button type='submit' onClick={methods.handleSubmit(onSubmit)} disabled={isMutating}>
                   Submit
-                </Button>
-                <Button type='button' unstyled className="padding-105 text-center" onClick={onClose}>
+              </Button>
+              <Button type='button' unstyled className="padding-105 text-center" onClick={onClose}>
                   Cancel
-                </Button>
-              </ButtonGroup>
-            </ModalFooter>
-          </form>
-        </FormProvider>
-        </Modal>
+              </Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </form>
+      </FormProvider>
+    </Modal>
   )
 }
 

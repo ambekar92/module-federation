@@ -8,14 +8,16 @@ type InputProps<T extends FieldValues> = {
     name: Path<T>;
     label: string;
     hint?: string;
+    onFileSelect?:(file:any) => void;
 } & Partial<Pick<HTMLInputElement, 'disabled' | 'required' | 'type'>>
 
-const DocumentUpload = <T extends FieldValues>({ name, label, hint, ...props }: InputProps<T>) => {
+const DocumentUpload = <T extends FieldValues>({ name, label, hint, onFileSelect, ...props }: InputProps<T>) => {
     const { control } = useFormContext<T>();
     const [file, setFile] = useState<File>();
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         setFile(e.target.files![0])
+        onFileSelect(e.target.files![0])
     }
     return (
         <Controller

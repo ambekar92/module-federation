@@ -11,13 +11,13 @@ export const HiddenTextInput = ({ question, inputId, handleChange, isSubQuestion
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         <span>{question.title}</span>
       </Label>
       <div className='display-flex flex-column' style={{maxWidth: '480px'}}>
         <TextInput
           type={showPassword ? 'text' : 'password'}
-          id={inputId}
+          id={question.name}
           name={question.name}
           value={currentValue}
           onChange={(e) => handleChange(question, e.target.value)}
@@ -25,7 +25,7 @@ export const HiddenTextInput = ({ question, inputId, handleChange, isSubQuestion
         <button
           type="button"
           className="usa-show-password flex-align-self-end margin-right-2px"
-          aria-controls={inputId}
+          aria-controls={question.name}
           onClick={(): void => setShowPassword(showPassword => !showPassword)}
         >
           {showPassword ? 'Hide Text' : 'Display Text'}

@@ -1,8 +1,8 @@
 import useSWR from "swr";
-import { Application } from "../types/application";
 import { useParams } from "next/navigation";
 import { useSessionUCMS } from "@/app/lib/auth";
 import { FIRM_APPLICATIONS_ROUTE } from "@/app/constants/routes";
+import { Application } from "../types/application-service/Application";
 
 export function useApplication() {
     const session = useSessionUCMS();

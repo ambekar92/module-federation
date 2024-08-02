@@ -1,21 +1,24 @@
-import React from 'react';
-import { Question, Rule, Answer } from '@/app/shared/types/questionnaireTypes';
-import { Grid } from '@trussworks/react-uswds';
+'use client'
 import {
+  AddressInput,
+  BooleanInput,
+  HiddenTextInput,
+  MultiSelectInput,
+  NumberInput,
+  QaDateInput,
+  QaGrid,
+  QaTextarea,
   QaTextInput,
   ReadOnly,
-  QaTextarea,
-  NumberInput,
-  BooleanInput,
-  SelectInput,
-  MultiSelectInput,
-  QaGrid,
-  QaDateInput,
-  HiddenTextInput,
-  AddressInput
+  SelectInput
 } from '@/app/shared/questionnaire/inputs';
-import { OwnershipQaGrid } from './OwnershipQaGrid';
+import ApiGetUrlInput from '@/app/shared/questionnaire/inputs/ApiGetUrl';
+import { isUrlAnswerChoice } from '@/app/shared/questionnaire/questionnaireHelpers';
+import { Answer, Question, Rule } from '@/app/shared/types/questionnaireTypes';
+import { Grid } from '@trussworks/react-uswds';
+import React, { useEffect, useRef } from 'react';
 import { OperatorsQaGrid } from './OperatorsQaGrid';
+import { OwnershipQaGrid } from './OwnershipQaGrid';
 
 interface QuestionRendererProps {
   question: Question;
@@ -26,6 +29,7 @@ interface QuestionRendererProps {
   isSubQuestion?: boolean;
 	userId: number | null;
 	contributorId: number;
+	onRefetchQuestionnaires: () => void;
 }
 
 const QuestionRenderer: React.FC<QuestionRendererProps> = ({
@@ -34,10 +38,18 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
   selectedAnswers,
   handleAnswerChange,
   isSubQuestion = false,
-  userId, contributorId
+  userId, contributorId, onRefetchQuestionnaires
 }) => {
   const inputId = `input-${question.question_type}-${index}`;
   const answer = selectedAnswers[question.name]?.value ?? question.answer?.value?.answer;
+  const hasRefetched = useRef(false);
+
+  useEffect(() => {
+    if (question.question_type === 'api.get.questionnaire' && !hasRefetched.current) {
+      onRefetchQuestionnaires();
+      hasRefetched.current = true;
+    }
+  }, [question.question_type, onRefetchQuestionnaires]);
 
   const renderInput = () => {
     switch (question.question_type) {
@@ -152,6 +164,25 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
             isSubQuestion={isSubQuestion}
           />
         );
+      case 'api.get.questionnaire':
+        return null;
+      case 'api.get.url':
+        if (isUrlAnswerChoice(question.answer_choice)) {
+          return (
+            <ApiGetUrlInput
+              question={question}
+              inputId={inputId}
+              handleChange={handleAnswerChange}
+              selectedAnswers={selectedAnswers}
+              isSubQuestion={isSubQuestion}
+              contributorId={contributorId}
+              onRefetchQuestionnaires={onRefetchQuestionnaires}
+            />
+          );
+        } else {
+          console.error('Invalid answer_choice for api.get.url question type');
+          return null;
+        }
       case 'document_upload':
         return null;
       default:
@@ -188,6 +219,7 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                   selectedAnswers={selectedAnswers}
                   handleAnswerChange={handleAnswerChange}
                   isSubQuestion={true}
+                  onRefetchQuestionnaires={onRefetchQuestionnaires}
                 />
               </Grid>
             );

@@ -17,7 +17,8 @@ export enum ActionMenuIDs {
   REASSIGN_SCREENER = 11,
   REASSIGN_ANALYST = 12,
   REASSIGN_APPROVER = 13,
-  UPDATE_VA_STATUS = 14
+  UPDATE_VA_STATUS = 14,
+  CHANGE_TIER = 15,
 }
 
 export const actionMenuData = [
@@ -81,73 +82,25 @@ export const actionMenuData = [
     }
   },
   {
-    'id': 3,
-    'optionLabel': 'Return to Analyst',
-    'permissions': ['supervisor_high_criteria', 'supervisor_low_criteria'],
-    'title': 'Return to Analyst',
-    'actionLabel': 'De-escalate',
-    'modalType': 'textarea',
-    'description': 'By clicking \'De-escalate\', you are returning this application to the person it was assigned to before you',
-    'inputDescription': 'Please, provide more information regarding why you are returning this application.',
-    'steps': [],
-    'table': {
-      'step': -1,
-      'tableHeader': [],
-      'tableRows': []
-    },
-    'signature': {
-      'step': -1,
-      'description': ''
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': -1,
-      'rows': []
-    }
+    id: ActionMenuIDs.RETURN_TO_ANALYST,
+    optionLabel: 'Return to Analyst',
+    permissions: [Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW_TIER, Role.REVIEWER],
   },
   {
-    'id': 4,
-    'optionLabel': 'Make Recommendation',
-    'permissions': ['analyst_low_criteria', 'analyst_high_criteria'],
-    'title': 'Make Recommendation',
-    'actionLabel': 'Complete Recommendation',
-    'modalType': 'step',
-    'description': 'Reason for request.',
-    'steps': ['Review and/or Edit Notes', 'Upload and Recommend'],
-    'table': {
-      'step': 1,
-      'tableHeader': ['Program', 'Approve', 'Decline'],
-      'tableRows': [
-        ['Program 1', 'radio', 'radio'],
-        ['Program 2', 'radio', 'radio'],
-        ['Program 3', 'radio', 'radio'],
-        ['Program 4', 'radio', 'radio']
-      ]
-    },
-    'signature': {
-      'step': -1,
-      'description': ''
-    },
-    'upload': true,
-    'uploadStep': 1,
-    'notes': {
-      'step': 0,
-      'rows': [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-      ]
-    },
-    'approvalLetter': {
-      'step': -1,
-      'rows': []
-    }
+    id: ActionMenuIDs.RETURN_TO_ANALYST,
+    optionLabel: 'Return to Analyst',
+    permissions: [Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW_TIER, Role.REVIEWER],
+  },
+  {
+    id: ActionMenuIDs.MAKE_RECOMMENDATION,
+    optionLabel: 'Make Recommendation',
+    permissions: [
+      Role.ANALYST,
+      Role.ANALYST_HIGH_TIER,
+      Role.ANALYST_LOW_TIER,
+      Role.ANALYST_LOW,
+      Role.ANALYST_HIGH
+    ],
   },
   {
     'id': 5,
@@ -278,64 +231,24 @@ export const actionMenuData = [
     }
   },
   {
-    'id': 9,
-    'optionLabel': 'Return to Reviewer',
-    'permissions': ['approver_8a_aabd', 'approver_8a_delegate'],
-    'title': 'Return to Reviewer',
-    'actionLabel': 'De-escalate',
-    'modalType': 'textarea',
-    'description': 'By clicking \'De-escalate\', you are returning this application to the person it was assigned to before you',
-    'inputDescription': 'Please, provide more information regarding why you are returning this application.',
-    'steps': [],
-    'table': {
-      'step': -1,
-      'tableHeader': [],
-      'tableRows': []
-    },
-    'signature': {
-      'step': -1,
-      'description': ''
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': -1,
-      'rows': []
-    }
+    id: ActionMenuIDs.RETURN_TO_REVIEWER,
+    optionLabel: 'Return to Reviewer',
+    permissions: [Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE, Role.APPROVER_AABD],
   },
   {
-    'id': 10,
-    'optionLabel': 'Return to Screener',
-    'permissions': ['analyst_low_criteria', 'analyst_high_criteria'],
-    'title': 'Return to Screener',
-    'actionLabel': 'De-escalate',
-    'modalType': 'textarea',
-    'description': 'By clicking \'De-escalate\', you are returning this application to the person it was assigned to before you',
-    'inputDescription': 'Please, provide more information regarding why you are returning this application.',
-    'steps': [],
-    'table': {
-      'step': -1,
-      'tableHeader': [],
-      'tableRows': []
-    },
-    'signature': {
-      'step': -1,
-      'description': ''
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': -1,
-      'rows': []
-    }
+    id: ActionMenuIDs.RETURN_TO_SCREENER,
+    optionLabel: 'Return to Screener',
+    permissions: [
+      Role.ANALYST,
+      Role.ANALYST_HIGH_TIER,
+      Role.ANALYST_LOW_TIER,
+      Role.ANALYST_HIGH,
+      Role.ANALYST_LOW,
+      Role.ANALYST_CONTRIBUTOR_OGC,
+      Role.ANALYST_CONTRIBUTOR_OSS,
+      Role.ANALYST_OGC,
+      Role.ANALYST_OSS
+    ],
   },
   {
     id: ActionMenuIDs.REASSIGN_SCREENER,
@@ -354,7 +267,12 @@ export const actionMenuData = [
   },
   {
     id: ActionMenuIDs.UPDATE_VA_STATUS,
-    optionLabel: 'Update VA Status',
+    optionLabel: "Update VA Status",
     permissions: [Role.SCREENER, Role.SCREENER_COMMON_APP],
+  },
+  {
+    id: ActionMenuIDs.CHANGE_TIER,
+    optionLabel: "Change Tier",
+    permissions: [Role.REVIEWER_LOW_TIER, Role.REVIEWER_HIGH_TIER],
   }
 ]

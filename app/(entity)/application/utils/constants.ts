@@ -61,7 +61,7 @@ export const calculateEligiblePrograms = (owners: OwnerType[]): ProgramOption[] 
         }
       };
 
-      manageDisadvantage(owner.gender === 'Female', 'female');
+      manageDisadvantage(owner.gender === 'F', 'female');
       manageDisadvantage(owner.veteranStatus === 'Veteran' || owner.veteranStatus === 'Service-Disabled Veteran', 'veteran');
       manageDisadvantage(owner.veteranStatus === 'Service-Disabled Veteran', 'disabledVeteran');
 

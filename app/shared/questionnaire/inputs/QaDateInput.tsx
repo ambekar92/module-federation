@@ -20,13 +20,13 @@ export const QaDateInput = ({ question, inputId, handleChange, isSubQuestion, se
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         <span>{question.title}</span>
       </Label>
       <DatePicker
         aria-describedby={`${question.name}-info ${question.name}-hint`}
         aria-labelledby={`${question.name}-info ${question.name}-label`}
-        id={inputId}
+        id={question.name}
         name={question.name}
         maxDate={today}
         defaultValue={isGridQuestion ? '' : currentValue}

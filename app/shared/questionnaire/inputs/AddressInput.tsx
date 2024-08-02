@@ -15,36 +15,36 @@ export const AddressInput = ({ question, inputId, handleChange, isSubQuestion, s
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
       <Fieldset>
-        <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+        <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
           <span>{question.title}</span>
         </Label>
         <p>
           Required fields are marked with an asterisk (<RequiredMarker />
           ).
         </p>
-        <Label htmlFor={`mailing-address-${inputId}`} requiredMarker={question.answer_required_flag}>Street address</Label>
+        <Label htmlFor={`mailing-address-${question.name}`} requiredMarker={question.answer_required_flag}>Street address</Label>
         <TextInput
-          id={`mailing-address-${inputId}`}
+          id={`mailing-address-${question.name}`}
           name={`mailing-address-${question.name}`}
           type="text"
           value={currentValue.street || ''}
           onChange={(e) => handleAddressChange('street', e.target.value)}
         />
 
-        <Label htmlFor={`mailing-address-2-${inputId}`}>Street address line 2</Label>
+        <Label htmlFor={`mailing-address-2-${question.name}`}>Street address line 2</Label>
         <TextInput
-          id={`mailing-address-2-${inputId}`}
+          id={`mailing-address-2-${question.name}`}
           name={`mailing-address-2-${question.name}`}
           type="text"
           value={currentValue.street2 || ''}
           onChange={(e) => handleAddressChange('street2', e.target.value)}
         />
 
-        <Label htmlFor={`mailing-city-${inputId}`} requiredMarker={question.answer_required_flag}>
+        <Label htmlFor={`mailing-city-${question.name}`} requiredMarker={question.answer_required_flag}>
           City
         </Label>
         <TextInput
-          id={`mailing-city-${inputId}`}
+          id={`mailing-city-${question.name}`}
           name={`mailing-city-${question.name}`}
           type="text"
           required
@@ -79,9 +79,9 @@ export const AddressInput = ({ question, inputId, handleChange, isSubQuestion, s
           onChange={(e) => handleAddressChange('zip', e.target.value)}
         />
 
-        <Label htmlFor={`urbanization-${inputId}`}>Urbanization (Puerto Rico only)</Label>
+        <Label htmlFor={`urbanization-${question.name}`}>Urbanization (Puerto Rico only)</Label>
         <TextInput
-          id={`urbanization-${inputId}`}
+          id={`urbanization-${question.name}`}
           name={`urbanization-${question.name}`}
           type="text"
           value={currentValue.urbanization || ''}

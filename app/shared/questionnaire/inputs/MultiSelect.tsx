@@ -51,7 +51,7 @@ export const MultiSelectInput = ({
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         {question.title}
       </Label>
       <Select

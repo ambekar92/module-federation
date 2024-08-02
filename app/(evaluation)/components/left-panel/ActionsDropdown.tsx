@@ -9,19 +9,19 @@ import CloseApplication from '@/app/shared/components/modals/CloseApplication'
 
 import { useCloseApplicationTask } from '@/app/services/mutations/useCloseApplicationTask'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
-import { useParams } from 'next/navigation'
+import { useParams, redirect } from 'next/navigation'
 import { ModalRef } from '@trussworks/react-uswds'
 import ReassignUserModal from '../modals/reassign-user-modal/ReassignUserModal'
 import { ReassignType } from '../modals/reassign-user-modal/types'
-import CompleteReview from '../modals/actionDropdownModal/CompleteReview'
+import CompleteReview from '../modals/complete-review-modal/CompleteReview'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
-import MakeApproval from '../modals/actionDropdownModal/MakeApproval'
+import MakeApproval from '../modals/complete-review-modal/MakeApproval'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import ConfirmVeteranStatusModal from '../modals/confirm-veteran-status-modal/ConfirmVeteranStatusModal'
+import ReturnToPreviousTaskModal from '../modals/return-to-previous-task-modal/ReturnToPreviousTaskModal'
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
-import { FIRM_APPLICATIONS_ROUTE } from '@/constants/routes'
-import { fetcherPUT } from '@/services/fetcher'
-import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote';
-import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note';
+import MakeRecommendationModal from '@/app/shared/components/modals/MakeRecommendationModal'
 
 const ActionsDropdown = () => {
   const sessionData = useSessionUCMS()
@@ -38,8 +38,14 @@ const ActionsDropdown = () => {
   )
   const { trigger: triggerClose } = useCloseApplicationTask()
   const { trigger: triggerReview } = useCompleteEvalTask()
-  const { trigger: triggerChangeTier } = useCreateNote();
   const reassignScreenerRef = useRef<ModalRef>(null)
+  const veteranStatusRef = useRef<ModalRef>(null)
+  const closeApplicationRef = useRef<ModalRef>(null)
+  const completeReviewRef = useRef<ModalRef>(null)
+  const makeApprovalRef = useRef<ModalRef>(null)
+  const changeTierRef = useRef<ModalRef>(null)
+  const makeRecommendationRef = useRef<ModalRef>(null)
+  const retrnToPreviousTaskRef = useRef<ModalRef>(null);
 
   useEffect(() => {
     if (sessionData.status === 'authenticated' && sessionData?.data?.user_id) {
@@ -48,131 +54,6 @@ const ActionsDropdown = () => {
   }, [sessionData, sessionData.status])
 
   const [selectedValue, setSelectedValue] = useState('')
-
-  // Change Tier
-  const [showChangeTierModal, setShowChangeTierModal] = useState(false)
-  const [changeTierProps, setChangeTierProps] = useState({
-    title: 'Change Tier',
-  })
-
-  const handleChangeTierCancel = () => {
-    setShowChangeTierModal(false)
-  }
-
-  const handleChangeTierPostRequest = async (description:any) => {
-    setShowChangeTierModal(false)
-    setSelectedValue('Actions')    
-
-    try {
-      const putData = {
-        application_id: Number(params.application_id) || 0,
-        signed_by_id: userId || 0,
-        application_tier: applicationData?.tier || "0",
-      };
-
-      const notePayload: CreateNotePayload = {
-        application_id: Number(params.application_id) || 0,
-        description: description,
-        subject: `Change Tier`,
-        user_id: userId || 0
-      }
-
-      await triggerChangeTier(notePayload);      
-      await fetcherPUT(FIRM_APPLICATIONS_ROUTE, putData);
-
-    } catch (error: any) {
-      console.error('Failed to complete evaluation task', error)
-      console.error('Network Error: ', error)
-      return
-    }
-  }
-
-  // Make an Approval
-  const [showMakeApprovalModal, setShowMakeApprovalModal] = useState(false)
-  const [makeApprovalProps, setMakeApprovalProps] = useState({
-    title: 'Make an Approval',
-  })
-
-  const handleMakeApprovalCancel = () => {
-    setShowMakeApprovalModal(false)
-  }
-
-  const handleMakeApprovalPostRequest = async () => {
-    setShowMakeApprovalModal(false)
-    setSelectedValue('Actions')
-
-    try {
-      const postData = {
-        process_id: applicationData?.process.id || 1,
-        data: {
-          approved: true,
-          tier: applicationData?.tier || 1,
-        },
-      }
-      const response = await triggerReview(postData)
-    } catch (error: any) {
-      console.error('Failed to complete evaluation task', error)
-      console.error('Network Error: ', error)
-      return
-    }
-  }
-
-  // Complete Review
-  const [showCompleteReviewModal, setShowCompleteReviewModal] = useState(false)
-  const [completeReviewlProps, setCompleteReviewlProps] = useState({
-    title: 'Complete Review',
-  })
-
-  const handleCompleteReviewCancel = () => {
-    setShowCompleteReviewModal(false)
-  }
-
-  const handlePostRequest = async () => {
-    setShowCompleteReviewModal(false)
-    setSelectedValue('Actions')
-
-    try {
-      const postData = {
-        process_id: applicationData?.process.id || 1,
-        data: {
-          approved: true,
-          tier: applicationData?.tier || 1,
-        },
-      }
-      const response = await triggerReview(postData)
-    } catch (error: any) {
-      console.error('Failed to complete evaluation task', error)
-      console.error('Network Error: ', error)
-      return
-    }
-  }
-
-  // Close This Application
-  const [showCloseAppModal, setShowCloseAppModal] = useState(false)
-  const [closeAppModalProps, setCloseAppModalProps] = useState({
-    title: 'Close This Application',
-  })
-
-  const handleCloseAppAction = async (description: any) => {
-    try {
-      const postData = {
-        application_id: application_id,
-        explanation: description,
-        user_id: userId,
-      }
-      const response = await triggerClose(postData)
-      setSelectedValue('Actions')
-      alert(response?.message)
-    } catch (error: any) {
-      console.error('Network Error: ', error)
-      return
-    }
-    setShowCloseAppModal(false)
-  }
-
-  const handleCloseAppCancel = () => {
-    setShowCloseAppModal(false)
-  }
 
   const [showModal, setShowModal] = useState(false)
   const [actionModalProps, setActionModalProps] = useState({
@@ -205,6 +86,62 @@ const ActionsDropdown = () => {
     },
   })
 
+  const handleMakeApprovalPostRequest = async () => {
+    setSelectedValue('Actions')
+
+    try {
+      const postData = {
+        process_id: applicationData?.process.id || 1,
+        data: {
+          approved: true,
+          tier: applicationData?.application_tier || 1,
+        },
+      }
+      await triggerReview(postData)
+    } catch (error: any) {
+      console.error('Failed to complete evaluation task', error)
+      console.error('Network Error: ', error)
+    }
+  }
+
+  const handlePostRequest = async () => {
+    setSelectedValue('Actions')
+
+    try {
+      const postData = {
+        process_id: applicationData?.process.id || 1,
+        data: {
+          approved: true,
+          tier: applicationData?.application_tier || 1,
+        },
+      }
+      await triggerReview(postData)
+    } catch (error: any) {
+      console.error('Failed to complete evaluation task', error)
+      console.error('Network Error: ', error)
+    }
+  }
+
+  const handleCloseAppAction = async (description: any) => {
+    try {
+      const postData = {
+        application_id: application_id,
+        explanation: description,
+        user_id: userId,
+      }
+      const response = await triggerClose(postData)
+      setSelectedValue('Actions')
+      // Todo - need to validate the response to display error message or redirect on success
+      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id }) + '?name=application-closed'
+    } catch (error: any) {
+      console.error('Failed to close application', error)
+    }
+  }
+
+  const handleResetActionDropdownRequest = async () => {
+    setSelectedValue('Actions')
+  }
+
   const handleAction = () => {
     setShowModal(false)
   }
@@ -224,24 +161,59 @@ const ActionsDropdown = () => {
     }
   }
 
-  const handleActionSelect = (e: any) => {
-    const selectedValue = Number(e.target.value)
-    /*eslint-disable eqeqeq*/
-    const modalProp = actionMenuData.find(
-      (item) => item.id == Number(e.target.value),
-    ) as any
+  const handleActionSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value
+    setSelectedValue(selectedValue)
 
-    if (selectedValue === ActionMenuIDs.REASSIGN_SCREENER) {
+    const selectedNumericValue = Number(selectedValue);
+
+    if (selectedNumericValue === ActionMenuIDs.REASSIGN_SCREENER) {
       setReassignType(ReassignType.REASSIGN_SCREENER)
       reassignScreenerRef.current?.toggleModal()
       return
     }
-    if (selectedValue === ActionMenuIDs.REASSIGN_ANALYST) {
+    if (selectedNumericValue === ActionMenuIDs.REASSIGN_ANALYST) {
       setReassignType(ReassignType.REASSIGN_ANALYST)
       reassignScreenerRef.current?.toggleModal()
       return
     }
+    if (selectedNumericValue === ActionMenuIDs.REASSIGN_APPROVER) {
+      setReassignType(ReassignType.REASSIGN_APPROVER)
+      reassignScreenerRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.UPDATE_VA_STATUS) {
+      veteranStatusRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.CLOSE_APPLICATION) {
+      closeApplicationRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.COMPLETE_REVIEW) {
+      completeReviewRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.MAKE_APPROVAL) {
+      makeApprovalRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.CHANGE_TIER) {
+      changeTierRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.MAKE_RECOMMENDATION) {
+      makeRecommendationRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.RETURN_TO_ANALYST || selectedNumericValue === ActionMenuIDs.RETURN_TO_REVIEWER || selectedNumericValue === ActionMenuIDs.RETURN_TO_SCREENER) {
+      retrnToPreviousTaskRef.current?.toggleModal();
+      return;
+    }
 
+    const modalProp = actionMenuData.find(
+      (item) => item.id === selectedNumericValue,
+    ) as any;
     if (modalProp) {
       setActionModalProps({
         title: modalProp?.title || '',
@@ -273,36 +245,17 @@ const ActionsDropdown = () => {
         },
       })
       setShowModal(true)
-    } else {
-      if (e.target.value === 'Close Application') {
-        setShowCloseAppModal(true)
-        setSelectedValue(e.target.value)
-      }
-      if (e.target.value === 'Complete Review') {
-        setShowCompleteReviewModal(true)
-        setSelectedValue(e.target.value)
-      }
-      if (e.target.value === 'Make an Approval') {
-        setShowMakeApprovalModal(true)
-        setSelectedValue(e.target.value)
-      }
-      if (e.target.value === 'Change Tier') {
-        setShowChangeTierModal(true)
-        setSelectedValue(e.target.value)
-      }
     }
   }
 
   const filteredActions = useMemo(() => {
     const userPermissions: Role[] =
       sessionData.data?.permissions?.map((p) => p.slug) || []
-    // const userPermissions = ['analyst_low_criteria']
 
     return actionMenuData.filter((action) => {
       if (action.permissions.length === 0) {
         return true
       }
-
       return action.permissions.some((permission) =>
         userPermissions.includes(permission as Role),
       )
@@ -345,6 +298,7 @@ const ActionsDropdown = () => {
         return null
     }
   }
+
   return (
     <div>
       <div className="usa-combo-box margin-bottom-4">
@@ -358,10 +312,6 @@ const ActionsDropdown = () => {
           value={selectedValue}
         >
           <option value="Actions">Actions</option>
-          <option value="Close Application">Close Application</option>
-          <option value="Complete Review">Complete Review</option>
-          <option value="Make an Approval">Make an Approval</option>
-          <option value="Change Tier">Change Tier</option>
           {filteredActions.map((item, index) => (
             <option key={`action-menu-option-${index}`} value={item.id}>
               {item.optionLabel}
@@ -370,6 +320,7 @@ const ActionsDropdown = () => {
         </select>
       </div>
       {renderModal()}
+
       <ReassignUserModal
         applicationId={Number(application_id)}
         modalRef={reassignScreenerRef}
@@ -377,31 +328,34 @@ const ActionsDropdown = () => {
       />
 
       <CloseApplication
-        open={showCloseAppModal}
-        title={closeAppModalProps.title}
+        modalRef={closeApplicationRef}
+        title="Close This Application"
         handleAction={handleCloseAppAction}
-        handleCancel={handleCloseAppCancel}
-        description={''}
       />
+
       <CompleteReview
-        open={showCompleteReviewModal}
-        title={completeReviewlProps.title}
+        modalRef={completeReviewRef}
+        title="Complete Review"
         handleAction={handlePostRequest}
-        handleCancel={handleCompleteReviewCancel}
       />
+
       <MakeApproval
-        open={showMakeApprovalModal}
-        title={makeApprovalProps.title}
+        modalRef={makeApprovalRef}
+        title="Make an Approval"
         handleAction={handleMakeApprovalPostRequest}
-        handleCancel={handleMakeApprovalCancel}
       />
+
+      <ReturnToPreviousTaskModal modalRef={retrnToPreviousTaskRef} processId={applicationData?.process?.id} />
+
       <ChangeTierModal
-        open={showChangeTierModal}
-        title={changeTierProps.title}
-        handleAction={handleChangeTierPostRequest}
-        handleCancel={handleChangeTierCancel}
-        description={''}
+        modalRef={changeTierRef}
+        handleAction={handleResetActionDropdownRequest}
       />
+      <MakeRecommendationModal
+        modalRef={makeRecommendationRef}
+        handleAction={handleResetActionDropdownRequest}
+      />
+      <ConfirmVeteranStatusModal modalRef={veteranStatusRef} processId={applicationData?.process?.id} />
     </div>
   )
 }

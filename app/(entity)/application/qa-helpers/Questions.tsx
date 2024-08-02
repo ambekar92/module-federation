@@ -2,9 +2,9 @@ import { ANSWER_ROUTE } from '@/app/constants/routes';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import React, { useEffect, useState } from 'react';
-import useSWR from 'swr';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
@@ -14,11 +14,12 @@ interface QuestionnaireProps {
   url: string;
   title: string;
   contributorId: number;
+	onRefetchQuestionnaires: () => void;
 }
 
-const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) => {
+const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, onRefetchQuestionnaires }) => {
   const dispatch = useApplicationDispatch();
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
+  const { data, error, isLoading } = useFetchOnce<QaQuestionsType>(url, fetcher);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const { userId } = useApplicationId();
 
@@ -101,6 +102,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId }) 
           index={index}
           selectedAnswers={selectedAnswers}
           handleAnswerChange={handleAnswerChange}
+          onRefetchQuestionnaires={onRefetchQuestionnaires}
         />
       ))}
     </>

@@ -1,18 +1,19 @@
 'use client'
 import { API_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { fetcherGET, fetcherPOST } from '@/app/services/fetcher-legacy'
+import { axiosInstance } from '@/app/services/axiosInstance'
+import fetcher from '@/app/services/fetcher'
+import { ApplicationEligibilityType } from '@/app/services/types/application-service/Application'
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
 import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
 import { Button, Grid } from '@trussworks/react-uswds'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import useSWR from 'swr'
 import {
   ProgramOption,
   sbaProgramOptions,
 } from '../../../../constants/sba-programs'
 import ProgramCard from '../../../../shared/components/ownership/ProgramCard'
-import { ApplicationEligibilityType } from '@/app/services/types/application-service/Application'
 
 const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`;
 
@@ -20,10 +21,11 @@ function Programs({applicationId}: {applicationId: number}) {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([])
   const { data: session, status } = useSessionUCMS();
   const [userId, setUserId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: eligibilityData, error, isLoading } = useSWR(
+  const { data: eligibilityData, error, isLoading } = useFetchOnce<ApplicationEligibilityType[] | []>(
     `${APPLICATION_ELIGIBILITY_ROUTE}?application_id=${applicationId}`,
-		fetcherGET<ApplicationEligibilityType[] | []>
+    fetcher
   );
 
   useEffect(() => {
@@ -46,6 +48,7 @@ function Programs({applicationId}: {applicationId: number}) {
   }, [eligibilityData]);
 
   const handlePostRequest = async () => {
+    setIsSubmitting(true);
     try {
       if(userId) {
         const entityId = await getEntityByUserId(userId);
@@ -59,14 +62,14 @@ function Programs({applicationId}: {applicationId: number}) {
             user_id: userId
           };
 
-          const res = await fetcherPOST(`${FIRM_APPLICATIONS_ROUTE}`, postData);
-          console.log(res)
-
+          await axiosInstance.post(`${FIRM_APPLICATIONS_ROUTE}`, postData);
           window.location.href = `/application/assign-a-delegate/${applicationId}`;
         }
       }
     } catch (error) {
-      console.log('Error in POST request:', error);
+      // Error handled lol -KJ
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -158,15 +161,16 @@ function Programs({applicationId}: {applicationId: number}) {
         </Link>
         {selectedPrograms.length === 0 ? (
           <Button disabled type="button">
-            Next
+   			 		Next
           </Button>
         ) : (
           <Button
             type='button'
             className="usa-button"
             onClick={handlePostRequest}
+            disabled={isSubmitting}
           >
-            Next
+            {isSubmitting ? 'Submitting...' : 'Next'}
           </Button>
         )}
       </div>

@@ -21,15 +21,16 @@ interface InviteContributorModalProps extends QuestionnaireProps {
   open: boolean
   handleCancel: () => void,
 	contributors: Contributor[]
+	entityId: number | null;
+	applicationId: number | null;
 }
 
 const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
   open,
   handleCancel,
-  contributorId, contributors
+  contributorId, contributors,
+  entityId, applicationId
 }) => {
-  const { entityId, applicationId } = useApplicationId();
-
   const setApplicationRole = (role: string) => {
     switch(role) {
       case 'role_other':

@@ -2,6 +2,7 @@ import { AUDIT_ROUTE } from "@/app/constants/routes";
 import useSWR from "swr";
 import { AuditResponseType, AuditType } from "../types/AuditType";
 import  {faker}  from "@faker-js/faker";
+import { useParams } from 'next/navigation';
 
 // temp convenience function to generate audit items [mdev]
 function generateAuditItems(n: number): AuditType[] {
@@ -20,12 +21,13 @@ function generateAuditItems(n: number): AuditType[] {
 
 export function useAudit(page: number = 1, pageSize: number = 10) {
     //TODO update local fetcher to fetcher from services/fetcher.ts once refactor pr: pull/486 is merged [mdev]
-    return useSWR<AuditResponseType>(`${AUDIT_ROUTE}?page=${page}&pageSize=${pageSize}`, fetcher)
+    const params = useParams<{application_id: string}>();
+    return useSWR<AuditResponseType>(`${AUDIT_ROUTE}?application_id=${params.application_id}&page=${page}&pageSize=${pageSize}`)
 }
 
 //TODO using this fetcher function as api does not yet exist, so mocking the response for now [mdev]
 export const fetcher = async <T>(url: string): Promise<AuditResponseType> => {
-    const pageSize = parseInt(url.split('pageSize=')[1])
+    const pageSize = parseInt(url.split('pageSize=')[1]);
+    const params = useParams<{application_id: string}>();
     return new Promise(resolve => setTimeout(() => resolve({items: generateAuditItems(pageSize), pageSize}), 1500) )
 }
-

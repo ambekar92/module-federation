@@ -32,7 +32,7 @@ const AuditWrapper = () => {
     return (
         <div>
             <Audit page={page} pageSize={pageSize} />
-            { data && data.items.length > 0 &&
+            { data && Array.isArray(data) && data.length > 0 &&
                 <>
                     <div style={{ float: 'left' }}>
                         <label htmlFor='page-size'>Rows per view:</label>

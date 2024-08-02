@@ -304,7 +304,7 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion
             <thead>
               <tr>
                 {question.grid_questions?.filter(gridQuestion =>
-                  question.name === 'personal_information_owner_and_management_partnership' || question.name === 'personal_information_owner_and_management_corporation' || question.name === 'personal_information_owner_and_management_sole_proprietorship' || question.name === 'personal_information_owner_and_management_sole_llc'
+                  question.name === 'personal_information_owner_and_management_partnership' || question.name === 'personal_information_owner_and_management_corporation' || question.name === 'personal_information_owner_and_management_sole_proprietorship' || question.name === 'personal_information_owner_and_management_llc'
                     ? ['First Name', 'Last Name', 'Email', 'Percent Ownership of the Business', 'Veteran'].includes(gridQuestion.title)
                     : true
                 ).map((gridQuestion) => (
@@ -318,7 +318,7 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion
               {gridRows.map((row, rowIndex) => (
                 <tr key={rowIndex}>
                   {question.grid_questions?.filter(gridQuestion =>
-                    question.name === 'personal_information_owner_and_management_partnership' || question.name === 'personal_information_owner_and_management_corporation' || question.name === 'personal_information_owner_and_management_sole_proprietorship' || question.name === 'personal_information_owner_and_management_sole_llc'
+                    question.name === 'personal_information_owner_and_management_partnership' || question.name === 'personal_information_owner_and_management_corporation' || question.name === 'personal_information_owner_and_management_sole_proprietorship' || question.name === 'personal_information_owner_and_management_llc'
                       ? ['First Name', 'Last Name', 'Email', 'Percent Ownership of the Business', 'Veteran'].includes(gridQuestion.title)
                       : true
                   ).map((gridQuestion) => (

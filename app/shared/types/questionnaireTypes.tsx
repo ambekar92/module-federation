@@ -4,7 +4,7 @@ interface BaseQuestion {
     name: string;
     type: string;
   };
-	details?: string;
+  details?: string;
 }
 
 export interface SelectQuestion extends BaseQuestion {
@@ -18,25 +18,29 @@ export interface SelectQuestion extends BaseQuestion {
 export type QuestionType = BaseQuestion | SelectQuestion;
 
 export interface MultiStepQuestionsProps {
-	step?: number;
+  step?: number;
 }
 
-type QuestionTypeName = 'boolean' | 'text' | 'grid' | 'document_upload' | 'number' | 'select' | 'multi_select' | string;
+type QuestionTypeName = 'text' | 'read_only' | 'textarea' | 'text_area' | 'number' | 'boolean' | 'select' | 'multi_select' | 'grid' | 'date' | 'text_with_asterisks' | 'address' | 'document_upload' | 'api.get.url' | string;
 
-type GridAnswerChoice = {
+export type GridAnswerChoice = {
   max_rows: number | null;
   min_rows: number | null;
   grid_question_names: string[];
 };
 
-type SelectAnswerChoice = {
+export type SelectAnswerChoice = {
   options: {
     option: string;
     description: string | null;
   }[];
 };
 
-type AnswerChoice = GridAnswerChoice | SelectAnswerChoice | null;
+export type UrlAnswerChoice = {
+  url: string;
+};
+
+export type AnswerChoice = GridAnswerChoice | SelectAnswerChoice | UrlAnswerChoice | null;
 
 export type Rule = {
   question_id: number;
@@ -53,7 +57,6 @@ export type Rule = {
   sub_question?: Question;
 };
 
-// From the API *subject to change again lol* -KJ
 export type Question = {
   id: number;
   name: string;

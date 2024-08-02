@@ -16,13 +16,20 @@ export type Permission = {
     id: number;
   };
 
+  type Entity = {
+    entity_id: number;
+    type: string;
+    structure: string;
+    user_id: number;
+  }
+
   type Data = {
     user: User;
     expires: string;
     csrfToken: string;
     user_id: number;
     permissions: Permission[];
-    entities: any[];
+    entities: Entity[];
     refresh: string;
     access: string;
   };

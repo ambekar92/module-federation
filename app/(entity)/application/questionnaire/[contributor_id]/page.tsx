@@ -1,18 +1,18 @@
 'use client';
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
-import { fetcherGET } from '@/app/services/fetcher-legacy';
+import fetcher from '@/app/services/fetcher';
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
 import { ButtonGroup, Card, CardGroup, CardHeader } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import useSWR from 'swr';
 import ApplicationLayout from '../../components/ApplicationLayout';
 import { QuestionnaireListType } from '../../components/questionnaire/utils/types';
-import applicationStore from '../../redux/applicationStore';
 import { setStep } from '../../redux/applicationSlice';
-import { applicationSteps } from '../../utils/constants';
+import applicationStore from '../../redux/applicationStore';
 import { useApplicationDispatch } from '../../redux/hooks';
+import { applicationSteps } from '../../utils/constants';
 
 interface QuestionnaireListPageProps {
   params: {
@@ -23,9 +23,9 @@ interface QuestionnaireListPageProps {
 const QuestionnaireListPage: React.FC<QuestionnaireListPageProps> = ({ params: { contributor_id } }) => {
   const params = useParams();
   const dispatch = useApplicationDispatch();
-  const { data: questionnairesData, error } = useSWR(
+  const { data: questionnairesData, error } = useFetchOnce<QuestionnaireListType>(
     params.contributor_id ? `${QUESTIONNAIRE_LIST_ROUTE}/${params.contributor_id}` : null,
-    fetcherGET<QuestionnaireListType>
+    fetcher
   );
 
   useEffect(() => {

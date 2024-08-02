@@ -23,16 +23,16 @@ const Audit = ({page, pageSize}: {page: number, pageSize: number}) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data && data.items.map((auditItem, index) => (
+                    {Array.isArray(data) && data.map((auditItem, index) => (
                         <tr key={index}>
-                            <td>{moment(auditItem.date).format('MM/DD/yyyy')}</td>
-                            <td>{auditItem.event}</td>
-                            <td>{auditItem.userName}</td>
+                            <td>{moment(auditItem.timestamp).format('MM/DD/yyyy')}</td>
+                            <td>{auditItem.verb}</td>
+                            <td>{auditItem.actor.first_name} {auditItem.actor.last_name}</td>
                             <td>{auditItem.userRole}</td>
                             <td>{auditItem.details}</td>
                         </tr>
                     ))}
-                    {(!data || !data.items.length) && !isLoading && <tr><td colSpan={5}>No audit items found.</td></tr>}
+                    {(!data || !Array.isArray(data) || !data.length) && !isLoading && <tr><td colSpan={5}>No audit items found.</td></tr>}
                 </tbody>
             </Table>
         </>

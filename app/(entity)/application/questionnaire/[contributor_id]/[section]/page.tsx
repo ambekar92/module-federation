@@ -1,46 +1,57 @@
 'use client';
 import { QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher-legacy';
+import fetcher from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Provider } from 'react-redux';
-import useSWR from 'swr';
 import ApplicationLayout from '../../../components/ApplicationLayout';
+import HubMock from '../../../components/questionnaire/HubMock';
 import { QuestionnaireListType } from '../../../components/questionnaire/utils/types';
 import Questions from '../../../qa-helpers/Questions';
 import applicationStore from '../../../redux/applicationStore';
-import HubMock from '../../../components/questionnaire/HubMock';
-import { useParams } from 'next/navigation';
 import HubzoneResults from '../../../sections/HubzoneResults';
+import useSWR from 'swr';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const params = useParams()
   const section = params.section.toString();
   const contributorId = parseInt(params.contributor_id as string, 10);
-  const { data: questionnairesData, error } = useSWR(
+  const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(
     params.contributor_id ? `${QUESTIONNAIRE_LIST_ROUTE}/${params.contributor_id}` : null,
-    fetcherGET<QuestionnaireListType>
+    fetcher
   );
 
-  useEffect(() => {
-    if (questionnairesData) {
-      const additionalSections = [
-        'individual-contributor-hubzone-business-relationships',
-        'hubzone-calculator-supplemental',
+  const refetchQuestionnaires = () => {
+    mutate();
+  };
+
+  const allSections = useMemo(() => {
+    if (!questionnairesData) {return [];}
+
+    const baseSections = questionnairesData.map((item) => item.url);
+    const hasHubzoneCalculator = baseSections.some(url => url.includes('hubzone-calculator'));
+
+    if (hasHubzoneCalculator) {
+      return [
+        ...baseSections,
+        `${contributorId}/individual-contributor-hubzone-business-relationships`,
+        `${contributorId}/hubzone-calculator-supplemental`
       ];
-      const allSections = [...questionnairesData.map((item) => item.url), ...additionalSections];
-      let index;
-      if (section === 'hubzone-calculator') {
-        index = allSections.findIndex(item => item === 'hubzone-calculator');
-      } else {
-        index = allSections.findIndex((item) => item.includes(section));
-      }
+    }
+
+    return baseSections;
+  }, [questionnairesData, contributorId]);
+
+  useEffect(() => {
+    if (allSections.length > 0) {
+      const index = allSections.findIndex((item) => item.includes(section));
       setCurrentIndex(index !== -1 ? index : 0);
     }
-  }, [questionnairesData, section]);
+  }, [allSections, section]);
 
   if (!questionnairesData) {
     return <h3>Loading...</h3>;
@@ -50,8 +61,7 @@ const QuestionnairePage: React.FC = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  const sectionTitle = section.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  const allSections = [...questionnairesData.map((item) => item.url), `${contributorId}/individual-contributor-hubzone-business-relationships`, `${contributorId}/hubzone-calculator-supplemental`];
+  const sectionTitle = section.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ').replace(/Hubzone/i, 'HUBZone').replace(/Wosb/i, 'WOSB').replace(/Edwosb/i, 'EDWOSB');;
 
   if(section === 'hubzone-results') {
     return (
@@ -85,6 +95,7 @@ const QuestionnairePage: React.FC = () => {
                 url={`${QUESTIONNAIRE_ROUTE}/${params.contributor_id}/${section}`}
                 title={sectionTitle}
                 contributorId={contributorId}
+                onRefetchQuestionnaires={refetchQuestionnaires}
               />
             }
           />

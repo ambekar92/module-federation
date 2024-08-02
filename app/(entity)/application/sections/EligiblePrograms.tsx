@@ -1,7 +1,7 @@
 'use client';
 import { CREATING_APPLICATION_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
-import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher-legacy';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
@@ -29,8 +29,8 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
         programs: selectedPrograms.map(program => program.id)
       };
 
-      await fetcherPUT(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
-      await fetcherPOST(`${CREATING_APPLICATION_ROUTE}`, postData);
+      await axiosInstance.put(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
+      await axiosInstance.post(`${CREATING_APPLICATION_ROUTE}`, postData);
     } catch (error: any) {
       console.log('PUT request error:', error);
       throw error;

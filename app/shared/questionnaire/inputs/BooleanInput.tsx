@@ -12,32 +12,32 @@ export const BooleanInput = ({ question, inputId, handleChange, isSubQuestion, s
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={inputId}>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         <span>{question.title}</span>
       </Label>
       <div className='usa-radio display-flex gap-1'>
         <input
           className="usa-radio__input"
-          id={`${inputId}-true`}
+          id={`${question.name}-true`}
           type="radio"
           value="TRUE"
           name={question.name}
           checked={currentValue === 'TRUE'}
           onChange={handleRadioChange}
         />
-        <Label className="usa-radio__label" htmlFor={`${inputId}-true`}>
+        <Label className="usa-radio__label" htmlFor={`${question.name}-true`}>
           Yes
         </Label>
         <input
           className="usa-radio__input"
-          id={`${inputId}-false`}
+          id={`${question.name}-false`}
           type="radio"
           value="FALSE"
           name={question.name}
           checked={currentValue === 'FALSE'}
           onChange={handleRadioChange}
         />
-        <Label className="usa-radio__label margin-left-105" htmlFor={`${inputId}-false`}>
+        <Label className="usa-radio__label margin-left-105" htmlFor={`${question.name}-false`}>
           No
         </Label>
       </div>

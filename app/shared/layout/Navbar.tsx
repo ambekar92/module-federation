@@ -15,29 +15,18 @@ import { SBA_LOGO_SQUARE_WHITE_URL } from '../../constants/icons'
 import { Notification } from './components/navbarNotification'
 import {adminNavBar}  from './utils/constant'
 import styles from './layout.module.scss'
-import ReactGA from "react-ga4";
+import ReactGA from 'react-ga4';
 import {REACT_GA_REPORT} from '../../constants/routes'
+import { useParams, usePathname } from 'next/navigation';
 
 //note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { ADMIN_BANNER_ROUTE } from '../../constants/routes'
-import { usePathname } from 'next/navigation'
-
-export interface StyleSetting {
-  bg: string
-  textColor: string
-  logo: string
-  hoverColor: string
-}
-interface MenuItem {
-  id: string
-  url: string
-}
-
 
 const selectedBottomRedBorder = '3px solid #CC0000'
 
 import dynamic from 'next/dynamic'
+import { buildRoute, FIRM_EVALUATION_PAGE } from '@/app/constants/url'
 
 const Navigation = () => {
   const adminBanner = ADMIN_BANNER_ROUTE
@@ -46,25 +35,32 @@ const Navigation = () => {
   const [openProfile, setOpenProfile] = useState([false, false])
   const [selectedNameId, setSelectedNameId] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [items, setItems] = useState<MenuItem[]>([])
+  const params = useParams<{application_id: string}>();
+
+  const isInApplicationFlow = () => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname.includes('/firm/application/');
+    }
+    return false;
+  };
 
   ReactGA.initialize(`${REACT_GA_REPORT}`);
 
   const handleClickGetHelp = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault(); 
+    event.preventDefault();
     ReactGA.event({
-      category: "Engagement",
-      action: "Clicked Get Help from Navbar",
-      label: "Main Navigation"
+      category: 'Engagement',
+      action: 'Clicked Get Help from Navbar',
+      label: 'Main Navigation'
     });
   }
 
   const handleClickOurProgram = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault(); 
+    event.preventDefault();
     ReactGA.event({
-      category: "Engagement",
-      action: "Clicked Our Program from Navbar",
-      label: "Main Navigation"
+      category: 'Engagement',
+      action: 'Clicked Our Program from Navbar',
+      label: 'Main Navigation'
     });
   }
   const ClientSideBusinessName = dynamic(() => Promise.resolve(() => (
@@ -100,63 +96,57 @@ const Navigation = () => {
   }, [session, path])
 
   useEffect(() => {
-    const pathname = window.location.pathname
-    // Determine activeLink based on pathname (you'll need to customize this logic)
-    switch (pathname) {
-      case 'https://certification.sba.gov':
+    switch (true) {
+      case isInApplicationFlow():
         setSelectedNameId('Home')
         break
-      case '/admin/configuration':
-        setSelectedNameId('System Configuration')
+      case path === '/my-tasks':
+        setSelectedNameId('My Tasks')
         break
-      case '/entities':
-        setSelectedNameId('Entities')
+      case path === '/team':
+        setSelectedNameId('Team')
         break
-      case '/users':
-        setSelectedNameId('Users')
+      case path === '/team-tasks':
+        setSelectedNameId('Team Tasks')
         break
-      case '/messages':
-        setSelectedNameId('Messages')
-        break
-      case '/documents':
-        setSelectedNameId('Documents')
-        break
-      case '/saved':
+      case path === '/saved':
         setSelectedNameId('Saved')
         break
-      case '/support':
+      case path === '/support':
         setSelectedNameId('Support')
         break
-      case '/should-i-apply/ownership':
+      case path === '/admin/configuration':
+        setSelectedNameId('System Configuration')
+        break
+      case path === '/entities':
+        setSelectedNameId('Entities')
+        break
+      case path === '/users':
+        setSelectedNameId('Users')
+        break
+      case path === '/messages':
+        setSelectedNameId('Messages')
+        break
+      case path === '/documents':
+        setSelectedNameId('Documents')
+        break
+      case path === '/should-i-apply/ownership':
         setSelectedNameId('Should I Apply?')
         break
-      case '/application':
+      case path === '/application':
         setSelectedNameId('Application Prep')
         break
-      case '/calculator':
+      case path === '/calculator':
         setSelectedNameId('HUBZone Calculator')
         break
-
+      case path === 'https://certification.sba.gov':
+        setSelectedNameId('Home')
+        break
       default:
-        setSelectedNameId('') // Default to Home if no match
+        setSelectedNameId('')
     }
-  }, [])
+  }, [path])
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      setItems([
-        { id: 'Home', url: 'https://certification.sba.gov' },
-        { id: 'Message', url: '/messages' },
-        { id: 'Documents', url: '/documents' },
-        { id: 'Saved', url: '/' },
-        { id: 'Support', url: '/' },
-      ])
-    }
-  }, [])
-
-  const mockToggle = (): void => {
-    /* mock submit fn */
-  }
   const toggleMobileNav = (): void => {
     setMobileNavOpen((prevOpen) => !prevOpen)
   }
@@ -315,6 +305,41 @@ const Navigation = () => {
     </React.Fragment>,
   ]
 
+  const authenticatedItems = [
+    ...(isInApplicationFlow() ? [
+      <React.Fragment key="auth_1">
+        <Link className="usa-nav_link" href={buildRoute(FIRM_EVALUATION_PAGE, { application_id: params.application_id })}>
+          <span>Home</span>
+        </Link>
+      </React.Fragment>
+    ] : []),
+    <React.Fragment key="auth_2">
+      <Link className="usa-nav_link" href="/user/dashboard">
+        <span>My Tasks</span>
+      </Link>
+    </React.Fragment>,
+    <React.Fragment key="auth_3">
+      <Link className="usa-nav_link" href="">
+        <span>Team</span>
+      </Link>
+    </React.Fragment>,
+    <React.Fragment key="auth_4">
+      <Link className="usa-nav_link" href="">
+        <span>Team Tasks</span>
+      </Link>
+    </React.Fragment>,
+    <React.Fragment key="auth_5">
+      <Link className="usa-nav_link" href="">
+        <span>Saved</span>
+      </Link>
+    </React.Fragment>,
+    <React.Fragment key="auth_6">
+      <Link className="usa-nav_link" href="">
+        <span>Support</span>
+      </Link>
+    </React.Fragment>,
+  ];
+
   return (
     <>
       <Header
@@ -331,15 +356,15 @@ const Navigation = () => {
             className={`usa-navbar ${styles['mobile-border--none']} width-full`}
           >
             <Title id="extended-logo">
-            <Link  href={'https://www.sba.gov/'}
-              > 
-              <img
-                className="padding-y-05"
-                src={`/${styleSettings.logo}`}
-                alt="logo"
-                height={50}
-              />
-                </Link>
+              <Link  href={'https://www.sba.gov/'}
+              >
+                <img
+                  className="padding-y-05"
+                  src={`/${styleSettings.logo}`}
+                  alt="logo"
+                  height={50}
+                />
+              </Link>
             </Title>
             <NavMenuButton
               label="Menu"
@@ -371,7 +396,6 @@ const Navigation = () => {
         </div>
       </Header>
       <Header
-        // className={`${styleSettings.bg} border-bottom-1px border-base-lighter padding-x-4 ${styles['mobile-border--none']}`}
         style={{ borderColor: '#F8DFE2' }}
         className={`border-bottom-1px padding-x-4 ${styles['mobile-border--none']}`}
       >
@@ -379,7 +403,7 @@ const Navigation = () => {
           <div className="usa-nav__primary float-left usa-accordion">
             {isAuthenticated && adminBanner === 'admin' ? (
               adminNavBar.map((header: any, index: number) => (
-                <ul>
+                <ul key={index}>
                   <li
                     key={index}
                     className="usa-nav__primary-item"
@@ -401,28 +425,12 @@ const Navigation = () => {
                 </ul>
               ))
             ) : isAuthenticated ? (
-              items.map((header: any, index: number) => (
-                <ul>
-                  <li
-                    key={index}
-                    className="usa-nav__primary-item"
-                    style={{
-                      borderBottom:
-                        selectedNameId === header.id
-                          ? selectedBottomRedBorder
-                          : '',
-                    }}
-                    onClick={() => setSelectedNameId(header.id)}
-                  >
-                    <a className="usa-nav__link" href={header.url}>
-                      <span className={` ${styleSettings.hoverColor}`}>
-                        {' '}
-                        {header.id}
-                      </span>
-                    </a>
-                  </li>
-                </ul>
-              ))
+              <PrimaryNav
+                aria-label="Primary navigation"
+                items={authenticatedItems}
+                onToggleMobileNav={toggleMobileNav}
+                mobileExpanded={mobileNavOpen}
+              ></PrimaryNav>
             ) : (
               <PrimaryNav
                 aria-label="Primary navigation"

@@ -6,30 +6,53 @@ import styles from './Login.module.scss';
 import LoginButton from './LoginButton';
 import { redirect } from 'next/navigation';
 import {
-  CLAIM_YOUR_BUSINESS, SELECT_INTENDED_PROGRAMS, DASHBOARD, ADMIN_DASHBOARD
+  CLAIM_YOUR_BUSINESS, SELECT_INTENDED_PROGRAMS, DASHBOARD, ADMIN_DASHBOARD,
+  USER_DASHBOARD_PAGE
 } from '@/app/constants/url'
 import { Role } from '../shared/types/role';
+import { debug } from 'console';
 
 export default async function Login({searchParams}: {searchParams: {next: string}}) {
   const session = await getSessionServer();
   if(session) {
-    switch (session?.permissions?.at(-1)?.slug) {
-      case Role.PRIMARY_QUALIFYING_OWNER:
-        // Todo
-        // Need to validate application progress for redirect
-        redirect(SELECT_INTENDED_PROGRAMS);
-        break;
-      case Role.EXTERNAL:
-        redirect(CLAIM_YOUR_BUSINESS);
-        break;
-      case Role.CONTRIBUTOR:
-        redirect(DASHBOARD);
-        break;
-      case Role.ADMIN:
-        redirect(ADMIN_DASHBOARD);
-        break;
-      default:
-        redirect('/');
+    const firstPermissionSlug = session.permissions?.at(0)?.slug;
+    const lastPermissionSlug = session.permissions?.at(-1)?.slug;
+
+    if (typeof firstPermissionSlug === 'string' && typeof lastPermissionSlug === 'string') {
+      switch (firstPermissionSlug) {
+        case Role.INTERNAL:
+          switch (lastPermissionSlug) {
+            case Role.ADMIN:
+              redirect(ADMIN_DASHBOARD);
+              break;
+            default:
+              redirect(USER_DASHBOARD_PAGE);
+          }
+          break;
+        case Role.EXTERNAL:
+          switch (lastPermissionSlug) {
+            case Role.EXTERNAL:
+              // Todo
+              // Need to validate application progress for router.push
+              redirect(CLAIM_YOUR_BUSINESS);
+              break;
+            case Role.PRIMARY_QUALIFYING_OWNER:
+              // Todo
+              // Need to validate application progress for redirect
+              redirect(CLAIM_YOUR_BUSINESS);
+              break;
+            case Role.CONTRIBUTOR:
+              redirect(DASHBOARD);
+              break;
+            default:
+              redirect('/');
+          }
+          break;
+        default:
+          redirect('/');
+      }
+    } else {
+      redirect('/');
     }
   }
   return (

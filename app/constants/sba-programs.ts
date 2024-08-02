@@ -43,9 +43,10 @@ export const sbaProgramOptions: ProgramOption[] = [
   {
     id: 3,
     name: 'Women-Owned',
-    description: `Women-Owned Small Business (WOSB) Program: The WOSB Program aims to empower and foster the
-		growth of women-owned businesses. It offers opportunities for female entrepreneurs to
-		compete for federal contracts and receive support to enhance their business capabilities.`,
+    description: `Women-Owned Small Business (WOSB) Certification: The WOSB Federal Contract Program aims to
+    empower and foster the growth of women-owned business in the federal contracting marketplace. It offers
+    opportunities for women owned and controlled businesses to compete for federal contracts and receive
+    support to enhance their federal contracting business capabilities.`,
     disadvantages: ['female', 'gender', 'woman', 'Gender'],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program#id-program-eligibility-requirements',
@@ -54,10 +55,11 @@ export const sbaProgramOptions: ProgramOption[] = [
   {
     id: 6,
     name: 'Economically-Disadvantaged Women-Owned',
-    description: `Economically-Disadvantaged Women-Owned Small Business (EDWOSB) Program: The EDWOSB Program
-		is a subset of the WOSB Program focused specifically on economically-disadvantaged women
-		entrepreneurs. Benefits include additional contracting opportunities and resources to
-		support business growth and success.`,
+    description: `Economically Disadvantaged Women-Owned Small Business (EDWOSB) Certification: EDWOSB certification
+    is a subset of the WOSB Federal Contract Program for women-owned businesses that meet the
+    qualifications for WOSB Program and fall within the financial thresholds of the program. Benefits include
+    additional contracting opportunities and resources to support business growth and success in the federal
+    contracting marketplace.`,
     disadvantages: ['gender', 'woman', 'female', 'Gender'],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program#id-program-eligibility-requirements',

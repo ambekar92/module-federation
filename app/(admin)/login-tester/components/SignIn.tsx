@@ -19,6 +19,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { LoginResponse } from '../types'
 import { SignInFormData, SignInFormSchema } from './Schema'
 import { fetcherPOST } from '@/app/services/fetcher-legacy'
+import {
+  CLAIM_YOUR_BUSINESS, SELECT_INTENDED_PROGRAMS, DASHBOARD, ADMIN_DASHBOARD,
+  USER_DASHBOARD_PAGE
+} from '@/app/constants/url'
+import { Role } from '@/app/shared/types/role'
 
 export default {
   title: 'Page Templates/Sign In',
@@ -65,7 +70,46 @@ export const SignIn = (): React.ReactElement => {
 
       const response = await fetcherPOST<LoginResponse>(TESTER_LOGIN_ROUTE, postData);
       Cookies.set('email_password_auth_token', JSON.stringify(response.user))
-      router.push('/claim-your-business');
+      Cookies.set('accesstoken', response.user.access)
+      const firstPermissionSlug = response.user.permissions?.at(0)?.slug;
+      const lastPermissionSlug = response.user.permissions?.at(-1)?.slug;
+      if (typeof firstPermissionSlug === 'string' && typeof lastPermissionSlug === 'string') {
+
+        switch (firstPermissionSlug) {
+          case Role.INTERNAL:
+            switch (lastPermissionSlug) {
+              case Role.ADMIN:
+                router.push(ADMIN_DASHBOARD);
+                break;
+              default:
+                router.push(USER_DASHBOARD_PAGE);
+            }
+            break;
+          case Role.EXTERNAL:
+            switch (lastPermissionSlug) {
+              case Role.EXTERNAL:
+                // Todo
+                // Need to validate application progress for router.push
+                router.push(CLAIM_YOUR_BUSINESS);
+                break;
+              case Role.PRIMARY_QUALIFYING_OWNER:
+                // Todo
+                // Need to validate application progress for router.push
+                router.push(CLAIM_YOUR_BUSINESS);
+                break;
+              case Role.CONTRIBUTOR:
+                router.push(DASHBOARD);
+                break;
+              default:
+                router.push('/');
+            }
+            break;
+          default:
+            router.push('/');
+        }
+      } else {
+        router.push(USER_DASHBOARD_PAGE);
+      }
     } catch (error: any) {
       console.error('Network Error: ', error)
       return

@@ -49,7 +49,7 @@ const QuestionnairePage: React.FC = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  const sectionTitle = section.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const sectionTitle = section.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ').replace(/Hubzone/i, 'HUBZone').replace(/Wosb/i, 'WOSB').replace(/Edwosb/i, 'EDWOSB');
   const allSections = [...questionnairesData.map((item) => item.url), `${contributorId}/individual-contributor-hubzone-business-relationships`, `${contributorId}/hubzone-calculator-supplemental`];
 
   if (section === 'hubzone-results') {

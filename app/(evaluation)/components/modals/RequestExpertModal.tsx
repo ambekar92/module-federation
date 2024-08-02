@@ -20,6 +20,7 @@ import { useParams } from 'next/navigation'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote'
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 
 interface RequestExpertModalProps {
   open: boolean
@@ -82,7 +83,7 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
       const isOssExpert = selectedUser.prbac_role.some(role => role.slug === 'analyst_contributor_oss');
 
       const payload = {
-        process_id: 1,
+        process_id: applicationData.process.id,
         data: {
           request_ogc_expert: isOgcExpert,
           request_oss_expert: isOssExpert,
@@ -102,6 +103,8 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
         await trigger(payload);
         await triggerNote(notePayload);
         console.log('Task completed successfully');
+        // Todo - need to validate the response to display error message or redirect on success
+        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData.id }) + '?name=requested-expert-opinion'
         handleCancel();
       } catch (error) {
         console.error('Failed to complete task', error);
@@ -123,7 +126,7 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
         isInitiallyOpen
         renderToPortal={false}
       >
-        <ModalHeading>Request Expert</ModalHeading>
+        <ModalHeading>Request Expert Opinion</ModalHeading>
         <div className="padding-4 text-center">Loading...</div>
       </Modal>
     )
@@ -140,7 +143,7 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
         isInitiallyOpen
         renderToPortal={false}
       >
-        <ModalHeading>Request Expert</ModalHeading>
+        <ModalHeading>Request Expert Opinion</ModalHeading>
         <div className="padding-4 text-center">Error loading data. Please try again later.</div>
       </Modal>
     )
@@ -156,7 +159,7 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
       isInitiallyOpen
       renderToPortal={false}
     >
-      <ModalHeading>Request Expert</ModalHeading>
+      <ModalHeading>Request Expert Opinion</ModalHeading>
 
       <Label htmlFor="expert-input-radio" className="text-bold padding-bottom-2">
         Choose SBA Office
