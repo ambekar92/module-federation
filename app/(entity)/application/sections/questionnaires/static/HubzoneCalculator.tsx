@@ -1,18 +1,15 @@
 'use client'
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
-import { ButtonGroup } from '@trussworks/react-uswds';
-import Link from 'next/link';
 import { useEffect } from 'react';
 import HubMock from '../../../components/questionnaire/HubMock';
-import { selectApplication, setStep } from '../../../redux/applicationSlice';
-import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
+import { setStep } from '../../../redux/applicationSlice';
+import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
 import { QuestionnaireProps } from '../../../utils/types';
 
 function HubzoneCalculator({contributorId}: QuestionnaireProps) {
   const dispatch = useApplicationDispatch();
-  const { totalQuestionnaires } = useApplicationSelector(selectApplication);
   useUpdateApplicationProgress('Hubzone Calculator');
 
   useEffect(() => {

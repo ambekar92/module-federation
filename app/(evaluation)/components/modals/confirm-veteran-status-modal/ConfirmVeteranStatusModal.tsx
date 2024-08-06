@@ -62,7 +62,7 @@ const ConfirmVeteranStatusModal = ({ modalRef, processId }: { modalRef: RefObjec
       aria-describedby="reassign-user-modal">
       <FormProvider {...methods}>
         <form>
-          <h1>Cofirm Veteran Status</h1>
+          <h1>Confirm Veteran Status</h1>
 
           <h3>After VA review, what is the Final Veteran Status?</h3>
 

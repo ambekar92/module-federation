@@ -7,11 +7,13 @@ import CompleteScreening from './modals/complete-screening/CompleteScreening'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
 import { useParams } from 'next/navigation';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
+import { getUserRole } from '@/app/shared/utility/getUserRole';
 
 const ApplicationWelcomeCard = () => {
   const params = useParams<{application_id: string}>();
   const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
   const sessionData = useSessionUCMS()
+  const userRole = getUserRole(sessionData?.data?.permissions || []);
   const { trigger } = useCompleteEvalTask()
 
   // Complete Screening
@@ -63,9 +65,7 @@ const ApplicationWelcomeCard = () => {
             <div className="margin-top-1">
               <div className="usa-card__body">
                 <p>
-                  Smiley was monstrous proud of his frog, and well he might be,
-                  for fellers that had <br /> traveled and been everywheres, all
-                  said he laid over any frog that ever they see.
+                 To begin this application review, please click “Start Review” below. Once you begin, the task timer will start tracking the amount of time you spend on this application. <br/> Return to this landing page to view any created and/or sent “Return to Business” items.
                 </p>
               </div>
             </div>
@@ -85,6 +85,7 @@ const ApplicationWelcomeCard = () => {
       </div>
 
       <CompleteScreening
+        userRole={userRole}
         open={showCompleteScreeningModal}
         title={completeScreeningModalProps.title}
         handleAction={handlePostRequest}

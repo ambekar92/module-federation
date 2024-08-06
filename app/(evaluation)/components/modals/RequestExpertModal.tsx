@@ -200,13 +200,14 @@ const RequestExpertModal: React.FC<RequestExpertModalProps> = ({
       </select>
 
       <Label htmlFor="request-expert-textarea" className="text-light">
-        Notes
+        Reason for Request *
       </Label>
       <Textarea
         className="display-flex flex-col maxw-full width-full"
         id="request-expert-textarea"
         name="request-expert-textarea"
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
+        placeholder='The business is Entity-Owned, OGC review is required. Thanks!'
       />
 
       <ModalFooter>

@@ -1,6 +1,6 @@
 // TODO update type once api is complete [mdev]
 export type AuditType = {
-    date: string, 
+    date: string,
     event: string,
     userName: string,
     userRole: string,

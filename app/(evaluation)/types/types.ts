@@ -1,5 +1,3 @@
-import { Role } from "@/app/shared/types/role"
-
 export type QuestionnaireItem = {
     section: string,
     title: string,
@@ -16,5 +14,3 @@ export type NavItem = {
     section: string,
     child: QuestionnaireItem[]
 }
-
- 

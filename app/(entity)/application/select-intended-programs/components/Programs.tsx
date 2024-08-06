@@ -44,6 +44,8 @@ function Programs({applicationId}: {applicationId: number}) {
         );
         setSelectedPrograms(selectedProgramsFromData);
       }
+    } else {
+      setSelectedPrograms([]);
     }
   }, [eligibilityData]);
 
@@ -104,7 +106,7 @@ function Programs({applicationId}: {applicationId: number}) {
   }
 
   if(error) {
-    return <h1>Sorry there was an error please refresh the page to try again.</h1>
+    console.log(error)
   }
 
   if(isLoading) {

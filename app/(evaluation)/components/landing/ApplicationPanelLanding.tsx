@@ -19,9 +19,10 @@ const ApplicationPanelLanding = () => {
   const userRole = getUserRole(sessionData?.data?.permissions || []);
 
   const [showModal, setShowModal] = useState(false)
-  const [modalProps, setModalProps] = useState({
-    title: 'Complete Task',
-  })
+  // const [modalProps, setModalProps] = useState({
+  //   title: 'Complete Task',
+  // })
+  const modalProps = {title: 'Complete Task'}
 
   const handleCompleteTask = async () => {
     setShowModal(true)
@@ -46,7 +47,7 @@ const ApplicationPanelLanding = () => {
       // Todo - need to validate the response to display error message or redirect on success
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-screening'
     } catch (error: any) {
-      console.error('Network Error: ', error)
+      // console.error('Network Error: ', error)
       return
     }
   }
@@ -55,7 +56,6 @@ const ApplicationPanelLanding = () => {
     switch (userRole) {
       case 'reviewer':
       case 'analyst':
-        return 'Welcome to this Application Review';
       case 'screener':
         return 'Welcome to this Application Review';
       default:
@@ -67,11 +67,11 @@ const ApplicationPanelLanding = () => {
     switch (userRole) {
       case 'reviewer':
       case 'analyst':
-        return 'Smiley was monstrous proud of his frog, and well he might be, for fellers that had traveled and been everywhere, all said he laid over any frog that ever they see.';
+        return 'To begin this application review, please click “Start Review” below. Once you begin, the task timer will start tracking the amount of time you spend on this application. Return to this landing page to view any created and/or sent “Request for Information” items.'
       case 'screener':
-        return 'To begin this application review, please click “Start Review” below. Once you begin, the task timer will start tracking the amount of time you spend on this application. Return to this landing page to view any created and/or sent “Return to Business” items.'
+        return 'Your application review has not been submitted. Use the options in the left-navigation to continue your review. Any created “Return to Business” and their status can be found on this page. '
       case 'default':
-        return 'Smiley was monstrous proud of his frog, and well he might be, for fellers that had traveled and been everywhere, all said he laid over any frog that ever they see.';
+        return 'Your application review has not been submitted. Use the options in the left-navigation to continue your review. Any created “Return to Business” and their status can be found on this page.'
     }
   }
 
@@ -81,9 +81,9 @@ const ApplicationPanelLanding = () => {
       case 'analyst':
         return 'Complete Review';
       case 'screener':
-        return 'Start Review';
+        return 'Start Screening';
       default:
-        return 'Complete Screening';
+        return 'Start Review';
     }
   }
 
@@ -119,6 +119,7 @@ const ApplicationPanelLanding = () => {
         </li>
       </div>
       <CompleteScreening
+        userRole={userRole}
         open={showModal}
         title={modalProps.title}
         handleAction={handlePostRequest}

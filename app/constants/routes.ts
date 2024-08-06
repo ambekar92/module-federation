@@ -52,3 +52,7 @@ export const USER_ROLES_ROUTE =  API_ROUTE + '/prbac_roles';
 export const CREATE_CONTRIBUTOR_ROUTE = API_ROUTE + '/creating-application-contributor';
 export const APPLICATION_CONTRIBUTORS_ROUTE = API_ROUTE + '/application-contributors';
 export const MAKE_RECOMMENDATION_ROUTE =  API_ROUTE + '/program-application';
+export const RFI_DRAFT_ROUTE = API_ROUTE + '/draft-rfi-items';
+export const RFI_ITEMS_ROUTE = API_ROUTE + '/rfi-items';
+export const RFI_CANCEL_ROUTE = API_ROUTE + '/cancel-rfi';
+export const SUBMIT_RFI_ROUTE = API_ROUTE + '/submit-rfi';

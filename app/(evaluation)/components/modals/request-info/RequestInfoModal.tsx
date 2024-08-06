@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, ModalHeading, ModalFooter, ButtonGroup, Button, Label } from '@trussworks/react-uswds';
+import React, { RefObject } from 'react';
+import { Modal, ModalHeading, ModalFooter, ButtonGroup, Button, Label, ModalRef } from '@trussworks/react-uswds';
 import styles from '../../Evaluation.module.scss';
 import { ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes';
 
@@ -9,28 +9,28 @@ interface ReasonState {
 }
 
 interface RequestInfoModalProps {
-  isOpen: boolean;
-  onClose: () => void;
   reason: ReasonState;
   setReason: (reason: ReasonState) => void;
   explanation: string;
   setExplanation: (explanation: string) => void;
   reasonCodes: ReasonCode[] | undefined;
   onSave: () => void;
+	userRole: string;
+	modalRef: RefObject<ModalRef>;
 }
 
 const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
-  isOpen,
-  onClose,
   reason,
   setReason,
   explanation,
   setExplanation,
   reasonCodes,
-  onSave
+  onSave,
+  userRole,
+  modalRef
 }) => {
-  if (!isOpen) {
-    return null;
+  function onClose() {
+    modalRef.current?.toggleModal();
   }
 
   const handleReasonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -49,12 +49,12 @@ const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
       aria-labelledby="request-info-modal"
       aria-describedby="request-info-modal"
       isLarge
-      isInitiallyOpen
+      ref={modalRef}
       renderToPortal={false}
     >
-      <ModalHeading>Edit This Request for Information</ModalHeading>
+      <ModalHeading>{userRole === 'screener' ? 'Edit This Return to Business' : 'Edit This Request for Information'}</ModalHeading>
       <div>
-        <Label htmlFor='reason-code' requiredMarker className={`${styles['field-title']}`}>What&apos;s your reason?</Label>
+        <Label htmlFor='reason-code' requiredMarker className={`${styles['field-title']}`}>{userRole === 'screener' ? 'What&apos;s your reason?' : 'Reason for Request'}</Label>
         <div className="usa-combo-box margin-top-05">
           <select
             className={`usa-select ${styles['dropdown-text']}`}
@@ -71,7 +71,7 @@ const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
         </div>
       </div>
       <div className='margin-top-4'>
-        <Label htmlFor='description-analyst' className={`${styles['field-title']}`}>Description (Optional)</Label>
+        <Label htmlFor='description-analyst' requiredMarker={userRole !== 'screener'} className={`${styles['field-title']}`}>Description {userRole === 'screener' && '(Optional)'}</Label>
         <textarea
           className={`${styles['textarea-field']}`}
           id="description-analyst"

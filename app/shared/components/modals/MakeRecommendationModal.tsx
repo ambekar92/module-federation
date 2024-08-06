@@ -147,7 +147,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
               <DocumentUpload
                 name="makeRecommendation"
                 label="Upload Documents"
-                hint="Only .pdf and .txt file formats are accepted"
+                hint="Upload any documents relevant to this recommendation. (Accepted file formats are .pdf, .png, and .jpg)"
                 onFileSelect={handleFileSelect}
               />
           </FormProvider>

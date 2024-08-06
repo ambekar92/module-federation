@@ -1,27 +1,31 @@
-import { ANSWER_ROUTE } from '@/app/constants/routes';
+import { ANSWER_ROUTE, CLOSE_APPLICATION_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import QuestionRenderer from './QuestionRenderer';
-
+import { ModalRef } from '@trussworks/react-uswds';
+import CloseApplicationModal from './CloseApplicationModal';
+import { Application } from '@/app/shared/types/responses';
 interface QuestionnaireProps {
   url: string;
   title: string;
   contributorId: number;
-	onRefetchQuestionnaires: () => void;
+  onRefetchQuestionnaires: () => void;
+  setCanNavigate: (canNavigate: boolean) => void;
 }
 
-const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, onRefetchQuestionnaires }) => {
+const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, onRefetchQuestionnaires, setCanNavigate }) => {
   const dispatch = useApplicationDispatch();
   const { data, error, isLoading } = useFetchOnce<QaQuestionsType>(url, fetcher);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const { userId } = useApplicationId();
+  const closeApplicationRef = useRef<ModalRef>(null);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
@@ -63,8 +67,47 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
       } catch (error) {
         // Error caught haha -KJ
       }
+
+      // Check if navigation should be blocked
+      const shouldBlock = question.rules?.some(rule =>
+        rule.alert_message === 'You are not allowed to continue' &&
+        (
+          (Array.isArray(value) && question.question_type === 'multi_select' &&
+           value.some(item => rule.answer_given_value.multi_select?.includes(item))) ||
+          (question.question_type === 'boolean' || question.question_type === 'text' ||
+           question.question_type === 'number' || question.question_type === 'select') &&
+          value === rule.answer_given_value[question.question_type]
+        )
+      );
+
+      setCanNavigate(!shouldBlock);
     }
   };
+
+  const handleCloseApplication = async () => {
+    try {
+      const applicationData: Application[] = await axiosInstance.get(`${FIRM_APPLICATIONS_ROUTE}/?user_id=${userId}`);
+
+      // Finds the first application where the contributorId is in the application_contributor_id array -KJ
+      const matchingApplication = applicationData.find(app =>
+        app.application_contributor.some(contributor => contributor.id === contributorId)
+      );
+
+      if (matchingApplication) {
+        const applicationId = matchingApplication.id;
+        await axiosInstance.post(CLOSE_APPLICATION_ROUTE, {
+          application_id: applicationId,
+          explanation: 'Response to third_party_disqualification_core_program_eligibility disqualified business from continuing',
+          user_id: userId
+        });
+      } else {
+        // eslint-disable-next-line no-console
+        console.error('No matching application found for the current contributor');
+      }
+    } catch(error) {
+      // Error handled lol -KJ
+    }
+  }
 
   if (error) {return <h3>Error: {error.message}</h3>;}
   if (!data || isLoading) {return <h3>Loading...</h3>;}
@@ -96,15 +139,21 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
       <h2>{title}</h2>
       {sortedAndFilteredQuestions.map((question, index) => (
         <QuestionRenderer
-          contributorId={contributorId} userId={userId}
+          contributorId={contributorId}
+          userId={userId}
           key={question.id}
           question={question}
           index={index}
           selectedAnswers={selectedAnswers}
           handleAnswerChange={handleAnswerChange}
           onRefetchQuestionnaires={onRefetchQuestionnaires}
+          closeApplicationRef={closeApplicationRef}
         />
       ))}
+      <CloseApplicationModal
+        modalRef={closeApplicationRef}
+        handleAction={handleCloseApplication}
+      />
     </>
   );
 };

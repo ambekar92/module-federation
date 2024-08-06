@@ -79,12 +79,12 @@ const ReturnToPreviousTaskModal = ({modalRef, processId}: {modalRef: RefObject<M
       <TextArea<ReturnToFormType> 
         required={true}
         name="description"
-        hint="By clicking 'De-escalate', you are returning this application to the person it was assigned to before you"
-        label="Please, provide more information regarding why you are returning this application." />
+        hint="By clicking “Return”, you are returning this application to the person it was assigned to before you."
+        label="Provide more information about why you are returning this application" />
       <ModalFooter>
         <ButtonGroup>
           <Button type='submit' onClick={methods.handleSubmit(onSubmit)} disabled={returningToPrevTask || creatingNote}>
-            Submit
+            Return
           </Button>
           <Button type='button' unstyled className="padding-105 text-center" onClick={onClose}>
             Cancel

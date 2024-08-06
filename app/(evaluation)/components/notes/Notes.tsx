@@ -39,7 +39,9 @@ function Notes() {
     return (
         <>
             <h1>Notes</h1>
-            <p>Maiores autem cumque quos nam similique  Sit at ipsam porro, ad aliquid adipisci exercitationem architecto.</p>
+            <p>
+                Below is a list of notes created throughout this application's review. Use the action buttons to view or edit a note. <b>You can only edit notes that you have created.</b> 
+            </p>
             <Button type='button'
                 onClick={onCreateNote}
                 style={{ float: 'right', marginBottom: '2rem' }} disabled={isLoading}>

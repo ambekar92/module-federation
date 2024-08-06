@@ -1,14 +1,17 @@
 'use client'
+import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
 import { ANSWER_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
 import fetcher from '@/app/services/fetcher';
 import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher-legacy';
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { calculateEligibleSbaPrograms, useOwnerApplicationInfo } from '../../../hooks/useOwnershipApplicationInfo';
@@ -17,9 +20,6 @@ import { selectApplication, setDisplayStepNavigation, setStep } from '../../../r
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
 import { QuestionnaireProps } from '../../../utils/types';
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
-import { useParams } from 'next/navigation';
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 
 function OwnershipQuestions({contributorId}: QuestionnaireProps) {
   const params = useParams<{application_id: string}>();
@@ -145,6 +145,7 @@ function OwnershipQuestions({contributorId}: QuestionnaireProps) {
                   selectedAnswers={selectedAnswers}
                   handleAnswerChange={handleAnswerChange}
                   contributorId={contributorId}
+                  onRefetchQuestionnaires={()=>{}}
                   userId={userId}
                 />
               ))}
@@ -154,7 +155,10 @@ function OwnershipQuestions({contributorId}: QuestionnaireProps) {
       />
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        <Link className='usa-button usa-button--outline' href={`/application/assign-a-delegate/${contributorId}`}>
+        <Link className='usa-button usa-button--outline' href={ buildRoute(APPLICATION_STEP_ROUTE, {
+          contributorId: contributorId,
+          stepLink: applicationSteps.entityOwned.link
+        })}>
           Previous
         </Link>
 

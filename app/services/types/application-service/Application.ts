@@ -64,7 +64,27 @@ export type Application = {
   program_application: ProgramApplication[]
   workflow_state: string
   application_version: number
-  application_contributor_id: number[]
+  application_contributor: Array<{
+		id: number,
+		deleted_at: string | null,
+		created_at: string,
+		updated_at: string,
+		workflow_state: string,
+		application_role_id: number,
+		application_role: {
+			name: string,
+			description: null | string,
+			title: string
+		},
+		user_id: number,
+		user: {
+			id: number,
+			email: string,
+			first_name: string,
+			last_name: string
+		},
+		application_id: number
+	}>
   deleted_at: string | null
   created_at: string
   updated_at: string
@@ -114,9 +134,8 @@ export type ApplicationAdminType = {
   legal_business_name: string
   uei: string
   tax_identifier_number: string
-  dba_name: string
-  created_at: string
-  updated_at: string
+  dba_name: string,
+  updated_at: string,
 	created_at: string,
 	first_name: string,
 	last_name: string,

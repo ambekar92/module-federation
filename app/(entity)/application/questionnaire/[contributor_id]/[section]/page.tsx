@@ -2,10 +2,10 @@
 import { QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import fetcher from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
-import { ButtonGroup } from '@trussworks/react-uswds';
+import { ButtonGroup, ModalRef } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Provider } from 'react-redux';
 import ApplicationLayout from '../../../components/ApplicationLayout';
 import HubMock from '../../../components/questionnaire/HubMock';
@@ -20,6 +20,9 @@ const QuestionnairePage: React.FC = () => {
   const params = useParams()
   const section = params.section.toString();
   const contributorId = parseInt(params.contributor_id as string, 10);
+  const closeApplicationRef = useRef<ModalRef>(null);
+  const [canNavigate, setCanNavigate] = useState(true);
+
   const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(
     params.contributor_id ? `${QUESTIONNAIRE_LIST_ROUTE}/${params.contributor_id}` : null,
     fetcher
@@ -63,6 +66,13 @@ const QuestionnairePage: React.FC = () => {
 
   const sectionTitle = section.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ').replace(/Hubzone/i, 'HUBZone').replace(/Wosb/i, 'WOSB').replace(/Edwosb/i, 'EDWOSB');;
 
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (!canNavigate) {
+      e.preventDefault();
+      closeApplicationRef.current?.toggleModal();
+    }
+  };
+
   if(section === 'hubzone-results') {
     return (
       <Provider store={applicationStore}>
@@ -96,6 +106,7 @@ const QuestionnairePage: React.FC = () => {
                 title={sectionTitle}
                 contributorId={contributorId}
                 onRefetchQuestionnaires={refetchQuestionnaires}
+                setCanNavigate={setCanNavigate}
               />
             }
           />
@@ -105,30 +116,34 @@ const QuestionnairePage: React.FC = () => {
             <Link
               className="usa-button usa-button--outline"
               href={`/application/questionnaire/${params.contributor_id}`}
+              onClick={(e) => handleNavigation(e, `/application/questionnaire/${params.contributor_id}`)}
             >
-              Previous
+      				Previous
             </Link>
           ) : (
             <Link
               className="usa-button usa-button--outline"
               href={`/application/questionnaire/${allSections[currentIndex - 1]}`}
+              onClick={(e) => handleNavigation(e, `/application/questionnaire/${allSections[currentIndex - 1]}`)}
             >
-              Previous
+      				Previous
             </Link>
           )}
           {currentIndex === allSections.length - 1 || section === 'hubzone-calculator-supplemental' ? (
             <Link
               className="usa-button"
               href={`/application/${params.contributor_id}/document-upload`}
+              onClick={(e) => handleNavigation(e, `/application/${params.contributor_id}/document-upload`)}
             >
-              Next
+      				Next
             </Link>
           ) : (
             <Link
               className="usa-button"
               href={`/application/questionnaire/${allSections[currentIndex + 1]}`}
+              onClick={(e) => handleNavigation(e, `/application/questionnaire/${allSections[currentIndex + 1]}`)}
             >
-              Next
+      				Next
             </Link>
           )}
         </ButtonGroup>

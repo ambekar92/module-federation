@@ -10,12 +10,11 @@ DELEGATE = 'delegate',
 SPOUSE = 'spouse',
 PRIMARY_QUALIFYING_OWNER = 'primary_qualifying_owner',
 
-// Screener Roles
+// Screener Roles (RTB)
 SCREENER = 'screener',
 SCREENER_COMMON_APP = 'screener_common_app',
-SCREENER_COMMON = 'screener_common_app',
 
-// Analyst Roles
+// Analyst Roles (RFI)
 ANALYST = 'analyst',
 ANALYST_HIGH_TIER = 'analyst_high_criteria',
 ANALYST_LOW_TIER = 'analyst_low_criteria',
@@ -23,10 +22,8 @@ ANALYST_HIGH = 'analyst_high_tier',
 ANALYST_LOW = 'analyst_low_tier',
 ANALYST_CONTRIBUTOR_OGC = 'analyst_contributor_ogc',
 ANALYST_CONTRIBUTOR_OSS = 'analyst_contributor_oss',
-ANALYST_OGC = 'analyst_contributor_ogc',
-ANALYST_OSS = 'analyst_contributor_oss',
 
-// Reviewer Roles
+// Reviewer Roles (RFI)
 REVIEWER = 'supervisor',
 REVIEWER_HIGH_TIER = 'supervisor_high_criteria',
 REVIEWER_LOW_TIER = 'supervisor_low_criteria',

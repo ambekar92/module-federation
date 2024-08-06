@@ -3,7 +3,7 @@ import { Link } from '@trussworks/react-uswds'
 import { useParams, usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Params, QuestionnaireItem } from '../../../types/types'
-import { useLeftItems } from './useLeftItems'
+import { useLeftItems } from '@/app/(evaluation)/components/left-panel/useLeftItems'
 
 function BusinessPlanLeftPanel() {
   const {isLoading, navItems, error} = useLeftItems()

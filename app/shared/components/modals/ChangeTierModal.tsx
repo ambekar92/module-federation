@@ -64,7 +64,7 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
       handleAction()
       await triggerChangeTier(notePayload)
       await triggerUpdateApp(putData)
-     
+
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData.id }) + '?name=changed-tier'
     } catch (error: any) {
       console.error('Failed to complete evaluation task', error)
@@ -100,7 +100,10 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
         </ModalHeading>
 
         <div className="margin-top-4">
-          <p className={`${styles['field-title']}`}>Provide more information</p>
+          <p className={`${styles['field-title']}`}>By clicking “Submit” below, you are changing the routing method of this application and it will get reassigned to the appropriate person.</p>
+          <p className={`${styles['field-title']}`}>
+            Provide more information about why you are changing the tier *
+          </p>
           <textarea
             className={`${styles['textarea-field']}`}
             id="description"

@@ -10,7 +10,7 @@ const TaskTimers = () => {
             <h1>Task Timers</h1>
             {isLoading && <p>Loading...</p>}
             {!isLoading && <>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem aperiam dolorem quibusdam error veritatis sit laudantium! Possimus, deleniti autem. Voluptate repellat veritatis facere eos suscipit consectetur fugit impedit distinctio necessitatibus?</p>
+                <p>Task timers represent the amount of time spent on each task. Time is rounded up to the nearest hour and/or day. </p>
 
                 <Table bordered={true} fullWidth>
                     <thead>

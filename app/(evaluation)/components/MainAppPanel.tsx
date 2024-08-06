@@ -1,5 +1,5 @@
 import ApplicationPanelLanding from './landing/ApplicationPanelLanding'
-import ReturnToBusinessPanel from './return-to-business/ReturnToBusinessPanel'
+import ReturnToBusinessPanel from './rtf-rfi/RtfRfiPanel'
 
 function MainAppPanel() {
   return (

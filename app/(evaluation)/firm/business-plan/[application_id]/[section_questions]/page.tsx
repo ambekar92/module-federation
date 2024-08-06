@@ -2,10 +2,10 @@
 import QuestionRenderer from '@/app/(entity)/application/qa-helpers/QuestionRenderer'
 import { Params } from '@/app/(evaluation)/types/types'
 import { ANSWER_ROUTE, API_ROUTE, QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes'
-import { fetcherGET, fetcherPOST } from '@/app/services/fetcher-legacy'
+import { axiosInstance } from '@/app/services/axiosInstance'
+import fetcher from '@/app/services/fetcher'
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
-import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
@@ -18,8 +18,8 @@ interface QuestionnaireItem {
 const BusinessPlanPage = () => {
   const params = useParams<Params>();
   const [title, setTitle] = useState<string>('');
-  const { data, isLoading } = useSWR<QaQuestionsType>(`${API_ROUTE}/questionnaire/${params.application_id}/${params.section_questions}`, fetcherGET);
-  const { data: navItems } = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`, fetcherGET);
+  const { data, isLoading } = useSWR<QaQuestionsType>(`${API_ROUTE}/questionnaire/${params.application_id}/${params.section_questions}`, fetcher);
+  const { data: navItems } = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`, fetcher);
   const [showNextButton, setShowNextButton] = useState<boolean>(true);
   const [showPreviousButton, setShowPreviousButton] = useState<boolean>(true);
   const router = useRouter();
@@ -27,40 +27,46 @@ const BusinessPlanPage = () => {
   const userId = null;
   const contributorId = parseInt(params.application_id as string, 10);
 
-  const handleAnswerChange = (question: Question, value: any) => {
-    setSelectedAnswers(prevState => ({
-      ...prevState,
-      [question.name]: {
-        id: question.id,
-        profile_answer_flag: question.profile_answer_flag,
-        reminder_flag: false,
-        application_contributor_id: contributorId,
-        value: question.question_type === 'multi_select'
-          ? value.map((option: { value: string }) => option.value)
-          : value,
-        question_id: question.id,
-        answer_by: userId,
-      }
-    }));
+  const handleAnswerChange = async (question: Question, value: any) => {
+    if (userId && contributorId) {
+      setSelectedAnswers(prevState => ({
+        ...prevState,
+        [question.name]: {
+          id: question.id,
+          profile_answer_flag: question.profile_answer_flag,
+          reminder_flag: false,
+          application_contributor_id: contributorId,
+          value: question.question_type === 'multi_select'
+            ? value.map((option: { value: string }) => option.value)
+            : value,
+          question_id: question.id,
+          answer_by: userId,
+        }
+      }));
 
-    // Save the answer immediately
-    const answer = {
-      profile_answer_flag: question.profile_answer_flag,
-      application_contributor_id: contributorId,
-      value: {
-        answer: question.question_type === 'multi_select'
+      // Saves the answer immediately
+      const answer = {
+        profile_answer_flag: question.profile_answer_flag,
+        application_contributor_id: contributorId,
+        value: { answer: question.question_type === 'multi_select'
           ? value.map((option: { value: string }) => option.value)
           : value
-      },
-      question_id: question.id,
-      answer_by: userId,
-      reminder_flag: false
-    };
+        },
+        question_id: question.id,
+        answer_by: userId,
+        reminder_flag: false
+      };
 
-    fetcherPOST(ANSWER_ROUTE, [answer])
-      .catch(error => {
-        console.error('Error saving answer:', error);
-      });
+      try {
+        await axiosInstance.post(ANSWER_ROUTE, [answer]);
+      } catch (error) {
+        // Error caught haha -KJ
+      }
+    }
+  };
+
+  const onRefetchQuestionnaires = () => {
+    // This is a tempfix as it is not needed rn -KJ
   };
 
   function onContinue() {
@@ -109,6 +115,7 @@ const BusinessPlanPage = () => {
             handleAnswerChange={handleAnswerChange}
             userId={userId}
             contributorId={contributorId}
+            onRefetchQuestionnaires={onRefetchQuestionnaires}
           />
         ))}
         <div className='flex-1'>{ }</div>

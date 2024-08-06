@@ -1,20 +1,26 @@
 import React from 'react'
 import styles from './Evaluation.module.scss';
 import NotesWidget from './notes-widget/NotesWidget'
-import ReturnToBusinessForm from './return-to-business/ReturnToBusinessForm'
+import RtfRtiForm from './rtf-rfi/RtfRfiForm'
 import AnalystDocument from './notes-widget/AnalystDocument'
 
 import { Accordion } from '@trussworks/react-uswds'
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion'
+import { getUserRole } from '@/app/shared/utility/getUserRole';
+import { useSessionUCMS } from '@/app/lib/auth';
 
 function RightPanel() {
+  const sessionData = useSessionUCMS();
+  const userRole = getUserRole(sessionData?.data?.permissions || []);
+  console.log('Session Data:', sessionData);
+  console.log('Permissions:', sessionData?.data?.permissions);
   const rightPanel: AccordionItemProps[] = [
     {
       id: 'rft',
-      title: 'Return to Business',
+      title: userRole === 'screener' ? 'Return to Business' : 'Request for Information',
       content: (
         <>
-          <ReturnToBusinessForm />
+          <RtfRtiForm />
         </>
       ),
       expanded: false,
@@ -24,7 +30,7 @@ function RightPanel() {
       id: 'item2',
       title: 'Notes',
       content: (
-          <NotesWidget />
+        <NotesWidget />
       ),
       expanded: false,
       headingLevel: 'h2',

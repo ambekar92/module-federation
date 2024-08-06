@@ -5,7 +5,7 @@ import LeftPanel from '@/app/(evaluation)/components/left-panel/LeftPanel';
 import { usePathname } from 'next/navigation';
 import React, { PropsWithChildren } from 'react';
 
-const routesWithoutRightNav = ['firm-summary', 'documents', 'analysis', 'messages', 'audit', 'task-timers', 'done', 'evaluation', 'review']
+const routesWithoutRightNav = ['firm-summary', 'documents', 'analysis', 'messages', 'audit', 'task-timers', 'done', 'evaluation', 'review', 'notes']
 const routesWithoutLeftNav = ['done'];
 
 const layout = ({children}: PropsWithChildren) => {

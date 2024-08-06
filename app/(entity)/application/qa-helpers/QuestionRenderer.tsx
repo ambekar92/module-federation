@@ -15,7 +15,8 @@ import {
 import ApiGetUrlInput from '@/app/shared/questionnaire/inputs/ApiGetUrl';
 import { isUrlAnswerChoice } from '@/app/shared/questionnaire/questionnaireHelpers';
 import { Answer, Question, Rule } from '@/app/shared/types/questionnaireTypes';
-import { Grid } from '@trussworks/react-uswds';
+import { Grid, ModalRef } from '@trussworks/react-uswds';
+import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import { OperatorsQaGrid } from './OperatorsQaGrid';
 import { OwnershipQaGrid } from './OwnershipQaGrid';
@@ -24,12 +25,12 @@ interface QuestionRendererProps {
   question: Question;
   index: number;
   selectedAnswers: Record<string, Answer>;
-  // eslint-disable-next-line no-unused-vars
   handleAnswerChange: (question: Question, value: any) => void;
   isSubQuestion?: boolean;
-	userId: number | null;
-	contributorId: number;
-	onRefetchQuestionnaires: () => void;
+  userId: number | null;
+  contributorId: number;
+  onRefetchQuestionnaires: () => void;
+  closeApplicationRef?: React.RefObject<ModalRef>;
 }
 
 const QuestionRenderer: React.FC<QuestionRendererProps> = ({
@@ -38,7 +39,10 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
   selectedAnswers,
   handleAnswerChange,
   isSubQuestion = false,
-  userId, contributorId, onRefetchQuestionnaires
+  userId,
+  contributorId,
+  onRefetchQuestionnaires,
+  closeApplicationRef
 }) => {
   const inputId = `input-${question.question_type}-${index}`;
   const answer = selectedAnswers[question.name]?.value ?? question.answer?.value?.answer;
@@ -220,6 +224,7 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
                   handleAnswerChange={handleAnswerChange}
                   isSubQuestion={true}
                   onRefetchQuestionnaires={onRefetchQuestionnaires}
+                  closeApplicationRef={closeApplicationRef}
                 />
               </Grid>
             );

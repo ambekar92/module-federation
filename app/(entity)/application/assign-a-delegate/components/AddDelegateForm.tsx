@@ -1,6 +1,7 @@
 import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
-import { fetcherDELETE, fetcherGET } from '@/app/services/fetcher-legacy'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
+import { axiosInstance } from '@/app/services/axiosInstance'
+import fetcher from '@/app/services/fetcher'
 import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -34,10 +35,10 @@ function AddDelegateForm() {
   const { userId, applicationId, contributorId } = useApplicationId();
   const dispatch = useFormDispatch();
 
-  const { data: delegatesData, isLoading } = useSWR(
+  const { data: delegatesData, isLoading } = useSWR<DelegatesResponse[]>(
     (contributorId) ? `${DELEGATES_ROUTE}/${contributorId}` : null,
-		fetcherGET<DelegatesResponse[]>,
-		{ revalidateOnFocus: false }
+    fetcher,
+    { revalidateOnFocus: false }
   );
   const isDelegate = delegatesData && delegatesData.length >= 1 && delegatesData[delegatesData.length - 1].invitation_status !== 'removed';
 
@@ -45,6 +46,7 @@ function AddDelegateForm() {
     if(isDelegate) {
       setOption('yes');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delegatesData]);
 
   const closeModal = () => {
@@ -96,9 +98,9 @@ function AddDelegateForm() {
       if (delegatesData) {
         try {
           const postData = { invitation_id: delegatesData[delegatesData?.length - 1].id }
-          await fetcherDELETE<DeleteDelegateType>(`${INVITATION_ROUTE}`, postData);
+          await axiosInstance.delete<DeleteDelegateType>(`${INVITATION_ROUTE}?invitation_id=${postData.invitation_id}`);
         } catch (error) {
-          console.error('Error deleting delegate:', error);
+          // Error handled lol -KJ
         }
       }
     } else if (selectedOption === 'yes') {

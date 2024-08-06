@@ -27,6 +27,8 @@ export const sbaProgramOptions: ProgramOption[] = [
       'native_american',
       'hispanic_american',
       'black_american',
+      'sexual-orientation',
+      'Sexual Orientation',
       'minority',
       'race',
       'Race',

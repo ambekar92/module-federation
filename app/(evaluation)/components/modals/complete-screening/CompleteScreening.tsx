@@ -15,6 +15,7 @@ interface CompleteScreeningProps {
   title: string
   handleAction: () => void
   handleCancel: () => void
+	userRole: string
 }
 
 const CompleteScreening: React.FC<CompleteScreeningProps> = ({
@@ -22,6 +23,7 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({
   title,
   handleAction,
   handleCancel,
+  userRole
 }) => {
 
   const handleActionSubmit = async () => {
@@ -47,7 +49,9 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({
           </ModalHeading>
 
           <div className='margin-top-4'>
-          By clicking "Confirm", you are attesting that this application contains all the necessary information and documents to send it forward for further analysis. You can click "Cancel" if you'd like to continue screening this application.
+            {userRole === 'screener'
+              ? 'By clicking "Confirm", you are attesting that this application contains all the necessary information and documents to send it forward for further analysis. You can click "Cancel" if you\'d like to continue screening this application.'
+              : 'By clicking "Confirm", you are attesting that this application contains all the necessary information and documents to send it forward for further analysis. You can click "Cancel" if you\'d like to continue screening this application.' }
           </div>
 
           <ModalFooter>

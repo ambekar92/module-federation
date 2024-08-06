@@ -59,8 +59,8 @@ const NotesForm = ({ modalRef, createText='Create', showCancelBtn=true, noteEdit
     
     return (
         <form onSubmit={handleSubmit(onNoteSave as SubmitHandler<FieldValues>)}>
-            <Input<NoteType> name="subject" label="Subject" hint='Note subject' required={true} />
-            <RichText<NoteType> name='description' label='Description' required={true} itemId={Math.random()} size={richTextEditorSize} />
+            <Input<NoteType> name="subject" label="Subject" hint='This is a text input with a character counter.' required={true} />
+            <RichText<NoteType> name='description' label='Body' required={true} itemId={Math.random()} size={richTextEditorSize} />
             <ButtonGroup style={{ display: 'flex', gap: '3rem', marginTop: '1rem' }}>
                 <Button type='submit'
                     disabled={isMutatingCreate || isMutatingUpdate}

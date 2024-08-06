@@ -100,6 +100,7 @@ function ControlAndOpsQuestions({contributorId}: QuestionnaireProps) {
                   selectedAnswers={selectedAnswers}
                   handleAnswerChange={handleAnswerChange}
                   contributorId={contributorId}
+                  onRefetchQuestionnaires={()=>{}}
                   userId={userId}
                 />
               ))}

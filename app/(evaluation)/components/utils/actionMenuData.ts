@@ -142,43 +142,9 @@ export const actionMenuData = [
     }
   },
   {
-    'id': 6,
+    'id': ActionMenuIDs.COMPLETE_REVIEW,
     'optionLabel': 'Complete Review',
-    'permissions': ['supervisor_high_criteria', 'supervisor_low_criteria'],
-    'title': 'Complete Review',
-    'actionLabel': 'Sign and Submit',
-    'modalType': 'step',
-    'description': 'Reason for request.',
-    'steps': ['lorem ipsum', 'lorem ipsum'],
-    'table': {
-      'step': 0,
-      'tableHeader': ['Program', 'Recommendation', 'Concur and Finalize'],
-      'tableRows': [
-        ['Program 1', 'Approve', 'checkbox'],
-        ['Program 2', 'Decline', 'checkbox'],
-        ['Program 3', 'Approve', 'checkbox'],
-        ['Program 4', 'Approve', 'checkbox']
-      ]
-    },
-    'signature': {
-      'step': 1,
-      'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': 1,
-      'rows': [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-      ]
-    }
+    'permissions': [Role.REVIEWER, Role.REVIEWER_HIGH, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW, Role.REVIEWER_LOW_TIER],
   },
   {
     'id': 7,
@@ -267,12 +233,12 @@ export const actionMenuData = [
   },
   {
     id: ActionMenuIDs.UPDATE_VA_STATUS,
-    optionLabel: "Update VA Status",
+    optionLabel: 'Update VA Status',
     permissions: [Role.SCREENER, Role.SCREENER_COMMON_APP],
   },
   {
     id: ActionMenuIDs.CHANGE_TIER,
-    optionLabel: "Change Tier",
+    optionLabel: 'Change Tier',
     permissions: [Role.REVIEWER_LOW_TIER, Role.REVIEWER_HIGH_TIER],
   }
 ]

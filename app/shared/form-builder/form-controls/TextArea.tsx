@@ -48,6 +48,7 @@ import {
                 onChange={field.onChange}
                 id={name}
                 name={name}
+                style={{maxWidth: '50rem'}}
                 error={!!error}
               />
             )}
@@ -61,6 +62,7 @@ import {
                 onChange={field.onChange}
                 maxLength={charLimit}
                 isTextArea
+                style={{maxWidth: '50rem'}}
                 rows={2}
                 aria-describedby="with-hint-textarea-info with-hint-textarea-hint"
               />

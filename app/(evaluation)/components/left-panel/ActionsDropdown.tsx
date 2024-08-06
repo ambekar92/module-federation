@@ -9,13 +9,13 @@ import CloseApplication from '@/app/shared/components/modals/CloseApplication'
 
 import { useCloseApplicationTask } from '@/app/services/mutations/useCloseApplicationTask'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
-import { useParams, redirect } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { ModalRef } from '@trussworks/react-uswds'
 import ReassignUserModal from '../modals/reassign-user-modal/ReassignUserModal'
 import { ReassignType } from '../modals/reassign-user-modal/types'
-import CompleteReview from '../modals/complete-review-modal/CompleteReview'
+import CompleteReviewModal from '../modals/complete-review-modal/CompleteReviewModal'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
-import MakeApproval from '../modals/complete-review-modal/MakeApproval'
+import MakeApproval from '../modals/make-approval-dialog/MakeApproval'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 import ConfirmVeteranStatusModal from '../modals/confirm-veteran-status-modal/ConfirmVeteranStatusModal'
 import ReturnToPreviousTaskModal from '../modals/return-to-previous-task-modal/ReturnToPreviousTaskModal'
@@ -46,14 +46,13 @@ const ActionsDropdown = () => {
   const changeTierRef = useRef<ModalRef>(null)
   const makeRecommendationRef = useRef<ModalRef>(null)
   const retrnToPreviousTaskRef = useRef<ModalRef>(null);
+  const [selectedValue, setSelectedValue] = useState('')
 
   useEffect(() => {
     if (sessionData.status === 'authenticated' && sessionData?.data?.user_id) {
       setUserId(sessionData.data.user_id)
     }
   }, [sessionData, sessionData.status])
-
-  const [selectedValue, setSelectedValue] = useState('')
 
   const [showModal, setShowModal] = useState(false)
   const [actionModalProps, setActionModalProps] = useState({
@@ -87,24 +86,6 @@ const ActionsDropdown = () => {
   })
 
   const handleMakeApprovalPostRequest = async () => {
-    setSelectedValue('Actions')
-
-    try {
-      const postData = {
-        process_id: applicationData?.process.id || 1,
-        data: {
-          approved: true,
-          tier: applicationData?.application_tier || 1,
-        },
-      }
-      await triggerReview(postData)
-    } catch (error: any) {
-      console.error('Failed to complete evaluation task', error)
-      console.error('Network Error: ', error)
-    }
-  }
-
-  const handlePostRequest = async () => {
     setSelectedValue('Actions')
 
     try {
@@ -333,11 +314,7 @@ const ActionsDropdown = () => {
         handleAction={handleCloseAppAction}
       />
 
-      <CompleteReview
-        modalRef={completeReviewRef}
-        title="Complete Review"
-        handleAction={handlePostRequest}
-      />
+      <CompleteReviewModal  modalRef={completeReviewRef} />
 
       <MakeApproval
         modalRef={makeApprovalRef}
