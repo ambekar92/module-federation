@@ -22,7 +22,7 @@ import { useParams, usePathname } from 'next/navigation';
 //note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { ADMIN_BANNER_ROUTE } from '../../constants/routes'
-
+import {UnauthenticatedItems }from '../../shared/components/layout-temp/UnathenticatedNavBar'
 const selectedBottomRedBorder = '3px solid #CC0000'
 
 import dynamic from 'next/dynamic'
@@ -81,7 +81,7 @@ const Navigation = () => {
 
   const styleSettings = {
     hoverColor: '',
-    bg: 'bg-primary-darker',
+    bg: 'bg-primary-dark',
     textColor: 'text-white',
     logo: SBA_LOGO_SQUARE_WHITE_URL,
   }
@@ -380,18 +380,7 @@ const Navigation = () => {
               mobileExpanded={mobileNavOpen}
             ></PrimaryNav>
           ) : (
-            <div
-              className="hi padding-0 margin-left-auto flex-align-self-center"
-              style={{ position: 'relative' }}
-            >
-              <PrimaryNav
-                className="padding-0 margin-top-1"
-                aria-label="Primary navigation"
-                items={notAuthenticatedLogin}
-                onToggleMobileNav={toggleMobileNav}
-                mobileExpanded={mobileNavOpen}
-              ></PrimaryNav>{' '}
-            </div>
+              <UnauthenticatedItems/>
           )}
         </div>
       </Header>

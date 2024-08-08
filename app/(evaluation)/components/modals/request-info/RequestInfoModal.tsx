@@ -54,7 +54,7 @@ const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
     >
       <ModalHeading>{userRole === 'screener' ? 'Edit This Return to Business' : 'Edit This Request for Information'}</ModalHeading>
       <div>
-        <Label htmlFor='reason-code' requiredMarker className={`${styles['field-title']}`}>{userRole === 'screener' ? 'What&apos;s your reason?' : 'Reason for Request'}</Label>
+        <Label htmlFor='reason-code' requiredMarker className={`${styles['field-title']}`}>{userRole === 'screener' ? 'What\'s your reason?' : 'Reason for Request'}</Label>
         <div className="usa-combo-box margin-top-05">
           <select
             className={`usa-select ${styles['dropdown-text']}`}

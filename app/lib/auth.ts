@@ -10,8 +10,7 @@ import { SessionType } from '../login/types';
 import { IUserDetails } from './next-auth';
 import { axiosInstance } from '../services/axiosInstance';
 
-
-  export  const authConfig: NextAuthOptions = {
+export  const authConfig: NextAuthOptions = {
   providers: [
     OktaProvider({
       clientId: process.env.OKTA_OAUTH2_CLIENT_ID!,
@@ -84,9 +83,9 @@ import { axiosInstance } from '../services/axiosInstance';
       return userSession;
     },
   },
-  }
+}
 
-  export async function getSessionServer() {
+export async function getSessionServer() {
   const session = await getServerSession(authConfig);
   return session;
 }
@@ -107,10 +106,15 @@ export function useSessionUCMS(): SessionType {
   const email_password_auth_token = emailPasswordAuthCookie
     ? JSON.parse(emailPasswordAuthCookie) as LoginResponseUser
     : null;
+
+  const fullName = email_password_auth_token?.first_name && email_password_auth_token?.last_name
+    ? `${email_password_auth_token.first_name} ${email_password_auth_token.last_name}`
+    : '';
+
   const session: SessionType = oktaSession.data ? oktaSession : {
     data: {
       user: {
-        name: '',
+        name: fullName,
         email: email_password_auth_token?.email || '',
         accessToken: email_password_auth_token?.access || '',
         okta_id: '',

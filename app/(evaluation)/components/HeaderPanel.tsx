@@ -1,9 +1,10 @@
 'use client'
 
-import { SamEntity } from "@/app/services/types/application-service/Application";
-import { useApplicationData } from "../firm/useApplicationData";
-import { useParams } from "next/navigation";
-import { ApplicationFilterType } from "@/app/services/queries/application-service/applicationFilters";
+import { SamEntity } from '@/app/services/types/application-service/Application';
+import { useApplicationData } from '../firm/useApplicationData';
+import { useParams } from 'next/navigation';
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
+import humanizeString from 'humanize-string';
 
 function HeaderPanel() {
   const params = useParams<{application_id: string}>();
@@ -34,13 +35,13 @@ function HeaderPanel() {
           <div className="grid-col-2 margin-right-3">
             <p className="margin-0 text-bold">Status</p>
             <div className="margin-top-1" style={{textTransform: 'capitalize'}}>
-              <span>{applicationData?.workflow_state}</span>
+              <span>{applicationData && humanizeString(applicationData.workflow_state)}</span>
             </div>
           </div>
           <div className="grid-col-3 margin-right-3">
             <p className="margin-0 text-bold">Exclusion Status</p>
             <div className="margin-top-1">
-              <span>{samEntity?.exclusion_status_flag === 'Y' ? 'yes' : 'no'}</span>
+              <span>{samEntity?.exclusion_status_flag === 'Y' ? 'Yes' : 'No'}</span>
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 'use client'
 
+import { useSessionUCMS } from '@/app/lib/auth'
+import { getUserRole } from '@/app/shared/utility/getUserRole'
 import {
   Button,
   ButtonGroup,
@@ -10,10 +12,8 @@ import {
   ModalRef,
   Textarea
 } from '@trussworks/react-uswds'
-import { useSession } from 'next-auth/react'
 import React, { RefObject, useEffect, useState } from 'react'
 import styles from '../RtfRfi.module.scss'
-import { getUserRole } from '@/app/shared/utility/getUserRole'
 
 interface CloseFormModalProps {
   open: boolean;
@@ -27,7 +27,7 @@ const CloseFormModal: React.FC<CloseFormModalProps> = ({
   selectedData,
   modalRef
 }) => {
-  const sessionData = useSession();
+  const sessionData = useSessionUCMS();
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const [description, setDescription] = useState('');
   const handleSave = () => {

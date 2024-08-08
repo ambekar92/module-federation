@@ -1,9 +1,17 @@
 import { NavItem } from '../../types/types';
+export const getAnalystQuestionnaires = () => [
+  '/analyst-questionnaire-ownership',
+  '/analyst-questionnaire-control',
+  '/analyst-questionnaire-size-and-additional-questions',
+  '/analyst-questionnaire-economic-disadvantage',
+  '/analyst-questionnaire-potential-for-success',
+  '/analyst-questionnaire-social-disadvantage'
+];
 
 export const getStaticNavItems = (application_id: string): NavItem[] => [
   {
     section: 'Firm Summary',
-    child: [{ section: 'Firm Summary', url: `${application_id}/firm-summary`, title: 'Firm Summary' }]
+    child: [{ section: 'Firm Summary', url: `${application_id}/business-summary`, title: 'Business Summary' }]
   },
   {
     section: 'Documents',

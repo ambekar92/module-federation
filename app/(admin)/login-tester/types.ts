@@ -18,6 +18,8 @@ type Permission = {
 export type LoginResponseUser = {
     user_id: number;
 		email: string;
+		first_name: string;
+		last_name: string;
     permissions: Permission[];
     entities: Entity[];
     refresh: string;

@@ -1,16 +1,16 @@
 'use client'
 
-import React from 'react'
+import { useSessionUCMS } from '@/app/lib/auth'
 import {
-  ButtonGroup,
-  Modal,
-  ModalHeading,
-  ModalFooter,
   Button,
+  ButtonGroup,
   Label,
+  Modal,
+  ModalFooter,
+  ModalHeading,
 } from '@trussworks/react-uswds'
+import React from 'react'
 import styles from '../RtfRfi.module.scss'
-import { useSession } from 'next-auth/react'
 
 interface ConfirmationModalProps {
   open: boolean
@@ -23,7 +23,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   handleSend,
   handleCancel,
 }) => {
-  const sessionData = useSession()
+  const sessionData = useSessionUCMS()
 
   return (
     <>

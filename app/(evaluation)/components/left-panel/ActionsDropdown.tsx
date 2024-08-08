@@ -21,7 +21,8 @@ import ConfirmVeteranStatusModal from '../modals/confirm-veteran-status-modal/Co
 import ReturnToPreviousTaskModal from '../modals/return-to-previous-task-modal/ReturnToPreviousTaskModal'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
-import MakeRecommendationModal from '@/app/shared/components/modals/MakeRecommendationModal'
+import CompleteScreening from '../modals/complete-screening/CompleteScreening'
+import MakeRecommendationModal from '../modals/make-recommendation/MakeRecommendationModal'
 
 const ActionsDropdown = () => {
   const sessionData = useSessionUCMS()
@@ -38,6 +39,7 @@ const ActionsDropdown = () => {
   )
   const { trigger: triggerClose } = useCloseApplicationTask()
   const { trigger: triggerReview } = useCompleteEvalTask()
+  // Modal Refs
   const reassignScreenerRef = useRef<ModalRef>(null)
   const veteranStatusRef = useRef<ModalRef>(null)
   const closeApplicationRef = useRef<ModalRef>(null)
@@ -45,7 +47,9 @@ const ActionsDropdown = () => {
   const makeApprovalRef = useRef<ModalRef>(null)
   const changeTierRef = useRef<ModalRef>(null)
   const makeRecommendationRef = useRef<ModalRef>(null)
-  const retrnToPreviousTaskRef = useRef<ModalRef>(null);
+  const returnToPreviousTaskRef = useRef<ModalRef>(null);
+  const completeScreeningRef = useRef<ModalRef>(null);
+
   const [selectedValue, setSelectedValue] = useState('')
 
   useEffect(() => {
@@ -188,7 +192,11 @@ const ActionsDropdown = () => {
       return
     }
     if (selectedNumericValue === ActionMenuIDs.RETURN_TO_ANALYST || selectedNumericValue === ActionMenuIDs.RETURN_TO_REVIEWER || selectedNumericValue === ActionMenuIDs.RETURN_TO_SCREENER) {
-      retrnToPreviousTaskRef.current?.toggleModal();
+      returnToPreviousTaskRef.current?.toggleModal();
+      return;
+    }
+    if(selectedNumericValue === ActionMenuIDs.COMPLETE_SCREENING) {
+      completeScreeningRef.current?.toggleModal();
       return;
     }
 
@@ -322,7 +330,7 @@ const ActionsDropdown = () => {
         handleAction={handleMakeApprovalPostRequest}
       />
 
-      <ReturnToPreviousTaskModal modalRef={retrnToPreviousTaskRef} processId={applicationData?.process?.id} />
+      <ReturnToPreviousTaskModal modalRef={returnToPreviousTaskRef} processId={applicationData?.process?.id} />
 
       <ChangeTierModal
         modalRef={changeTierRef}
@@ -332,7 +340,13 @@ const ActionsDropdown = () => {
         modalRef={makeRecommendationRef}
         handleAction={handleResetActionDropdownRequest}
       />
-      <ConfirmVeteranStatusModal modalRef={veteranStatusRef} processId={applicationData?.process?.id} />
+      <ConfirmVeteranStatusModal modalRef={veteranStatusRef} applicationId={applicationData?.id} />
+
+      <CompleteScreening modalRef={completeScreeningRef}
+        processId={applicationData?.process?.id}
+        applicationTier={applicationData?.application_tier}
+        applicationId={applicationData?.id}
+      />
     </div>
   )
 }

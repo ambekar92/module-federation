@@ -7,6 +7,8 @@ import { QuestionnaireItem } from '../../types/types'
 import ActionsDropdown from './ActionsDropdown'
 import { useLeftItems } from './useLeftItems'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { getUserRole } from '@/app/shared/utility/getUserRole'
 
 function LeftPanel() {
   const params = useParams<{application_id: string, section_questions: any}>();
@@ -14,6 +16,8 @@ function LeftPanel() {
   const {isLoading: isNavItemsLoading, navItems, error} = useLeftItems()
   const [activeSection, setActiveSection] = useState<string>('');
   const [activeTitle, setActiveTitle] = useState('');
+  const sessionData = useSessionUCMS();
+  const userRole = getUserRole(sessionData?.data?.permissions || []);
   const router = useRouter();
   const pathname = usePathname();
   const selectedSegment = useSelectedLayoutSegment()
@@ -59,8 +63,12 @@ function LeftPanel() {
     );
   };
 
+  if(!applicationData || !sessionData) {
+    return
+  }
+
   return (
-    <>
+    <div className='bg-white padding-top-2'>
       <div className="grid-container margin-top-2">
         <h2 className="margin-top-0">{applicationData?.sam_entity?.legal_business_name ?? 'N/A'}</h2>
         <div className="margin-top-1">
@@ -74,7 +82,14 @@ function LeftPanel() {
         <div className="margin-top-1 margin-bottom-3">
           <span className="usa-tag margin-top-2">Entity Owned</span>
         </div>
-        <ActionsDropdown />
+        {(
+          userRole === 'analyst' ||
+					(userRole === 'screener' && applicationData.workflow_state === 'submitted') ||
+					(userRole === 'reviewer') ||
+					(userRole === 'default')
+        ) && (
+          <ActionsDropdown />
+        )}
       </div>
       <div className="grid-container">
         <nav aria-label="Side navigation">
@@ -84,12 +99,12 @@ function LeftPanel() {
                 return (
                   <ul className='padding-left-0' key={index}>
                     <li style={{listStyle: 'none'}} className="usa-sidenav__item">
-                      <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`../${item.child[0].url}`} className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
+                      <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`/${item.child[0].url}`} className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
                       {item.child.length > 1 && <ul className="usa-sidenav__sublist">
                         {item.child.map((childItem, index1) => (
                           <div key={index1}>
                             <li className="usa-sidenav__item">
-                              <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`../${childItem.url}`} className={childItem.title === activeTitle ? 'usa-current' : ''}>{childItem.title}</Link>
+                              <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`/${childItem.url}`} className={childItem.title === activeTitle ? 'usa-current' : ''}>{childItem.title}</Link>
                             </li>
                           </div>
                         ))}
@@ -110,7 +125,7 @@ function LeftPanel() {
           </ul>
         </nav>
       </div>
-    </>
+    </div>
   )
 }
 

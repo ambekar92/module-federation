@@ -10,13 +10,12 @@ import { RefObject } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { ConfirmVA, ConfirmVeteranStatusType, schema } from './schema'
 
-const ConfirmVeteranStatusModal = ({ modalRef, processId }: { modalRef: RefObject<ModalRef>, processId: number | undefined }) => {
+const ConfirmVeteranStatusModal = ({ modalRef, applicationId }: { modalRef: RefObject<ModalRef>, applicationId: number | undefined }) => {
   const {trigger, isMutating} = useUpdateVAStatus();
 
   const methods = useForm<ConfirmVeteranStatusType>({
     resolver: zodResolver(schema),
     defaultValues: {
-      veteran_status: null,
       vba_feedback: ''
     }
   })
@@ -26,24 +25,22 @@ const ConfirmVeteranStatusModal = ({ modalRef, processId }: { modalRef: RefObjec
       methods.setError('vba_feedback', {message: 'Please provide more information'});
       return;
     }
-    if (!processId) {
+    if (!applicationId) {
       modalRef.current?.toggleModal();
       methods.reset();
       throw  new Error('Application process id not found');
     };
     const payload: ConfirmVeteranStatusPayload = {
-      process_id: processId,
-      data: {
-        veteran_status: formData.veteran_status!,
-        vba_feedback: formData.vba_feedback
-      }
+      application_id: applicationId,
+      veteran_status: formData.veteran_status!,
+      vba_feedback: formData.vba_feedback
     }
     trigger(payload)
       .finally(() => {
         methods.reset()
         modalRef.current?.toggleModal();
         // Todo - need to validate the response to display error message or redirect on success
-        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: processId }) + '?name=confirmed-veteran-status'
+        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=confirmed-veteran-status'
       })
   }
 
@@ -80,10 +77,10 @@ const ConfirmVeteranStatusModal = ({ modalRef, processId }: { modalRef: RefObjec
           <ModalFooter>
             <ButtonGroup>
               <Button type='submit' onClick={methods.handleSubmit(onSubmit)} disabled={isMutating}>
-                                Submit
+                Submit
               </Button>
               <Button type='button' unstyled className="padding-105 text-center" onClick={onClose}>
-                                Cancel
+                Cancel
               </Button>
             </ButtonGroup>
           </ModalFooter>

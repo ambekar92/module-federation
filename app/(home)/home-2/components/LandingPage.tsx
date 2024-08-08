@@ -81,7 +81,7 @@ export const LandingPage = () => {
         className="width-full maxw-full"
         style={{
           backgroundColor: '#1a4480',
-          marginTop: '-10px',
+          marginTop: '-8px',
           height: '250px',
         }}
       >

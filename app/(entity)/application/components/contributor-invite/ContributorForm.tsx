@@ -34,7 +34,7 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
   const { data: operatorData } = useFetchOnce<Question[]>(`${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation`, fetcher);
 
   useEffect(() => {
-    if (ownerData && ownerData[0].answer && Array.isArray(ownerData[0].answer) && ownerData[0].answer.length > 0) {
+    if (ownerData && ownerData[0].answer) {
       const ownerContributors = convertOwnerAnswerToContributors(ownerData[0].answer);
       dispatch((dispatch, getState) => {
         const currentState = selectApplication(getState());
@@ -121,7 +121,6 @@ function ContributorForm({contributorId}: QuestionnaireProps) {
           }
         });
 
-        console.log(mergedContributors);
         dispatch(setContributors(mergedContributors));
       });
     }

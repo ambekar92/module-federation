@@ -5,7 +5,7 @@ import {
 } from '@trussworks/react-uswds';
 import { PropsWithChildren } from 'react';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
-import TipTap from './Tiptap';
+import Editor from 'react-simple-wysiwyg';
   
   type Props<T extends FieldValues> = {
     name: Path<T>;
@@ -57,7 +57,7 @@ import TipTap from './Tiptap';
               <ErrorMessage id="input-error-message">
                 {error?.message}
               </ErrorMessage>
-              <TipTap size={size} onChange={field.onChange} value={field.value} itemId={itemId}/>
+              <Editor value={field.value} onChange={field.onChange} />
             </>
           </FormGroup>
         )}

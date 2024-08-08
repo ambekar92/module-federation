@@ -15,7 +15,7 @@ export const BooleanInput = ({ question, inputId, handleChange, isSubQuestion, s
       <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         <span>{question.title}</span>
       </Label>
-      <div className='usa-radio display-flex gap-1'>
+      <div style={{backgroundColor: 'transparent'}} className='usa-radio display-flex gap-1'>
         <input
           className="usa-radio__input"
           id={`${question.name}-true`}

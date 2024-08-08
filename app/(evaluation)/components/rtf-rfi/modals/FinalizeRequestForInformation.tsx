@@ -1,5 +1,8 @@
 'use client'
 
+import { SUBMIT_RFI_ROUTE } from '@/app/constants/routes'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { axiosInstance } from '@/app/services/axiosInstance'
 import { IRTFItems } from '@/app/services/types/evaluation-service/RTFItems'
 import {
   Button,
@@ -16,27 +19,29 @@ import {
   Select,
   TextInput
 } from '@trussworks/react-uswds'
-import { useSession } from 'next-auth/react'
 import { useParams } from 'next/navigation'
 import React, { RefObject, useState } from 'react'
 import styles from '../RtfRfi.module.scss'
-import { axiosInstance } from '@/app/services/axiosInstance'
-import { SUBMIT_RFI_ROUTE } from '@/app/constants/routes'
+import { mutate } from 'swr'
 
 interface EditFormModalProps {
   tableData: IRTFItems[];
   reasonCodeMap: Record<number, string>;
-	modalRef: RefObject<ModalRef>;
-	applicationId: string
+  modalRef: RefObject<ModalRef>;
+  applicationId: string;
+  mutateDraft: () => void;
+  mutateRequest: () => void;
 }
 
 const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
   tableData,
   reasonCodeMap,
   modalRef,
-  applicationId
+  applicationId,
+  mutateDraft,
+  mutateRequest
 }) => {
-  const sessionData = useSession()
+  const sessionData = useSessionUCMS()
   const params = useParams<{application_id: string}>();
   const [dueDate, setDueDate] = useState({ month: '', day: '', year: '' });
   const [subject, setSubject] = useState('');
@@ -52,7 +57,7 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
   const formatDueDate = () => {
     if (dueDate.month && dueDate.day && dueDate.year) {
       const date = new Date(parseInt(dueDate.year), parseInt(dueDate.month) - 1, parseInt(dueDate.day));
-      return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      return date.toISOString().split('T')[0];
     }
     return '';
   };
@@ -60,19 +65,22 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
   const handleReturnApp = async () => {
     try {
       const requestData = {
-        application_id: applicationId,
+        application_id: parseInt(applicationId),
         due_date: formatDueDate(),
         author_id: sessionData.data?.user_id,
         message: subject
       }
 
       await axiosInstance.post(SUBMIT_RFI_ROUTE, requestData);
+      mutateDraft();
+      mutateRequest();
     } catch(error) {
       // Error handled lol -KJ
     }
 
     onClose()
   }
+
   return (
     <>
       <Modal

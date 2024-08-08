@@ -1,53 +1,46 @@
 'use client'
-import React, { useState } from 'react'
-import { Button } from '@trussworks/react-uswds'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
-import { useSessionUCMS } from '@/app/lib/auth'
-import CompleteScreening from '../modals/complete-screening/CompleteScreening'
-import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
-import { useParams } from 'next/navigation';
+import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes';
+import { useSessionUCMS } from '@/app/lib/auth';
+import { axiosInstance } from '@/app/services/axiosInstance';
+import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
-import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
+import { Button } from '@trussworks/react-uswds';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 
 const ApplicationPanelLanding = () => {
   const params = useParams<{application_id: string}>();
-  const { applicationData } = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const { applicationData, mutate } = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const [ reviewStarted, setReviewStarted ] = useState(false);
   const sessionData = useSessionUCMS()
   const { trigger } = useCompleteEvalTask()
 
   const userRole = getUserRole(sessionData?.data?.permissions || []);
 
-  const [showModal, setShowModal] = useState(false)
-  // const [modalProps, setModalProps] = useState({
-  //   title: 'Complete Task',
-  // })
-  const modalProps = {title: 'Complete Task'}
-
   const handleCompleteTask = async () => {
-    setShowModal(true)
-  }
-
-  const handleModalCancel = () => {
-    setShowModal(false)
-  }
-
-  const handlePostRequest = async () => {
-    setShowModal(false)
     try {
+      setReviewStarted(true);
       const postData = {
-        process_id: applicationData?.process.id || 1,
+        process_id: applicationData?.process?.id || 1,
         data: {
-          approved: true,
-          create_return_to_firm_note: false,
-          tier: applicationData?.application_tier || 1,
+          review_start: true
         },
       }
-      const response = await trigger(postData)
-      // Todo - need to validate the response to display error message or redirect on success
-      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-screening'
+      await trigger(postData)
+      const updateAppStateData = {
+        application_id: applicationData?.id,
+        state_action: 'under_review',
+        user_id: sessionData.data.user_id,
+        subject: 'Updated for evaluation review',
+        description: 'Updated for evaluation review'
+      }
+      await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
+      await mutate();
     } catch (error: any) {
-      // console.error('Network Error: ', error)
+      // Error handled lol -KJ
+      setReviewStarted(false);
       return
     }
   }
@@ -69,7 +62,7 @@ const ApplicationPanelLanding = () => {
       case 'analyst':
         return 'To begin this application review, please click “Start Review” below. Once you begin, the task timer will start tracking the amount of time you spend on this application. Return to this landing page to view any created and/or sent “Request for Information” items.'
       case 'screener':
-        return 'Your application review has not been submitted. Use the options in the left-navigation to continue your review. Any created “Return to Business” and their status can be found on this page. '
+        return 'To begin this application review, please click “Start Review below. Once you begin, the task timer will start tracking the amount of time you spend on this application. Return to this landing page to view any created and/or sent “Return to Business” items.'
       case 'default':
         return 'Your application review has not been submitted. Use the options in the left-navigation to continue your review. Any created “Return to Business” and their status can be found on this page.'
     }
@@ -81,12 +74,15 @@ const ApplicationPanelLanding = () => {
       case 'analyst':
         return 'Complete Review';
       case 'screener':
-        return 'Start Screening';
+        return 'Start Review';
       default:
         return 'Start Review';
     }
   }
 
+  if(!applicationData || !sessionData) {
+    return
+  }
   return (
     <>
       <div className="grid-container">
@@ -104,27 +100,27 @@ const ApplicationPanelLanding = () => {
                 </p>
               </div>
             </div>
-            <div className="margin-top-7">
-              <div className="usa-card__footer">
-                <Button
-                  type="button"
-                  className="usa-button"
-                  onClick={handleCompleteTask}
-                >
-                  {getButtonText()}
-                </Button>
+            {(
+              userRole === 'analyst' ||
+              (userRole === 'screener' && applicationData.workflow_state === 'submitted') ||
+							(userRole === 'reviewer') ||
+							(userRole === 'default')
+            ) && (
+              <div className="margin-top-7">
+                <div className="usa-card__footer">
+                  <Button
+                    type="button"
+                    className="usa-button"
+                    onClick={handleCompleteTask}
+                  >
+                    {getButtonText()}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </li>
       </div>
-      <CompleteScreening
-        userRole={userRole}
-        open={showModal}
-        title={modalProps.title}
-        handleAction={handlePostRequest}
-        handleCancel={handleModalCancel}
-      />
     </>
   )
 }

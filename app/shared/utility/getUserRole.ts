@@ -20,7 +20,7 @@ export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'scree
     Role.ANALYST_HIGH,
     Role.ANALYST_LOW,
     Role.ANALYST_CONTRIBUTOR_OGC,
-    Role.ANALYST_CONTRIBUTOR_OSS
+    Role.ANALYST_CONTRIBUTOR_OSS,
   ];
 
   const screenerRoles = [

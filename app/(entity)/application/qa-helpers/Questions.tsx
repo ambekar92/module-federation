@@ -120,7 +120,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
     .filter(question => question.question_ordinal !== null)
     .sort((q1, q2) => (q1.question_ordinal! - q2.question_ordinal!));
 
-  if(title === 'Hubzone Calculator Supplemental') {
+  if(title === 'HUBZone Calculator Supplemental') {
     if(contributorId) {
       const principleOfficeAnswer = sortedAndFilteredQuestions[0].answer?.value;
       const shouldSkip = principleOfficeAnswer?.answer === 'not applicable' || principleOfficeAnswer === null;

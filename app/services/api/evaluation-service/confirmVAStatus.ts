@@ -1,6 +1,6 @@
-import { axiosInstance } from "../../axiosInstance";
-import { ConfirmVeteranStatusPayload } from "../../types/evaluation-service/ConfirmVAStatus";
+import { axiosInstance } from '../../axiosInstance';
+import { ConfirmVeteranStatusPayload } from '../../types/evaluation-service/ConfirmVAStatus';
 
 export async function confirmVAStatus(url: string, {arg}: {arg: ConfirmVeteranStatusPayload}) {
-    await axiosInstance.post(url, arg)
+  await axiosInstance.put(url, arg)
 }

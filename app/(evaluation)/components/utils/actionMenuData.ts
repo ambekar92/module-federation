@@ -19,6 +19,7 @@ export enum ActionMenuIDs {
   REASSIGN_APPROVER = 13,
   UPDATE_VA_STATUS = 14,
   CHANGE_TIER = 15,
+	COMPLETE_SCREENING = 16,
 }
 
 export const actionMenuData = [
@@ -211,9 +212,7 @@ export const actionMenuData = [
       Role.ANALYST_HIGH,
       Role.ANALYST_LOW,
       Role.ANALYST_CONTRIBUTOR_OGC,
-      Role.ANALYST_CONTRIBUTOR_OSS,
-      Role.ANALYST_OGC,
-      Role.ANALYST_OSS
+      Role.ANALYST_CONTRIBUTOR_OSS
     ],
   },
   {
@@ -240,5 +239,10 @@ export const actionMenuData = [
     id: ActionMenuIDs.CHANGE_TIER,
     optionLabel: 'Change Tier',
     permissions: [Role.REVIEWER_LOW_TIER, Role.REVIEWER_HIGH_TIER],
+  },
+  {
+    id: ActionMenuIDs.COMPLETE_SCREENING,
+    optionLabel: 'Complete Screening',
+    permissions: [Role.SCREENER, Role.SCREENER_COMMON_APP],
   }
 ]

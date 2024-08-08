@@ -1,12 +1,9 @@
 
-import Ucp from './components/Ucp'
+import ConstantsTable from './components/ConstantsTable'
 
-export default function AdminUcp() {
 
-  return (
-    <div>
-
-      <Ucp />
-    </div>
-  )
+function ConfigurationPage() {
+  return  <ConstantsTable />
+  
 }
+export default ConfigurationPage

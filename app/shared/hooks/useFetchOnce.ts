@@ -4,6 +4,8 @@ const defaultConfig: SWRConfiguration = {
   revalidateOnFocus: false,
   revalidateOnReconnect: false,
   refreshInterval: 0,
+  shouldRetryOnError: false,
+  errorRetryCount: 0,
 };
 
 function useFetchOnce<Data = any, Error = any>(

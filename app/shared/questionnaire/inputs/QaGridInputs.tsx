@@ -42,7 +42,7 @@ export const BooleanInput: React.FC<{ question: Question; value: string; onChang
       <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         {question.title}
       </Label>
-      <div className="usa-radio display-flex gap-1">
+      <div style={{backgroundColor: 'transparent'}} className="usa-radio display-flex gap-1">
         <input className="usa-radio__input" id={`${question.name}-true`} type="radio" value="Yes" name={question.name} checked={value === 'Yes'} onChange={() => onChange('Yes')} />
         <Label className="usa-radio__label" htmlFor={`${question.name}-true`}>Yes</Label>
         <input className="usa-radio__input" id={`${question.name}-false`} type="radio" value="No" name={question.name} checked={value === 'No'} onChange={() => onChange('No')} />

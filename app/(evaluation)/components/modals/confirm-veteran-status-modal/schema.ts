@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export enum ConfirmVA {
     confirmed = 'confirmed',
@@ -7,8 +7,8 @@ export enum ConfirmVA {
 }
 
 export const schema = z.object({
-    veteran_status: z.nativeEnum(ConfirmVA).nullable().refine(val => val !== null, 'Please confirm the veteran status'),
-    vba_feedback: z.string().min(1, 'Please provide more information'),
+  veteran_status: z.nativeEnum(ConfirmVA).optional().refine(val => val !== undefined, 'Please select a veteran status'),
+  vba_feedback: z.string().min(1, 'Please provide more information'),
 })
 
 export type ConfirmVeteranStatusType = z.infer<typeof schema>;

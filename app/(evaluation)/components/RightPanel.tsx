@@ -1,19 +1,17 @@
 import React from 'react'
 import styles from './Evaluation.module.scss';
 import NotesWidget from './notes-widget/NotesWidget'
-import RtfRtiForm from './rtf-rfi/RtfRfiForm'
 import AnalystDocument from './notes-widget/AnalystDocument'
 
 import { Accordion } from '@trussworks/react-uswds'
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion'
 import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { useSessionUCMS } from '@/app/lib/auth';
+import RtfRtiForm from './rtf-rfi/form/RtfRfiForm';
 
 function RightPanel() {
   const sessionData = useSessionUCMS();
   const userRole = getUserRole(sessionData?.data?.permissions || []);
-  console.log('Session Data:', sessionData);
-  console.log('Permissions:', sessionData?.data?.permissions);
   const rightPanel: AccordionItemProps[] = [
     {
       id: 'rft',

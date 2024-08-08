@@ -62,7 +62,7 @@ const UserRoleTable = async ({
   const [shouldFetch, setShouldFetch] = useState(true)
 const [showDisplay, setShowDisplay] = useState(false)
 
-  const {
+ const  {
     data: responseData,
     error: responseError,
     isLoading,
