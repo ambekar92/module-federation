@@ -1,7 +1,7 @@
 'use client'
 import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
 import {
-  USER_DASHBOARD_PAGE
+  CLAIM_YOUR_BUSINESS
 } from '@/app/constants/url'
 import { fetcherPOST } from '@/app/services/fetcher-legacy'
 import { Role } from '@/app/shared/types/role'
@@ -78,7 +78,7 @@ export const SignIn = (): React.ReactElement => {
         const redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
         router.push(redirectUrl);
       } else {
-        router.push(USER_DASHBOARD_PAGE);
+        router.push(CLAIM_YOUR_BUSINESS);
       }
     } catch (error: any) {
       console.error('Network Error: ', error)
