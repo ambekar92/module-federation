@@ -20,6 +20,7 @@ export enum ActionMenuIDs {
   UPDATE_VA_STATUS = 14,
   CHANGE_TIER = 15,
 	COMPLETE_SCREENING = 16,
+  REASSIGN_EXPERT = 17,
 }
 
 export const actionMenuData = [
@@ -103,45 +104,7 @@ export const actionMenuData = [
       Role.ANALYST_HIGH
     ],
   },
-  {
-    'id': 5,
-    'optionLabel': 'Make an Approval',
-    'permissions': ['approver_8a_aabd', 'approver_8a_delegate'],
-    'title': 'Make an Approval',
-    'actionLabel': 'Sign and Submit',
-    'modalType': 'step',
-    'description': 'Reason for request.',
-    'steps': ['lorem ipsum', 'lorem ipsum'],
-    'table': {
-      'step': 0,
-      'tableHeader': ['Program', 'Recommendation', 'Concur and Finalize'],
-      'tableRows': [
-        ['Program 1', 'Approve', 'checkbox'],
-        ['Program 2', 'Decline', 'checkbox'],
-        ['Program 3', 'Approve', 'checkbox'],
-        ['Program 4', 'Approve', 'checkbox']
-      ]
-    },
-    'signature': {
-      'step': 1,
-      'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': 1,
-      'rows': [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-      ]
-    }
-  },
+
   {
     'id': ActionMenuIDs.COMPLETE_REVIEW,
     'optionLabel': 'Complete Review',
@@ -203,6 +166,11 @@ export const actionMenuData = [
     permissions: [Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE, Role.APPROVER_AABD],
   },
   {
+    id: ActionMenuIDs.MAKE_APPROVAL,
+    optionLabel: 'Make an Approval',
+    permissions: [Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE, Role.APPROVER_AABD],
+  },
+  {
     id: ActionMenuIDs.RETURN_TO_SCREENER,
     optionLabel: 'Return to Screener',
     permissions: [
@@ -244,5 +212,10 @@ export const actionMenuData = [
     id: ActionMenuIDs.COMPLETE_SCREENING,
     optionLabel: 'Complete Screening',
     permissions: [Role.SCREENER, Role.SCREENER_COMMON_APP],
+  },
+  {
+    id: ActionMenuIDs.REASSIGN_EXPERT,
+    optionLabel: 'Reassign Expert',
+    permissions: permissionsMap[ReassignType.REASSIGN_EXPERT],
   }
 ]

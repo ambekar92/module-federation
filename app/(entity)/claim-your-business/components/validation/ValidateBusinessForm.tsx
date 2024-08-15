@@ -21,6 +21,7 @@ import SuccessModal from '../modals/SuccessModal';
 import ValidationTable from './ValidationTable';
 import { toolTipCmbValidation } from '@/app/constants/tooltips';
 import Tooltip from '@/app/shared/components/tooltip/Tooltip';
+import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url';
 interface ValidateBusinessFormProps {
   samData: CmbResponseType
 }
@@ -29,7 +30,7 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
   const [ open, setOpen ] = useState(false);
   const [ errorMsg, setErrorMsg ] = useState('');
   const [ isPostSuccessful, setPostSuccessful ] = useState(false);
-  const [ applicationId, setApplicationId ] = useState<number | undefined>();
+  const [ entityId, setEntityId ] = useState<number | undefined>();
 
   const handleClose = () => {
     setOpen(false);
@@ -80,7 +81,7 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
             <ConfirmModal
               handleClose={handleClose} handleOpen={handleOpen} open={open}
               setErrorMsg={setErrorMsg} setPostSuccessful={setPostSuccessful}
-              business={samData} setApplicationId={setApplicationId}
+              business={samData} setEntityId={setEntityId}
             />
           </Show.When>
         </Show>
@@ -148,8 +149,8 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
                 Back
               </Link>
               {isPostSuccessful ? (
-                applicationId ? (
-                  <Link href={`/application/select-intended-programs/${applicationId}`} className="usa-button usa-button">
+                entityId ? (
+                  <Link href={buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, {entity_id: entityId})} className="usa-button usa-button">
 										Continue
                   </Link>
                 ): (

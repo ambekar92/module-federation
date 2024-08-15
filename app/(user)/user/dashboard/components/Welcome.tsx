@@ -1,26 +1,24 @@
 'use client'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { Show } from '@/app/shared/components/Show'
 import { Role } from '@/app/shared/types/role'
+import { isRole } from '@/middleware'
+import { useCurrentPath } from '../hooks/useCurrentPath'
 
 const Welcome = () => {
-    const session = useSessionUCMS();
-    // temporary function to replace isRole from @/middleware. will swich back to the one from @/middleware once determined which user role corresponds to analyst
-    function isRole(permissions: any, role: any) {
-        return false;
-    }
-    
+  const session = useSessionUCMS();
+  const { isReviewersDashboard, isTasksDashboard } = useCurrentPath();
+
+  if (!session.data || isRole(session.data?.permissions, Role.EXTERNAL)) {return null;}
+
   return (
     <div>
-        <Show>
-            <Show.When isTrue={!isRole(session.data?.permissions, Role.EXTERNAL)}>
-                <strong data-testid="reviewer-dashboard">Reviewer Dashboard</strong>
-            </Show.When>
-            <Show.Otherwise>
-                <strong data-testid="user-dashboard">User Dashboard</strong>
-            </Show.Otherwise>
-        </Show>
-        <h1>Welcome, {session.data?.user?.name}</h1>
+      <h1>Welcome, {session.data?.user?.name}</h1>
+      {isReviewersDashboard && (
+        <p>This dashboard provides an additional view that allows you to search and filter on an individual Analyst to view their workload.</p>
+      )}
+      {isTasksDashboard && (
+        <p>This dashboard provides a list of applications assigned to you, a few details about the application, as well as some metrics related to your open tasks and productivity.</p>
+      )}
     </div>
   )
 }

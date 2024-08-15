@@ -5,7 +5,7 @@ import moment from 'moment'
 import React from 'react'
 
 const Audit = ({page, pageSize}: {page: number, pageSize: number}) => {
-  const { data, isLoading } = useAudit(page, pageSize)
+  const { data, isLoading } = useAudit(page, pageSize);
 
   return (
     <>
@@ -25,7 +25,7 @@ const Audit = ({page, pageSize}: {page: number, pageSize: number}) => {
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(data) && data.map((auditItem, index) => (
+          {Array.isArray(data) && data.slice((page-1)*pageSize, (page-1)*pageSize + pageSize).map((auditItem, index) => (
             <tr key={index}>
               <td>{moment(auditItem.timestamp).format('MM/DD/yyyy')}</td>
               <td>{auditItem.verb}</td>

@@ -6,5 +6,12 @@ import fetcher from '../../fetcher';
 
 export function useApplication(filterType: ApplicationFilterType, filterValue: any) {
   const q = filterValue ? `?${filterType}=${filterValue}` : '';
-  return useSWR<Application[]>(`${APPLICATION_ROUTE}${q}`, fetcher)
+  return useSWR<Application[]>(`${APPLICATION_ROUTE}${q}`, fetcher, {
+    refreshInterval: 60000,
+    dedupingInterval: 60000,
+    errorRetryInterval: 60000,
+    focusThrottleInterval: 60000,
+    loadingTimeout: 60000,
+    shouldRetryOnError: false,
+  })
 }

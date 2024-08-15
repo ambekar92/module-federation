@@ -173,4 +173,18 @@ input.usa-input.usa-input--success.icon:-internal-autofill-selected {
 }
 }
 
+.toggle-button-group-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	align-items: baseline;
+	width: 100%;
+	border-top: 1px solid rgba(0,0,0, 0.1);
+	border-bottom: 1px solid rgba(0,0,0, 0.1);
+	padding: 40px 0;
 
+	label:first-child {
+		padding-left: 40px;
+		font-weight: bold;
+		grid-column: span 2;
+	}
+}

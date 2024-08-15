@@ -1,19 +1,23 @@
 'use client'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import { getUserRole } from '@/app/shared/utility/getUserRole'
 import { Link } from '@trussworks/react-uswds'
 import { useParams, usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useApplicationData } from '../../firm/useApplicationData'
-import { QuestionnaireItem } from '../../types/types'
+import { NavItem, QuestionnaireItem } from '../../types/types'
 import ActionsDropdown from './ActionsDropdown'
-import { useLeftItems } from './useLeftItems'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
-import { useSessionUCMS } from '@/app/lib/auth'
-import { getUserRole } from '@/app/shared/utility/getUserRole'
 
-function LeftPanel() {
+interface LeftPanelProps {
+  isNavItemsLoading: boolean;
+  navItems: NavItem[];
+  error: any;
+}
+
+function LeftPanel({ isNavItemsLoading, navItems, error }: LeftPanelProps) {
   const params = useParams<{application_id: string, section_questions: any}>();
   const {applicationData, isLoading: isAppDataLoading} = useApplicationData(ApplicationFilterType.id, params.application_id)
-  const {isLoading: isNavItemsLoading, navItems, error} = useLeftItems()
   const [activeSection, setActiveSection] = useState<string>('');
   const [activeTitle, setActiveTitle] = useState('');
   const sessionData = useSessionUCMS();
@@ -39,7 +43,7 @@ function LeftPanel() {
   }
 
   if (isAppDataLoading || isNavItemsLoading) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   if (error) {
@@ -84,9 +88,8 @@ function LeftPanel() {
         </div>
         {(
           userRole === 'analyst' ||
-					(userRole === 'screener' && applicationData.workflow_state === 'submitted') ||
-					(userRole === 'reviewer') ||
-					(userRole === 'default')
+					(userRole === 'screener' && applicationData.workflow_state === 'under_review') ||
+					(userRole === 'reviewer')
         ) && (
           <ActionsDropdown />
         )}

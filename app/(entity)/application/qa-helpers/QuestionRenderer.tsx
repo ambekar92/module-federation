@@ -16,7 +16,6 @@ import ApiGetUrlInput from '@/app/shared/questionnaire/inputs/ApiGetUrl';
 import { isUrlAnswerChoice } from '@/app/shared/questionnaire/questionnaireHelpers';
 import { Answer, Question, Rule } from '@/app/shared/types/questionnaireTypes';
 import { Grid, ModalRef } from '@trussworks/react-uswds';
-import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import { OperatorsQaGrid } from './OperatorsQaGrid';
 import { OwnershipQaGrid } from './OwnershipQaGrid';
@@ -28,7 +27,7 @@ interface QuestionRendererProps {
   handleAnswerChange: (question: Question, value: any) => void;
   isSubQuestion?: boolean;
   userId: number | null;
-  contributorId: number;
+  contributorId: number | null | undefined;
   onRefetchQuestionnaires: () => void;
   closeApplicationRef?: React.RefObject<ModalRef>;
 }
@@ -54,6 +53,8 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
       hasRefetched.current = true;
     }
   }, [question.question_type, onRefetchQuestionnaires]);
+
+  if(!contributorId) {return}
 
   const renderInput = () => {
     switch (question.question_type) {

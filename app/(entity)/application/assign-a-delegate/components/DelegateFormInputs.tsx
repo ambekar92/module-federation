@@ -1,15 +1,16 @@
+import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
 import { INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { fetcherPOST } from '@/app/services/fetcher-legacy'
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
+import { axiosInstance } from '@/app/services/axiosInstance'
+import getEntityByUserId, { getEntityByDelegateId } from '@/app/shared/utility/getEntityByUserId'
 import {
   Button,
   ButtonGroup,
   Grid,
   GridContainer,
   Label,
-  TextInput
+  TextInput,
 } from '@trussworks/react-uswds'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -25,6 +26,7 @@ import {
   UseFormStateReturn,
   UseFormTrigger,
 } from 'react-hook-form'
+import { applicationSteps } from '../../utils/constants'
 import {
   addOrUpdateDelegate,
   editDelegate,
@@ -39,7 +41,7 @@ import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
 import Styles from './DelegateForm.module.scss'
 import DelegateTable from './DelegateTable'
 import InviteModal from './InviteModal'
-import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
+import { Application } from '@/app/services/types/application-service/Application'
 
 interface FormInputInterface {
   showModal: boolean
@@ -54,13 +56,13 @@ interface FormInputInterface {
   reset: UseFormReset<DelegateFormInputType>
   trigger: UseFormTrigger<DelegateFormInputType>
   getValues: UseFormGetValues<DelegateFormInputType>
-  touchedFields: UseFormStateReturn<DelegateFormInputType>['touchedFields'],
-	userDetails: {
-		userId: number | null ,
-		applicationId: number | null,
-		contributorId: number | null
-	}
-	delegatesData: DelegatesResponse[] | null
+  touchedFields: UseFormStateReturn<DelegateFormInputType>['touchedFields']
+  userDetails: {
+    userId: number | null
+    applicationId: number | null
+  }
+  delegatesData: DelegatesResponse[] | null
+	applicationData: Application | null
 }
 
 const fieldKeys: (keyof DelegateFormInputType)[] = [
@@ -70,51 +72,101 @@ const fieldKeys: (keyof DelegateFormInputType)[] = [
 ]
 
 const DelegateFormInputs = ({
-  showModal, handleNext,
-  handlePrevious, closeModal,
-  control, errors, handleSubmit,
-  isValid, setValue, getValues,
-  trigger, reset, touchedFields,
-  userDetails, delegatesData
+  showModal,
+  handleNext,
+  handlePrevious,
+  closeModal,
+  control,
+  errors,
+  handleSubmit,
+  isValid,
+  setValue,
+  getValues,
+  trigger,
+  reset,
+  touchedFields,
+  userDetails,
+  delegatesData,
+  applicationData
 }: FormInputInterface) => {
-  const { userId, applicationId, contributorId } = userDetails
-  const dispatch = useFormDispatch();
-  const { delegates } = useFormSelector(selectForm);
-  const [showForm, setShowForm] = useState(true);
-  const [inviteSent, setInviteSent] = useState(false);
-  const { data: session } = useSessionUCMS();
-  const [emailValidate, setEmailValidate] = useState(false);
-  const [inviteId, setInviteId] = useState<number>();
+  const { userId, applicationId } = userDetails
+  const dispatch = useFormDispatch()
+  const { delegates, editingDelegate } = useFormSelector(selectForm)
+  const [requestSuccessful, setRequestSuccessful] = useState(false)
+  const [showForm, setShowForm] = useState(true)
+  const [inviteSent, setInviteSent] = useState(false)
+  const { data: session } = useSessionUCMS()
+  const [emailValidate, setEmailValidate] = useState(false)
+  const [inviteId, setInviteId] = useState<number>()
 
   useEffect(() => {
     if (delegatesData) {
-      if (delegatesData.every(delegate => delegate.invitation_status === 'removed')) {
-        dispatch(setDelegates([]));
-        setShowForm(true);
+      if (
+        delegatesData.every(
+          (delegate) => delegate.invitation_status === 'removed',
+        )
+      ) {
+        dispatch(setDelegates([]))
+        setShowForm(true)
         reset({
           firstName: '',
           lastName: '',
           email: '',
-        });
+        })
       } else {
-        setShowForm(false);
-        dispatch(setDelegates([{
-          id: delegatesData[delegatesData.length - 1].id,
-          firstName: delegatesData[delegatesData.length - 1].first_name,
-          lastName: delegatesData[delegatesData.length - 1].last_name,
-          email: delegatesData[delegatesData.length - 1].email,
-          status: delegatesData[delegatesData.length - 1].invitation_status
-        }]));
+        setShowForm(false)
+        dispatch(
+          setDelegates([
+            {
+              id: delegatesData[delegatesData.length - 1].id,
+              firstName: delegatesData[delegatesData.length - 1].first_name,
+              lastName: delegatesData[delegatesData.length - 1].last_name,
+              email: delegatesData[delegatesData.length - 1].email,
+              status: delegatesData[delegatesData.length - 1].invitation_status,
+            },
+          ]),
+        )
       }
     } else {
-      setShowForm(true);
+      setShowForm(true)
       reset({
         firstName: '',
         lastName: '',
         email: '',
-      });
+      })
     }
-  }, [delegatesData, dispatch, reset]);
+  }, [delegatesData, dispatch, reset])
+
+  const handleSuccessfulResponse = (responseData: DelegatesResponse) => {
+    setInviteId(responseData.id)
+    setRequestSuccessful(true)
+    setShowForm(false)
+    dispatch(
+      addOrUpdateDelegate({
+        id: responseData.id,
+        firstName: responseData.first_name,
+        lastName: responseData.last_name,
+        email: responseData.email,
+        status: responseData.invitation_status || '',
+      }),
+    )
+    reset({
+      firstName: '',
+      lastName: '',
+      email: '',
+    })
+    dispatch(editDelegate(0))
+    delegates.length === 0 && dispatch(updateInputKey())
+  }
+
+  const handleError = (error: any) => {
+    setRequestSuccessful(false)
+    setShowForm(true)
+    console.error('Error adding/updating delegate:', error)
+    alert(
+      'An error occurred while adding/updating the delegate. Please try again.',
+    )
+  }
 
   const onSubmit: SubmitHandler<DelegateFormInputType> = async () => {
     const isValid = await trigger(['firstName', 'lastName', 'email'], {
@@ -123,86 +175,85 @@ const DelegateFormInputs = ({
     const data = getValues()
     if (isValid) {
       if (!userId) {
-        alert('You must be signed in to continue.');
-        return;
+        alert('You must be signed in to continue.')
+        return
       }
-      if(!validateEmail(data.email, session?.user?.email)){
-        setEmailValidate(true);
-        return;
-      } else{
-        setEmailValidate(false);
+      if (!validateEmail(data.email, session?.user?.email)) {
+        setEmailValidate(true)
+        return
+      } else {
+        setEmailValidate(false)
       }
-
-      dispatch(
-        addOrUpdateDelegate({
-          ...data,
-          status: ''
-        }),
-      )
-
-      reset({
-        firstName: '',
-        lastName: '',
-        email: '',
-      })
-
-      dispatch(editDelegate(0))
-      delegates.length === 0 && dispatch(updateInputKey())
-      setShowForm(false);
 
       try {
-        const entityData = await getEntityByUserId(userId);
-        if (!entityData || entityData.length === 0) {
-          throw new Error('Entity data not found');
+        if (!applicationData || !applicationData.entity) {
+          throw new Error('Entity data not found')
         }
 
         const postData = {
           application_id: applicationId,
           email: data.email,
-          entity_id: entityData[entityData.length - 1].id,
+          entity_id: applicationData.entity.entity_id,
           application_role_id: 5,
           first_name: data.firstName,
-          last_name: data.lastName
-        };
-        // await fetcherPOST(INVITATION_ROUTE, postData);
-        const response: DelegatesResponse = await fetcherPOST(INVITATION_ROUTE, postData);
-        if(response.id) {
-          setInviteId(response.id)
+          last_name: data.lastName,
+        }
+
+        if (editingDelegate === null) {
+          const response = await axiosInstance.post(INVITATION_ROUTE, postData)
+          if (response && response.data && response.data.id) {
+            handleSuccessfulResponse(response.data)
+          } else {
+            throw new Error('Failed to add delegate: No ID in response')
+          }
         } else {
-          setInviteId(userId);
+          const response = await axiosInstance.put(INVITATION_ROUTE, {
+            ...postData,
+            id: inviteId ?? delegates[0].id,
+          })
+          if (response && response.data && response.data.id) {
+            handleSuccessfulResponse(response.data)
+          } else {
+            throw new Error('Failed to update delegate: No ID in response')
+          }
         }
       } catch (error) {
-        console.log(error);
+        handleError(error)
       }
     }
   }
 
   const handleSend = async () => {
-    handleNext();
     try {
-      if(!inviteId) {
-        console.log('No changes to invitation found');
-        closeModal();
-        setInviteSent(true);
-        return
+      if (!inviteId) {
+        throw new Error('No invite ID found')
       }
 
       const postData = {
-        invitation_id: inviteId
-      };
+        invitation_id: inviteId,
+      }
 
-      await fetcherPOST(SEND_INVITATION_DELEGATE, postData);
-      closeModal();
-      setInviteSent(true);
+      await axiosInstance.post(SEND_INVITATION_DELEGATE, postData)
+      setInviteSent(true)
+      closeModal()
+      window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+        applicationId: applicationId,
+        stepLink: applicationSteps.ownership.link,
+      })
+      handleNext()
     } catch (error) {
-      closeModal();
-      // console.log('Error in POST request:', error);
-      alert('An error has occurred.');
+      setInviteSent(false)
+      setRequestSuccessful(false)
+      closeModal()
+      alert('An error occurred while sending the invitation. Please try again.')
     }
-  };
+  }
 
-  const validateEmail = (email: string, userEmail: string | undefined | null) => {
-    return email !== userEmail;
+  const validateEmail = (
+    email: string,
+    userEmail: string | undefined | null,
+  ) => {
+    return email !== userEmail
   }
 
   const handleCancel = () => {
@@ -217,22 +268,24 @@ const DelegateFormInputs = ({
       email: '',
     })
     if (delegates.length === 0) {
-      dispatch(setEditingDelegate(null));
+      dispatch(setEditingDelegate(null))
       setInviteSent(false)
     } else {
-      setShowForm(false);
+      setShowForm(false)
     }
   }
 
   const handleEditDelegate = (index: number) => {
     const delegate = delegates[index]
-    if(!delegate) {return;}
+    if (!delegate) {
+      return
+    }
 
     Object.entries(delegate).forEach(([key, value]) => {
       if (key !== 'id' && key !== 'status') {
         setValue(
-					key as keyof DelegateFormInputType,
-					typeof value !== 'string' ? '' : value,
+          key as keyof DelegateFormInputType,
+          typeof value !== 'string' ? '' : value,
         )
       }
     })
@@ -250,26 +303,31 @@ const DelegateFormInputs = ({
 
       <Grid row className="width-full margin-top-2" col={12}>
         <hr className="width-full" />
-        <Grid
-          mobile={{ col: 12 }}
-          desktop={{ col: 6 }}
-        >
-          <Label className="text-bold font-sans-lg" htmlFor="input-radio-question">
+        <Grid mobile={{ col: 12 }} desktop={{ col: 6 }}>
+          <Label
+            className="text-bold font-sans-lg"
+            htmlFor="input-radio-question"
+          >
             Delegate
           </Label>
         </Grid>
-        <Grid
-          mobile={{ col: 12 }}
-          desktop={{ col: 6 }}
-        >
-          <Button type="submit" outline className='margin-top-2 float-right' onClick={() => handleEditDelegate(0)}>
+        <Grid mobile={{ col: 12 }} desktop={{ col: 6 }}>
+          <Button
+            type="submit"
+            outline
+            className="margin-top-2 float-right"
+            data-testid="testid-edit-button"
+            onClick={() => handleEditDelegate(0)}
+          >
             Edit
           </Button>
         </Grid>
-
       </Grid>
 
-      <GridContainer containerSize="widescreen" className={'width-full padding-y-2 margin-top-2 bg-base-lightest'}>
+      <GridContainer
+        containerSize="widescreen"
+        className={'width-full padding-y-2 margin-top-2 bg-base-lightest'}
+      >
         <form
           onSubmit={handleSubmit(onSubmit)}
           className={showForm ? 'width-full' : 'display-none'}
@@ -281,10 +339,10 @@ const DelegateFormInputs = ({
                 mobile={{ col: 12 }}
                 desktop={{
                   col:
-										(key === 'firstName' && 6) ||
-										(key === 'lastName' && 6) ||
-										(key === 'email' && 12) ||
-										12,
+                    (key === 'firstName' && 6) ||
+                    (key === 'lastName' && 6) ||
+                    (key === 'email' && 12) ||
+                    12,
                 }}
                 className={`${key === 'lastName' && 'padding-left-2'} ${Styles.lastName}`}
               >
@@ -301,6 +359,7 @@ const DelegateFormInputs = ({
                     <TextInput
                       {...field}
                       id={`input-${key}`}
+                      data-testid={`testid-${key}-input`}
                       type="text"
                       maxLength={delegateInputDetails[key].maxlength}
                       className={
@@ -310,12 +369,17 @@ const DelegateFormInputs = ({
                       }
                       onChange={(e) => field.onChange(e)}
                       onBlur={(e) => {
-                        field.onBlur();
+                        field.onBlur()
                         if (key === 'email') {
-                          const isValid = validateEmail(e.target.value, session?.user?.email);
-                          setEmailValidate(!isValid);
+                          const isValid = validateEmail(
+                            e.target.value,
+                            session?.user?.email,
+                          )
+                          setEmailValidate(!isValid)
                           if (!isValid) {
-                            setValue('email', e.target.value, { shouldValidate: true });
+                            setValue('email', e.target.value, {
+                              shouldValidate: true,
+                            })
                           }
                         }
                       }}
@@ -331,12 +395,17 @@ const DelegateFormInputs = ({
                   )}
                 />
                 <div className="usa-input-helper-text margin-top-1">
-                  <span className={(errors[key] && 'text-secondary-dark' || (emailValidate && (key === 'email')) && 'text-secondary-dark') + ''}>
-                    {
-                      (emailValidate && (key === 'email'))
-                        ? 'Email ID should not be same as login user email ID.'
-                        : delegateInputDetails[key].fieldHelper
+                  <span
+                    className={
+                      ((errors[key] && 'text-secondary-dark') ||
+                        (emailValidate &&
+                          key === 'email' &&
+                          'text-secondary-dark')) + ''
                     }
+                  >
+                    {emailValidate && key === 'email'
+                      ? 'Email ID should not be same as login user email ID.'
+                      : delegateInputDetails[key].fieldHelper}
                   </span>
                 </div>
               </Grid>
@@ -344,13 +413,22 @@ const DelegateFormInputs = ({
             <Grid className="margin-top-2" col={12}>
               <div className="default-btn">
                 <ButtonGroup type="default">
-                  <Button type="submit" disabled={!isValid}>
+                  <Button
+                    type="submit"
+                    data-testid="testid-add-or-update-button"
+                    disabled={!isValid}
+                  >
                     {delegates.length > 0 ? 'Update' : 'Add'}
                   </Button>
 
-                  <div className='margin-left-2'>
-                    <Button type="button" unstyled onClick={handleClearOrCancel}>
-                    	Cancel
+                  <div className="margin-left-2">
+                    <Button
+                      type="button"
+                      data-testid="testid-cancel-button"
+                      unstyled
+                      onClick={handleClearOrCancel}
+                    >
+                      Cancel
                     </Button>
                   </div>
                 </ButtonGroup>
@@ -359,50 +437,44 @@ const DelegateFormInputs = ({
           </Grid>
         </form>
 
-        {!showForm &&
+        {!showForm && (
           <Grid row className="margin-right-2 width-full">
             <DelegateTable />
           </Grid>
-        }
-
+        )}
       </GridContainer>
 
       <Grid row gap="sm" className="margin-y-2 flex-justify-end" col={12}>
         <hr className="width-full" />
         <ButtonGroup className="display-flex">
-          {inviteSent
-            ? (
-              <>
-                {contributorId
-                  ? (
-                    <Link
-                      href={buildRoute(APPLICATION_STEP_ROUTE, {
-                        contributorId: contributorId,
-                        stepLink: '/ownership'
-                      })}
-                      className="float-right usa-button"
-                    >
-											Next
-                    </Link>
-                  ): (
-                    <Button type='button' disabled>
-											Next
-                    </Button>
-                  )
-                }
-              </>
-            )
-            : (
-              <Button
-                type="button"
-                onClick={() => handleNext()}
-                className="display-flex"
-                disabled={delegates.length > 0 ? false : true}
-              >
-            		Continue
-              </Button>
-            )}
-
+          {inviteSent && requestSuccessful ? (
+            <>
+              {applicationId ? (
+                <Link
+                  href={buildRoute(APPLICATION_STEP_ROUTE, {
+                    applicationId: applicationId,
+                    stepLink: applicationSteps.ownership.link,
+                  })}
+                  className="float-right usa-button"
+                >
+                  Next
+                </Link>
+              ) : (
+                <Button type="button" disabled>
+                  Next
+                </Button>
+              )}
+            </>
+          ) : (
+            <Button
+              type="button"
+              onClick={() => handleNext()}
+              className="display-flex"
+              disabled={!requestSuccessful || delegates.length === 0}
+            >
+              Continue
+            </Button>
+          )}
         </ButtonGroup>
       </Grid>
     </>

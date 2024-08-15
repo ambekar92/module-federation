@@ -1,8 +1,8 @@
 import { DOCUMENT_REQUIRED_ROUTE, GET_DOCUMENTS } from '@/app/constants/routes';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { fetcherGET, fetcherPOST, fetcherDELETE } from '@/app/services/fetcher-legacy';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
-import { Button, ButtonGroup, Icon, Table } from '@trussworks/react-uswds';
+import { axiosInstance } from '@/app/services/axiosInstance';
+import fetcher from '@/app/services/fetcher';
+import { Alert, Button, ButtonGroup, Icon, Table } from '@trussworks/react-uswds';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { DocumentUploadType } from './utils/types';
@@ -21,24 +21,20 @@ interface DocumentsState {
   };
 }
 
-const DocumentUploads = ({ contributorId }: {contributorId: number}) => {
+interface DocumentUploadsProps {
+	contributorId: number | undefined | null;
+	entityId: number | undefined;
+}
+
+const DocumentUploads = ({ contributorId, entityId }: DocumentUploadsProps) => {
   const { data: session } = useSessionUCMS();
-  const { entityId, userId } = useApplicationId();
   const [documentsToDelete, setDocumentsToDelete] = useState<{[key: string]: number[]}>({});
   const [isSaving, setIsSaving] = useState(false);
-  const { data: questions, error } = useSWR(
+  const { data: questions, error } = useSWR<DocumentUploadType>(
     contributorId ? `${DOCUMENT_REQUIRED_ROUTE}/${contributorId}` : null,
-		fetcherGET<DocumentUploadType>
+    fetcher
   );
-
-  // When the documents show the answers I will add the functionality for this -KJ
-  // const { data: responseData, error: responseError, isLoading } = useSWR(
-  //   userId
-  //     ? `${GET_DOCUMENTS}/?user_id=${userId}`
-  //     // ? `${GET_DOCUMENTS}/?user_id=8`
-  //     : null,
-  //   fetcherGET<DocumentsType>,
-  // );
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   const [documents, setDocuments] = useState<DocumentsState>({});
   const [editMode, setEditMode] = useState<{ [key: string]: boolean }>({});
@@ -55,16 +51,34 @@ const DocumentUploads = ({ contributorId }: {contributorId: number}) => {
     }
   }, [questions]);
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showErrorAlert) {
+      timer = setTimeout(() => {
+        setShowErrorAlert(false);
+      }, 10000); // 10 seconds
+    }
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [showErrorAlert]);
+
   const handleFileUpload = async (sectionName: string, subSectionName: string, file: File, questionId: number, replaceIndex: number | null = null) => {
     setIsUploading(true);
     try {
       const formData = new FormData();
       formData.append('files', file);
-      formData.append('document_type_id', '1'); // temp until api in sync
+      formData.append('document_type_id', '1');
       formData.append('internal_document', 'false');
       formData.append('hubzone_key', '1');
 
-      await fetcherPOST(`${GET_DOCUMENTS}/?application_contributor_id=${contributorId}&entity_id=${entityId}&upload_user_id=${userId}&question_id=${questionId}&document_type_id=1`, formData);
+      await axiosInstance.post(`${GET_DOCUMENTS}?application_contributor_id=${contributorId}&entity_id=${entityId}&upload_user_id=${session.user_id}&question_id=${questionId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      });
 
       const newDocument: DocumentDetails = {
         name: file.name,
@@ -88,7 +102,7 @@ const DocumentUploads = ({ contributorId }: {contributorId: number}) => {
         };
       });
     } catch (error: any) {
-      alert(error.message);
+      setShowErrorAlert(true);
     } finally {
       setIsUploading(false);
     }
@@ -154,9 +168,8 @@ const DocumentUploads = ({ contributorId }: {contributorId: number}) => {
       for (const [sectionName, indexes] of Object.entries(documentsToDelete)) {
         for (const index of indexes) {
           if (contributorId) {
-            const postData = { document_id: index };
             try {
-              await fetcherDELETE<{ document_id: number }>(`${GET_DOCUMENTS}`, postData);
+              await axiosInstance.delete<{ document_id: number }>(`${GET_DOCUMENTS}?document_id=${index}`);
             } catch (error) {
               // eslint-disable-next-line no-console
               console.log(`Error deleting document ${index}: ${error}`);
@@ -196,6 +209,7 @@ const DocumentUploads = ({ contributorId }: {contributorId: number}) => {
 
   return (
     <>
+      {showErrorAlert && <Alert type='error' headingLevel='h6'>Document upload failed: Please try again later.</Alert>}
       {questions.map((question, index) => (
         <div key={index}>
           <h2>{question.title}</h2>

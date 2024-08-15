@@ -23,6 +23,7 @@ import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
 import CompleteScreening from '../modals/complete-screening/CompleteScreening'
 import MakeRecommendationModal from '../modals/make-recommendation/MakeRecommendationModal'
+import MakeApprovalModal from '../modals/make-approval-modal/MakeApprovalModal'
 
 const ActionsDropdown = () => {
   const sessionData = useSessionUCMS()
@@ -34,13 +35,11 @@ const ActionsDropdown = () => {
   const selectRef = useRef<HTMLSelectElement>(null)
   const { application_id } = useParams<{ application_id: string }>()
   const [userId, setUserId] = useState<number | null>(null)
-  const [reassignType, setReassignType] = useState<ReassignType>(
-    ReassignType.REASSIGN_SCREENER,
-  )
+  const [reassignType, setReassignType] = useState<ReassignType | null>(null)
   const { trigger: triggerClose } = useCloseApplicationTask()
   const { trigger: triggerReview } = useCompleteEvalTask()
   // Modal Refs
-  const reassignScreenerRef = useRef<ModalRef>(null)
+  const reassignUserRef = useRef<ModalRef>(null)
   const veteranStatusRef = useRef<ModalRef>(null)
   const closeApplicationRef = useRef<ModalRef>(null)
   const completeReviewRef = useRef<ModalRef>(null)
@@ -154,17 +153,22 @@ const ActionsDropdown = () => {
 
     if (selectedNumericValue === ActionMenuIDs.REASSIGN_SCREENER) {
       setReassignType(ReassignType.REASSIGN_SCREENER)
-      reassignScreenerRef.current?.toggleModal()
+      reassignUserRef.current?.toggleModal()
       return
     }
     if (selectedNumericValue === ActionMenuIDs.REASSIGN_ANALYST) {
       setReassignType(ReassignType.REASSIGN_ANALYST)
-      reassignScreenerRef.current?.toggleModal()
+      reassignUserRef.current?.toggleModal()
       return
     }
     if (selectedNumericValue === ActionMenuIDs.REASSIGN_APPROVER) {
       setReassignType(ReassignType.REASSIGN_APPROVER)
-      reassignScreenerRef.current?.toggleModal()
+      reassignUserRef.current?.toggleModal()
+      return
+    }
+    if (selectedNumericValue === ActionMenuIDs.REASSIGN_EXPERT) {
+      setReassignType(ReassignType.REASSIGN_EXPERT)
+      reassignUserRef.current?.toggleModal()
       return
     }
     if (selectedNumericValue === ActionMenuIDs.UPDATE_VA_STATUS) {
@@ -312,8 +316,9 @@ const ActionsDropdown = () => {
 
       <ReassignUserModal
         applicationId={Number(application_id)}
-        modalRef={reassignScreenerRef}
+        modalRef={reassignUserRef}
         reassignType={reassignType}
+        handleAction={handleResetActionDropdownRequest}
       />
 
       <CloseApplication
@@ -322,30 +327,29 @@ const ActionsDropdown = () => {
         handleAction={handleCloseAppAction}
       />
 
-      <CompleteReviewModal  modalRef={completeReviewRef} />
+      <CompleteReviewModal applicationData={applicationData} modalRef={completeReviewRef} processId={applicationData?.process?.id} />
 
-      <MakeApproval
-        modalRef={makeApprovalRef}
-        title="Make an Approval"
-        handleAction={handleMakeApprovalPostRequest}
-      />
+      <MakeApprovalModal applicationData={applicationData} modalRef={makeApprovalRef} processId={applicationData?.process?.id} />
 
-      <ReturnToPreviousTaskModal modalRef={returnToPreviousTaskRef} processId={applicationData?.process?.id} />
+      <ReturnToPreviousTaskModal modalRef={returnToPreviousTaskRef} processId={applicationData?.process?.id} handleAction={handleResetActionDropdownRequest} />
 
       <ChangeTierModal
         modalRef={changeTierRef}
         handleAction={handleResetActionDropdownRequest}
       />
+
       <MakeRecommendationModal
         modalRef={makeRecommendationRef}
         handleAction={handleResetActionDropdownRequest}
       />
-      <ConfirmVeteranStatusModal modalRef={veteranStatusRef} applicationId={applicationData?.id} />
+
+      <ConfirmVeteranStatusModal modalRef={veteranStatusRef} applicationId={applicationData?.id} handleAction={handleResetActionDropdownRequest} />
 
       <CompleteScreening modalRef={completeScreeningRef}
         processId={applicationData?.process?.id}
         applicationTier={applicationData?.application_tier}
         applicationId={applicationData?.id}
+        handleAction={handleResetActionDropdownRequest}
       />
     </div>
   )

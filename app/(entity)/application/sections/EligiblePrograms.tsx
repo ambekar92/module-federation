@@ -1,23 +1,24 @@
 'use client';
 import { CREATING_APPLICATION_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
+import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_LIST_PAGE } from '@/app/constants/url';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
-import { applicationSteps, calculateEligiblePrograms, qaAppLinkPrefix } from '../utils/constants';
-import { QuestionnaireProps } from '../utils/types';
+import { applicationSteps, calculateEligiblePrograms } from '../utils/constants';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 
-function EligiblePrograms({contributorId}: QuestionnaireProps) {
+function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
-  const { applicationId } = useApplicationId();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { applicationId } = useApplicationContext();
   useUpdateApplicationProgress('Eligible Programs');
 
   const dispatch = useApplicationDispatch();
@@ -41,9 +42,9 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
     setIsLoading(true);
     try {
       await handlePostRequest();
-      window.location.href = `${qaAppLinkPrefix}/questionnaire/${contributorId}`
+      window.location.href = buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId })
     } catch (error: unknown) {
-      console.log('Error submitting data:', error);
+      // console.log('Error submitting data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -63,23 +64,37 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
         const programs = calculateEligiblePrograms(mappedOwners);
         setEligiblePrograms(programs);
       } else {
-        console.error('Invalid owner application info structure');
+        // console.error('Invalid owner application info structure');
         setEligiblePrograms([]);
       }
     } else {
-      console.log('No owner application info found');
+      // console.log('No owner application info found');
       setEligiblePrograms([]);
     }
   }, [dispatch]);
 
   const handleCheckboxChange = (program: ProgramOption) => {
     setSelectedPrograms(prev => {
-      const isAlreadySelected = prev.find(p => p.name === program.name);
+      let newSelection = [...prev];
+      const isAlreadySelected = newSelection.find(p => p.name === program.name);
+
       if (isAlreadySelected) {
-        return prev.filter(p => p.name !== program.name);
+        newSelection = newSelection.filter(p => p.name !== program.name);
       } else {
-        return [...prev, program];
+        newSelection.push(program);
+
+        if (program.name === 'Economically-Disadvantaged Women-Owned') {
+          newSelection = newSelection.filter(p => p.name !== 'Women-Owned');
+        } else if (program.name === 'Women-Owned') {
+          newSelection = newSelection.filter(p => p.name !== 'Economically-Disadvantaged Women-Owned');
+        } else if (program.name === 'Service-Disabled Veteran-Owned') {
+          newSelection = newSelection.filter(p => p.name !== 'Veteran-Owned');
+        } else if (program.name === 'Veteran-Owned') {
+          newSelection = newSelection.filter(p => p.name !== 'Service-Disabled Veteran-Owned');
+        }
       }
+
+      return newSelection;
     });
   };
 
@@ -93,7 +108,7 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
         {eligiblePrograms.length === 0
           ? 'Your business does not qualify for any programs'
           : 'To which programs would you like to apply today?'
-        }
+        }<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the “visit here” link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/>
       </h1>
       {eligiblePrograms.length > 0 ? <h3>You appear to be eligible for the program(s) below select which you&apos;d like to apply to.</h3> : null}
       <Grid row gap>
@@ -123,7 +138,10 @@ function EligiblePrograms({contributorId}: QuestionnaireProps) {
       <div className='flex-fill'></div>
       <hr className='margin-y-3 width-full border-base-lightest'/>
       <ButtonGroup className='display-flex flex-justify'>
-        <Link aria-disabled={!contributorId} href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.controlAndOwnership.link}`} className='usa-button usa-button--outline'>
+        <Link aria-disabled={!applicationId} href={ buildRoute(APPLICATION_STEP_ROUTE, {
+          applicationId: applicationId,
+          stepLink: applicationSteps.controlAndOwnership.link
+        })} className='usa-button usa-button--outline'>
     			Back
         </Link>
         {eligiblePrograms.length === 0 ? (

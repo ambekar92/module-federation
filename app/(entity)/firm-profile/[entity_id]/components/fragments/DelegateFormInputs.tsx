@@ -55,7 +55,7 @@ interface FormInputInterface {
   userDetails: {
     userId: number | null
     applicationId: number | null
-    contributorId: number | null
+    contributorId: number | null | undefined
   }
 }
 

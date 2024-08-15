@@ -10,20 +10,20 @@ export type SamEntity = {
   cage_code: string
   tax_identifier_number: string
   dba_name: string
-  physical_address_1: string
-  physical_address_2: string
+  physical_addr_1: string
+  physical_addr_2: string
   physical_city: string
-  mailing_address_state_or_province: string
+  physical_state_or_province: string
   physical_zip_code_5: string
   naics_code_string: string
   entity_structure: string
   sam_extract_code: string
   exclusion_status_flag: string
-  debt_subject_to_offset_flag: string | null
+  debt_subject_to_offset_flag: string
   expiration_date: string
   last_update_date: string
   business_start_date: string
-  corporate_url: string
+  entity_url: string
 }
 
 export type ApplicationType = {
@@ -33,26 +33,27 @@ export type ApplicationType = {
   title: string
 }
 
-type Program = {
-  name: string
-  description: string | null
-  title: string
-}
-
-type ProgramApplication = {
-  id: number
-  program_id: number
-  programs: Program
-}
-
 type ProcessType = {
   id: number
   data: {
+    tier: string
     is_eight_a: boolean
     application_id: number
+    pre_screener_id: number
     program_decisions: {
       program_id: number
     }[]
+    veteran_owned_small_business: boolean
+  }
+}
+
+type ProgramApplication = {
+  id: number,
+  program_id: number,
+  programs: {
+    name: string,
+    description: null | string,
+    title: string
   }
 }
 
@@ -63,28 +64,27 @@ export type Application = {
   application_type: ApplicationType
   program_application: ProgramApplication[]
   workflow_state: string
-  application_version: number
   application_contributor: Array<{
-		id: number,
-		deleted_at: string | null,
-		created_at: string,
-		updated_at: string,
-		workflow_state: string,
-		application_role_id: number,
-		application_role: {
-			name: string,
-			description: null | string,
-			title: string
-		},
-		user_id: number,
-		user: {
-			id: number,
-			email: string,
-			first_name: string,
-			last_name: string
-		},
-		application_id: number
-	}>
+    id: number,
+    deleted_at: string | null,
+    created_at: string,
+    updated_at: string,
+    workflow_state: string,
+    application_role_id: number,
+    application_role: {
+      name: string,
+      description: null | string,
+      title: string
+    },
+    user_id: number,
+    user: {
+      id: number,
+      email: string,
+      first_name: string,
+      last_name: string
+    },
+    application_id: number
+  }>
   deleted_at: string | null
   created_at: string
   updated_at: string
@@ -94,6 +94,14 @@ export type Application = {
   signed_date: string | null
   submitted_at: string | null
   process: ProcessType
+	business_point_of_contact: {
+		user_id: number,
+		email: string,
+		is_active: boolean,
+		username: string,
+		first_name: string,
+		last_name: string
+	}
 }
 
 export type ApplicationEligibilityType = {
@@ -164,4 +172,15 @@ export type EntitiesType = {
 	dba_name: string
 	entity_structure: string
 	sam_extract_code: string
+}
+
+export type ProgramApplicationType = {
+	id: number,
+	name: string,
+	title: string,
+	application_id: number,
+	workflow_state: string,
+	analyst_recommendation: string,
+	approver_decision: null | string,
+	reviewer_decision: null | string
 }

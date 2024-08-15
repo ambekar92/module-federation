@@ -10,7 +10,7 @@ const TooltipIcon: React.FC<TooltipIconProps> = ({ text }) => {
   return (
     <Tooltip className='padding-0' style={{background: 'none'}} label={text}>
       <Image
-        src="./icons/tooltip-info.svg"
+        src="/icons/tooltip-info.svg"
         width={20}
         height={20}
         alt="Tooltip Icon"

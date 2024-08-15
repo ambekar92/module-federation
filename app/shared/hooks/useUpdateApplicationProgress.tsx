@@ -1,10 +1,10 @@
 import { APPLICATION_ROUTE } from '@/app/constants/routes';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import { useEffect } from 'react';
-import { useApplicationId } from './useApplicationIdResult';
+import { useApplicationContext } from './useApplicationContext';
 
 export const useUpdateApplicationProgress = (progress: string) => {
-  const { applicationId } = useApplicationId();
+  const { applicationId } = useApplicationContext();
 
   useEffect(() => {
     const updateProgress = async () => {

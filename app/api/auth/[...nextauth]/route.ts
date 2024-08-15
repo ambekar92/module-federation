@@ -21,6 +21,7 @@ async function auth(req: NextApiRequest, res: NextApiResponse) {
           jwt: async ({ token, account, profile }) => {
             if (account && account.access_token) {
               token.accessToken = account.access_token;
+              token.idToken = account.id_token;
             }
             if (token.csrfToken !== null) {
               token.csrfToken = generateCsrfToken()
@@ -34,6 +35,9 @@ async function auth(req: NextApiRequest, res: NextApiResponse) {
             if (typeof token.accessToken === 'string') {
               session.user.accessToken = token.accessToken;
             }
+            if (typeof token.idToken === 'string') {
+              session.user.idToken = token.idToken;
+           }
             if (typeof token.csrfToken === 'string') {
               session.csrfToken = token.csrfToken;
             }
@@ -41,7 +45,7 @@ async function auth(req: NextApiRequest, res: NextApiResponse) {
             if (typeof token.okta_id === 'string') {
               session.user.okta_id = token.okta_id;
             }
-      
+
             let userDetails: { data: IUserDetails } = { data: {} as IUserDetails };
             const postData = {
               user: {
@@ -72,6 +76,7 @@ async function auth(req: NextApiRequest, res: NextApiResponse) {
               if (userDetails.data.access) {
                 session.access = userDetails.data.access;
                 cookies().set('accesstoken', userDetails.data.access);
+                cookies().set('idtoken', session.user.idToken);
               }
             } catch (error) {
               console.error('Error making POST request:', error);

@@ -1,10 +1,10 @@
 import TaskTimers from '@/app/(evaluation)/components/task-timers/TaskTimers'
 import React from 'react'
 
-const page = () => {
+const TaskTimersPage = () => {
   return (
     <TaskTimers />
   )
 }
 
-export default page
+export default TaskTimersPage

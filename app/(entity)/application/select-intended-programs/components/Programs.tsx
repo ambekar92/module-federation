@@ -5,26 +5,32 @@ import { axiosInstance } from '@/app/services/axiosInstance'
 import fetcher from '@/app/services/fetcher'
 import { ApplicationEligibilityType } from '@/app/services/types/application-service/Application'
 import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
+import { ApplicationsType } from '@/app/shared/types/responses'
 import { Button, Grid } from '@trussworks/react-uswds'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import {
   ProgramOption,
   sbaProgramOptions,
 } from '../../../../constants/sba-programs'
 import ProgramCard from '../../../../shared/components/ownership/ProgramCard'
+import { ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url'
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip'
 
 const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`;
 
-function Programs({applicationId}: {applicationId: number}) {
-  const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([])
+function Programs() {
+  const params = useParams();
   const { data: session, status } = useSessionUCMS();
+  const entityId = params.entity_id;
+
+  const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([])
   const [userId, setUserId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { data: eligibilityData, error, isLoading } = useFetchOnce<ApplicationEligibilityType[] | []>(
-    `${APPLICATION_ELIGIBILITY_ROUTE}?application_id=${applicationId}`,
+  const { data: applicationData } = useFetchOnce<ApplicationsType>(`${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}&application_type_id=1`, fetcher);
+  const { data: eligibilityData, isLoading } = useFetchOnce<ApplicationEligibilityType[] | []>(
+    applicationData && applicationData.length > 0 ?`${APPLICATION_ELIGIBILITY_ROUTE}?application_id=${applicationData[applicationData.length - 1].id}` : null,
     fetcher
   );
 
@@ -53,20 +59,17 @@ function Programs({applicationId}: {applicationId: number}) {
     setIsSubmitting(true);
     try {
       if(userId) {
-        const entityId = await getEntityByUserId(userId);
-        if(entityId) {
-          const postData = {
-            entity_id: entityId[entityId.length - 1].id,
-            application_type_id: 1,
-            programs: selectedPrograms.map(program => program.id),
-            workflow_state: 'draft',
-            application_role_id: 1,
-            user_id: userId
-          };
+        const postData = {
+          entity_id: entityId,
+          application_type_id: 1,
+          programs: selectedPrograms.map(program => program.id),
+          workflow_state: 'draft',
+          application_role_id: 1,
+          user_id: userId
+        };
 
-          await axiosInstance.post(`${FIRM_APPLICATIONS_ROUTE}`, postData);
-          window.location.href = `/application/assign-a-delegate/${applicationId}`;
-        }
+        const response = await axiosInstance.post(`${FIRM_APPLICATIONS_ROUTE}`, postData);
+        window.location.href = buildRoute(ASSIGN_DELEGATE_PAGE, {applicationId: response.data.id})
       }
     } catch (error) {
       // Error handled lol -KJ
@@ -77,36 +80,32 @@ function Programs({applicationId}: {applicationId: number}) {
 
   const handleCheckboxChange = async (program: ProgramOption) => {
     setSelectedPrograms((prev) => {
-      const isAlreadySelected = prev.find((p) => p.id === program.id)
-      if (isAlreadySelected) {
-        return prev.filter((p) => p.id !== program.id)
-      } else {
-        return [...prev, program]
-      }
-    })
-    // try {
-    //   if(applicationId) {
-    //     const postData = {
-    //       application_type_id: 1,
-    //       program_id: program.id
-    //     }
+      let newSelection = [...prev];
+      const isAlreadySelected = newSelection.find((p) => p.id === program.id);
 
-    //     // const rs = await fetcherPOST(`${APPLICATION_ELIGIBILITY_ROUTE}/intent`, postData)
-    //     // console.log(rs);
-    //     // console.log(postData);
-    //     await fetcherPOST(`${APPLICATION_ELIGIBILITY_ROUTE}/`, postData)
-    //   }
-    // } catch(error) {
-    //   console.log('PUT Error: ' + error)
-    // }
-  }
+      if (isAlreadySelected) {
+        newSelection = newSelection.filter((p) => p.id !== program.id);
+      } else {
+        newSelection.push(program);
+
+        // Handle mutually exclusive selections
+        if (program.id === 6) { // EDWOSB
+          newSelection = newSelection.filter((p) => p.id !== 3); // Removes WOSB if EDWOSB is selected
+        } else if (program.id === 3) { // WOSB
+          newSelection = newSelection.filter((p) => p.id !== 6); // Removes EDWOSB if WOSB is selected
+        } else if (program.id === 5) { // SDVOSB
+          newSelection = newSelection.filter((p) => p.id !== 4); // Removes VOSB if SDVOSB is selected
+        } else if (program.id === 4) { // VOSB
+          newSelection = newSelection.filter((p) => p.id !== 5); // Removes SDVOSB if VOSB is selected
+        }
+      }
+
+      return newSelection;
+    });
+  };
 
   const handleCardClick = (program: ProgramOption) => {
     handleCheckboxChange(program)
-  }
-
-  if(error) {
-    console.log(error)
   }
 
   if(isLoading) {
@@ -115,7 +114,7 @@ function Programs({applicationId}: {applicationId: number}) {
 
   return (
     <>
-      <h1>Select Intended Program(s) for Application</h1>
+      <h1>Select Intended Program(s) for Application<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the “visit here” link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/></h1>
       <h3>
         Please select the appropriate program(s) you wish to apply for from the
         options below.

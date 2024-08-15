@@ -1,11 +1,11 @@
 'use client'
-import styles from '../utils/DocumentsList.module.scss';
-import { useState } from 'react';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
 import { GET_DOCUMENTS } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher';
+import { useSessionUCMS } from '@/app/lib/auth';
+import fetcher from '@/app/services/fetcher';
 import { DocumentsType } from '@/app/services/types/document';
+import { useState } from 'react';
 import useSWR from 'swr';
+import styles from '../utils/DocumentsList.module.scss';
 import DocsHeader from './DocsHeader';
 import DocsTable from './DocsTable';
 
@@ -13,15 +13,16 @@ function DocumentsContainer() {
   const [menu, setMenu] = useState<HTMLElement | null>(null)
   const [mainMenu, setMainMenu] = useState(0)
 
-  const { userId } = useApplicationId()
+  const session = useSessionUCMS();
+  const userId = session?.data?.user.id;
 
   // Get Documents Data
-  const { data: responseData, error: responseError, isLoading } = useSWR(
+  const { data: responseData, error: responseError, isLoading } = useSWR<DocumentsType>(
     userId
       ? `${GET_DOCUMENTS}/?user_id=${userId}`
       // ? `${GET_DOCUMENTS}/?user_id=8`
       : null,
-    fetcherGET<DocumentsType>,
+    fetcher,
   )
 
   if(responseError) {

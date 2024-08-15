@@ -6,7 +6,7 @@ Before creating an account, please note that you must register your business on 
 export const toolTipCmbInputs = {
   'uei': 'Unique Entity ID (UEI) - The Unique Entity ID is a 12-character alphanumeric ID assigned to an entity by SAM.gov | Home .',
   'cageCode': 'Commercial and Government Entity (CAGE) Code - The CAGE Code is a five character ID number used by the Federal Government to identify vendors.',
-  'tin': 'Taxpayer Identification Number (TIN) - A Taxpayer Identification Number (TIN) is an identification number used by the Internal Revenue Service (IRS) in the administration of tax laws. This could be a Social Security Number (SSN), Employer Identification Number (EIN), Individual Taxpayer Identification Number (ITIN), or other TIN. This number should be the TIN associated to your SAM.gov | Home  registration.',
+  'tin': 'A Taxpayer Identification Number (TIN) is an identification number used by the Internal Revenue Service (IRS) in the administration of tax laws. This could be a Social Security Number (SSN), Employer Identification Number (EIN), Individual Taxpayer Identification Number (ITIN), or other TIN. This number should be the TIN associated to your SAM.gov | Home registration.',
   'bankAccountNumber': '',
   'serverError': ''
 }

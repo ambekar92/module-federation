@@ -3,8 +3,8 @@ import useSWR from "swr";
 import fetcher from "../../fetcher";
 import { User } from "../../types/user-service/User";
 
-export function useUser(userId: String) {
-    return useSWR<User>(`${USER_ROUTE}/${userId}`, fetcher) 
+export function useUser(userId: String | null | undefined) {
+    return useSWR<User>(`${USER_ROUTE}/${userId}`, userId ? fetcher : null) 
 }
 
 export function useUsers(filterType: 'id' | 'first_name' | 'last_name' | 'email' | 'is_active' | 'role_slug' | '' = '', filterValue: any =  '') {

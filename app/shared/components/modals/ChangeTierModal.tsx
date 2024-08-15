@@ -9,7 +9,7 @@ import {
   ModalHeading,
   ModalRef,
 } from '@trussworks/react-uswds'
-import React, { useEffect, useState } from 'react'
+import React, { RefObject, useEffect, useState } from 'react'
 import styles from './Modals.module.scss'
 import { useParams } from 'next/navigation'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
@@ -52,20 +52,20 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
       const putData = {
         application_id: Number(params.application_id) || 0,
         signed_by_id: userId || 0,
-        application_tier: applicationData?.tier || '0',
+        application_tier: applicationData?.application_tier || '0',
       }
 
       const notePayload: CreateNotePayload = {
         application_id: Number(params.application_id) || 0,
         description: description,
-        subject: `Change Tier`,
+        subject: 'Change Tier',
         user_id: userId || 0,
       }
       handleAction()
       await triggerChangeTier(notePayload)
       await triggerUpdateApp(putData)
 
-      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData.id }) + '?name=changed-tier'
+      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=changed-tier'
     } catch (error: any) {
       console.error('Failed to complete evaluation task', error)
       console.error('Network Error: ', error)

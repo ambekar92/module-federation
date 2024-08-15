@@ -1,6 +1,9 @@
 'use client'
 
+import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes';
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
+import { useSessionUCMS } from '@/app/lib/auth';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask';
 import {
   Button,
@@ -18,10 +21,12 @@ interface CompleteScreeningProps {
 	processId: number | undefined;
 	applicationTier: string | undefined;
 	applicationId: number | undefined;
+	handleAction: () => void;
 }
 
-const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, processId, applicationTier, applicationId }) => {
+const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, processId, applicationTier, applicationId, handleAction }) => {
   const { trigger } = useCompleteEvalTask()
+  const sessionData = useSessionUCMS()
 
   const handleActionSubmit = async () => {
     try {
@@ -34,8 +39,17 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, process
         },
       }
       await trigger(postData)
+      const updateAppStateData = {
+        application_id: applicationId,
+        state_action: 'review',
+        user_id: sessionData.data.user_id,
+        subject: 'Updated for review',
+        description: 'Updated for review'
+      }
+      await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=completed-screening'
     } catch (error: any) {
+      handleAction();
       // console.error('Network Error: ', error)
       return
     }
@@ -43,6 +57,7 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, process
 
   const handleCancel = () => {
     modalRef.current?.toggleModal();
+    handleAction();
   }
   return (
     <>

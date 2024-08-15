@@ -18,10 +18,6 @@ export const getStaticNavItems = (application_id: string): NavItem[] => [
     child: [{ section: 'Documents', url: `${application_id}/documents`, title: 'Documents' }]
   },
   {
-    section: 'Analysis',
-    child: [{ section: 'Analysis', url: `${application_id}/analysis`, title: 'Analysis' }]
-  },
-  {
     section: 'Notes',
     child: [{ section: 'Notes', url: `${application_id}/notes`, title: 'Notes' }]
   },

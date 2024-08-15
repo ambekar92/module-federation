@@ -10,7 +10,7 @@ import { RefObject } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { ConfirmVA, ConfirmVeteranStatusType, schema } from './schema'
 
-const ConfirmVeteranStatusModal = ({ modalRef, applicationId }: { modalRef: RefObject<ModalRef>, applicationId: number | undefined }) => {
+const ConfirmVeteranStatusModal = ({ modalRef, applicationId, handleAction }: { modalRef: RefObject<ModalRef>, applicationId: number | undefined, handleAction: () => void }) => {
   const {trigger, isMutating} = useUpdateVAStatus();
 
   const methods = useForm<ConfirmVeteranStatusType>({
@@ -20,7 +20,7 @@ const ConfirmVeteranStatusModal = ({ modalRef, applicationId }: { modalRef: RefO
     }
   })
 
-  function onSubmit(formData: ConfirmVeteranStatusType) {
+  async function onSubmit(formData: ConfirmVeteranStatusType) {
     if (stripHtmlTags(formData.vba_feedback).trim().length === 0) {
       methods.setError('vba_feedback', {message: 'Please provide more information'});
       return;
@@ -28,25 +28,31 @@ const ConfirmVeteranStatusModal = ({ modalRef, applicationId }: { modalRef: RefO
     if (!applicationId) {
       modalRef.current?.toggleModal();
       methods.reset();
-      throw  new Error('Application process id not found');
+      throw new Error('Application process id not found');
     };
+
     const payload: ConfirmVeteranStatusPayload = {
       application_id: applicationId,
       veteran_status: formData.veteran_status!,
       vba_feedback: formData.vba_feedback
     }
-    trigger(payload)
-      .finally(() => {
-        methods.reset()
-        modalRef.current?.toggleModal();
-        // Todo - need to validate the response to display error message or redirect on success
-        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=confirmed-veteran-status'
-      })
+
+    try {
+      await trigger(payload);
+      // Todo - need to validate the response to display error message or redirect on success
+      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=confirmed-veteran-status';
+    } catch (error) {
+      console.error('Failed to update VA status:', error);
+    } finally {
+      methods.reset();
+      modalRef.current?.toggleModal();
+    }
   }
 
   function onClose() {
     methods.reset();
     modalRef.current?.toggleModal();
+    handleAction()
   }
 
   return (

@@ -1,5 +1,7 @@
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
+import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
 import fetcher from '@/app/services/fetcher';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Button, ButtonGroup } from '@trussworks/react-uswds';
@@ -9,16 +11,18 @@ import DocumentUploads from '../components/document-uploads/DocumentUploads';
 import { QuestionnaireListType } from '../components/questionnaire/utils/types';
 import { setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
-import { applicationSteps, qaAppLinkPrefix } from '../utils/constants';
-import { QuestionnaireProps } from '../utils/types';
+import { applicationSteps, extractLastPart } from '../utils/constants';
+import useSWR from 'swr';
 
-function DocumentUpload({contributorId}: QuestionnaireProps) {
+function DocumentUpload() {
   const dispatch = useApplicationDispatch();
   useUpdateApplicationProgress('Document Upload');
+  const { applicationId, contributorId, applicationData } = useApplicationContext();
+
   const [skipHubzoneSup, setSkipHubzoneSup] = useState(false);
   const [previousLink, setPreviousLink] = useState('');
 
-  const { data: questionnairesData } = useFetchOnce<QuestionnaireListType>(
+  const { data: questionnairesData } = useSWR<QuestionnaireListType>(
     contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
     fetcher
   );
@@ -32,14 +36,21 @@ function DocumentUpload({contributorId}: QuestionnaireProps) {
       const hasHubzoneCalculator = questionnairesData.some(item => item.url.includes('hubzone-calculator'));
 
       if (hasHubzoneCalculator) {
-        setPreviousLink(skipHubzoneSupValue
-          ? `/application/questionnaire/${contributorId}/individual-contributor-hubzone-business-relationships`
-          : `/application/questionnaire/${contributorId}/hubzone-calculator-supplemental`
+        setPreviousLink(
+          buildRoute(QUESTIONNAIRE_PAGE, {
+            applicationId: applicationId,
+            section: skipHubzoneSupValue ? '/individual-contributor-hubzone-business-relationships' : '/hubzone-calculator-supplemental'
+          })
         );
       } else {
         // If there's no hubzone-calculator, set the previous link to the last questionnaire
         const lastQuestionnaire = questionnairesData[questionnairesData.length - 1];
-        setPreviousLink(`/application/questionnaire/${lastQuestionnaire.url}`);
+        setPreviousLink(
+          buildRoute(QUESTIONNAIRE_PAGE, {
+            applicationId: applicationId,
+            section: `/${extractLastPart(lastQuestionnaire.url)}`
+          })
+        );
       }
     }
 
@@ -48,7 +59,7 @@ function DocumentUpload({contributorId}: QuestionnaireProps) {
 
   return (
     <>
-      <DocumentUploads contributorId={contributorId} />
+      <DocumentUploads contributorId={contributorId} entityId={applicationData?.entity.entity_id} />
       <ButtonGroup className='display-flex flex-justify margin-top-2 margin-right-2px'>
         {questionnairesData
           ? (
@@ -65,7 +76,12 @@ function DocumentUpload({contributorId}: QuestionnaireProps) {
         <Link
           className='usa-button'
           aria-disabled={!contributorId}
-          href={`${qaAppLinkPrefix}${contributorId}${applicationSteps.contributorInvitation.link}`}
+          href={
+            buildRoute(APPLICATION_STEP_ROUTE, {
+              applicationId: applicationId,
+              stepLink: applicationSteps.contributorInvitation.link
+            })
+          }
         >
           Next
         </Link>

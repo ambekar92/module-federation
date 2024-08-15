@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import styles from '../../../../(admin)/admin/configuration/components/Card.module.scss'
+import styles from './Cards.module.scss'
 import { GridContainer, Grid} from '@trussworks/react-uswds'
 import CustomTable from '../components/CustomTable'
 import { ModalsAddUsers } from './AddNewUsersForm'

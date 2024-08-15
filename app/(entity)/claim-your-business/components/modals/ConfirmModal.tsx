@@ -1,11 +1,12 @@
 import { ENTITY_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { fetcherPOST } from '@/app/services/fetcher-legacy'
+import { axiosInstance } from '@/app/services/axiosInstance'
 import { Box } from '@mui/material'
 import Modal from '@mui/material/Modal'
 import { Button, ButtonGroup, Icon } from '@trussworks/react-uswds'
 import React from 'react'
 import { CmbResponseType } from '../../utils/types'
+import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
 
 interface IPostResponse {
 	id: number;
@@ -19,7 +20,7 @@ interface ConfirmModalProps {
   business: CmbResponseType;
   setErrorMsg: (msg: string) => void;
 	setPostSuccessful: (success: boolean) => void;
-	setApplicationId: (id: number) => void;
+	setEntityId: (id: number) => void;
 }
 
 // Only way to style the box component
@@ -39,7 +40,7 @@ const boxStyles = {
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   business, open, handleClose, handleOpen, setErrorMsg,
-  setPostSuccessful, setApplicationId
+  setPostSuccessful, setEntityId
 }) => {
   const session = useSessionUCMS();
   const user_id = session?.data?.user_id;
@@ -50,12 +51,15 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         owner_user_id: user_id,
         sam_entity_id: business.sam_entity.sam_entity_id
       }];
-      const res = await fetcherPOST<IPostResponse[]>(`${ENTITY_ROUTE}`, postData);
 
-      if(res) {
-        setApplicationId(res[0].id)
+      const response = await axiosInstance.post(`${ENTITY_ROUTE}`, postData);
+
+      if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
+        const res: IPostResponse[] = response.data;
+        setEntityId(res[0].id);
         setPostSuccessful(true);
-      	handleClose();
+        handleClose();
+        window.location.href = buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, {entity_id: res[0].id})
       } else {
         throw 'POST Request Failed'
       }

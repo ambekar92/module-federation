@@ -8,14 +8,14 @@ import { selectApplication, setOwnerTypeSelected, setStep } from '../../redux/ap
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
 import { applicationSteps, calculateEligiblePrograms, qaAppLinkPrefix } from '../../utils/constants';
 import { fetcherPUT } from '@/app/services/fetcher-legacy';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 
 type OwnershipLayoutProps = {
   children: React.ReactNode;
-	contributorId: number;
-	applicationId: number | null;
 };
 
-function OwnershipLayout({children, contributorId, applicationId}: OwnershipLayoutProps) {
+function OwnershipLayout({children}: OwnershipLayoutProps) {
+  const { applicationId, contributorId } = useApplicationContext();
   const { ownerTypeSelected, owners, ownershipPercentageTotal } = useApplicationSelector(selectApplication);
   const dispatch = useApplicationDispatch();
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);

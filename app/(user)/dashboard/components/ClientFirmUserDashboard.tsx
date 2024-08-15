@@ -1,22 +1,19 @@
 'use client'
 import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
-import { fetcherGET } from '@/app/services/fetcher-legacy'
 import { useSessionUCMS } from '@/app/lib/auth'
-import getEntityByUserId from '@/app/shared/utility/getEntityByUserId'
+import fetcher from '@/app/services/fetcher'
+import { getEntityByDelegateId } from '@/app/shared/utility/getEntityByUserId'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Collection } from '@trussworks/react-uswds'
 import { ReactElement, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import styles from '../utils/FirmDashboard.module.scss'
-import { humanizeText } from '../utils/helpers'
-import ApplicationCard from './ApplicationCard'
+import ApplicationCards from './ApplicationCards'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
 import { Application } from '@/app/services/types/application-service/Application'
 
-
 export default function ClientFirmUserDashboard() {
-
   const { data: session, status } = useSessionUCMS()
   const [clickedId, setClickedId] = useState<number | null>(null)
   const [actionButton, setActionButton] = useState<ReactElement>()
@@ -28,7 +25,7 @@ export default function ClientFirmUserDashboard() {
   const [userId, setUserId] = useState<number | null>(null)
   const [entityId, setEntityId] = useState<number | null>(null)
 
-
+  const hasDelegate = session?.permissions?.some(permission => permission.slug.includes('delegate'))
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user_id) {
@@ -38,23 +35,23 @@ export default function ClientFirmUserDashboard() {
 
   useEffect(() => {
     async function fetchEntityData() {
-      if (userId) {
-        const entityData = await getEntityByUserId(userId)
+      if (userId && hasDelegate) {
+        const entityData = await getEntityByDelegateId(userId)
         if (entityData && entityData.length > 0) {
           setEntityId(entityData[entityData.length - 1].id)
         }
       }
     }
     fetchEntityData()
-  }, [userId])
+  }, [userId, hasDelegate])
 
-  const url = entityId
+  const url = hasDelegate && entityId
     ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}`
     : userId
       ? `${FIRM_APPLICATIONS_ROUTE}?user_id=${userId}`
       : null
 
-  const { data, error } = useSWR(url, fetcherGET<Application[]>)
+  const { data, error } = useSWR(url, fetcher<Application[]>)
 
   const applicationDeleteOrWithdraw = async (event: any, id: number) => {
     // Prevent default action and event bubbling if needed
@@ -130,19 +127,13 @@ export default function ClientFirmUserDashboard() {
     <>
       <div>
         <h1>Welcome, {session?.user?.name}</h1>
-        <p>
-          <i>{data[data.length - 1]?.sam_entity?.legal_business_name || ''}</i>
-        </p>
       </div>
 
-      <h2 className="text-size-2xl">Applications</h2>
-      <span className="text-size-lg">
-        <strong>{humanizeText(data[0]?.workflow_state || '')}</strong>
-      </span>
+      <h2 className="text-size-2xl margin-y-0 border-bottom padding-y-2 border-base-lighter">Applications</h2>
       {data && data.length > 0 && (
         <div>
           <Collection>
-            <ApplicationCard
+            <ApplicationCards
               data={data}
               clickedId={clickedId}
               actionButton={actionButton}

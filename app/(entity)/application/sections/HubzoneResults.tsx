@@ -1,12 +1,14 @@
+import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_LIST_PAGE } from '@/app/constants/url';
 import { ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';
-import { QuestionnaireProps } from '../utils/types';
-import { useApplicationDispatch } from '../redux/hooks';
+import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { setStep } from '../redux/applicationSlice';
+import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 
-function HubzoneResults({contributorId}: QuestionnaireProps) {
+function HubzoneResults() {
+  const params = useParams();
   const dispatch = useApplicationDispatch();
 
   useEffect(() => {
@@ -40,13 +42,18 @@ function HubzoneResults({contributorId}: QuestionnaireProps) {
       <ButtonGroup className="display-flex flex-justify border-top padding-y-2 margin-right-2px">
         <Link
           className="usa-button usa-button--outline"
-          href={`/application/questionnaire/${contributorId}`}
+          href={buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: params.application_id })}
         >
               Previous
         </Link>
         <Link
           className="usa-button"
-          href={`/application/${contributorId}/document-upload`}
+          href={
+            buildRoute(APPLICATION_STEP_ROUTE, {
+              applicationId: params.application_id,
+              stepLink: applicationSteps.documentUpload.link
+            })
+          }
         >
     					Next
         </Link>

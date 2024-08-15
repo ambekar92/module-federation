@@ -23,7 +23,7 @@ const AuditWrapper = () => {
     setPage(number);
   }
   function onPageSizeChange(e: any) {
-    setPageSize(e.target.value);
+    setPageSize(Number(e.target.value));
     setPage(1)
   }
 
@@ -55,7 +55,7 @@ const AuditWrapper = () => {
 				    onClickNext={onNext}
 				    onClickPageNumber={(e, n) => onPageNumber(e, n)}
 				    onClickPrevious={onPrevious}
-				    totalPages={40} pathname={''} />
+				    totalPages={Math.ceil(data.length / pageSize)} pathname={''} />
 				</>
       }
     </div>

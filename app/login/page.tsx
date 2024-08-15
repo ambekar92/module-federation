@@ -1,32 +1,52 @@
-import React from 'react';
-import UCMSAlert from '../shared/components/UCMSAlert/UCMSAlert';
+import {
+  ADMIN_DASHBOARD,
+  CLAIM_YOUR_BUSINESS,
+  DASHBOARD,
+  REVIEWERS_DASHBOARD_PAGE,
+  TASKS_DASHBOARD_PAGE,
+  USER_DASHBOARD_PAGE
+} from '@/app/constants/url';
+import { Role } from '@/app/shared/types/role';
 import { Card } from '@trussworks/react-uswds';
+import { redirect } from 'next/navigation';
 import { getSessionServer } from '../lib/auth';
+import UCMSAlert from '../shared/components/UCMSAlert/UCMSAlert';
 import styles from './Login.module.scss';
 import LoginButton from './LoginButton';
-import { redirect } from 'next/navigation';
-import {
-  CLAIM_YOUR_BUSINESS, SELECT_INTENDED_PROGRAMS, DASHBOARD, ADMIN_DASHBOARD,
-  USER_DASHBOARD_PAGE
-} from '@/app/constants/url'
-import { Role } from '../shared/types/role';
-import { debug } from 'console';
+type RoleType = `${Role}`;
 
+/**
+ * 
+ * @deprecated login action now happens through LoginMenu.tsx component
+ */
 export default async function Login({searchParams}: {searchParams: {next: string}}) {
   const session = await getSessionServer();
   if(session) {
-    const firstPermissionSlug = session.permissions?.at(0)?.slug;
-    const lastPermissionSlug = session.permissions?.at(-1)?.slug;
-
-    if (typeof firstPermissionSlug === 'string' && typeof lastPermissionSlug === 'string') {
+    const firstPermissionSlug = session.permissions?.at(0)?.slug as RoleType;
+    const lastPermissionSlug = session.permissions?.at(-1)?.slug as RoleType;
+    if (firstPermissionSlug && lastPermissionSlug) {
       switch (firstPermissionSlug) {
         case Role.INTERNAL:
           switch (lastPermissionSlug) {
             case Role.ADMIN:
               redirect(ADMIN_DASHBOARD);
               break;
+            case Role.ANALYST:
+            case Role.ANALYST_HIGH_TIER:
+            case Role.ANALYST_LOW_TIER:
+            case Role.ANALYST_HIGH:
+            case Role.ANALYST_LOW:
+            case Role.ANALYST_CONTRIBUTOR_OGC:
+            case Role.ANALYST_CONTRIBUTOR_OSS:
+            case Role.REVIEWER:
+            case Role.REVIEWER_HIGH_TIER:
+            case Role.REVIEWER_LOW_TIER:
+            case Role.REVIEWER_HIGH:
+            case Role.REVIEWER_LOW:
+              redirect(REVIEWERS_DASHBOARD_PAGE);
+              break;
             default:
-              redirect(USER_DASHBOARD_PAGE);
+              redirect(TASKS_DASHBOARD_PAGE);
           }
           break;
         case Role.EXTERNAL:
@@ -55,6 +75,7 @@ export default async function Login({searchParams}: {searchParams: {next: string
       redirect('/');
     }
   }
+
   return (
     <>
       <Card

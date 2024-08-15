@@ -1,30 +1,32 @@
 import { ANSWER_ROUTE, CLOSE_APPLICATION_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes';
+import { useSessionUCMS } from '@/app/lib/auth';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
+import { Application } from '@/app/services/types/application-service/Application'
+import { ModalRef } from '@trussworks/react-uswds';
 import React, { useEffect, useRef, useState } from 'react';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
-import QuestionRenderer from './QuestionRenderer';
-import { ModalRef } from '@trussworks/react-uswds';
 import CloseApplicationModal from './CloseApplicationModal';
-import { Application } from '@/app/shared/types/responses';
+import QuestionRenderer from './QuestionRenderer';
+import useSWR from 'swr';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 interface QuestionnaireProps {
   url: string;
   title: string;
-  contributorId: number;
+  contributorId: number | null | undefined;
   onRefetchQuestionnaires: () => void;
   setCanNavigate: (canNavigate: boolean) => void;
 }
 
 const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, onRefetchQuestionnaires, setCanNavigate }) => {
   const dispatch = useApplicationDispatch();
-  const { data, error, isLoading } = useFetchOnce<QaQuestionsType>(url, fetcher);
+  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
-  const { userId } = useApplicationId();
+  const session = useSessionUCMS();
+  const userId = session?.data?.user.id;
   const closeApplicationRef = useRef<ModalRef>(null);
 
   useEffect(() => {
@@ -136,7 +138,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
 
   return (
     <>
-      <h2>{title}</h2>
+      <h2>{title}<TooltipIcon text='You must complete each questionnaire associated with the selected certification requests. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.' /></h2>
       {sortedAndFilteredQuestions.map((question, index) => (
         <QuestionRenderer
           contributorId={contributorId}

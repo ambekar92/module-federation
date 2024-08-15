@@ -4,6 +4,7 @@ export enum ReassignType {
     REASSIGN_SCREENER,
     REASSIGN_ANALYST,
     REASSIGN_APPROVER,
+    REASSIGN_EXPERT,
 }
 
 export const schema = z.object({

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import CustomHeader from '../../../../shared/components/forms/CustomHeader'
 import InvitationCodeForm from '../forms/InvitationCodeForm'
+import { useRouter } from 'next/navigation'
 
 interface claimBusinessLandingProps {
   proceedToClaimBusiness: () => void
@@ -13,20 +14,25 @@ interface claimBusinessLandingProps {
 function ClaimBusinessLanding({
   proceedToClaimBusiness,
 }: claimBusinessLandingProps) {
-  const [enterInvitationCode, setEnterInvitationCode] = useState(false)
+  const [enterInvitationCode, setEnterInvitationCode] = useState(false);
+  const router = useRouter()
 
   const onEnterCodeClick = () => {
     setEnterInvitationCode(true)
   }
 
+  const onEnterCodeCancel = () => {
+    setEnterInvitationCode(false)
+  }
+
   const submitForm = () => {
-    proceedToClaimBusiness()
+    router.push('/dashboard')
   }
 
   return (
     <section>
       {enterInvitationCode ? (
-        <InvitationCodeForm submitForm={submitForm} />
+        <InvitationCodeForm onEnterCodeCancel={onEnterCodeCancel} submitForm={submitForm} />
       ) : (
         <section>
           <CustomHeader title="Small Business Certification"></CustomHeader>
@@ -38,7 +44,7 @@ function ClaimBusinessLanding({
               <h4 className="usa-alert__heading">
 								Have an Invitation Code?
                 <span className='text-normal'>
-                  <Tooltip text={toolTipCmbInvitationInfo}/>
+                  <Tooltip text={'Shared with Contributor or Delegate to begin application process. Visit the Knowledge Base for more information, quick references, and FAQs.'}/>
                 </span>
               </h4>
               <p className="usa-alert__text">
@@ -63,7 +69,7 @@ function ClaimBusinessLanding({
               SAM.gov
             </Link>{' '}
             account to verify your identity.
-            <Tooltip text={toolTipCmbInvitationInfo}/>
+            <Tooltip text={'Visit the Knowledge Base for more information, quick references, and FAQs.'}/>
           </p>
           <ul>
             <li>

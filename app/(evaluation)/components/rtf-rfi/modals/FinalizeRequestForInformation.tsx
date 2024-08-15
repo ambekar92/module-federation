@@ -101,8 +101,8 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
         </ModalHeading>
 
         <div className={styles['modalBody']}>
-          <Fieldset legend="Date of birth">
-            <span className="usa-hint" id="dateOfBirthHint">
+          <Fieldset legend="Due Date">
+            <span className="usa-hint" id="dueDateHint">
       					For example: 1 15 2025
             </span>
             <DateInputGroup>

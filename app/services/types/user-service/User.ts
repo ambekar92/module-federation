@@ -1,3 +1,5 @@
+import { Role } from "@/app/lib/next-auth";
+
 export type User = {
     id: number;
     username: string;
@@ -9,5 +11,13 @@ export type User = {
     is_active: boolean;
     last_login: null | string;
     date_joined: string;
-    prbac_role: null;
+    prbac_role: PrbacRole[];
 };
+
+type PrbacRole = {
+    id: number,
+    slug: Role,
+    name: string,
+    description: string,
+    parameters: string
+}

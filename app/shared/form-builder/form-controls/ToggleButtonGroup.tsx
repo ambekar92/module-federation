@@ -7,61 +7,63 @@ type Props<T extends FieldValues, U> = {
     options: Option<U>[];
     label: string;
     hint?:string;
+		grid?: boolean;
     style?: React.CSSProperties;
 } & Partial<Pick<HTMLInputElement, 'disabled' | 'required'>>;
 
 const ToggleButtonGroup = <T extends FieldValues, U extends string | number>({
-    name,
-    options,
-    label,
-    hint,
-    style,
-    ...props
+  name,
+  options,
+  label,
+  hint,
+  style,
+  grid,
+  ...props
 }: Props<T, U>) => {
-    const { control } = useFormContext<T>();
-    return (
-        <Controller
-            name={name}
-            control={control}
-            render={({ field, fieldState: { error } }) => (
-                <FormGroup error={!!error} className="bg-white radius-sm">
-                    <Label
-                        style={{maxWidth: 'fit-content'}}
-                        htmlFor={name}
-                        error={!!error}
-                        className="padding-bottom-1"
-                        requiredMarker={props.required}
-                    >
-                        {label}
-                    </Label>
-                    <span className='text-base'>{hint}</span>
-                    {!!error && (
-                        <ErrorMessage id="input-error-message">
-                            {error.message}
-                        </ErrorMessage>
-                    )}
-                    <div
-                        className="padding-bottom-1"
-                        style={style}
-                    >
-                        {options?.map((opt) => (
-                            <Radio
-                                className="padding-y-1"
-                                key={opt.label}
-                                id={`${opt.label}|${name}`}
-                                label={opt.label}
-                                name={name}
-                                disabled={props.disabled}
-                                value={opt.value}
-                                checked={field.value === opt.value}
-                                onChange={field.onChange}
-                            />
-                        ))}
-                    </div>
-                </FormGroup>
-            )}
-        />
-    );
+  const { control } = useFormContext<T>();
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) => (
+        <FormGroup error={!!error} className={`bg-white radius-sm ${grid && 'toggle-button-group-grid'}`}>
+          <Label
+            style={{maxWidth: 'fit-content'}}
+            htmlFor={name}
+            error={!!error}
+            className="padding-bottom-1"
+            requiredMarker={props.required}
+          >
+            {label}
+          </Label>
+          <span className={`text-base ${!hint && 'display-none'}`}>{hint}</span>
+          {!!error && (
+            <ErrorMessage id="input-error-message">
+              {error.message}
+            </ErrorMessage>
+          )}
+          <div
+            className="padding-bottom-1"
+            style={style}
+          >
+            {options?.map((opt) => (
+              <Radio
+                className="padding-y-1"
+                key={opt.label}
+                id={`${opt.label}|${name}`}
+                label={opt.label}
+                name={name}
+                disabled={props.disabled}
+                value={opt.value}
+                checked={field.value === opt.value}
+                onChange={field.onChange}
+              />
+            ))}
+          </div>
+        </FormGroup>
+      )}
+    />
+  );
 };
 
 export default ToggleButtonGroup;

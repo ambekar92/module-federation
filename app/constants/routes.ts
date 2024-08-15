@@ -33,7 +33,7 @@ export const USER_PRODUCTIVITY_ROUTE =
   API_ROUTE + '/user-productivity-dashboard'
 export const FIRM_EVALUATIONS_ADD_NOTE_ROUTE =
   API_ROUTE + '/upsert-viewflow-note'
-export const ASSIGN_USER_TO_VIEWFLOW_ROUTE = FIRM_EVALUATIONS_ROUTE + '/assign-user-to-viewflow'
+export const ASSIGN_USER_TO_VIEWFLOW_ROUTE = '/evaluation/assign-user-to-viewflow'
 export const DELEGATES_ROUTE = API_ROUTE + '/delegates'
 export const APPLICATION_ROUTE = API_ROUTE + '/application'
 export const TESTER_LOGIN_ROUTE = API_ROUTE + '/login'
@@ -43,7 +43,7 @@ export const NOTES_ROUTE = '/notes';
 export const MESSAGES_ROUTE = API_ROUTE + '/messages';
 export const THREADS_ROUTE = API_ROUTE + '/threads';
 export const TASK_TIMERS_ROUTE = API_ROUTE + '/task-timers'; // this route does not exist, it is a placeholder
-export const AUDIT_ROUTE = API_ROUTE + '/activity/actions';
+export const AUDIT_ROUTE = '/activity/actions';
 export const COMPLETE_EVALUATION_TASK_ROUTE = API_ROUTE + '/complete-evaluation-task';
 export const REACT_GA_REPORT = process.env.UCP_TRACKING_ID
 export const EVALUATING_RETURN_TO_PREV_TASK_ROUTE = '/evaluating-return-to-previous-task';
@@ -51,7 +51,7 @@ export const CLOSE_APPLICATION_ROUTE = API_ROUTE + '/close-application';
 export const USER_ROLES_ROUTE =  API_ROUTE + '/prbac_roles';
 export const CREATE_CONTRIBUTOR_ROUTE = API_ROUTE + '/creating-application-contributor';
 export const APPLICATION_CONTRIBUTORS_ROUTE = API_ROUTE + '/application-contributors';
-export const MAKE_RECOMMENDATION_ROUTE =  API_ROUTE + '/program-application';
+export const PROGRAM_APPLICATION =  API_ROUTE + '/program-application';
 export const RFI_DRAFT_ROUTE = API_ROUTE + '/draft-rfi-items';
 export const RFI_ITEMS_ROUTE = API_ROUTE + '/rfi-items';
 export const RFI_CANCEL_ROUTE = API_ROUTE + '/cancel-rfi';

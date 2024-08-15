@@ -7,7 +7,6 @@ import { useUsers } from '@/app/services/queries/user-service/useUser';
 import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, ButtonGroup, ComboBoxOption, Modal, ModalFooter, ModalRef } from '@trussworks/react-uswds';
-import { useParams } from 'next/navigation';
 import { RefObject, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import Combobox from '../../../../shared/form-builder/form-controls/Combobox';
@@ -21,14 +20,15 @@ import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 type Props = {
     modalRef: RefObject<ModalRef>,
    reassignType: ReassignType,
-   applicationId: number
+   applicationId: number,
+	 handleAction: () => void
 }
 
-const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
+const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}: Props ) => {
   const currentUser = useSessionUCMS();
   const {trigger, isMutating} = useCreateNote(false);
   const {applicationData} = useApplicationData(ApplicationFilterType.id, applicationId);
-  const {data, isLoading} = useUsers('role_slug', userRolesOptionsMap[reassignType]);
+  const {data, isLoading} = useUsers('role_slug', userRolesOptionsMap(reassignType, currentUser));
   const [userOptions, setUserOptions] = useState<ComboBoxOption[] | null>(null);
 
   const methods = useForm<ReassignUserType>({
@@ -45,22 +45,26 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
     setUserOptions(opts);
   }, [data]);
 
-  function onSubmit(formData: ReassignUserType) {
+  async function onSubmit(formData: ReassignUserType) {
     if (stripHtmlTags(formData.comments).trim().length === 0) {
       methods.setError('comments', {message: 'Please provide a reason for reassigning the user'});
       return;
     }
 
-    reassign(formData).then(() => {
-      postNote(formData).catch(() => console.error('failed to post note'));
-      // Todo - need to validate the response to display error message or redirect on success
-      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=reassignment-complete'
-    }).catch(() => {console.error('failed to reassign')}).finally(() => {
+    try {
+      await reassign(formData);
+      await postNote(formData);
+      // Redirect after both operations are complete
+      window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=reassignment-complete';
+    } catch (error) {
+      console.error('Failed to reassign or post note:', error);
+    } finally {
       onClose();
-    });
+    }
   }
 
   async function postNote(formData: ReassignUserType) {
+    if (reassignType === null) {return;}
     const firmName = applicationData?.sam_entity.legal_business_name;
     const notePayload: CreateNotePayload = {
       application_id: Number(applicationId),
@@ -68,21 +72,21 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
       subject: `${firmName}${subjectSuffixMap[reassignType]}`,
       user_id: currentUser.data.user_id
     }
-    trigger(notePayload)
+    await trigger(notePayload);
   }
 
   async function reassign(formData: ReassignUserType) {
-    const assignedUser = data?.find(user => user.id === formData.user);
     const assignUserToViewflowPayload: AssignUserToViewflowPayload = {
       process_id: applicationData?.process?.id || 0,
-      pre_screener_id: assignedUser?.id || 0,
-      analyst_id: assignedUser?.id || 0,
-      supervisor_id: assignedUser?.id || 0,
-      approver_id: assignedUser?.id || 0,
-      mpp_screener_id: assignedUser?.id || 0,
-      mpp_analyst_id: assignedUser?.id || 0
+      user_id: formData.user,
+      pre_screener_id: 0,
+      analyst_id: 0,
+      supervisor_id: 0,
+      approver_id:  0,
+      mpp_screener_id: 0,
+      mpp_analyst_id: 0
     }
-    assignUserToViewflow(assignUserToViewflowPayload)
+    await assignUserToViewflow(assignUserToViewflowPayload);
   }
 
   function onClose() {
@@ -90,8 +94,8 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
     // this is a work around as uswds combobox component does not clear out the content when the form is reset
     const comboboxClearButton = document.querySelector('.usa-combo-box__clear-input') as unknown as any;
     comboboxClearButton?.click();
-
     modalRef.current?.toggleModal();
+    handleAction();
   }
 
   return (
@@ -104,16 +108,16 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId}: Props ) => {
       aria-describedby="reassign-user-modal">
       <FormProvider {...methods}>
         <form>
-          <h1> {titleMap[reassignType]} </h1>
+          <h1> {reassignType !== null && titleMap[reassignType]} </h1>
           {userOptions && <Combobox<ReassignUserType> name='user' required={true} label='Select User' options={userOptions}/>}
           <RichText<ReassignUserType> name='comments' label='Provide more information' required={true} itemId={Math.random()} />
           <ModalFooter>
             <ButtonGroup>
               <Button type='submit' onClick={methods.handleSubmit(onSubmit)} disabled={isMutating}>
-                  Submit
+                Submit
               </Button>
               <Button type='button' unstyled className="padding-105 text-center" onClick={onClose}>
-                  Cancel
+                Cancel
               </Button>
             </ButtonGroup>
           </ModalFooter>

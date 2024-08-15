@@ -11,15 +11,15 @@ export type UserTaskDashboard = {
   status: string;
   submitted_on: null | string;
   uei: string;
-  };
+};
 
-  export type AssignedTo = {
-    id: number;
-    first_name: string;
-    last_name: string;
-    prbac_role: Array<{
-      role_id: number;
-      slug: string;
-      name: string;
-    }>;
-  };
+export type AssignedTo = {
+	id: number;
+	first_name: string;
+	last_name: string;
+	prbac_role: Array<{
+		role_id: number;
+		slug: string;
+		name: string;
+	}>;
+};

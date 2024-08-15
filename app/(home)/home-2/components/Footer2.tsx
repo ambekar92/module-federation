@@ -1,7 +1,7 @@
 import { useSessionUCMS } from '@/app/lib/auth'
 import { GridContainer, Grid } from '@trussworks/react-uswds'
 import { SBA_LOGO_CIRCLE_URL } from '../../../../app/constants/icons'
-import styles from './Cards.module.scss'
+import styles from './Layout.module.scss'
 
 export default function Footer() {
   const lineItemStyle =

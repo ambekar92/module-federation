@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { VALIDATE_SAM_ENTITY_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher-legacy';
+import { toolTipCmbInputs } from '@/app/constants/tooltips';
+import fetcher from '@/app/services/fetcher';
+import InputHelperText from '@/app/shared/components/inputs/InputHelperText';
+import Tooltip from '@/app/shared/components/tooltip/Tooltip';
 import {
   Button,
   ButtonGroup,
@@ -23,9 +26,6 @@ import {
 } from '../../utils/helpers';
 import { ClaimBusinessInputs, CmbResponseType } from '../../utils/types';
 import Styles from '../ClaimMyBusiness.module.scss';
-import InputHelperText from '@/app/shared/components/inputs/InputHelperText';
-import Tooltip from '@/app/shared/components/tooltip/Tooltip';
-import { toolTipCmbInputs } from '@/app/constants/tooltips';
 
 interface IClaimInputs {
   claimFormComplete: (responseData: CmbResponseType) => void;
@@ -72,9 +72,9 @@ const ClaimInputs = ({
   const getEntityData = (uei: string, tin: string, cageCode: string, bankAccountNumber: string) =>
     `${VALIDATE_SAM_ENTITY_ROUTE}?uei=${uei}&tax_identifier_number=${tin}&cage_code=${cageCode}&account_hash=${bankAccountNumber}`;
 
-  const { data: responseData, error: responseError } = useSWR(
+  const { data: responseData, error: responseError } = useSWR<CmbResponseType>(
     () => (shouldFetchEntity ? getEntityData(queryParams.uei, queryParams.tin, queryParams.cageCode, queryParams.bankAccountNumber) : null),
-		fetcherGET<CmbResponseType>
+    fetcher
   );
 
   useEffect(() => {

@@ -13,7 +13,7 @@ import { useState } from 'react';
 const ApplicationPanelLanding = () => {
   const params = useParams<{application_id: string}>();
   const { applicationData, mutate } = useApplicationData(ApplicationFilterType.id, params.application_id)
-  const [ reviewStarted, setReviewStarted ] = useState(false);
+  const [showButton, setShowButton] = useState(true);
   const sessionData = useSessionUCMS()
   const { trigger } = useCompleteEvalTask()
 
@@ -21,7 +21,6 @@ const ApplicationPanelLanding = () => {
 
   const handleCompleteTask = async () => {
     try {
-      setReviewStarted(true);
       const postData = {
         process_id: applicationData?.process?.id || 1,
         data: {
@@ -38,9 +37,9 @@ const ApplicationPanelLanding = () => {
       }
       await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
       await mutate();
+      setShowButton(false)
     } catch (error: any) {
       // Error handled lol -KJ
-      setReviewStarted(false);
       return
     }
   }
@@ -60,7 +59,7 @@ const ApplicationPanelLanding = () => {
     switch (userRole) {
       case 'reviewer':
       case 'analyst':
-        return 'To begin this application review, please click “Start Review” below. Once you begin, the task timer will start tracking the amount of time you spend on this application. Return to this landing page to view any created and/or sent “Request for Information” items.'
+        return 'Your application review has not been submitted. Use the options in the left-navigation to continue your review. Any created “Request for Information” and their status can be found on this page.'
       case 'screener':
         return 'To begin this application review, please click “Start Review below. Once you begin, the task timer will start tracking the amount of time you spend on this application. Return to this landing page to view any created and/or sent “Return to Business” items.'
       case 'default':
@@ -72,7 +71,7 @@ const ApplicationPanelLanding = () => {
     switch (userRole) {
       case 'reviewer':
       case 'analyst':
-        return 'Complete Review';
+        return 'Start Review';
       case 'screener':
         return 'Start Review';
       default:
@@ -80,7 +79,7 @@ const ApplicationPanelLanding = () => {
     }
   }
 
-  if(!applicationData || !sessionData) {
+  if(!applicationData || !sessionData || userRole === 'default') {
     return
   }
   return (
@@ -101,12 +100,10 @@ const ApplicationPanelLanding = () => {
               </div>
             </div>
             {(
-              userRole === 'analyst' ||
-              (userRole === 'screener' && applicationData.workflow_state === 'submitted') ||
-							(userRole === 'reviewer') ||
-							(userRole === 'default')
+              (userRole === 'screener' && applicationData.workflow_state === 'submitted' && showButton) ||
+              (userRole === 'analyst' && applicationData.workflow_state === 'under_review' && showButton)
             ) && (
-              <div className="margin-top-7">
+              <div className="margin-top-2">
                 <div className="usa-card__footer">
                   <Button
                     type="button"

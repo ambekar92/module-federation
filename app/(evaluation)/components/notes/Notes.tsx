@@ -23,7 +23,7 @@ function Notes() {
         defaultValues: {subject: '', description: ''},
         shouldUnregister: true
     });
-    
+
     function onEditNote(note: NoteListItem) {
         setNoteEdited(note);
         methods.reset({subject: note.subject, description: note.description});
@@ -60,17 +60,17 @@ function Notes() {
                 </thead>
                 <tbody style={{fontSize: '.9rem'}}>
                     {data && data.length > 0 && data.map((note, idx) => (<React.Fragment key={note.id}>
-                        
+
                         <tr>
                             <td style={{width: '200px', textWrap: 'wrap', wordBreak: 'break-word'}}>{note.subject}</td>
-                            <td>{note.id}</td>
+                            <td>{note.user?.role}</td>
                             <td>{moment(note.created_at).format('MM/DD/yyyy')}</td>
                             <td>{`${note.user.first_name} ${note.user.last_name}`}</td>
                             <td style={{width: '170px'}}>
                                 <Button style={{fontSize: '.7rem', margin: '1rem 0', marginRight: '.5rem'}} type='button' outline onClick={() => setNoteViewed(noteViewed === idx ? null : idx)}>
                                     {noteViewed === idx ? 'Hide' : 'View'}
                                 </Button>
-                                {note?.user?.id === user_id && <Button 
+                                {note?.user?.id === user_id && <Button
                                 onClick={() => onEditNote(note)}
                                 style={{fontSize: '.7rem', margin: '1rem 0'}} type='button' outline
                                  disabled={isLoading}>

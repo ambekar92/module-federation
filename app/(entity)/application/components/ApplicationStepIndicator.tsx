@@ -3,7 +3,7 @@ interface ApplicationStepIndicatorProps {
   stepNumber: number
 }
 const steps = [
-  'Entity-Owned',
+  // 'Entity-Owned',
   'Ownership',
   'Control & Operations',
   'Program Selection',

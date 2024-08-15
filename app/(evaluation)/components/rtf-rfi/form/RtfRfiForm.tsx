@@ -12,20 +12,26 @@ import { useState } from 'react'
 import styles from '../../Evaluation.module.scss'
 import DeleteConfirmationModal from '../../modals/request-info/DeleteConfirmationModal'
 import RequestInfoModal from '../../modals/request-info/RequestInfoModal'
-import { useParams } from 'next/navigation'
+import { useParams, useSelectedLayoutSegment } from 'next/navigation'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
+import { NavItem } from '@/app/(evaluation)/types/types'
 
 export interface ReasonState {
   id: number | null;
   title: string;
 }
 
-function RtfRtiForm() {
-  const params = useParams<{application_id: string}>();
+interface RtfRfiFormProps {
+	navItems: NavItem[];
+}
+
+function RtfRtiForm({ navItems }: RtfRfiFormProps) {
+  const params = useParams<{application_id: string, section_questions: any}>();
   const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const selectedSegment = useSelectedLayoutSegment()
   const sessionData = useSessionUCMS()
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const { data: reasonCodes, error } = useFetchOnce<ReasonCode[]>(REASON_CODE_ROUTE, fetcher)
@@ -43,9 +49,12 @@ function RtfRtiForm() {
 
   const handlePostRequest = async () => {
     try {
+      const segment = params.section_questions ?? selectedSegment;
+      const currentSection = navItems.map(nav => nav.child).flat().find(item => item.url.includes(segment))
       const requestData = {
         application_id: applicationData?.id,
         author_id: sessionData.data?.user_id,
+        application_section_id: currentSection?.id,
         explanation,
         reason_id: reason.id,
         reason: reason.title

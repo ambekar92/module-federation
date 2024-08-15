@@ -2,7 +2,8 @@ import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { axiosInstance } from '@/app/services/axiosInstance'
 import fetcher from '@/app/services/fetcher'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext'
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Alert,
@@ -12,11 +13,11 @@ import {
   GridContainer,
   Label,
   Link,
-  Radio
+  Radio,
 } from '@trussworks/react-uswds'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import useSWR from 'swr'
+import { applicationSteps } from '../../utils/constants'
 import { setDelegates } from '../store/formSlice'
 import { useFormDispatch } from '../store/hooks'
 import { DelegateFormSchema } from '../utils/schemas'
@@ -24,7 +25,7 @@ import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
 import DelegateFormInputs from './DelegateFormInputs'
 
 type DeleteDelegateType = {
-	invitation_id: number
+  invitation_id: number
 }
 
 function AddDelegateForm() {
@@ -32,22 +33,26 @@ function AddDelegateForm() {
   const [showModal, setShowModal] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const steps = ['Add Delegate', 'Invite Modal']
-  const { userId, applicationId, contributorId } = useApplicationId();
-  const dispatch = useFormDispatch();
+  const { applicationId, userId, contributorId, applicationData } = useApplicationContext()
+  const dispatch = useFormDispatch()
 
-  const { data: delegatesData, isLoading } = useSWR<DelegatesResponse[]>(
-    (contributorId) ? `${DELEGATES_ROUTE}/${contributorId}` : null,
+  const { data: delegatesData, isLoading } = useFetchOnce<DelegatesResponse[]>(
+    contributorId ? `${DELEGATES_ROUTE}/${contributorId}` : null,
     fetcher,
-    { revalidateOnFocus: false }
-  );
-  const isDelegate = delegatesData && delegatesData.length >= 1 && delegatesData[delegatesData.length - 1].invitation_status !== 'removed';
+    { revalidateOnFocus: false },
+  )
+
+  const isDelegate =
+    delegatesData &&
+    delegatesData.length >= 1 &&
+    delegatesData[delegatesData.length - 1].invitation_status !== 'removed'
 
   useEffect(() => {
-    if(isDelegate) {
-      setOption('yes');
+    if (isDelegate) {
+      setOption('yes')
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [delegatesData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [delegatesData])
 
   const closeModal = () => {
     setShowModal(false)
@@ -89,27 +94,28 @@ function AddDelegateForm() {
 
   const onChange = async (selectedOption: string) => {
     if (selectedOption === 'no') {
-      dispatch(setDelegates([]));
+      dispatch(setDelegates([]))
       reset({
         firstName: '',
         lastName: '',
         email: '',
-      });
+      })
       if (delegatesData) {
         try {
-          const postData = { invitation_id: delegatesData[delegatesData?.length - 1].id }
-          await axiosInstance.delete<DeleteDelegateType>(`${INVITATION_ROUTE}?invitation_id=${postData.invitation_id}`);
+          await axiosInstance.delete(
+            `${INVITATION_ROUTE}?invitation_id=${delegatesData[delegatesData?.length - 1].id}`,
+          )
         } catch (error) {
           // Error handled lol -KJ
         }
       }
     } else if (selectedOption === 'yes') {
-      dispatch(setDelegates([]));
+      dispatch(setDelegates([]))
     }
-    setOption(selectedOption);
+    setOption(selectedOption)
   }
 
-  if(isLoading || !contributorId) {
+  if (isLoading) {
     return <h2>Loading...</h2>
   }
 
@@ -147,6 +153,7 @@ function AddDelegateForm() {
         </Label>
         <Radio
           id="input-radio-yes"
+          data-testid="testid-yes-radio-button"
           name="input-radio-question"
           onChange={() => onChange('yes')}
           label="Yes"
@@ -154,6 +161,7 @@ function AddDelegateForm() {
         />
         <Radio
           id="input-radio-no"
+          data-testid="testid-no-radio-button"
           name="input-radio-question"
           onChange={() => onChange('no')}
           label="No"
@@ -176,8 +184,9 @@ function AddDelegateForm() {
             getValues={getValues}
             trigger={trigger}
             reset={reset}
-            userDetails={{userId, applicationId, contributorId}}
+            userDetails={{ userId, applicationId }}
             delegatesData={isDelegate ? delegatesData : null}
+            applicationData={applicationData}
           />
         </Grid>
       )}
@@ -186,23 +195,21 @@ function AddDelegateForm() {
         <Grid row className="margin-top-2 flex-justify-end" col={12}>
           <hr className="width-full" />
           <ButtonGroup className="display-flex">
-            {contributorId
-              ? (
-                <Link
-                  href={buildRoute(APPLICATION_STEP_ROUTE, {
-                    contributorId: contributorId,
-                    stepLink: '/ownership'
-                  })}
-                  className="float-right usa-button"
-                >
-									Next
-                </Link>
-              ): (
-                <Button type='button' disabled>
-									Next
-                </Button>
-              )
-            }
+            {applicationId ? (
+              <Link
+                href={buildRoute(APPLICATION_STEP_ROUTE, {
+                  applicationId: applicationId,
+                  stepLink: applicationSteps.ownership.link,
+                })}
+                className="float-right usa-button"
+              >
+                Next
+              </Link>
+            ) : (
+              <Button type="button" disabled>
+                Next
+              </Button>
+            )}
           </ButtonGroup>
         </Grid>
       )}

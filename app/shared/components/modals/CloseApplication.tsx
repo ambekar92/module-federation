@@ -52,11 +52,11 @@ const CloseApplication: React.FC<CloseApplicationProps> = ({
 
       <div className='margin-top-4'>
         <p className={`${styles['field-title']}`}>
-          Closing this application will end the review process. 
-          The business will be notified, and they will be allowed to re-apply at anytime. 
+          Closing this application will end the review process.
+          The business will be notified, and they will be allowed to re-apply at anytime.
         </p>
         <p className={`${styles['field-title']}`}>
-          Provide more information about why you are closing this application 
+          Provide more information about why you are closing this application
         </p>
         <textarea
           className={`${styles['textarea-field']}`}

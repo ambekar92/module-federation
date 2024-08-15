@@ -38,12 +38,14 @@ const InviteModal: React.FC<InviteModalProps> = ({
           </ModalHeading>
 
           <div className="usa-prose">
-            By clicking &quot;Send Invite&quot;, the delegate will receive an invitation email at the provided e-mail address.
+            By clicking &quot;Send Invite&quot;, the delegate will receive an
+            invitation email at the provided e-mail address.
           </div>
           <ModalFooter>
             <ButtonGroup className="float-right">
               <Button
                 type="button"
+                data-testid="testid-cancel-invite-button"
                 className="float-right"
                 onClick={handleCancel}
                 outline
@@ -51,7 +53,8 @@ const InviteModal: React.FC<InviteModalProps> = ({
                 Cancel
               </Button>
               <Button
-                type='button'
+                type="button"
+                data-testid="testid-send-invite-button"
                 className="float-right usa-button"
                 onClick={() => handleSend()}
               >

@@ -1,15 +1,13 @@
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Grid, GridContainer } from '@trussworks/react-uswds'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { DelegateFormSchema } from '../utils/schemas'
 import { DelegateFormInputType } from '../utils/types'
 import DelegateFormInputs from './DelegateFormInputs'
-import { setDelegates } from '../store/formSlice'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 
 function AddDelegateForm() {
-  const { userId, applicationId, contributorId } = useApplicationId()
+  const { applicationId, userId, contributorId } = useApplicationContext();
 
   const {
     control,

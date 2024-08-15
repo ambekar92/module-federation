@@ -21,9 +21,10 @@ import { InvitationCodeInputType } from '../../utils/types'
 
 interface invitationCodeFormProps {
   submitForm: () => void
+	onEnterCodeCancel: () => void
 }
 
-function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
+function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFormProps) {
   const session = useSessionUCMS()
   const [showAlert, setShowAlert] = useState(false)
 
@@ -31,6 +32,7 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
     control,
     getValues,
     reset,
+    watch,
     formState: { errors, touchedFields },
   } = useForm<InvitationCodeInputType>({
     resolver: zodResolver(InvitationCodeFormSchema),
@@ -40,6 +42,7 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
     },
   })
 
+  const invitationCode = watch('invitationCode');
   const filterText = (text: string, onlyNumbers: boolean = false): string => {
     if (onlyNumbers) {
       // Filter out everything but digits
@@ -139,9 +142,15 @@ function InvitationCodeForm({ submitForm }: invitationCodeFormProps) {
               className="display-flex flex-justify flex-fill padding-y-2"
               type="default"
             >
-              <Button type="button" onClick={onClear}>
+              {invitationCode === '' ? (
+                <Button type="button" onClick={onEnterCodeCancel}>
+                	Back
+                </Button>
+              ): (
+                <Button type="button" onClick={onClear}>
                 Clear
-              </Button>
+                </Button>
+              )}
               <Button
                 type="button"
                 disabled={

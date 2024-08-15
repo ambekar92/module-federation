@@ -1,4 +1,5 @@
 export type QuestionnaireItem = {
+		id: number,
     section: string,
     title: string,
     url: string,
@@ -11,6 +12,7 @@ export type Params = {
 }
 
 export type NavItem = {
+		id?: number,
     section: string,
     child: QuestionnaireItem[]
 }

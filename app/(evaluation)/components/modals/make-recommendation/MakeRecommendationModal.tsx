@@ -1,7 +1,7 @@
 'use client'
 
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
-import { GET_DOCUMENTS, MAKE_RECOMMENDATION_ROUTE } from '@/app/constants/routes'
+import { GET_DOCUMENTS, PROGRAM_APPLICATION, UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
@@ -20,6 +20,9 @@ import {
 import { useParams } from 'next/navigation'
 import React, { RefObject, useEffect, useState } from 'react'
 import DocumentUploadInput from '../../../../shared/components/forms/DocumentUploadInput'
+import { ProgramApplicationType } from '@/app/services/types/application-service/Application'
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
+import fetcher from '@/app/services/fetcher'
 
 interface MakeRecommendationModalProps {
   modalRef: RefObject<ModalRef>
@@ -32,10 +35,9 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
 }) => {
   const sessionData = useSessionUCMS()
   const params = useParams<{ application_id: string }>()
-
+  const { data: programData } = useFetchOnce(`${PROGRAM_APPLICATION}/${params.application_id}`, fetcher)
   const [userId, setUserId] = useState<number | null>(null)
   const [fileData, setFileData] = useState<File | null>(null)
-  const [programData, setProgramData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const { applicationData } = useApplicationData(
     ApplicationFilterType.id,
@@ -50,25 +52,14 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
     }
   }, [sessionData])
 
-  useEffect(() => {
-    fetchProgramData()
-  }, [])
-
-  const fetchProgramData = async () => {
-    try {
-      const response = await axiosInstance.get(`${MAKE_RECOMMENDATION_ROUTE}/${params.application_id}`)
-      setProgramData(response.data)
-    } catch (error) {
-      // Error handled lol -KJ
-    }
-  }
-
   const handleActionSubmit = async () => {
     setLoading(true)
     try {
       await handleMakeSubmitPostRequest()
       onClose()
+      handleAction();
     } catch (error) {
+      handleAction();
       // Error handled lol -KJ
     } finally {
       setLoading(false)
@@ -76,7 +67,8 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
   }
 
   const onClose = () => {
-    modalRef.current?.toggleModal()
+    modalRef.current?.toggleModal();
+    handleAction();
   }
 
   const updateMakeRecommendation = async (id: number, recommendation: string) => {
@@ -86,7 +78,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
         program_id: id,
         analyst_recommendation: recommendation,
       }
-      await axiosInstance.put(MAKE_RECOMMENDATION_ROUTE, putData)
+      await axiosInstance.put(PROGRAM_APPLICATION, putData)
     } catch (error) {
       console.error('Failed to update recommendation:', error)
     }
@@ -105,6 +97,14 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
       }
 
       await triggerSubmit(postData)
+      const updateAppStateData = {
+        application_id: applicationData?.id,
+        state_action: 'final_review',
+        user_id: sessionData.data.user_id,
+        subject: 'Updated for final review',
+        description: 'Updated for final review'
+      }
+      await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, {
         application_id: Number(params.application_id),
       }) + '?name=made-recommendation'
@@ -130,7 +130,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
       // Error handled lol -KJ
     }
   }
-
+  if(!programData) {return}
   return (
     <Modal
       ref={modalRef}
@@ -165,9 +165,9 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
           </tr>
         </thead>
         <tbody>
-          {programData.map((program, i) => (
+          {programData.map((program: ProgramApplicationType, i:number) => (
             <tr key={`action-modal-table-tr-${i}`}>
-              <td>{program.name}</td>
+              <td>{program.title}</td>
               <td>
                 <div className="usa-radio display-flex flex-column flex-align-center display-flex flex-row flex-align-center bg-transparent padding-bottom-4">
                   <input

@@ -1,17 +1,14 @@
 'use client'
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
 import { ANSWER_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
-import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
+import { APPLICATION_STEP_ROUTE, ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
-import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher-legacy';
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { calculateEligibleSbaPrograms, useOwnerApplicationInfo } from '../../../hooks/useOwnershipApplicationInfo';
@@ -19,18 +16,21 @@ import QuestionRenderer from '../../../qa-helpers/QuestionRenderer';
 import { selectApplication, setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
-import { QuestionnaireProps } from '../../../utils/types';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 
-function OwnershipQuestions({contributorId}: QuestionnaireProps) {
-  const params = useParams<{application_id: string}>();
+function OwnershipQuestions() {
+  // Redux
   const dispatch = useApplicationDispatch();
-  const { owners } = useApplicationSelector(selectApplication);
-  const { applicationData } = useApplicationData(ApplicationFilterType.id, params.application_id);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
-  const { userId } = useApplicationId();
-  const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
   const { ownerApplicationInfo } = useOwnerApplicationInfo();
+  const { owners } = useApplicationSelector(selectApplication);
+
+  const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
+  useUpdateApplicationProgress('Ownership');
+
+  const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
+
+  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -76,7 +76,7 @@ function OwnershipQuestions({contributorId}: QuestionnaireProps) {
         reminder_flag: false
       };
 
-      fetcherPOST(ANSWER_ROUTE, [answer])
+      axiosInstance.post(ANSWER_ROUTE, [answer])
         .catch(error => {
           console.error('Error saving answer:', error);
         });
@@ -94,9 +94,9 @@ function OwnershipQuestions({contributorId}: QuestionnaireProps) {
           programs: eligiblePrograms.map(program => program.id)
         };
 
-        await fetcherPUT(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
+        await axiosInstance.put(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
         window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
-          contributorId: contributorId,
+          applicationId: applicationId,
           stepLink: applicationSteps.controlAndOwnership.link
         });
       } catch (error) {
@@ -155,13 +155,23 @@ function OwnershipQuestions({contributorId}: QuestionnaireProps) {
       />
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        <Link className='usa-button usa-button--outline' href={ buildRoute(APPLICATION_STEP_ROUTE, {
-          contributorId: contributorId,
-          stepLink: applicationSteps.entityOwned.link
-        })}>
-          Previous
-        </Link>
-
+        {applicationId
+          ? (
+            <Link
+              href={buildRoute(ASSIGN_DELEGATE_PAGE, {applicationId: applicationId})}
+              className="usa-button usa-button--outline"
+            >
+							Previous
+            </Link>
+          ): (
+            <Button
+              type="button"
+              className="usa-button"
+              disabled
+            >
+            		Previous
+            </Button>
+          )}
         <Button
           type='button'
           onClick={handleSubmit}

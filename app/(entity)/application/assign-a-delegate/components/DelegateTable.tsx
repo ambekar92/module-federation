@@ -5,12 +5,15 @@ import { useFormSelector } from '../store/hooks'
 import styles from './DelegateForm.module.scss'
 
 const DelegateTable: React.FC = () => {
-  const { delegates } = useFormSelector(selectForm);
+  const { delegates } = useFormSelector(selectForm)
 
   return (
     <Grid row className="width-full">
       <div className=" width-full">
-        <table className="usa-table usa-table--borderless width-full">
+        <table
+          className="usa-table usa-table--borderless width-full"
+          data-testid="testid-delegate-table"
+        >
           <thead>
             <tr>
               <td className={styles['text-bold']}>First Name</td>
@@ -20,16 +23,14 @@ const DelegateTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {
-              delegates.map((delegate, index) => (
-                <tr key={index}>
-                  <td>{delegate.firstName}</td>
-                  <td>{delegate.lastName}</td>
-                  <td>{delegate.email}</td>
-                  <td>{delegate.status ? delegate.status : 'Pending'}</td>
-                </tr>
-              ))
-            }
+            {delegates.map((delegate, index) => (
+              <tr key={index}>
+                <td>{delegate.firstName}</td>
+                <td>{delegate.lastName}</td>
+                <td>{delegate.email}</td>
+                <td>{delegate.status ? delegate.status : 'Pending'}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

@@ -5,7 +5,15 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import styles from './TableHeader.module.scss';
 
-const TableHeader = ({ defaultSortColumn, columns }: { defaultSortColumn: string, columns: { val: string, label: string, sortable?:boolean}[] }) => {
+const TableHeader = ({
+  defaultSortColumn,
+  columns,
+  isReviewersDashboard
+}: {
+  defaultSortColumn: string,
+  columns: { val: string, label: string, sortable?: boolean }[],
+  isReviewersDashboard?: boolean
+}) => {
   const searchParams = useSearchParams();
   const searchParamsState = new URLSearchParams(Array.from(searchParams.entries()));
   const pathName = usePathname();
@@ -23,6 +31,10 @@ const TableHeader = ({ defaultSortColumn, columns }: { defaultSortColumn: string
     router.push(`${pathName}?${q}`)
   }, [pathName])
 
+  const filteredColumns = isReviewersDashboard
+    ? columns
+    : columns.filter(col => col.val !== 'takeAction' && col.val !== 'assigned_to');
+
   function setQueryParams(colName: string) {
     const sortOrder = colName === searchParamsState.get('sortColumn') ? searchParamsState.get('sortOrder') === 'asc' ? 'desc' : 'asc' : 'asc';
     searchParamsState.set('sortColumn', colName);
@@ -34,9 +46,9 @@ const TableHeader = ({ defaultSortColumn, columns }: { defaultSortColumn: string
   return (
     <thead>
       <tr>
-        {columns.map(col => (
+        {filteredColumns.map(col => (
           <th key={col.val} onClick={() =>{col.sortable &&  setQueryParams(col.val)}} style={{ width: (100 / columns.length).toString() + '%' }}>
-            <span className={styles.tableHeadCell}> {col.label} {searchParams.get('sortColumn') === col.val 
+            <span className={styles.tableHeadCell}> {col.label} {searchParams.get('sortColumn') === col.val
               && <FontAwesomeIcon icon={(searchParams.get('sortOrder') === 'asc') ? faChevronDown : faChevronUp} />}
             </span>
           </th>

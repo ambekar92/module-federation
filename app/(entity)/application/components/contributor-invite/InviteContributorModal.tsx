@@ -1,8 +1,8 @@
 'use client'
 
 import { INVITATION_ROUTE } from '@/app/constants/routes'
+import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { fetcherPOST } from '@/app/services/fetcher-legacy'
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 import {
   Button,
   ButtonGroup,
@@ -12,16 +12,16 @@ import {
   ModalHeading,
 } from '@trussworks/react-uswds'
 import React from 'react'
-import { QuestionnaireProps } from '../../utils/types'
-import { Contributor } from './types'
-import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { applicationSteps } from '../../utils/constants'
+import { Contributor } from './types'
+import { axiosInstance } from '@/app/services/axiosInstance'
 
-interface InviteContributorModalProps extends QuestionnaireProps {
-  open: boolean
-  handleCancel: () => void,
-	contributors: Contributor[]
-	entityId: number | null;
+interface InviteContributorModalProps {
+  open: boolean;
+	contributorId: number | undefined | null;
+  handleCancel: () => void;
+	contributors: Contributor[];
+	entityId: number | undefined;
 	applicationId: number | null;
 }
 
@@ -61,17 +61,17 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
           // const res = await fetcherPOST(INVITATION_ROUTE, postData);
           // console.log(res ? 'Successful' : 'Failed')
           // console.log(res)
-          await fetcherPOST(INVITATION_ROUTE, postData);
+          await axiosInstance.post(INVITATION_ROUTE, postData);
         }
 
         window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
-          contributorId: contributorId,
+          applicationId: applicationId,
           stepLink: applicationSteps.sign.link
         })
       }
     } catch(error) {
       window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
-        contributorId: contributorId,
+        applicationId: applicationId,
         stepLink: applicationSteps.sign.link
       })
       // alert('Error sending invitations. Please try again.')

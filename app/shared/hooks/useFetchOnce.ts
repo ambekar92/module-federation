@@ -14,7 +14,11 @@ function useFetchOnce<Data = any, Error = any>(
   customConfig: SWRConfiguration = {}
 ): SWRResponse<Data, Error> {
   const config = { ...defaultConfig, ...customConfig };
-  return useSWR<Data, Error>(key, fetcher, config);
+
+  return useSWR<Data, Error>(key, fetcher, {
+    ...config,
+    revalidateIfStale: false
+  });
 }
 
 export default useFetchOnce;

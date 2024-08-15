@@ -8,8 +8,15 @@ import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accor
 import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { useSessionUCMS } from '@/app/lib/auth';
 import RtfRtiForm from './rtf-rfi/form/RtfRfiForm';
+import { NavItem } from '../types/types';
 
-function RightPanel() {
+interface RightPanelProps {
+  isNavItemsLoading: boolean;
+  navItems: NavItem[];
+  error: any;
+}
+
+function RightPanel({ isNavItemsLoading, navItems, error }: RightPanelProps) {
   const sessionData = useSessionUCMS();
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const rightPanel: AccordionItemProps[] = [
@@ -18,7 +25,7 @@ function RightPanel() {
       title: userRole === 'screener' ? 'Return to Business' : 'Request for Information',
       content: (
         <>
-          <RtfRtiForm />
+          <RtfRtiForm navItems={navItems} />
         </>
       ),
       expanded: false,

@@ -10,7 +10,7 @@ function SamInfo() {
   const params = useParams<{application_id: string}>();
   const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
   const samEntity = applicationData?.sam_entity ?? null;
-  
+
   return (
     <>
       <div className='grid-row margin-0'>
@@ -82,13 +82,13 @@ function SamInfo() {
 export default SamInfo;
 
 function registrationStatus(samEntity: SamEntity | null) {
-  if (!samEntity) return 'N/A'
+  if (!samEntity) {return 'N/A'}
   const today = new Date().getTime();
   const expirationDate = new Date(samEntity.expiration_date).getTime();
   return today > expirationDate ? 'Expired' : 'Active';
 }
 
 function getAddress(samEntity: SamEntity | null) {
-  if (!samEntity) return 'N/A'
-  return `${samEntity.physical_address_1} ${samEntity.physical_address_2} ${samEntity.physical_city} ${ samEntity.mailing_address_state_or_province} ${samEntity.physical_zip_code_5}`
+  if (!samEntity) {return 'N/A'}
+  return `${samEntity.physical_addr_1} ${samEntity.physical_addr_2} ${samEntity.physical_city} ${ samEntity.physical_state_or_province} ${samEntity.physical_zip_code_5}`
 }

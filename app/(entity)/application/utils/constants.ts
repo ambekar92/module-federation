@@ -14,35 +14,35 @@ export const qaAppLinkPrefix = '/application/'
 
 export const applicationSteps = {
   entityOwned: {
-    stepIndex: 0,
+    stepIndex: null,
     link: '/entity-owned',
   },
   ownership: {
-    stepIndex: 1,
+    stepIndex: 0,
     link: '/ownership',
   },
   controlAndOwnership: {
-    stepIndex: 2,
+    stepIndex: 1,
     link: '/control-and-operations',
   },
   eligiblePrograms: {
-    stepIndex: 3,
+    stepIndex: 2,
     link: '/eligible-programs',
   },
   questionnaire: {
-    stepIndex: 4,
+    stepIndex: 3,
     link: '/questionnaires',
   },
   documentUpload: {
-    stepIndex: 5,
+    stepIndex: 4,
     link: '/document-upload',
   },
   contributorInvitation: {
-    stepIndex: 6,
+    stepIndex: 5,
     link: '/contributor-invite',
   },
   sign: {
-    stepIndex: 7,
+    stepIndex: 6,
     link: '/sign',
   },
 }
@@ -83,3 +83,7 @@ export const calculateEligiblePrograms = (
     })
   })
 }
+
+export const extractLastPart = (url: string) => {
+  return url.substring(url.lastIndexOf('/') + 1);
+};

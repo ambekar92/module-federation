@@ -30,8 +30,8 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => (
         </tr>
         <tr>
           <th scope="row">Business Address</th>
-          <td>{`${profiles.sam_entity.physical_address_1}, ${profiles.sam_entity.physical_address_2},`}
-            <br/>{`${profiles.sam_entity.physical_city}, ${profiles.sam_entity.mailing_address_state_or_province}, ${profiles.sam_entity.physical_zip_code_5}`}</td>
+          <td>{`${profiles.sam_entity.physical_addr_1}, ${profiles.sam_entity.physical_addr_2},`}
+            <br/>{`${profiles.sam_entity.physical_city}, ${profiles.sam_entity.physical_state_or_province}, ${profiles.sam_entity.physical_zip_code_5}`}</td>
         </tr>
         <tr>
           <th scope="row">Government Contact</th>

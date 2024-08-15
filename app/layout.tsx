@@ -1,8 +1,8 @@
 'use client'
 import React, {useState, useEffect} from 'react'
 //import { NavbarHome2 } from './shared/components/layout-temp/NavbarHome2'
-import Footer2 from './shared/components/layout-temp/Footer2'
-import Navbar from './shared/layout/Navbar'
+import Footer from './layout/Footer'
+import Navbar from './layout/Navbar'
 //import Footer from './shared/layout/Footer'
 import './globals.scss'
 import { SessionProvider } from 'next-auth/react'
@@ -38,7 +38,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
                   {children}
                 </main>
               </div>
-              <Footer2 />
+              <Footer />
             </div>
           </SWRProvider>
         </SessionProvider>

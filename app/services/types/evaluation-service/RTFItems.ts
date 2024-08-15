@@ -2,9 +2,21 @@ export interface IRTFItems {
 	id: number,
 	explanation: string,
 	application: number,
-	reason: number,
 	author: number,
-	request: null
+	request: null,
+	reason: {
+		id: number,
+		title: string,
+		action_type: string
+	},
+	application_section:
+		{
+			id: number,
+			title: string,
+			description: string,
+			name: string,
+			ordinal: number
+		}
 }
 
 export interface IRTFRequestItem {

@@ -36,10 +36,11 @@ export function useLeftItems() {
       const analystQuestions = getAnalystQuestionnaires();
       const analystItems: NavItem = {
         section: 'Analyst Questionnaires',
-        child: analystQuestions.map(url => ({
+        child: analystQuestions.map((url, index) => ({
+          id: index,
           section: 'Analyst Questionnaires',
           url: `/${params.application_id}${url}`,
-          title: url.split('/').pop()?.replace(/-/g, ' ').replace(/(\b\w)/g, l => l.toUpperCase()) || ''
+          title: url.split('/').pop()?.replace(/-/g, ' ').replace(/(\b\w)/g, l => l.toUpperCase()).replace(/Analyst Questionnaire/g,'') || ''
         }))
       };
       setAnalystQuestionnaireItems([analystItems]);
@@ -52,6 +53,7 @@ export function useLeftItems() {
     section: 'Application',
     child: [
       ...(navItems?.map(item => ({
+        id: item.id,
         title: item.title,
         url: item.url,
         section: 'Application'

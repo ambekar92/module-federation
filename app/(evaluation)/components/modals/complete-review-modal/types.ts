@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { approvalLetterSchema, declineLetterSchema, reviewSummarySchema, schema } from "./schema";
+import { z } from 'zod';
+import { approvalLetterSchema, declineLetterSchema, reviewSummarySchema, schema } from './schema';
 
 export type CompleteReviewFormType = z.infer<typeof schema>;
 
@@ -9,7 +9,7 @@ export type ApprovalLetterType = z.infer<typeof approvalLetterSchema>;
 
 export type DeclineLetterType = z.infer<typeof declineLetterSchema>;
 
-export enum Desicion {
+export enum Decision {
     Concur = 'concur',
     Disagree = 'disagree'
 }

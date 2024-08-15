@@ -64,7 +64,7 @@ export function isCmbResponseTypeArray(data: any): data is CmbResponseType[] {
     typeof item.physical_address_2 === 'string' &&
     typeof item.physical_city === 'string' &&
     typeof item.naics_code_string === 'string' &&
-    typeof item.mailing_address_state_or_province === 'string' &&
+    typeof item.physical_state_or_province === 'string' &&
     typeof item.physical_zip_code_5 === 'string' &&
     typeof item.sam_extract_code === 'string' &&
     typeof item.entity_structure === 'string' &&

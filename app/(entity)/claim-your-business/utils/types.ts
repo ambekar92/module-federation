@@ -70,11 +70,11 @@ export type CmbResponseType = {
     account_hash: string;
     tax_identifier_number: string;
     dba_name: string;
-    physical_address_1: string;
-    physical_address_2: string;
+    physical_addr_1: string;
+    physical_addr_2: string;
     physical_city: string;
     naics_code_string: string;
-    mailing_address_state_or_province: string;
+    physical_state_or_province: string;
     physical_zip_code_5: string;
     sam_extract_code: string;
     entity_structure: string;

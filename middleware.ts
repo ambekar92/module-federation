@@ -4,7 +4,6 @@
 import { getToken } from 'next-auth/jwt';
 import createMiddleware from 'next-easy-middlewares';
 import { NextRequest, NextResponse } from 'next/server';
-import { IUserPermission } from './app/lib/next-auth';
 import { LoginResponseUser } from './app/(admin)/login-tester/types';
 import { Role } from './app/shared/types/role';
 import { Permission } from './app/login/types';
@@ -16,18 +15,17 @@ async function handleProtectedRoute(request: NextRequest) {
     return NextResponse.next();
   }
   if (!token && !email_password_auth_token) {
-    return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`);
+    return NextResponse.redirect(`${request.nextUrl.origin}`);
   } else {
     return NextResponse.next();
   }
 }
 
 const middlewares: { [key: string]: any } = {
+  '/(.*)': [handleProtectedRoute],
   '/dashboard/:path*': [async (request: NextRequest) => {
-    const {email_password_auth_token, permissions, token, originalUrl} = await getData(request)
-    if (!token && !email_password_auth_token) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
-    } else if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
+    const {permissions} = await getData(request)
+     if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/admin/dashboard`)
     } else if (!isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) && !isRole(permissions, Role.CONTRIBUTOR) && !isRole(permissions, Role.ADMIN)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard`);
@@ -36,15 +34,33 @@ const middlewares: { [key: string]: any } = {
     }
   }],
   '/admin/dashboard': [async (request: NextRequest) => {
-    const {email_password_auth_token, permissions, token, originalUrl} = await getData(request)
-    if (!token && !email_password_auth_token) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/login?next=${originalUrl}`)
-    } else if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
+    const {permissions} = await getData(request)
+    if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/dashboard`)
     } else if (!isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) && !isRole(permissions, Role.CONTRIBUTOR) && !isRole(permissions, Role.ADMIN)){
       return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard`);
     } else {
       return NextResponse.next();
+    }
+  }],
+  '/firm/:path*': [async (request: NextRequest) => {
+    const {permissions} = await getData(request)
+    const isInternalUser = isRole(permissions, Role.INTERNAL);
+    if (isInternalUser) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}`);
+
+    }
+  }],
+  '/admin/:path*': [async (request: NextRequest) => {
+    const {permissions} = await getData(request)
+    const isAdminUser = isRole(permissions, Role.ADMIN);
+    if (isAdminUser) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}`);
+
     }
   }],
   '/login-tester': [async (request: NextRequest) => {
@@ -61,8 +77,7 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.redirect(`${request.nextUrl.origin}/login`);
     }
   }],
-  '/': [handleProtectedRoute],
-  '/:path*': [handleProtectedRoute]
+  
 };
 
 export const config = {
@@ -87,7 +102,8 @@ export const config = {
     '/firm(.*)', // all sub-routes
     '/dashboard/(.*)',
     '/login-tester',
-    '/tester-login'
+    '/tester-login',
+     '/entity-own/(.*)',
   ],
 }
 

@@ -1,10 +1,10 @@
 'use client'
 import { ANSWER_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
-import { fetcherPOST } from '@/app/services/fetcher-legacy';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import { ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
@@ -14,14 +14,16 @@ import QuestionRenderer from '../../../qa-helpers/QuestionRenderer';
 import { setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
-import { QuestionnaireProps } from '../../../utils/types';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 
-function ControlAndOpsQuestions({contributorId}: QuestionnaireProps) {
+function ControlAndOpsQuestions() {
   const dispatch = useApplicationDispatch();
+  const { applicationId, userId, contributorId } = useApplicationContext();
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
-  const { userId } = useApplicationId();
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : '';
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
+  useUpdateApplicationProgress('Control and Operations');
+
   useEffect(() => {
     dispatch(setStep(applicationSteps.controlAndOwnership.stepIndex));
     dispatch(setDisplayStepNavigation(true));
@@ -58,7 +60,7 @@ function ControlAndOpsQuestions({contributorId}: QuestionnaireProps) {
         reminder_flag: false
       };
 
-      fetcherPOST(ANSWER_ROUTE, [answer])
+      axiosInstance.post(ANSWER_ROUTE, [answer])
         .catch(error => {
           console.error('Error saving answer:', error);
         });
@@ -112,20 +114,20 @@ function ControlAndOpsQuestions({contributorId}: QuestionnaireProps) {
       <hr className="margin-y-3 margin-bottom-0 width-full border-base-lightest" />
 
       <ButtonGroup className="display-flex flex-justify padding-y-2 margin-right-2px">
-        <Link className="usa-button usa-button--outline" aria-disabled={!contributorId}
+        <Link className="usa-button usa-button--outline" aria-disabled={!applicationId}
           href={
             buildRoute(APPLICATION_STEP_ROUTE, {
-              contributorId: contributorId,
+              applicationId: applicationId,
               stepLink: applicationSteps.ownership.link
             })
           }
         >
           Previous
         </Link>
-        <Link className="usa-button" aria-disabled={!contributorId}
+        <Link className="usa-button" aria-disabled={!applicationId}
           href={
             buildRoute(APPLICATION_STEP_ROUTE, {
-              contributorId: contributorId,
+              applicationId: applicationId,
               stepLink: applicationSteps.eligiblePrograms.link
             })
           }

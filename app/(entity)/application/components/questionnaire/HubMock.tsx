@@ -1,11 +1,11 @@
 import { useSessionUCMS } from '@/app/lib/auth';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 
 function HubMock() {
   const session = useSessionUCMS();
   const accessToken = session?.data?.user?.accessToken;
   const userId = session?.data?.user.id;
-  const { applicationId, contributorId } = useApplicationId()
+  const { applicationId, contributorId } = useApplicationContext();
 
   return (
     <div style={{lineHeight: 1.5}}>

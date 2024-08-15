@@ -12,21 +12,17 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // read route params
   const id = params.id
- 
+
   // fetch data
   const product = await fetch(`${FIRM_APPLICATIONS_ROUTE}`).then((res) => res.json())
- console.log(product.created_at)
+  console.log(product.created_at)
   // optionally access and extend (rather than replace) parent metadata
-
- 
   return {
     title: product.name,
-   
   }
 }
- 
-export default async function FirmUserDashboard() {
 
+export default async function FirmUserDashboard() {
 
   return(
     <> <ClientFirmUserDashboard /> <div></div></>)

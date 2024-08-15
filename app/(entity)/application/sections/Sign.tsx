@@ -1,9 +1,9 @@
 'use client'
 import { FIRM_APPLICATIONS_ROUTE, FIRM_EVALUATIONS_ROUTE } from '@/app/constants/routes';
 import { APPLICATION_STEP_ROUTE, DASHBOARD, buildRoute } from '@/app/constants/url';
-import { fetcherPOST, fetcherPUT } from '@/app/services/fetcher-legacy';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
-import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Accordion, Button, ButtonGroup, Checkbox, Modal, ModalFooter, ModalHeading, ModalRef, ModalToggleButton } from '@trussworks/react-uswds';
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion';
@@ -14,7 +14,7 @@ import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 
 function SignPage() {
-  const { contributorId, applicationId, userId } = useApplicationId();
+  const { applicationId, userId } = useApplicationContext();
   const dispatch = useApplicationDispatch();
   useUpdateApplicationProgress('Sign Application');
 
@@ -51,8 +51,8 @@ function SignPage() {
         // const res2 = await fetcherPOST(FIRM_EVALUATIONS_ROUTE, postData);
         // console.log(res2)
 
-        await fetcherPUT(`${FIRM_APPLICATIONS_ROUTE}`, putData);
-        await fetcherPOST(FIRM_EVALUATIONS_ROUTE, postData);
+        await axiosInstance.put(`${FIRM_APPLICATIONS_ROUTE}`, putData);
+        await axiosInstance.post(FIRM_EVALUATIONS_ROUTE, postData);
         window.location.href = buildRoute(DASHBOARD, {});
       } else {
         console.log('PUT request failed')
@@ -96,9 +96,9 @@ function SignPage() {
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
         <Link className='usa-button'
-				 	aria-disabled={!contributorId}
+				 	aria-disabled={!applicationId}
 				 	href={buildRoute(APPLICATION_STEP_ROUTE, {
-            contributorId: contributorId,
+            applicationId: applicationId,
             stepLink: applicationSteps.contributorInvitation.link
           })}
         >

@@ -79,8 +79,8 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
 
   const handleEdit = (item: IRTFItems) => {
     setReason({
-      id: item.reason,
-      title: reasonCodeMap[item.reason] || ''
+      id: item?.reason?.id || null,
+      title: reasonCodeMap[item?.reason?.id] || ''
     });
     setExplanation(item.explanation);
     setRowId(item.id);
@@ -128,7 +128,7 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
                   <span>Reason</span>
                 </th>
                 <th scope="col">
-                  <span>Explanation</span>
+                  <span>Section</span>
                 </th>
                 <th scope="col">
                   <span>Status</span>
@@ -141,8 +141,8 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
             <tbody>
               {tableData && tableData.length !== 0 && tableData.map((item) => (
                 <tr key={item.id}>
-                  <td>{reasonCodeMap[item.reason] || 'Unknown Reason'}</td>
-                  <td>{item.explanation}</td>
+                  <td>{item?.reason?.title}</td>
+                  <td>{item?.application_section?.title}</td>
                   <td>Created</td>
                   <td>
                     <span

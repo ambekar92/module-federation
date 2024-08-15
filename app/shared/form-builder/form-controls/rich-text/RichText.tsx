@@ -57,7 +57,7 @@ import Editor from 'react-simple-wysiwyg';
               <ErrorMessage id="input-error-message">
                 {error?.message}
               </ErrorMessage>
-              <Editor value={field.value} onChange={field.onChange} />
+              <Editor value={field.value} onChange={field.onChange} style={{minHeight: '10rem'}}  />
             </>
           </FormGroup>
         )}

@@ -5,11 +5,11 @@ export type ProgramOption = {
   disadvantages: string[]
   details: string
   registration:
-    | 'eightA'
+    | 'eight_a'
     | 'wosb'
     | 'edwosb'
     | 'protege'
-    | 'hubzone'
+    | 'hubZone'
     | 'vosb'
     | 'sdvosb'
 }
@@ -40,7 +40,7 @@ export const sbaProgramOptions: ProgramOption[] = [
     ],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program',
-    registration: 'eightA',
+    registration: 'eight_a',
   },
   {
     id: 3,
@@ -96,7 +96,7 @@ export const sbaProgramOptions: ProgramOption[] = [
     ],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',
-    registration: 'hubzone',
+    registration: 'hubZone',
   },
   {
     id: 4,

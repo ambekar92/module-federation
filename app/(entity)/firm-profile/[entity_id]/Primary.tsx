@@ -60,7 +60,7 @@ const Primary = () => {
             </td>
             <td>
               {entityData.length > 0 &&
-                entityData[0]['sam_entity']['physical_address_1']}
+                entityData[0]['sam_entity']['physical_addr_1']}
             </td>
           </tr>
           <tr>
