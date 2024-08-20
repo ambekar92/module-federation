@@ -74,10 +74,10 @@ export const firmDoneData = [
     buttonLink: USER_DASHBOARD_PAGE
   },
   {
-    name: 'requested-expert-opinion',
-    header: 'You’ve requested an expert opinion!',
+    name: 'escalate-review',
+    header: 'You’ve escalated the review!',
     alertText: 'Request sent.',
-    body: 'You’ve successfully requested an expert opinion on this application. It will no longer be assigned to you. Once the expert provides a response the application will be reassigned back to you.',
+    body: 'You’ve successfully escalated the review. It will no longer be assigned to you. Once the expert provides a response the application will be reassigned back to you.',
     buttonText: 'Return to your Dashboard',
     buttonLink: USER_DASHBOARD_PAGE
   },

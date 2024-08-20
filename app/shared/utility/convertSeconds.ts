@@ -25,3 +25,10 @@ export function convertSeconds(seconds: number): string {
 
   return result.trim();
 }
+
+export function calculateTimeDifference(openedDate: string, closedDate: string): string {
+  const opened = new Date(openedDate);
+  const closed = new Date(closedDate);
+  const differenceInSeconds = Math.floor((closed.getTime() - opened.getTime()) / 1000);
+  return convertSeconds(differenceInSeconds);
+}

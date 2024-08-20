@@ -104,7 +104,7 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
           <h4>List of Issues</h4>
           {tableData.map((item: IRTFItems, index: number) => (
             <div className='margin-bottom-3' key={index}>
-              <p className='margin-bottom-1'>{reasonCodeMap[item.reason] || 'Unknown Reason'}</p>
+              <p className='margin-bottom-1'>{item?.reason.title}</p>
               {item.explanation && <p className='margin-y-0'>{item.explanation}</p>}
             </div>
           ))}

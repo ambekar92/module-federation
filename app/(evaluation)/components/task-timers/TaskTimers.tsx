@@ -1,13 +1,13 @@
 'use client'
 import { useSessionUCMS } from '@/app/lib/auth';
+import { IRTFRequestItem } from '@/app/services/types/evaluation-service/RTFItems';
+import { calculateTimeDifference, convertSeconds } from '@/app/shared/utility/convertSeconds';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { Accordion, Table } from '@trussworks/react-uswds';
-import { useParams } from 'next/navigation';
-import { useRtfRequestData } from '../rtf-rfi/hooks/useRtfRequestData';
-import { convertSeconds } from '@/app/shared/utility/convertSeconds';
-import { useEffect, useState } from 'react';
-import { IRTFRequestItem } from '@/app/services/types/evaluation-service/RTFItems';
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRtfRequestData } from '../rtf-rfi/hooks/useRtfRequestData';
 
 const TaskTimers = () => {
   const params = useParams<{application_id: string}>();
@@ -39,10 +39,15 @@ const TaskTimers = () => {
           {task && task.items.length > 0 && task.items.map((taskTimer, index) => (
             <tr key={index}>
               <td>{taskTimer.request}</td>
-              <td>{convertSeconds(parseInt(task.total_seconds))}</td>
+              <td>
+                {task.closed
+                  ? calculateTimeDifference(task.opened, task.closed)
+                  : convertSeconds(parseInt(task.total_seconds))
+                }
+              </td>
             </tr>
           ))}
-          {(!requestData || requestData.length === 0) && <tr>
+          {(!requestData || requestData.length === 0 || tasks.length === 0) && <tr>
             <td colSpan={4}>No task timers found.</td>
           </tr>}
         </tbody>
@@ -50,7 +55,27 @@ const TaskTimers = () => {
     ),
     expanded: index === 0 ? true : false,
     headingLevel: 'h2',
-  })) ?? [];
+  })) ?? [{
+    id: '007',
+    title: userRole === 'screener' ? 'Return to Business' : 'Request for Information',
+    content: (
+      <Table bordered={true} fullWidth>
+        <thead>
+          <tr>
+            <th>Tasks</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={4}>No task timers found.</td>
+          </tr>
+        </tbody>
+      </Table>
+    ),
+    expanded: true,
+    headingLevel: 'h2',
+  }];
 
   return (
     <div>

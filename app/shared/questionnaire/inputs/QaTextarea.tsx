@@ -23,6 +23,7 @@ export const QaTextarea: React.FC<QaInputProps> = ({ question, inputId, handleCh
         <span>{question.title}</span>
       </Label>
       <CharacterCount
+        className="maxw-full"
         id={question.name}
         name={question.name}
         maxLength={1000}

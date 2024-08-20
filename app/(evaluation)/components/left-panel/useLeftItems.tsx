@@ -9,6 +9,10 @@ import { useApplicationData } from '../../firm/useApplicationData';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
+import {
+  buildRoute,
+  FIRM_EVALUATION_PAGE,
+} from '@/app/constants/url'
 
 export function useLeftItems() {
   const sessionData = useSessionUCMS();
@@ -35,12 +39,16 @@ export function useLeftItems() {
     if (firstContributorId && userRole === 'analyst') {
       const analystQuestions = getAnalystQuestionnaires();
       const analystItems: NavItem = {
-        section: 'Analyst Questionnaires',
+        section: 'Analyst Review',
         child: analystQuestions.map((url, index) => ({
           id: index,
-          section: 'Analyst Questionnaires',
+          section: 'Analyst Review',
           url: `/${params.application_id}${url}`,
-          title: url.split('/').pop()?.replace(/-/g, ' ').replace(/(\b\w)/g, l => l.toUpperCase()).replace(/Analyst Questionnaire/g,'') || ''
+          title: url.split('/').pop()
+            ?.replace(/-/g, ' ')
+            .replace(/(\b\w)/g, l => l.toUpperCase())
+            .replace(/Analyst Questionnaire/g,'')
+            .replace(/Eight A/g, '8(a)') || ''
         }))
       };
       setAnalystQuestionnaireItems([analystItems]);
@@ -56,13 +64,17 @@ export function useLeftItems() {
         id: item.id,
         title: item.title,
         url: item.url,
-        section: 'Application'
+        section: 'Application',
       })) || [])
     ]
   };
+  const homeItem: NavItem = {
+    section: 'Home',
+    child: [{ section: 'Home', url: applicationData?.id + '/evaluation', title: 'Home', id: 0 }]
+  };
 
   return {
-    navItems: [applicationItem, ...questionnaireItems, ...analystQuestionnaireItems, ...staticNavItems],
+    navItems: [homeItem, applicationItem, ...questionnaireItems, ...analystQuestionnaireItems, ...staticNavItems],
     isLoading,
     error
   };

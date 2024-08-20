@@ -1,3 +1,4 @@
+// Todo need to find a better way not to include useApplicationData everywhere to check view permission
 'use client'
 
 import { SamEntity } from '@/app/services/types/application-service/Application';
@@ -10,14 +11,18 @@ function HeaderPanel() {
   const params = useParams<{application_id: string}>();
   const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
   const samEntity = applicationData?.sam_entity ?? null;
-  const stateOrder = ['submitted', 'under_review', 'review', 'final_review'];
+  const stateOrder = ['screening', 'analyst', 'reviewer', 'ogc', 'oss', 'approver'];
 
-  function getStepIndicatorClass(currentState: string | null, stepState: string): string {
+  if(!applicationData?.process || !applicationData.process.data) {
+    return <h3>No Application process data found.</h3>
+  }
+
+  function getStepIndicatorClass(currentState: string | null | undefined, stepState: string): string {
     if (currentState === null && stepState === 'submitted') {
       return 'usa-step-indicator__segment--current';
     }
 
-    if (currentState === null) {
+    if (currentState === null || !currentState) {
       return '';
     }
 
@@ -72,9 +77,9 @@ function HeaderPanel() {
           >
             <ol className="usa-step-indicator__segments">
               {stateOrder.map((step) => (
-                <li key={step} className={`usa-step-indicator__segment ${getStepIndicatorClass(applicationData?.progress, step)}`}>
+                <li key={step} className={`usa-step-indicator__segment ${getStepIndicatorClass(applicationData?.process?.data.step, step)}`}>
                   <span className="usa-step-indicator__segment-label font-ui-2xs">
-                    {step === 'submitted' ? 'Screening' :  step === 'under_review' ? 'Analysis' : humanizeString(step)}
+                    {step === 'screening' ? 'Screening' :  step === 'analyst' ? 'Analysis' : step === 'reviewer' ? 'Review' : step === 'ogc' ? 'Expert Review OGC' : step === 'oss' ? 'Expert Review OSS' : step === 'approver' ? 'Decision' : humanizeString(step)}
                     <span className="usa-sr-only">
                       {getStepIndicatorClass(applicationData?.progress, step).includes('current')
                         ? 'current step'

@@ -1,11 +1,14 @@
 import { Button } from '@trussworks/react-uswds'
-import { signIn } from 'next-auth/react'
+import { signIn } from 'next-auth/react';
 
 const LoginMenu = () => {
     function handleLogin() {
         localStorage.clear()
         signIn('okta', { callbackUrl: '/?signedIn=true' })
     }
+    const handleSSOLogin =  async() => {
+         signIn('boxyhq-saml');
+      };
     return (
         <div style={{
             textWrap: 'wrap', 
@@ -29,7 +32,7 @@ const LoginMenu = () => {
                 <p>If you are a federal employee or [other secondary user], please use [secondary Single Sign On (SSO)]</p>
             </div>
 
-            <Button outline type='button'>Launch Secondary SSO</Button>
+            <Button outline type='button' onClick={handleSSOLogin}>Launch Secondary SSO</Button>
         </div>
     )
 }

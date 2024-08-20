@@ -2,16 +2,17 @@ import { NavItem } from '../../types/types';
 export const getAnalystQuestionnaires = () => [
   '/analyst-questionnaire-ownership',
   '/analyst-questionnaire-control',
-  '/analyst-questionnaire-size-and-additional-questions',
+  '/analyst-questionnaire-additional-questions',
+  '/analyst-questionnaire-hubzone-specific',
   '/analyst-questionnaire-economic-disadvantage',
-  '/analyst-questionnaire-potential-for-success',
+  '/analyst-questionnaire-eight-a-specific',
   '/analyst-questionnaire-social-disadvantage'
 ];
 
 export const getStaticNavItems = (application_id: string): NavItem[] => [
   {
-    section: 'Firm Summary',
-    child: [{ section: 'Firm Summary', url: `${application_id}/business-summary`, title: 'Business Summary' }]
+    section: 'Business Summary',
+    child: [{ section: 'Business Summary', url: `${application_id}/business-summary`, title: 'Business Summary' }]
   },
   {
     section: 'Documents',
@@ -36,7 +37,7 @@ export const getStaticNavItems = (application_id: string): NavItem[] => [
 ]
 
 export const actionOptions = ['Screener: Accept for Review', 'Close Application', 'Return Application',
-  'Make Recommendation', 'Make an Approval', 'Complete Review', 'Request Expert Opinion', 'Confirm Veteran Status',
+  'Make Recommendation', 'Make an Approval', 'Complete Review', 'Escalate Review', 'Confirm Veteran Status',
   'Change Tier', 'Expert: Provide Opinion', 'Analyst: Reassign User', 'Reviewer: Reassign User', 'Screener: Reassign Case',
   'Approver: Reassign Approver',
 ] as const;

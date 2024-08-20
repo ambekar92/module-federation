@@ -10,7 +10,7 @@ export enum ActionMenuIDs {
   MAKE_RECOMMENDATION = 4,
   MAKE_APPROVAL = 5,
   COMPLETE_REVIEW = 6,
-  REQUEST_EXPERT_OPINION = 7,
+  ESCALATE_REVIEW = 7,
   PROVIDE_OPINION = 8,
   RETURN_TO_REVIEWER = 9,
   RETURN_TO_SCREENER = 10,
@@ -112,9 +112,9 @@ export const actionMenuData = [
   },
   {
     'id': 7,
-    'optionLabel': 'Request Expert Opinion',
+    'optionLabel': 'Escalate Review',
     'permissions': ['analyst_low_criteria', 'analyst_high_criteria', 'supervisor_low_criteria', 'supervisor_high_criteria'],
-    'title': 'Request Expert Opinion',
+    'title': 'Escalate Review',
     'actionLabel': 'Submit',
     'modalType': 'requestExpert',
     'description': 'Reason for request.',
@@ -142,7 +142,8 @@ export const actionMenuData = [
     'title': 'Provide Opinion',
     'actionLabel': 'Submit',
     'modalType': 'textarea',
-    'description': 'Provide more information.',
+    'description': 'Your professional opinion has been requested on this application. If you haven’t already, review the request in the Notes section of this application review.',
+    'inputDescription': 'Please provide your professional opinion on this application*',
     'steps': [],
     'table': {
       'step': -1,
@@ -217,5 +218,12 @@ export const actionMenuData = [
     id: ActionMenuIDs.REASSIGN_EXPERT,
     optionLabel: 'Reassign Expert',
     permissions: permissionsMap[ReassignType.REASSIGN_EXPERT],
+  },
+  {
+    id: ActionMenuIDs.ESCALATE_REVIEW,
+    optionLabel: 'Escalate Review',
+    permissions: [Role.REVIEWER, Role.REVIEWER_HIGH, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW, Role.REVIEWER_LOW_TIER,
+      Role.ANALYST, Role.ANALYST_HIGH, Role.ANALYST_HIGH_TIER, Role.ANALYST_LOW, Role.ANALYST_LOW_TIER
+    ]
   }
 ]

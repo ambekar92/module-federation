@@ -69,7 +69,7 @@ export type Question = {
   answer_required_flag: boolean;
   document_required_flag: boolean;
   question_ordinal: number | null;
-  answer: Answer | null;
+  answer: Answer;
   rules: Rule[];
   grid_questions?: Question[];
 };

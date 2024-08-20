@@ -17,6 +17,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useApplicationData } from '../../../useApplicationData'
 import AnswerValue from './AnswerValue'
 import QuestionRenderer from '@/app/(entity)/application/qa-helpers/QuestionRenderer'
+import { useEvaluationDispatch, useEvaluationSelector } from '@/app/(evaluation)/redux/hooks'
+import { setCompletedAnalystQA } from '@/app/(evaluation)/redux/evaluationSlice'
 
 const SectionQuestions = () => {
   const params = useParams<Params>();
@@ -26,6 +28,9 @@ const SectionQuestions = () => {
   const { applicationData } = useApplicationData(ApplicationFilterType.id, params.application_id);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const firstContributorId = applicationData?.application_contributor?.[0]?.id;
+  const dispatch = useEvaluationDispatch();
+  const completedAnalystQAs = useEvaluationSelector(state => state.evaluation.completedAnalystQAs);
+
   const matchingContributorId = useMemo(() => {
     if (!applicationData?.application_contributor || userRole !== 'analyst') {
       return null;
@@ -51,6 +56,10 @@ const SectionQuestions = () => {
   const isAnalystQuestionnaire = useMemo(() => {
     return params.section_questions?.startsWith('analyst-questionnaire');
   }, [params.section_questions]);
+  const analystQuestionnaires = useMemo(() => getAnalystQuestionnaires(), []);
+  const isLastQuestionnaire = useMemo(() => {
+    return params.section_questions === analystQuestionnaires[analystQuestionnaires.length - 1].replace(/^\//, '');
+  }, [params.section_questions, analystQuestionnaires]);
 
   const contributorIdToUse = isAnalystQuestionnaire ? matchingContributorId : firstContributorId;
 
@@ -71,13 +80,14 @@ const SectionQuestions = () => {
     const analystItems = getAnalystQuestionnaires().map(url => ({
       title: url.replace(/-/g, ' ')
         .replace(/(\b\w)/g, l => l.toUpperCase())
-        .replace(/^\//, ''),
+        .replace(/^\//, '')
+        .replace(/Eight A/g, '8(a)'),
       url: `/firm/application/${params.application_id}${url}`,
       section: 'Analyst Questionnaires'
     }));
 
     return [...navItems, ...analystItems];
-  }, [navItems, params.application_id]);
+  }, [navItems, params.application_id, userRole]);
 
   const [showNextButton, setShowNextButton] = useState<boolean>(true);
   const router = useRouter();
@@ -90,15 +100,6 @@ const SectionQuestions = () => {
     const next = combinedNavItems[currIdx + 1].url;
     router.push(next.startsWith('/') ? next : `../${next}`);
   }
-
-  useEffect(() => {
-    if (combinedNavItems.length > 0) {
-      const currentSection = combinedNavItems.find(item => item.url.includes(params.section_questions as string));
-      if (currentSection) {
-        setTitle(currentSection.title);
-      }
-    }
-  }, [combinedNavItems, params.section_questions]);
 
   const handleAnswerChange = async (question: Question, value: any) => {
     if (sessionData.data.user_id && matchingContributorId) {
@@ -138,6 +139,42 @@ const SectionQuestions = () => {
     }
   };
 
+  const handleNextQuestionnaire = () => {
+    if (isLastQuestionnaire) {
+      router.push('evaluation');
+    } else {
+      const currentIndex = analystQuestionnaires.findIndex(url => url.includes(params.section_questions as string));
+      if (currentIndex < analystQuestionnaires.length - 1) {
+        const nextUrl = analystQuestionnaires[currentIndex + 1];
+        router.push(`/firm/application/${params.application_id}${nextUrl}`);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (combinedNavItems.length > 0) {
+      const currentSection = combinedNavItems.find(item => item.url.includes(params.section_questions as string));
+      if (currentSection) {
+        let newTitle = currentSection.title;
+        if (newTitle.startsWith('Analyst Questionnaire')) {
+          newTitle = newTitle.replace('Analyst Questionnaire ', '');
+        }
+        setTitle(newTitle);
+      }
+    }
+  }, [combinedNavItems, params.section_questions]);
+
+  useEffect(() => {
+    if (isAnalystQuestionnaire && data) {
+      const allQuestionsAnswered = data.every(question => selectedAnswers[question.name]?.value !== null);
+      const currentQuestionnaireKey = params.section_questions?.replace('analyst-questionnaire-', '') as keyof typeof completedAnalystQAs;
+
+      if (allQuestionsAnswered) {
+        dispatch(setCompletedAnalystQA({ key: currentQuestionnaireKey, value: true }));
+      }
+    }
+  }, [isAnalystQuestionnaire, data, selectedAnswers, dispatch, params.section_questions]);
+
   return (
     <div>
       {isLoading && <div>Loading...</div>}
@@ -170,9 +207,25 @@ const SectionQuestions = () => {
             </React.Fragment>
           ))}
         </form>
-        {showNextButton && <Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>}
+        {(
+          (userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true && showNextButton) ||
+          (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true && showNextButton) ||
+          (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer' && showNextButton) ||
+          (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver' && showNextButton)
+        )
+          && (<Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>)}
       </>
       }
+      {isAnalystQuestionnaire && (
+        <Button
+          onClick={handleNextQuestionnaire}
+          className='margin-top-4'
+          type='button'
+          // disabled={!completedAnalystQAs[params.section_questions?.replace('analyst-questionnaire-', '') as keyof typeof completedAnalystQAs]}
+        >
+          {isLastQuestionnaire ? 'Done' : 'Save & Continue'}
+        </Button>
+      )}
     </div>
   )
 

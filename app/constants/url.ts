@@ -27,6 +27,9 @@ export const ASSIGN_DELEGATE_PAGE = '/application/assign-a-delegate/:application
 export const QUESTIONNAIRE_PAGE = '/application/questionnaire/:applicationId/:section'
 export const QUESTIONNAIRE_LIST_PAGE = '/application/questionnaire/:applicationId'
 export const USER_PROFILE_PAGE = '/user'
+export const MESSAGE_PAGE = '/messages'
+export const NOTES_PAGE = '/firm/application/:applicationId/notes'
+export const DOCUMENT_PAGE = '/documents'
 
 export const buildRoute = (template: any, params: any) => {
   let route = template

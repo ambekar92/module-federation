@@ -186,12 +186,12 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
 
         <ButtonGroup className='grid-row margin-top-3'>
           <div className="grid-col-6">
-            <Button className="usa-button--outline" type="button" onClick={handleClear}>Cancel</Button>
-          </div>
-          <div className="grid-col-6">
             <Button type="button" disabled={error} onClick={handlePostRequest}>
           		Create
             </Button>
+          </div>
+          <div className="grid-col-6">
+            <Button className="usa-button--outline" type="button" onClick={handleClear}>Cancel</Button>
           </div>
         </ButtonGroup>
 
@@ -219,7 +219,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
       {postSuccess && (
         <div style={{ paddingLeft: 0 }} className='display-flex flex-justify flex-align-end margin-top-3'>
           <Button type='button' className={`${styles['field-title']}`} unstyled onClick={handleOpenModal}>
-						Append {reasonCodes?.find(code => code.id === lastPostedItem?.reason_id)?.title || 'Reason'}
+            {reasonCodes?.find(code => code.id === lastPostedItem?.reason_id)?.title || 'Reason'}
           </Button>
           <Button type='button' className={`${styles['field-title']} margin-left-1`} unstyled onClick={handleOpenDeleteModal}>x Delete</Button>
         </div>

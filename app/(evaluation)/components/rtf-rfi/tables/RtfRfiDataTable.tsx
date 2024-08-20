@@ -1,3 +1,4 @@
+// Todo need to find a better way not to include useApplicationData everywhere to check view permission
 'use client'
 import { RFI_CANCEL_ROUTE, RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
@@ -13,6 +14,8 @@ import RequestInfoModal from '../../modals/request-info/RequestInfoModal'
 import styles from '../RtfRfi.module.scss'
 import FinalizeRequestForInformation from '../modals/FinalizeRequestForInformation'
 import FinalizeReturnToFirm from '../modals/FinalizeReturnToFirm'
+import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 
 export interface ReasonState {
   id: number | null;
@@ -29,6 +32,7 @@ interface RtfRfiDataTableProps {
 const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCodes, mutateDraft, mutateRequest }) => {
   const sessionData = useSessionUCMS()
   const params = useParams<{application_id: string}>()
+  const { applicationData, mutate } = useApplicationData(ApplicationFilterType.id, params.application_id)
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const [tableData, setTableData] = useState<IRTFItems[]>([]);
   const [rowId, setRowId] = useState<number | null>(null)
@@ -165,19 +169,17 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
           </Table>
         </div>
 
-        <div className="margin-top-2">
-          <Button
-            type="button"
-            className="float-left usa-button"
-            onClick={handleFinalize}
-          >
-            {
-              userRole === 'screener'
-                ? 'Finalize RTB'
-                : 'Finalize RFI'
-            }
-          </Button>
-        </div>
+        {((userRole === 'screener' && applicationData?.process.data.step === 'screening' && applicationData?.workflow_state === 'under_review') ||
+          (userRole === 'analyst' && applicationData?.process.data.step === 'analyst' && applicationData?.process.data?.review_start === true )) && (
+          <div className="margin-top-2">
+            <Button
+              type="button"
+              className="float-left usa-button"
+              onClick={handleFinalize}
+            >
+              {userRole === 'screener' ? 'Finalize Return to Business' : 'Finalize Request for Information' }
+            </Button>
+          </div>)}
       </Grid>
 
       <RequestInfoModal

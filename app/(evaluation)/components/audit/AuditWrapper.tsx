@@ -6,7 +6,7 @@ import { useAudit } from '@/app/services/queries/useAudit';
 
 const AuditWrapper = () => {
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(15);
   const { isLoading, data } = useAudit(page, pageSize);
 
   useEffect(() => {

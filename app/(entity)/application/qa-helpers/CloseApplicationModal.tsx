@@ -54,7 +54,7 @@ function CloseApplicationModal({
           </Button>
           <Button
             type="button"
-            className="float-left"
+            className="float-left usa-button--unstyled"
             onClick={onClose}
             outline
           >
@@ -62,6 +62,15 @@ function CloseApplicationModal({
           </Button>
         </ButtonGroup>
       </ModalFooter>
+      <button
+        type="button"
+        className="usa-button usa-modal__close"
+        aria-label="Close this window"
+        data-close-modal
+        onClick={onClose}
+      >
+            x
+      </button>
     </Modal>
   )
 }

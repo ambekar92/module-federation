@@ -2,6 +2,7 @@
 import Cookies from 'js-cookie';
 import { NextAuthOptions, getServerSession } from 'next-auth';
 import OktaProvider from 'next-auth/providers/okta';
+import BoxyHQSAMLProvider from "next-auth/providers/boxyhq-saml";
 import { useSession } from 'next-auth/react';
 import { LoginResponseUser } from '../(admin)/login-tester/types';
 import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken';
@@ -10,13 +11,16 @@ import { SessionType } from '../login/types';
 import { IUserDetails } from './next-auth';
 import { axiosInstance } from '../services/axiosInstance';
 
+/**
+ * @deprecated
+ */
 export  const authConfig: NextAuthOptions = {
   providers: [
     OktaProvider({
       clientId: process.env.OKTA_OAUTH2_CLIENT_ID!,
       clientSecret: process.env.OKTA_OAUTH2_CLIENT_SECRET!,
       issuer: process.env.OKTA_OAUTH2_ISSUER!,
-    }),
+    })
   ],
   callbacks: {
     jwt: async ({ token, account, profile }) => {

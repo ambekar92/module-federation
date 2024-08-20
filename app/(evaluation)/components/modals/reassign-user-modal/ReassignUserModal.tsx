@@ -19,7 +19,7 @@ import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 
 type Props = {
     modalRef: RefObject<ModalRef>,
-   reassignType: ReassignType,
+   reassignType: ReassignType | null,
    applicationId: number,
 	 handleAction: () => void
 }
@@ -123,6 +123,15 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
           </ModalFooter>
         </form>
       </FormProvider>
+      <button
+        type="button"
+        className="usa-button usa-modal__close"
+        aria-label="Close this window"
+        data-close-modal
+        onClick={onClose}
+      >
+            x
+      </button>
     </Modal>
   )
 }

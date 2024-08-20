@@ -6,7 +6,7 @@ import OktaProvider from 'next-auth/providers/okta';
 import { generateCsrfToken } from "../utils/generateCsrfToken";
 import { cookies } from "next/headers";
 import { axiosInstance } from "@/app/services/axiosInstance";
-
+import BoxyHQSAMLProvider from "next-auth/providers/boxyhq-saml"
 
 async function auth(req: NextApiRequest, res: NextApiResponse) {
     return await NextAuth(req, res, {
@@ -16,6 +16,11 @@ async function auth(req: NextApiRequest, res: NextApiResponse) {
             clientSecret: process.env.OKTA_OAUTH2_CLIENT_SECRET!,
             issuer: process.env.OKTA_OAUTH2_ISSUER!,
           }),
+          BoxyHQSAMLProvider({
+            issuer: 'https://login.stage.max.gov/idp/shibboleth',
+            clientId: "dummy", // Placeholder since tenant and product are not needed
+            clientSecret: "dummy", // Placeholder since tenant and product are not needed
+          })
         ],
         callbacks: {
           jwt: async ({ token, account, profile }) => {
@@ -88,3 +93,5 @@ async function auth(req: NextApiRequest, res: NextApiResponse) {
         })
   }
   export {auth as GET, auth as POST};
+
+

@@ -65,7 +65,7 @@ function ContributorInvitation() {
   }, [ownerData, dispatch]);
 
   useEffect(() => {
-    if (operatorData && operatorData[0].answer?.value && Array.isArray(operatorData[0].answer.value) && operatorData[0].answer.value.length > 0) {
+    if (operatorData && operatorData[0].answer && Array.isArray(operatorData[0].answer.value.answer) && operatorData[0].answer.value.answer.length > 0) {
       const operatorContributors = convertOperatorAnswerToContributors(operatorData[0].answer);
       dispatch((dispatch, getState) => {
         const currentState = selectApplication(getState());

@@ -75,7 +75,7 @@ function FirmSummary() {
     <>
       <div className='grid-row'>
         <div className="grid-col-12">
-          <h1>Firm Summary</h1>
+          <h1>Business Summary</h1>
           {isLoading && <p>Loading...</p>}
           {!isLoading && <p> {appication?.description ?? 'N/A'} </p>}
         </div>

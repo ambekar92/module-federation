@@ -188,7 +188,7 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
       </Label>
       <Grid row gap='md'>
         {question.grid_questions?.map((gridQuestion) => (
-          <Grid col={6} key={gridQuestion.id}>
+          <Grid col={12} key={gridQuestion.id}>
             {renderInput(gridQuestion)}
           </Grid>
         ))}

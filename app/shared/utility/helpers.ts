@@ -45,3 +45,9 @@ export const filterText = (
   // Filter out non-alphanumeric characters (as per the original function)
   return text.replace(/[^a-zA-Z0-9]/g, '')
 }
+
+import { Question } from '../types/questionnaireTypes';
+
+export function areAllQuestionsAnswered(questions: Question[]): boolean {
+  return questions.every(question => question.answer.value !== null);
+}

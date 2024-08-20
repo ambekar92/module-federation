@@ -27,7 +27,15 @@ $line-height-tight-px: 1.35;
     max-width: 100%;
 	}
 }
-
+.usa-modal__close {
+  position: absolute;
+  top: 30px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 2rem !important;
+  cursor: pointer;
+}
 .line-height {
 	&-base {line-height: $line-height-base-px;}
 	&-tight {line-height: $line-height-tight-px;}
@@ -217,4 +225,3 @@ li.usa-card {
   margin: 0rem !important;
   max-width: 100% !important;
 }
-

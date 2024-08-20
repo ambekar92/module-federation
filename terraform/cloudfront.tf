@@ -1,6 +1,6 @@
 # Alias Records
 resource "aws_route53_record" "ipv4" {
-  name            = "ucms.${local.env.domain_name}"
+  name            = "ucp.${local.env.domain_name}"
   type            = "A"
   zone_id         = data.aws_route53_zone.selected.id
   allow_overwrite = true
@@ -12,7 +12,7 @@ resource "aws_route53_record" "ipv4" {
   }
 }
 resource "aws_route53_record" "ipv6" {
-  name            = "ucms.${local.env.domain_name}"
+  name            = "ucp.${local.env.domain_name}"
   type            = "AAAA"
   zone_id         = data.aws_route53_zone.selected.id
   allow_overwrite = true
@@ -26,7 +26,7 @@ resource "aws_route53_record" "ipv6" {
 
 # Distribution
 resource "aws_cloudfront_distribution" "distribution" {
-  aliases             = ["ucms.${local.env.domain_name}"]
+  aliases             = ["ucp.${local.env.domain_name}"]
   comment             = "ucms-wfe-${terraform.workspace}"
   enabled             = true
   http_version        = "http2"

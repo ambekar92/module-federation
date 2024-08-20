@@ -9,6 +9,9 @@ import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { useSessionUCMS } from '@/app/lib/auth';
 import RtfRtiForm from './rtf-rfi/form/RtfRfiForm';
 import { NavItem } from '../types/types';
+import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
+import { useParams } from 'next/navigation';
 
 interface RightPanelProps {
   isNavItemsLoading: boolean;
@@ -17,6 +20,8 @@ interface RightPanelProps {
 }
 
 function RightPanel({ isNavItemsLoading, navItems, error }: RightPanelProps) {
+  const params = useParams<{application_id: string}>();
+  const { applicationData, mutate } = useApplicationData(ApplicationFilterType.id, params.application_id)
   const sessionData = useSessionUCMS();
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const rightPanel: AccordionItemProps[] = [
@@ -40,17 +45,17 @@ function RightPanel({ isNavItemsLoading, navItems, error }: RightPanelProps) {
       expanded: false,
       headingLevel: 'h2',
     },
-    {
-      id: 'item3',
-      title: 'Analyst Documents',
-      content: (
-        <div>
-          <AnalystDocument />
-        </div>
-      ),
-      expanded: false,
-      headingLevel: 'h2',
-    },
+    // {
+    //   id: 'item3',
+    //   title: 'Analyst Documents',
+    //   content: (
+    //     <div>
+    //       <AnalystDocument />
+    //     </div>
+    //   ),
+    //   expanded: false,
+    //   headingLevel: 'h2',
+    // },
   ]
   return (
     <>

@@ -5,6 +5,17 @@ export const formatFullDate = (date: Date) => {
   return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
 }
 
+export function extractBodyContent(html: string): string {
+  // const bodyRegex = /<body[^>]*>([\s\S]*)<\/body>/i;
+  // const match = html.match(bodyRegex);
+
+  // if (match && match[1]) {
+  //   return match[1].trim();
+  // }
+
+  // If no body tags found, return the original HTML
+  return html;
+}
 export const generateDefaultText = (applicationData: Application, today: Date) => {
   const content = `
 ${formatFullDate(today)}
@@ -82,3 +93,38 @@ EM: ombudsman@sba.gov
     asString: content
   };
 };
+
+export const pdfTabStyles = `
+	body {
+		background-color: #4a4a4a;
+		margin: 0;
+		padding: 20px;
+		display: flex;
+		justify-content: center;
+		min-height: 100vh;
+	}
+	.page {
+		background-color: white;
+		width: 210mm;
+		min-height: 297mm;
+		padding: 20mm;
+		margin: 0 auto;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	}
+	@media print {
+		body {
+			background-color: white;
+		}
+		.page {
+			width: 210mm;
+			height: 297mm;
+			box-shadow: none;
+			margin: 0;
+			padding: 0;
+		}
+	}
+	.content {
+		font-family: Arial, sans-serif;
+		line-height: 1.6;
+	}
+`

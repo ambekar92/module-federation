@@ -18,8 +18,8 @@ import {
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { applicationSteps } from '../../utils/constants'
-import { setDelegates } from '../store/formSlice'
-import { useFormDispatch } from '../store/hooks'
+import { selectForm, setDelegates } from '../store/formSlice'
+import { useFormDispatch, useFormSelector } from '../store/hooks'
 import { DelegateFormSchema } from '../utils/schemas'
 import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
 import DelegateFormInputs from './DelegateFormInputs'
@@ -33,6 +33,7 @@ function AddDelegateForm() {
   const [showModal, setShowModal] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const steps = ['Add Delegate', 'Invite Modal']
+  const { delegates } = useFormSelector(selectForm)
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext()
   const dispatch = useFormDispatch()
 
@@ -100,10 +101,10 @@ function AddDelegateForm() {
         lastName: '',
         email: '',
       })
-      if (delegatesData) {
+      if (delegatesData || delegates) {
         try {
           await axiosInstance.delete(
-            `${INVITATION_ROUTE}?invitation_id=${delegatesData[delegatesData?.length - 1].id}`,
+            `${INVITATION_ROUTE}?invitation_id=${delegatesData ? delegatesData[delegatesData?.length - 1].id : delegates[0].id}`,
           )
         } catch (error) {
           // Error handled lol -KJ

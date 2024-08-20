@@ -1,16 +1,19 @@
 import { Role } from '../types/role';
 
-export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'screener' | 'default' => {
+export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'screener' | 'approver' | 'default' => {
+  const approverRoles = [
+    Role.APPROVER,
+    Role.APPROVER_8a_aabd,
+    Role.APPROVER_AABD,
+    Role.APPROVER_DELEGATE,
+  ];
+
   const reviewerRoles = [
     Role.REVIEWER,
     Role.REVIEWER_HIGH_TIER,
     Role.REVIEWER_LOW_TIER,
     Role.REVIEWER_HIGH,
     Role.REVIEWER_LOW,
-    Role.APPROVER,
-    Role.APPROVER_8a_aabd,
-    Role.APPROVER_AABD,
-    Role.APPROVER_DELEGATE
   ];
 
   const analystRoles = [
@@ -34,6 +37,8 @@ export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'scree
     return 'analyst';
   } else if (permissions.some(permission => screenerRoles.includes(permission.slug))) {
     return 'screener';
+  } else if (permissions.some(permission => approverRoles.includes(permission.slug))) {
+    return 'approver'
   } else {
     return 'default';
   }

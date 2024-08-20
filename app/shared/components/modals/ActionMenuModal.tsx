@@ -160,10 +160,7 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
           id="action-modal"
         >
           <ModalHeading id="action-modal-heading">
-            <Label htmlFor="action-modal">
-              <h2 className="text-bold">{title}</h2>
-              <p>{inputDescription}</p>
-            </Label>
+            {title}
           </ModalHeading>
 
           {steps.length > 0 && (
@@ -454,8 +451,9 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
                 className="text-light"
                 requiredMarker={modalType === 'confirmVeteranStatus'}
               >
-                {description}
+                <p>{description}</p>
               </Label>
+              <p>{inputDescription}</p>
               <Textarea
                 className="display-flex flex-col maxw-full width-full"
                 id="action-modal-textarea"
@@ -497,7 +495,7 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
               </Button>
               <Button
                 type="button"
-                className="float-left"
+                className="float-left usa-button--unstyled"
                 onClick={handleCancel}
                 outline
               >
@@ -505,6 +503,15 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
               </Button>
             </ButtonGroup>
           </ModalFooter>
+          <button
+            type="button"
+            className="usa-button usa-modal__close"
+            aria-label="Close this window"
+            data-close-modal
+            onClick={handleCancel}
+          >
+            x
+          </button>
         </Modal>
       )}
     </>

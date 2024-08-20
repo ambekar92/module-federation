@@ -216,7 +216,7 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
 
           if (shouldRenderSubQuestion && rule.sub_question) {
             return (
-              <Grid col={rule.sub_question.question_type !== 'grid' ? 6 : undefined} key={`sub-${index}-${ruleIndex}`}>
+              <Grid col={12} key={`sub-${index}-${ruleIndex}`}>
                 <QuestionRenderer
                   contributorId={contributorId} userId={userId}
                   question={rule.sub_question}

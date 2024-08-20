@@ -1,5 +1,12 @@
 'use client'
 
+import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote'
+import { useChangeTier } from '@/app/services/mutations/useChangeTier'
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note'
 import {
   Button,
   ButtonGroup,
@@ -9,16 +16,9 @@ import {
   ModalHeading,
   ModalRef,
 } from '@trussworks/react-uswds'
+import { useParams } from 'next/navigation'
 import React, { RefObject, useEffect, useState } from 'react'
 import styles from './Modals.module.scss'
-import { useParams } from 'next/navigation'
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
-import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote'
-import { useUpdateApplicationTask } from '@/app/services/mutations/useUpdateApplicationTask'
-import { useSessionUCMS } from '@/app/lib/auth'
-import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note'
-import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 
 interface ChangeTierModalProps {
   modalRef: RefObject<ModalRef>
@@ -38,8 +38,8 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
 
   const [description, setDescription] = useState('')
   const [userId, setUserId] = useState<number | null>(null)
-  const { trigger: triggerChangeTier } = useCreateNote()
-  const { trigger: triggerUpdateApp } = useUpdateApplicationTask()
+  const { trigger: triggerCreateNote } = useCreateNote()
+  const { trigger: triggerChangeTier } = useChangeTier()
 
   useEffect(() => {
     if (sessionData.status === 'authenticated' && sessionData?.data?.user_id) {
@@ -51,7 +51,6 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
     try {
       const putData = {
         application_id: Number(params.application_id) || 0,
-        signed_by_id: userId || 0,
         application_tier: applicationData?.application_tier || '0',
       }
 
@@ -62,8 +61,8 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
         user_id: userId || 0,
       }
       handleAction()
-      await triggerChangeTier(notePayload)
-      await triggerUpdateApp(putData)
+      await triggerCreateNote(notePayload)
+      await triggerChangeTier(putData)
 
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=changed-tier'
     } catch (error: any) {
@@ -131,6 +130,15 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
             </Button>
           </ButtonGroup>
         </ModalFooter>
+        <button
+          type="button"
+          className="usa-button usa-modal__close"
+          aria-label="Close this window"
+          data-close-modal
+          onClick={onClose}
+        >
+            x
+        </button>
       </Modal>
     </>
   )

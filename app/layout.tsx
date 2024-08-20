@@ -33,7 +33,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
             <div className={`${theme.palette.mode} layout`}>
               <Navbar />
               <UserSessionModal />
-              <div className={`grid-container-widescreen display-flex ${isApplicationPage ? 'bg-gray-5' : ''}`}>
+              <div className={`start grid-container-widescreen display-flex ${isApplicationPage ? 'padding-x-0 bg-gray-5' : ''}`}>
                 <main className="flex-fill display-flex flex-column">
                   {children}
                 </main>

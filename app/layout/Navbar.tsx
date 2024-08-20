@@ -18,6 +18,7 @@ import styles from './Layout.module.scss'
 import ReactGA from 'react-ga4';
 import {REACT_GA_REPORT} from '../constants/routes'
 import { useParams, usePathname } from 'next/navigation';
+import { getUserRole } from '@/app/shared/utility/getUserRole';
 
 //note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
 import { useSessionUCMS } from '@/app/lib/auth'
@@ -31,7 +32,9 @@ import {
   FIRM_EVALUATION_PAGE,
   TASKS_DASHBOARD_PAGE,
   REVIEWERS_DASHBOARD_PAGE,
-  USER_PROFILE_PAGE
+  USER_PROFILE_PAGE,
+  MESSAGE_PAGE,
+  DOCUMENT_PAGE
 } from '@/app/constants/url'
 
 const Navbar = () => {
@@ -92,6 +95,7 @@ const Navbar = () => {
     logo: SBA_LOGO_SQUARE_WHITE_URL,
   }
   const session = useSessionUCMS()
+  const userRole = getUserRole(session?.data?.permissions || []);
   const path = usePathname()
 
   useEffect(() => {
@@ -181,7 +185,7 @@ const Navbar = () => {
     Cookies.remove('idtoken')
     localStorage.clear();
 
-    signOut({callbackUrl: logout_url})
+    signOut({callbackUrl: '/home'})
   }
 
   const profileDropdown = [
@@ -282,7 +286,7 @@ const Navbar = () => {
             Prepare for Application
           </Link>,
           <Link key={2} href="https://calculator.demo.sba-one.net/">
-            HUBZone Calculatr
+            HUBZone Calculator
           </Link>,
           <Link
             key={3}
@@ -321,25 +325,31 @@ const Navbar = () => {
       </React.Fragment>
     ] : []),
     <React.Fragment key="auth_2">
-      <Link className="usa-nav_link" href={TASKS_DASHBOARD_PAGE}>
-        <span>My Tasks</span>
+      <Link className="usa-nav_link" href={MESSAGE_PAGE}>
+        <span>Messages</span>
       </Link>
     </React.Fragment>,
-    <React.Fragment key="auth_4">
-      <Link className="usa-nav_link" href={REVIEWERS_DASHBOARD_PAGE}>
-        <span>Team Tasks</span>
+    <React.Fragment key="auth_2">
+      <Link className="usa-nav_link" href={DOCUMENT_PAGE}>
+        <span>Documents</span>
       </Link>
     </React.Fragment>,
-    <React.Fragment key="auth_5">
-      <Link className="usa-nav_link" href="">
-        <span>Saved</span>
-      </Link>
-    </React.Fragment>,
-    <React.Fragment key="auth_6">
-      <Link className="usa-nav_link" href="">
-        <span>Support</span>
-      </Link>
-    </React.Fragment>,
+    ...(userRole === 'analyst' || userRole === 'approver' || userRole === 'reviewer' || userRole === 'screener' ? [
+      <React.Fragment key="auth_3">
+        <Link className="usa-nav_link" href={TASKS_DASHBOARD_PAGE}>
+          <span>My Tasks</span>
+        </Link>
+      </React.Fragment>
+    ] : []),
+    ...(userRole === 'analyst' || userRole === 'approver' ? [
+      <React.Fragment key="auth_4">
+        <Link
+          className="usa-nav_link"
+          href={REVIEWERS_DASHBOARD_PAGE}>
+          <span>Team Tasks</span>
+        </Link>
+      </React.Fragment>
+    ] : [])
   ];
 
   return (

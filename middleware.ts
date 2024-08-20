@@ -103,7 +103,7 @@ export const config = {
     '/dashboard/(.*)',
     '/login-tester',
     '/tester-login',
-     '/entity-own/(.*)',
+     '/entity-owned/(.*)',
   ],
 }
 

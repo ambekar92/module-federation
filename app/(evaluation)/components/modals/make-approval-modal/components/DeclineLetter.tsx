@@ -1,22 +1,40 @@
-import { Application } from '@/app/services/types/application-service/Application'
-import Checkbox from '@/app/shared/form-builder/form-controls/Checkbox'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, ButtonGroup, ModalFooter, ModalRef, Textarea } from '@trussworks/react-uswds'
 import React, { Dispatch, RefObject, useEffect, useState } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { generateDefaultText } from '../constants'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Button, ButtonGroup, ModalFooter, ModalRef } from '@trussworks/react-uswds'
+import { axiosInstance } from '@/app/services/axiosInstance'
+import { COMPLETE_EVALUATION_TASK_ROUTE } from '@/app/constants/routes'
+import Checkbox from '@/app/shared/form-builder/form-controls/Checkbox'
+import { Application } from '@/app/services/types/application-service/Application'
 import { declineLetterSchema } from '../schema'
-import { MakeApprovalFormType, DeclineLetterType, Steps } from '../types'
+import { MakeApprovalFormType, DeclineLetterType, Steps, Decision, ReviewSummaryType } from '../types'
+import BodyContentRenderer from '../../../BodyContentRenderer'
+import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate'
+import { useProgramStatus } from '../useProgramStatus'
+import { pdfTabStyles } from '../constants'
+import { formatProgramText } from '@/app/shared/utility/formatProgramText'
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
 
-const DeclineLetter = ({ modalRef, setCurrentStep, applicationData }: {
-  modalRef: RefObject<ModalRef>,
-  setCurrentStep: Dispatch<React.SetStateAction<number>>,
-  applicationData: Application | null
+interface DeclineLetterProps {
+  modalRef: RefObject<ModalRef>;
+  setCurrentStep: Dispatch<React.SetStateAction<number>>;
+  applicationData: Application | null;
+  reviewSummaryData: ReviewSummaryType | null;
+  processId: number | undefined;
+}
+
+const DeclineLetter: React.FC<DeclineLetterProps> = ({
+  modalRef,
+  setCurrentStep,
+  applicationData,
+  reviewSummaryData,
+  processId
 }) => {
-  const [currentLetterIdx, setCurrentLetterIdx] = useState<number | null>(null);
-  const [supplementalLetters, setSupplementalLetters] = useState<string[]>([]);
+  const [currentLetterIdx, setCurrentLetterIdx] = useState<number>(0);
+  const [supplementalLetters, setSupplementalLetters] = useState<DocumentTemplateType[]>([]);
+  const { declinedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData);
   const {getValues, setValue, reset} = useFormContext<MakeApprovalFormType>();
 
   const methods = useForm<DeclineLetterType>({
@@ -26,8 +44,14 @@ const DeclineLetter = ({ modalRef, setCurrentStep, applicationData }: {
   })
 
   useEffect(() => {
-    setSupplementalLetters(['Supplemental Letter 1']);
-  }, [])
+    if (!isLoading) {
+      if (declinedLetters.length === 0) {
+        setCurrentStep(Steps.DeclineLetter);
+      } else {
+        setSupplementalLetters(declinedLetters);
+      }
+    }
+  }, [declinedPrograms, declinedLetters, isLoading, setCurrentStep]);
 
   useEffect(() => {
     const declineLetter = getValues('declineLetter')
@@ -38,87 +62,150 @@ const DeclineLetter = ({ modalRef, setCurrentStep, applicationData }: {
     return <h3>No application data found...</h3>
   }
 
-  const today = new Date();
-  const { asJSX: defaultText, asString: defaultTextString } = generateDefaultText(applicationData, today);
+  const openContentInNewTab = () => {
+    const bodyContentElement = document.querySelector('.body-content-renderer');
+    if (!bodyContentElement) {
+      alert('There was an error opening the content. Please try again.');
+      return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${applicationData?.sam_entity.legal_business_name}_${formatProgramText(declinedPrograms[currentLetterIdx])}_approval.pdf</title>
+        <style>
+          ${pdfTabStyles}
+        </style>
+      </head>
+      <body>
+        <div class="page">
+          <div class="content">
+            ${bodyContentElement.innerHTML}
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const newWindow = window.open();
+    if (newWindow) {
+      newWindow.document.write(htmlContent);
+      newWindow.document.close();
+    } else {
+      alert('Please allow pop-ups for this site to view the content in a new tab.');
+    }
+  };
 
   function onContinue() {
-    if (currentLetterIdx === null && supplementalLetters.length > 0) {
-      setCurrentLetterIdx(0);
-      return;
-    } else if (currentLetterIdx !== null && currentLetterIdx <= supplementalLetters.length) {
-      setCurrentLetterIdx(currentLetterIdx => currentLetterIdx! + 1);
-    }
-    if (currentLetterIdx === supplementalLetters.length) {
-      setCurrentStep(3);
+    if (currentLetterIdx < supplementalLetters.length - 1) {
+      setCurrentLetterIdx(currentLetterIdx => currentLetterIdx + 1);
+    } else {
+      methods.handleSubmit(onSubmit)();
     }
   }
 
   function onPrevious() {
-    if (currentLetterIdx === null || !supplementalLetters.length) {
+    if (currentLetterIdx > 0) {
+      setCurrentLetterIdx(currentLetterIdx => currentLetterIdx - 1);
+    }
+    if(reviewSummaryData?.length === declinedPrograms.length) {
+      setCurrentStep(Steps.ReviewSummary);
+    } else {
       setCurrentStep(Steps.ApprovalLetter);
-    } else if (currentLetterIdx > 0) {
-      setCurrentLetterIdx(currentLetterIdx => currentLetterIdx! - 1);
-    } else if (currentLetterIdx === 0) {
-      setCurrentLetterIdx(null);
     }
   }
 
   function onCancel() {
-    setCurrentStep(1);
+    setCurrentStep(Steps.ReviewSummary);
     reset();
     modalRef.current?.toggleModal();
   }
 
-  function onSubmit(formData: DeclineLetterType) {
-    setValue('declineLetter', formData)
-    const completeReviewFormData = getValues();
-    console.log(completeReviewFormData);
-    setCurrentStep(1);
-    reset();
-    modalRef.current?.toggleModal()
+  async function onSubmit(formData: DeclineLetterType) {
+    try {
+      setValue('declineLetter', formData)
+
+      if (processId !== undefined && reviewSummaryData) {
+        const programApplication = applicationData?.program_application || []
+        const programDecisions = programApplication.map((program) => {
+          const programName = program.programs.name
+          const decision = reviewSummaryData[`approval${programName}`]
+          const baseDecision = {
+            program_id: program.program_id,
+            approved: decision === Decision.Concur ? 1 : 0,
+          }
+
+          if (decision === Decision.Disagree) {
+            const reviewerAppealValue = reviewSummaryData[`approvalReviewerAppeal-${programName}`] === Decision.Concur ? 1 : 0
+
+            return {
+              ...baseDecision,
+              approver_decline_reason: reviewSummaryData[`approvalCommentsOnDisagreement-${programName}`],
+              reviewer_can_appeal: reviewerAppealValue,
+            }
+          }
+
+          return baseDecision
+        })
+
+        const postData = {
+          process_id: processId,
+          data: {
+            program_decisions: programDecisions
+          }
+        }
+
+        await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, postData)
+
+        setCurrentStep(Steps.ReviewSummary);
+        reset();
+        modalRef.current?.toggleModal();
+        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-approval'
+      } else {
+        throw new Error('Process id not found or review summary data is missing')
+      }
+    } catch (err) {
+      alert('An error has occurred, please contact help desk.')
+    }
   }
 
   function getContinueButtonTxt() {
-    if (!supplementalLetters.length || currentLetterIdx === supplementalLetters.length) {
-      return 'Continue';
-    }
-    if (currentLetterIdx === null && supplementalLetters.length > 0) {
-      return `Continue & View ${supplementalLetters.length} Supplemental Letters`;
-    }
-    if (currentLetterIdx! < supplementalLetters.length - 1) {
-      return 'Continue';
-    }
     if (currentLetterIdx === supplementalLetters.length - 1) {
-      return 'Preview PDF';
+      return 'Sign and Submit';
     }
+    return 'Continue';
   }
 
-  const content = currentLetterIdx === null ?
-    <div style={containerStyles}>
-      {defaultText}
-    </div> :
-    supplementalLetters.length > 0 && currentLetterIdx !== null && currentLetterIdx < supplementalLetters.length
-      ? <div style={containerStyles}>{supplementalLetters[currentLetterIdx]}</div>
-      : <><div style={containerStyles}>
-        <Textarea
-          style={{ maxWidth: '100%', width: '100%', resize: 'vertical'}}
-          className='border-0'
-          id='letterContent'
-          name='letterContent'
-          defaultValue={defaultTextString}
-        />
+  if(isLoading) {
+    return
+  }
+
+  const content = (
+    <>
+      <div className='display-flex flex-justify-end' style={{border: '1px solid black', borderBottom: 'none', padding: '0.5rem 1rem'}}><Button type='button' onClick={openContentInNewTab} outline>View PDF</Button></div>
+      <div style={containerStyles}>
+        <BodyContentRenderer isEditable name={supplementalLetters[currentLetterIdx]} />
       </div>
       <h5>Signature</h5>
-      <Checkbox<DeclineLetterType>
-        {...methods.register('approvalDecision')}
-        label={'By clicking this checkbox, you are attesting that you\'ve done a thorough review and are ready to officially approve or deny the certifications listed in this application. Once you select "Sign and Submit", the applicant will be notified and receive their official letters.'}/>
-      </>;
+      {declinedPrograms.map((program, index) => (
+        <div key={program} style={{ display: index === currentLetterIdx ? 'block' : 'none' }}>
+          <Checkbox<DeclineLetterType>
+            {...methods.register(`approvalDecisions.${program}`)}
+            label={`I have reviewed and decline the ${program.replace('_', ' ')} certification.`}
+          />
+        </div>
+      ))}
+    </>
+  );
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <h4>Decline Letter(s)</h4>
-        {currentLetterIdx !== null && currentLetterIdx >= 0 && currentLetterIdx < supplementalLetters.length && <p>Supplemental Letter {currentLetterIdx+1}</p>}
+        {supplementalLetters.length > 0 && <p>Decline Letter {currentLetterIdx + 1} of {supplementalLetters.length}</p>}
         {content}
 
         <ModalFooter style={{ marginTop: '3rem' }}>
@@ -131,17 +218,12 @@ const DeclineLetter = ({ modalRef, setCurrentStep, applicationData }: {
               >
                 Previous
               </Button>
-              {currentLetterIdx !== supplementalLetters.length && <Button
+              <Button
                 type="button"
                 onClick={onContinue}
               >
                 {getContinueButtonTxt()}
-              </Button>}
-              {currentLetterIdx === supplementalLetters.length && <Button
-                type="submit"
-              >
-                Sign and Submit
-              </Button>}
+              </Button>
             </div>
             <Button
               type="button"

@@ -1,207 +1,147 @@
+import { Application } from '@/app/services/types/application-service/Application'
 import TextArea from '@/app/shared/form-builder/form-controls/TextArea'
 import ToggleButtonGroup from '@/app/shared/form-builder/form-controls/ToggleButtonGroup'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, ButtonGroup, ModalFooter, ModalRef } from '@trussworks/react-uswds'
-import React, { Dispatch, RefObject, useEffect } from 'react'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { reviewSummarySchema } from '../schema'
+import React, { Dispatch, RefObject, useMemo } from 'react'
+import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { generateReviewSummarySchema } from '../schema'
 import { Decision, MakeApprovalFormType, ReviewSummaryType, Steps } from '../types'
 
-const ReviewSummary = ({modalRef, setCurrentStep, processId}: {modalRef: RefObject<ModalRef>, setCurrentStep: Dispatch<React.SetStateAction<number>>, processId: number | undefined}) => {
-  const {getValues, setValue, reset} = useFormContext<MakeApprovalFormType>()
+interface ReviewSummaryProps {
+  modalRef: RefObject<ModalRef>;
+  setCurrentStep: Dispatch<React.SetStateAction<number>>;
+  applicationData: Application | null;
+  setReviewSummaryData: Dispatch<React.SetStateAction<ReviewSummaryType | null>>;
+}
 
-  const methods = useForm<ReviewSummaryType>(
-    {
-      defaultValues: getValues('certifications'),
-      shouldUnregister: true,
-      resolver: zodResolver(reviewSummarySchema)
-    }
-  )
-  useEffect(() => {
-    const certifications = getValues('certifications')
-    methods.reset(certifications)
-  }, [])
+const ReviewSummary: React.FC<ReviewSummaryProps> = ({
+  modalRef,
+  setCurrentStep,
+  applicationData,
+  setReviewSummaryData
+}) => {
+  const { getValues, setValue } = useFormContext<MakeApprovalFormType>();
+  const programApplication = applicationData?.program_application || []
+
+  const reviewSummarySchema = useMemo(() => generateReviewSummarySchema(programApplication), [programApplication])
+
+  const defaultValues = useMemo(() => {
+    const currentValues = getValues('reviewSummary') || {}
+    return programApplication.reduce((acc, program) => {
+      const programName = program.programs.name
+      acc[`approval${programName}`] = currentValues[`approval${programName}`] || undefined
+      acc[`approvalCommentsOnDisagreement-${programName}`] = currentValues[`approvalCommentsOnDisagreement-${programName}`] || ''
+      acc[`approvalReviewerAppeal-${programName}`] = currentValues[`approvalReviewerAppeal-${programName}`] || undefined
+      return acc
+    }, {} as Record<string, any>)
+  }, [programApplication, getValues])
+
+  const methods = useForm<ReviewSummaryType>({
+    defaultValues,
+    resolver: zodResolver(reviewSummarySchema),
+    mode: 'onChange'
+  })
 
   async function onContinue(formData: ReviewSummaryType) {
-    try {
-      setValue('certifications', formData);
-      setCurrentStep(Steps.ApprovalLetter);
-    } catch (err) {
-      // Error handled -KJ
-    }
+    setValue('step', Steps.ApprovalLetter)
+    setValue('reviewSummary', formData)
+
+    setReviewSummaryData(formData)
+    setCurrentStep(Steps.ApprovalLetter)
   }
 
   function onCancel() {
-    setCurrentStep(1);
-    reset();
-    modalRef.current?.toggleModal();
+    setCurrentStep(1)
+    modalRef.current?.toggleModal()
   }
-
-  const getDecisionText = (decision: Decision | null) => {
-    if (decision === Decision.Concur) {return 'Approved';}
-    if (decision === Decision.Disagree) {return 'Decline';}
-    return 'Pending';
-  };
-
-  const vosb = methods.watch('approvalVosb')
-  const eight_a = methods.watch('approvalEight_a')
-  const edwosb = methods.watch('approvalEdwosb')
-  const hubZone = methods.watch('approvalHubZone')
 
   return (
     <FormProvider {...methods}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
-        <span>Certification</span>
-        <span>Recommendation</span>
-        <span>Make Decision</span>
-      </div>
-      <hr />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'baseline' }}>
-        <div>
-          <strong>8(a) Certification</strong>
+      <form onSubmit={methods.handleSubmit(onContinue)}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+          <span>Certification</span>
+          <span>Recommendation</span>
+          <span>Make Decision</span>
         </div>
-        <div>
-          <span>{getDecisionText(eight_a)}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <ToggleButtonGroup<ReviewSummaryType, string>
-            style={{ display: 'flex', gap: '0.5rem' }}
-            name='approvalEight_a'
-            options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-            label={''} />
-        </div>
-      </div>
-      {(eight_a === 'disagree') && <div>
-        <TextArea<ReviewSummaryType>
-          required={true}
-          name='approvalCommentsOnDisagreementEight_a'
-          label='Provide more information about your disagreement'
-        />
-      </div>}
-      {(eight_a === 'disagree') && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <ToggleButtonGroup<ReviewSummaryType, string>
-          style={{ display: 'flex', gap: '0.5rem' }}
-          name='approvalReviewerAppealEight_a'
-          label='Can the applicant appeal this decision?'
-          required
-          grid
-          options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-        />
-      </div>}
+        <hr />
+        {programApplication.map((program) => {
+          const programName = program.programs.name
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'baseline' }}>
-        <div>
-          <strong>VOSB Certification</strong>
-        </div>
-        <div>
-          <span>{getDecisionText(vosb)}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <ToggleButtonGroup<ReviewSummaryType, string>
-            style={{ display: 'flex', gap: '0.5rem' }}
-            name='approvalVosb'
-            options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-            label={''} />
-        </div>
-      </div>
-      {(vosb === 'disagree') && <div>
-        <TextArea<ReviewSummaryType>
-          required={true}
-          name='approvalCommentsOnDisagreementVosb'
-          label='Provide more information about your disagreement'
-        />
-      </div>}
-      {(vosb === 'disagree') && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <ToggleButtonGroup<ReviewSummaryType, string>
-          style={{ display: 'flex', gap: '0.5rem' }}
-          name='approvalReviewerAppealVosb'
-          label='Can the applicant appeal this decision?'
-          required
-          grid
-          options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-        />
-      </div>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'baseline' }}>
-        <div>
-          <strong>EDWOSB Certification</strong>
-        </div>
-        <div>
-          <span>{getDecisionText(edwosb)}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <ToggleButtonGroup<ReviewSummaryType, Decision>
-            style={{ display: 'flex', gap: '0.5rem' }}
-            name='approvalEdwosb'
-            options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-            label={''} />
-        </div>
-      </div>
-      {(edwosb === 'disagree') && <div>
-        <TextArea<ReviewSummaryType>
-          required={true}
-          name='approvalCommentsOnDisagreementEdwosb'
-          label='Provide more information about your disagreement'
-        />
-      </div>}
-      {(edwosb === 'disagree') && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <ToggleButtonGroup<ReviewSummaryType, string>
-          style={{ display: 'flex', gap: '0.5rem' }}
-          name='approvalReviewerAppealEdwosb'
-          label='Can the applicant appeal this decision?'
-          grid
-          required
-          options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-        />
-      </div>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'baseline' }}>
-        <div>
-          <strong>HUBZone Certification</strong>
-        </div>
-        <div>
-          <span>{getDecisionText(hubZone)}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <ToggleButtonGroup<ReviewSummaryType, string>
-            style={{ display: 'flex', gap: '0.5rem' }}
-            name='approvalHubZone'
-            options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-            label={''} />
-        </div>
-      </div>
-      {(hubZone === 'disagree') && <div>
-        <TextArea<ReviewSummaryType>
-          required={true}
-          name='approvalCommentsOnDisagreementHubZone'
-          label='Provide more information about your disagreement'
-        />
-      </div>}
-      {(hubZone === 'disagree') && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <ToggleButtonGroup<ReviewSummaryType, string>
-          style={{ display: 'flex', gap: '0.5rem' }}
-          name='approvalReviewerAppealHubZone'
-          label='Can the applicant appeal this decision?'
-          grid
-          required
-          options={[{ label: 'Concur', value: Decision.Concur }, { label: 'Disagree', value: Decision.Disagree }]}
-        />
-      </div>}
-      <ModalFooter style={{ marginTop: '3rem' }}>
-        <ButtonGroup style={{display: 'flex', justifyContent: 'space-between'}}>
-          <Button
-            type="submit"
-            onClick={methods.handleSubmit(onContinue)}
-          >
-            Continue
-          </Button>
-          <Button
-            type="button"
-            onClick={onCancel}
-            outline
-          >
-            Cancel
-          </Button>
-        </ButtonGroup>
-      </ModalFooter>
+          return (
+            <React.Fragment key={program.id}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'baseline' }}>
+                <div>
+                  <strong>{program.programs.title}</strong>
+                </div>
+                <div>
+                  <span>{program.approver_decision}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Controller
+                    name={`approval${programName}`}
+                    control={methods.control}
+                    render={({ field }) => (
+                      <ToggleButtonGroup<ReviewSummaryType, string>
+                        {...field}
+                        style={{ display: 'flex', gap: '0.5rem' }}
+                        options={[
+                          { label: 'Concur', value: Decision.Concur },
+                          { label: 'Disagree', value: Decision.Disagree }
+                        ]}
+                        label={''}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              {methods.watch(`approval${programName}`) === Decision.Disagree && (
+                <>
+                  <div>
+                    <TextArea<ReviewSummaryType>
+                      name={`approvalCommentsOnDisagreement-${programName}`}
+                      label='Provide more information about your disagreement'
+                    />
+                  </div>
+                </>
+              )}
+              {program.reviewer_can_appeal
+							&& ((program.reviewer_decision === Decision.Concur && methods.watch(`approval${programName}`) === Decision.Disagree)
+							|| (program.reviewer_decision === Decision.Disagree && methods.watch(`approval${programName}`) === Decision.Concur))
+							&& (
+							  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+							    <Controller
+							      name={`approvalReviewerAppeal-${programName}`}
+							      control={methods.control}
+							      render={({ field }) => (
+							        <ToggleButtonGroup<ReviewSummaryType, string>
+							          {...field}
+							          style={{ display: 'flex', gap: '0.5rem' }}
+							          label='Can the applicant appeal this decision?'
+							          grid
+							          options={[
+							            { label: 'Concur', value: Decision.Concur },
+							            { label: 'Disagree', value: Decision.Disagree }
+							          ]}
+							        />
+							      )}
+							    />
+							  </div>
+							)}
+            </React.Fragment>
+          )
+        })}
+        <ModalFooter style={{ marginTop: '3rem' }}>
+          <ButtonGroup style={{display: 'flex', justifyContent: 'space-between'}}>
+            <Button type="submit">
+              Continue
+            </Button>
+            <Button type="button" onClick={onCancel} outline>
+              Cancel
+            </Button>
+          </ButtonGroup>
+        </ModalFooter>
+      </form>
     </FormProvider>
   )
 }

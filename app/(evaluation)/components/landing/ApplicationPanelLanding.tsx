@@ -1,3 +1,4 @@
+// Todo need to find a better way not to include useApplicationData everywhere to check view permission
 'use client'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
 import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes';
@@ -17,6 +18,9 @@ const ApplicationPanelLanding = () => {
   const sessionData = useSessionUCMS()
   const { trigger } = useCompleteEvalTask()
 
+  if(!applicationData?.process || !applicationData.process.data) {
+    return
+  }
   const userRole = getUserRole(sessionData?.data?.permissions || []);
 
   const handleCompleteTask = async () => {
@@ -100,8 +104,8 @@ const ApplicationPanelLanding = () => {
               </div>
             </div>
             {(
-              (userRole === 'screener' && applicationData.workflow_state === 'submitted' && showButton) ||
-              (userRole === 'analyst' && applicationData.workflow_state === 'under_review' && showButton)
+              (userRole === 'screener' && applicationData.workflow_state === 'submitted' && applicationData?.process.data?.review_start === false && showButton) ||
+              (userRole === 'analyst' && applicationData?.process.data.step === 'analyst'  && applicationData?.process.data?.review_start === false && showButton)
             ) && (
               <div className="margin-top-2">
                 <div className="usa-card__footer">

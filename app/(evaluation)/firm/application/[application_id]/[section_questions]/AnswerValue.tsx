@@ -57,9 +57,6 @@ const AnswerValue = ({ question }: { question: Question }) => {
       <Label style={{maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={question.name}>
         {question.title}
       </Label>
-      <span className='text-base'>
-        {question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-      </span>
       <p>{renderAnswerValue(question)}</p>
       {renderSubQuestions(question)}
     </div>

@@ -1,69 +1,59 @@
 import { z } from 'zod';
 import { Decision } from './types';
 
-const certificationSchema = z.nativeEnum(Decision).nullable().refine((value) => value !== null, { message: 'Please select an option' });
+export function generateReviewSummarySchema(programApplications: any[]) {
+  const schemaFields: Record<string, any> = {};
+  programApplications.forEach((program) => {
+    const programName = program.programs.name;
+    schemaFields[`approval${programName}`] = z.nativeEnum(Decision).optional();
+    schemaFields[`approvalCommentsOnDisagreement-${programName}`] = z.string().optional();
+    schemaFields[`approvalReviewerAppeal-${programName}`] = z.nativeEnum(Decision).optional();
+  });
 
-export const reviewSummarySchema = z.object({
-  approvalEight_a: certificationSchema,
-  approvalVosb: certificationSchema,
-  approvalEdwosb: certificationSchema,
-  approvalHubZone: certificationSchema,
-  approvalCommentsOnDisagreementEight_a: z.string().optional(),
-  approvalCommentsOnDisagreementVosb: z.string().optional(),
-  approvalCommentsOnDisagreementEdwosb: z.string().optional(),
-  approvalCommentsOnDisagreementHubZone: z.string().optional(),
-  approvalReviewerAppealEight_a: certificationSchema.optional(),
-  approvalReviewerAppealVosb: certificationSchema.optional(),
-  approvalReviewerAppealEdwosb: certificationSchema.optional(),
-  approvalReviewerAppealHubZone: certificationSchema.optional(),
-}).refine((data) => {
-  if (data.approvalEight_a === Decision.Disagree) {
-    return !!data.approvalCommentsOnDisagreementEight_a &&
-			data.approvalCommentsOnDisagreementEight_a.trim().length > 0 &&
-			data.approvalReviewerAppealEight_a !== null;
-  }
-  return true;
-}, {
-  message: 'Please provide comments on the disagreement and select a reviewer appeal option',
-  path: ['approvalCommentsOnDisagreementEight_a', 'approvalReviewerAppealEight_a']
-}).refine((data) => {
-  if (data.approvalVosb === Decision.Disagree) {
-    return !!data.approvalCommentsOnDisagreementVosb &&
-			data.approvalCommentsOnDisagreementVosb.trim().length > 0 &&
-			data.approvalReviewerAppealVosb !== null;
-  }
-  return true;
-}, {
-  message: 'Please provide comments on the disagreement and select a reviewer appeal option',
-  path: ['approvalCommentsOnDisagreementVosb', 'approvalReviewerAppealVosb']
-}).refine((data) => {
-  if (data.approvalEdwosb === Decision.Disagree) {
-    return !!data.approvalCommentsOnDisagreementEdwosb &&
-			data.approvalCommentsOnDisagreementEdwosb.trim().length > 0 &&
-			data.approvalReviewerAppealEdwosb !== null;
-  }
-  return true;
-}, {
-  message: 'Please provide comments on the disagreement and select a reviewer appeal option',
-  path: ['approvalCommentsOnDisagreementEdwosb', 'approvalReviewerAppealEdwosb']
-}).refine((data) => {
-  if (data.approvalHubZone === Decision.Disagree) {
-    return !!data.approvalCommentsOnDisagreementHubZone &&
-			data.approvalCommentsOnDisagreementHubZone.trim().length > 0 &&
-			data.approvalReviewerAppealHubZone !== null;
-  }
-  return true;
-}, {
-  message: 'Please provide comments on the disagreement and select a reviewer appeal option',
-  path: ['approvalCommentsOnDisagreementHubZone', 'approvalReviewerAppealHubZone']
+  return z.object(schemaFields).superRefine((data, ctx) => {
+    programApplications.forEach((program) => {
+      const programName = program.programs.name;
+      if (data[`approval${programName}`] === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Please select a decision',
+          path: [`approval${programName}`]
+        });
+      }
+      if (data[`approval${programName}`] === Decision.Disagree) {
+        if (!data[`approvalCommentsOnDisagreement-${programName}`] ||
+            data[`approvalCommentsOnDisagreement-${programName}`].trim().length === 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Please provide comments on the disagreement',
+            path: [`approvalCommentsOnDisagreement-${programName}`]
+          });
+        }
+        if (program.reviewer_can_appeal && program.reviewer_decision === 'Concurs' && data[`approvalReviewerAppeal-${programName}`] === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Please select a reviewer appeal option',
+            path: [`approvalReviewerAppeal-${programName}`]
+          });
+        }
+      }
+    });
+  });
+}
+
+export const approvalLetterSchema = z.object({
+  approvalDecisions: z.record(z.boolean())
 });
-
-export const approvalLetterSchema = z.object({approvalDecision: z.boolean().refine((value) => value === true)});
-export const declineLetterSchema = z.object({approvalDecision: z.boolean().refine((value) => value === true)});
+export const declineLetterSchema = z.object({
+  approvalDecisions: z.record(z.boolean())
+});
 
 export const schema = z.object({
   step: z.number().default(1),
-  certifications: reviewSummarySchema,
   approvalLetter: approvalLetterSchema,
   declineLetter: declineLetterSchema,
+  reviewSummary: z.record(z.any()).optional(),
 });
+
+// This is a placeholder the actual schema will be generated dynamically -KJ
+export const reviewSummarySchema = z.any();

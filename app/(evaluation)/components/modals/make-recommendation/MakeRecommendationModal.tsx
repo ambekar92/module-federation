@@ -39,6 +39,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
   const [userId, setUserId] = useState<number | null>(null)
   const [fileData, setFileData] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
+  const [documentId, setDocumentId] = useState<number>();
   const { applicationData } = useApplicationData(
     ApplicationFilterType.id,
     params.application_id,
@@ -87,7 +88,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
   const handleMakeSubmitPostRequest = async () => {
     try {
       const postData = {
-        process_id: applicationData?.process.id,
+        process_id: applicationData?.process?.id,
         data: {
           approved: true,
           tier: applicationData?.application_tier,
@@ -116,16 +117,20 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
   const handleFileSelect = async (file: File) => {
     setFileData(file)
     try {
-      const formData = new FormData()
-      formData.append('entity_id', applicationData?.entity.entity_id.toString() || '0')
-      formData.append('doc_owner_user_id', userId?.toString() || '')
-      formData.append('application_contributor_id', params.application_id)
-      formData.append('internal_document', 'true')
-      formData.append('file', file)
+      if(userId && applicationData) {
+        const formData = new FormData()
+        formData.append('files', file)
+        formData.append('document_type_id', '1');
+        formData.append('internal_document', 'true')
+        formData.append('hubzone_key', '1');
 
-      await axiosInstance.post(GET_DOCUMENTS, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
+        const response = await axiosInstance.post(`${GET_DOCUMENTS}?application_contributor_id=${applicationData.application_contributor[0].id}&entity_id=${applicationData.entity.entity_id}&upload_user_id=${userId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        setDocumentId(response.data.document.id);
+      } else {
+        throw new Error('Document upload failed')
+      }
     } catch (error) {
       // Error handled lol -KJ
     }
@@ -153,6 +158,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
           label="Upload Documents"
           hint="Upload any documents relevant to this recommendation. (Accepted file formats are .pdf, .png, and .jpg)"
           onFileSelect={handleFileSelect}
+          documentId={documentId}
         />
       </div>
 

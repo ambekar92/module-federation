@@ -92,6 +92,15 @@ const ConfirmVeteranStatusModal = ({ modalRef, applicationId, handleAction }: { 
           </ModalFooter>
         </form>
       </FormProvider>
+      <button
+        type="button"
+        className="usa-button usa-modal__close"
+        aria-label="Close this window"
+        data-close-modal
+        onClick={onClose}
+      >
+        x
+      </button>
     </Modal>
 
   )

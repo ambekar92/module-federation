@@ -3,7 +3,7 @@ import { INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
-import getEntityByUserId, { getEntityByDelegateId } from '@/app/shared/utility/getEntityByUserId'
+import { Application } from '@/app/services/types/application-service/Application'
 import {
   Button,
   ButtonGroup,
@@ -41,7 +41,6 @@ import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
 import Styles from './DelegateForm.module.scss'
 import DelegateTable from './DelegateTable'
 import InviteModal from './InviteModal'
-import { Application } from '@/app/services/types/application-service/Application'
 
 interface FormInputInterface {
   showModal: boolean

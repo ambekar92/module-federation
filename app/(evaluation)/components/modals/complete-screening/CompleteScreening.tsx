@@ -91,7 +91,7 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, process
             </Button>
             <Button
               type="button"
-              className="float-left"
+              className="float-left usa-button--unstyled"
               onClick={handleCancel}
               outline
             >
@@ -99,6 +99,15 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, process
             </Button>
           </ButtonGroup>
         </ModalFooter>
+        <button
+          type="button"
+          className="usa-button usa-modal__close"
+          aria-label="Close this window"
+          data-close-modal
+          onClick={handleCancel}
+        >
+        x
+        </button>
       </Modal>
     </>
   )

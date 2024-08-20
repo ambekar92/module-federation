@@ -85,8 +85,8 @@ const ReturnToPreviousTaskModal = ({modalRef, processId, handleAction}: {modalRe
         <TextArea<ReturnToFormType>
           required={true}
           name="description"
-          hint="By clicking “Return”, you are returning this application to the person it was assigned to before you."
-          label="Provide more information about why you are returning this application" />
+          label="By clicking “Return”, you are returning this application to the person it was assigned to before you."
+          hint="Provide more information about why you are returning this application" />
         <ModalFooter>
           <ButtonGroup>
             <Button type='submit' onClick={methods.handleSubmit(onSubmit)} disabled={returningToPrevTask || creatingNote}>
@@ -98,6 +98,15 @@ const ReturnToPreviousTaskModal = ({modalRef, processId, handleAction}: {modalRe
           </ButtonGroup>
         </ModalFooter>
       </FormProvider>
+      <button
+        type="button"
+        className="usa-button usa-modal__close"
+        aria-label="Close this window"
+        data-close-modal
+        onClick={onClose}
+      >
+            x
+      </button>
     </Modal>
   )
 }

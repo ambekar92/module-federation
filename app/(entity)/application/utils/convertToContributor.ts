@@ -44,20 +44,16 @@ export function convertOperatorAnswerToContributors(answer: Answer): Contributor
   }
 
   return answer.value.answer.map((row: any): Contributor => {
-    const getOperatorPropertyValue = (prefix: string): string => {
-      const suffixes = ['corporation', 'llc', 'partnership', 'sole_proprietorship'];
-      for (const suffix of suffixes) {
-        const key = `${prefix}_control_and_operation_${suffix}`;
-        if (row[key]) {return row[key];}
-      }
-      return '';
-    };
+    const firstName = getOwnershipPropertyValue(row, 'legal_management_team_first_name_control_and_operation');
+    const lastName = getOwnershipPropertyValue(row, 'legal_management_team_last_name_control_and_operation');
+    const emailAddress = getOwnershipPropertyValue(row, 'legal_management_team_email_control_and_operation');
+    const contributorRole = 'role_other';
 
     return {
-      firstName: getOperatorPropertyValue('legal_management_team_first_name'),
-      lastName: getOperatorPropertyValue('legal_management_team_last_name'),
-      emailAddress: getOperatorPropertyValue('legal_management_team_email'),
-      contributorRole: 'role_other',
+      contributorRole,
+      firstName,
+      lastName,
+      emailAddress,
     };
   });
 }

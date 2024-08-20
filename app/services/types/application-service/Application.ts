@@ -40,6 +40,8 @@ type ProcessType = {
     is_eight_a: boolean
     application_id: number
     pre_screener_id: number
+		review_start: boolean
+		step: string
     program_decisions: {
       program_id: number
     }[]
@@ -55,6 +57,14 @@ type ProgramApplication = {
     description: null | string,
     title: string
   }
+	workflow_state: string,
+	analyst_recommendation: string | null,
+	reviewer_decision: string | null,
+	reviewer_decline_reason: string | null,
+	reviewer_can_appeal: string | null,
+	approver_decision: string | null,
+	application_id: number,
+	certification_id: number
 }
 
 export type Application = {
@@ -90,10 +100,11 @@ export type Application = {
   updated_at: string
   application_tier: string
   progress: string
+	assigned_to: string | null
   signed_by: string | null
   signed_date: string | null
   submitted_at: string | null
-  process: ProcessType
+  process: ProcessType |null
 	business_point_of_contact: {
 		user_id: number,
 		email: string,

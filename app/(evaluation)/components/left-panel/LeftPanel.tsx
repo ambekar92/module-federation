@@ -1,13 +1,15 @@
+// Todo need to find a better way not to include useApplicationData everywhere to check view permission
 'use client'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
-import { Link } from '@trussworks/react-uswds'
+import { Button, Link } from '@trussworks/react-uswds'
 import { useParams, usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useApplicationData } from '../../firm/useApplicationData'
 import { NavItem, QuestionnaireItem } from '../../types/types'
 import ActionsDropdown from './ActionsDropdown'
+import { useEvaluationSelector } from '../../redux/hooks'
 
 interface LeftPanelProps {
   isNavItemsLoading: boolean;
@@ -24,7 +26,38 @@ function LeftPanel({ isNavItemsLoading, navItems, error }: LeftPanelProps) {
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const router = useRouter();
   const pathname = usePathname();
-  const selectedSegment = useSelectedLayoutSegment()
+  const selectedSegment = useSelectedLayoutSegment();
+  const completedAnalystQAs = useEvaluationSelector(state => state.evaluation.completedAnalystQAs);
+
+  const renderNavItem = (childItem: QuestionnaireItem, index: number) => {
+    const isAnalystQuestionnaire = childItem.url.includes('analyst-questionnaire');
+    const questionnaireKey = childItem.url.split('-').pop() as keyof typeof completedAnalystQAs;
+    const isCompleted = completedAnalystQAs[questionnaireKey];
+    const isFirstQuestionnaire = index === 0;
+
+    // if (isAnalystQuestionnaire && !isFirstQuestionnaire && !isCompleted) {
+    //   return (
+    //     <Button
+    //       type='button'
+    //       disabled
+    //       style={{ backgroundColor: 'transparent', fontSize: '16px' }}
+    //       className={`padding-y-1 padding-right-2 padding-left-4 text-normal ${childItem.title === activeTitle ? 'usa-current' : ''}`}
+    //     >
+    //       {childItem.title}
+    //     </Button>
+    //   );
+    // }
+
+    return (
+      <Link
+        onClick={(e) => onNavLinkClick(e, childItem)}
+        href={`/${childItem.url}`}
+        className={childItem.title === activeTitle ? 'usa-current' : ''}
+      >
+        {childItem.title}
+      </Link>
+    );
+  };
 
   useEffect(() => {
     const segment = params.section_questions ?? selectedSegment;
@@ -87,9 +120,10 @@ function LeftPanel({ isNavItemsLoading, navItems, error }: LeftPanelProps) {
           <span className="usa-tag margin-top-2">Entity Owned</span>
         </div>
         {(
-          userRole === 'analyst' ||
-					(userRole === 'screener' && applicationData.workflow_state === 'under_review') ||
-					(userRole === 'reviewer')
+          (userRole === 'analyst' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
+					(userRole === 'screener' && applicationData?.process?.data.step === 'screening' && applicationData.workflow_state === 'under_review' && applicationData?.process.data?.review_start === true) ||
+					(userRole === 'reviewer' && applicationData?.process?.data.step === 'reviewer' && applicationData.workflow_state === 'under_review' ) ||
+          (userRole === 'approver' && applicationData?.process?.data.step === 'approver' && applicationData.workflow_state === 'under_review' )
         ) && (
           <ActionsDropdown />
         )}
@@ -103,15 +137,17 @@ function LeftPanel({ isNavItemsLoading, navItems, error }: LeftPanelProps) {
                   <ul className='padding-left-0' key={index}>
                     <li style={{listStyle: 'none'}} className="usa-sidenav__item">
                       <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`/${item.child[0].url}`} className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
-                      {item.child.length > 1 && <ul className="usa-sidenav__sublist">
-                        {item.child.map((childItem, index1) => (
-                          <div key={index1}>
-                            <li className="usa-sidenav__item">
-                              <Link onClick={(e) => onNavLinkClick(e, childItem)} href={`/${childItem.url}`} className={childItem.title === activeTitle ? 'usa-current' : ''}>{childItem.title}</Link>
-                            </li>
-                          </div>
-                        ))}
-                      </ul>}
+                      {item.child.length > 1 && (
+                        <ul className="usa-sidenav__sublist">
+                          {item.child.map((childItem, index1) => (
+                            <div key={index1}>
+                              <li className="usa-sidenav__item">
+                                {renderNavItem(childItem, index1)}
+                              </li>
+                            </div>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   </ul>
                 )

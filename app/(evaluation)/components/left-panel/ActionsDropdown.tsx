@@ -4,7 +4,7 @@ import React, { useMemo, useRef, useState, useEffect } from 'react'
 import { ActionMenuIDs, actionMenuData } from '../utils/actionMenuData'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { Role } from '@/app/shared/types/role'
-import RequestExpertModal from '../modals/RequestExpertModal'
+import EscalateReviewModal from '../modals/escalate-review/EscalateReviewModal'
 import CloseApplication from '@/app/shared/components/modals/CloseApplication'
 
 import { useCloseApplicationTask } from '@/app/services/mutations/useCloseApplicationTask'
@@ -15,7 +15,6 @@ import ReassignUserModal from '../modals/reassign-user-modal/ReassignUserModal'
 import { ReassignType } from '../modals/reassign-user-modal/types'
 import CompleteReviewModal from '../modals/complete-review-modal/CompleteReviewModal'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
-import MakeApproval from '../modals/make-approval-dialog/MakeApproval'
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 import ConfirmVeteranStatusModal from '../modals/confirm-veteran-status-modal/ConfirmVeteranStatusModal'
 import ReturnToPreviousTaskModal from '../modals/return-to-previous-task-modal/ReturnToPreviousTaskModal'
@@ -24,6 +23,7 @@ import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
 import CompleteScreening from '../modals/complete-screening/CompleteScreening'
 import MakeRecommendationModal from '../modals/make-recommendation/MakeRecommendationModal'
 import MakeApprovalModal from '../modals/make-approval-modal/MakeApprovalModal'
+import { useEvaluationSelector } from '../../redux/hooks'
 
 const ActionsDropdown = () => {
   const sessionData = useSessionUCMS()
@@ -38,16 +38,20 @@ const ActionsDropdown = () => {
   const [reassignType, setReassignType] = useState<ReassignType | null>(null)
   const { trigger: triggerClose } = useCloseApplicationTask()
   const { trigger: triggerReview } = useCompleteEvalTask()
+
+  const completedAnalystQAs = useEvaluationSelector(state => state.evaluation.completedAnalystQAs);
+
   // Modal Refs
-  const reassignUserRef = useRef<ModalRef>(null)
-  const veteranStatusRef = useRef<ModalRef>(null)
-  const closeApplicationRef = useRef<ModalRef>(null)
-  const completeReviewRef = useRef<ModalRef>(null)
-  const makeApprovalRef = useRef<ModalRef>(null)
-  const changeTierRef = useRef<ModalRef>(null)
-  const makeRecommendationRef = useRef<ModalRef>(null)
+  const reassignUserRef = useRef<ModalRef>(null);
+  const veteranStatusRef = useRef<ModalRef>(null);
+  const closeApplicationRef = useRef<ModalRef>(null);
+  const completeReviewRef = useRef<ModalRef>(null);
+  const makeApprovalRef = useRef<ModalRef>(null);
+  const changeTierRef = useRef<ModalRef>(null);
+  const makeRecommendationRef = useRef<ModalRef>(null);
   const returnToPreviousTaskRef = useRef<ModalRef>(null);
   const completeScreeningRef = useRef<ModalRef>(null);
+  const escalateReviewRef = useRef<ModalRef>(null);
 
   const [selectedValue, setSelectedValue] = useState('')
 
@@ -88,23 +92,9 @@ const ActionsDropdown = () => {
     },
   })
 
-  const handleMakeApprovalPostRequest = async () => {
-    setSelectedValue('Actions')
-
-    try {
-      const postData = {
-        process_id: applicationData?.process.id || 1,
-        data: {
-          approved: true,
-          tier: applicationData?.application_tier || 1,
-        },
-      }
-      await triggerReview(postData)
-    } catch (error: any) {
-      console.error('Failed to complete evaluation task', error)
-      console.error('Network Error: ', error)
-    }
-  }
+  const areAllAnalystQuestionnairesCompleted = useMemo(() => {
+    return Object.values(completedAnalystQAs).every(value => value === true);
+  }, [completedAnalystQAs]);
 
   const handleCloseAppAction = async (description: any) => {
     try {
@@ -183,9 +173,17 @@ const ActionsDropdown = () => {
       completeReviewRef.current?.toggleModal()
       return
     }
-    if (selectedNumericValue === ActionMenuIDs.MAKE_APPROVAL) {
-      makeApprovalRef.current?.toggleModal()
+    if (selectedNumericValue === ActionMenuIDs.MAKE_RECOMMENDATION) {
+      makeRecommendationRef.current?.toggleModal()
       return
+      // TODO Use this after testing
+      // if (areAllAnalystQuestionnairesCompleted) {
+      //   makeRecommendationRef.current?.toggleModal()
+      // } else {
+      //   alert('Please complete all analyst questionnaires before making a recommendation.');
+      //   setSelectedValue('Actions');
+      // }
+      // return
     }
     if (selectedNumericValue === ActionMenuIDs.CHANGE_TIER) {
       changeTierRef.current?.toggleModal()
@@ -201,6 +199,10 @@ const ActionsDropdown = () => {
     }
     if(selectedNumericValue === ActionMenuIDs.COMPLETE_SCREENING) {
       completeScreeningRef.current?.toggleModal();
+      return;
+    }
+    if(selectedNumericValue === ActionMenuIDs.ESCALATE_REVIEW) {
+      escalateReviewRef.current?.toggleModal();
       return;
     }
 
@@ -257,10 +259,6 @@ const ActionsDropdown = () => {
 
   const renderModal = () => {
     switch (actionModalProps.modalType) {
-      case 'requestExpert':
-        return (
-          <RequestExpertModal handleCancel={handleCancel} open={showModal} />
-        )
       case 'default':
       case 'textarea':
       case 'confirmVeteranStatus':
@@ -345,12 +343,15 @@ const ActionsDropdown = () => {
 
       <ConfirmVeteranStatusModal modalRef={veteranStatusRef} applicationId={applicationData?.id} handleAction={handleResetActionDropdownRequest} />
 
-      <CompleteScreening modalRef={completeScreeningRef}
+      <CompleteScreening
+        modalRef={completeScreeningRef}
         processId={applicationData?.process?.id}
         applicationTier={applicationData?.application_tier}
         applicationId={applicationData?.id}
         handleAction={handleResetActionDropdownRequest}
       />
+
+      <EscalateReviewModal applicationData={applicationData} modalRef={escalateReviewRef} handleAction={handleResetActionDropdownRequest} />
     </div>
   )
 }
