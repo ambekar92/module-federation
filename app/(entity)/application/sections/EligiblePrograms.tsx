@@ -11,8 +11,9 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
-import { applicationSteps, calculateEligiblePrograms } from '../utils/constants';
+import { applicationSteps } from '../utils/constants';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
+import { calculateEligibleSbaPrograms } from '../hooks/useOwnershipApplicationInfo';
 
 function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
@@ -61,7 +62,7 @@ function EligiblePrograms() {
         const mappedOwners = parsedInfo.owners.map((owner: any) => ({
           ...owner
         }));
-        const programs = calculateEligiblePrograms(mappedOwners);
+        const programs = calculateEligibleSbaPrograms(mappedOwners);
         setEligiblePrograms(programs);
       } else {
         // console.error('Invalid owner application info structure');

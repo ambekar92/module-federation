@@ -2,16 +2,25 @@ import { ProgramOption, sbaProgramOptions } from '@/app/constants/sba-programs';
 import { useEffect, useState } from 'react';
 
 export type OwnerType = {
-  firstName: string;
-  lastName: string;
+  ownerType: 'Individual' | 'Organization';
   ownershipPercent: string;
   emailAddress: string;
-  socialDisadvantages: string[];
-  citizenship: string;
-  gender: string;
-  veteranStatus: string;
   isEligibleOwner?: boolean;
-};
+} & (
+  | {
+      ownerType: 'Individual';
+      firstName: string;
+      lastName: string;
+      socialDisadvantages: string[];
+      citizenship: string;
+      gender: string;
+      veteranStatus: string;
+    }
+  | {
+      ownerType: 'Organization';
+      organizationName: string;
+    }
+);
 
 export type OwnerApplicationInfo = {
   totalPercent: number;
@@ -80,6 +89,10 @@ export const useOwnerApplicationInfo = () => {
 export const calculateEligibleSbaPrograms = (owners: OwnerType[]): ProgramOption[] => {
   return sbaProgramOptions.filter((program) => {
     return owners.some(owner => {
+      if (owner.ownerType !== 'Individual') {
+        return false;
+      }
+
       let updatedDisadvantages = owner.socialDisadvantages.length > 0
         ? owner.socialDisadvantages
         : ['Not Claiming Social Disadvantage'];
@@ -124,7 +137,6 @@ export const calculateEligibleSbaPrograms = (owners: OwnerType[]): ProgramOption
       });
 
       const flatMappedDisadvantages = mappedDisadvantages.flat();
-
       return program.disadvantages.some(disadvantage => flatMappedDisadvantages.includes(disadvantage));
     });
   });

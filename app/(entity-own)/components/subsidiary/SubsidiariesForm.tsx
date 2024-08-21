@@ -22,7 +22,7 @@ interface SubsidiariesFormProps {
     value: any
   }
   handleCancelFrom: () => void
-  handleSaveFrom: (data: any) => void
+  handleSaveFrom: (data: any, type:any) => void
   handleDeleteData: (id: any) => void
 }
 
@@ -50,7 +50,7 @@ const SubsidiariesForm: React.FC<SubsidiariesFormProps> = ({
 
   const onInputChange: React.FC<SubsidiariesFormProps> = ({ target: { name, value } }) => {
     setFormInputs((formInputs) => ({ ...formInputs, [name]: value }));
-    if(name === 'subsidiary_name'){
+    if(name === 'subsidiary_name' || name === 'parent_company' || name === 'address' || name === 'owner' || name === 'email' || name === 'phone_number' || name === 'notes'){
       if(value === ''){
         setSaveStatus(true)
       }else{
@@ -71,8 +71,15 @@ const SubsidiariesForm: React.FC<SubsidiariesFormProps> = ({
     handleCancelFrom()
   }
   const handleSave = () => {
-    formInputs.id = Math.floor(1000 + Math.random() * 9000);
-    handleSaveFrom(formInputs)
+    if(formInputs.id){
+      formInputs.contributor_name = formInputs.firstName + " " + formInputs.middleName + " " + formInputs.lastName;         
+      handleSaveFrom(formInputs, 'Edit')
+    }else{
+      formInputs.id = Math.floor(1000 + Math.random() * 9000);
+      formInputs.contributor_name = formInputs.firstName + " " + formInputs.middleName + " " + formInputs.lastName;    
+      formInputs.isNew = true;    
+      handleSaveFrom(formInputs, 'Save')
+    }
   }
   const handleDelete = () => {
     let obj = {

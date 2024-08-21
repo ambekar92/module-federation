@@ -35,18 +35,18 @@ function LeftPanel({ isNavItemsLoading, navItems, error }: LeftPanelProps) {
     const isCompleted = completedAnalystQAs[questionnaireKey];
     const isFirstQuestionnaire = index === 0;
 
-    // if (isAnalystQuestionnaire && !isFirstQuestionnaire && !isCompleted) {
-    //   return (
-    //     <Button
-    //       type='button'
-    //       disabled
-    //       style={{ backgroundColor: 'transparent', fontSize: '16px' }}
-    //       className={`padding-y-1 padding-right-2 padding-left-4 text-normal ${childItem.title === activeTitle ? 'usa-current' : ''}`}
-    //     >
-    //       {childItem.title}
-    //     </Button>
-    //   );
-    // }
+    if (isAnalystQuestionnaire && !isFirstQuestionnaire && !isCompleted) {
+      return (
+        <Button
+          type='button'
+          disabled
+          style={{ backgroundColor: 'transparent', fontSize: '16px' }}
+          className={`padding-y-1 padding-right-2 padding-left-4 text-normal ${childItem.title === activeTitle ? 'usa-current' : ''}`}
+        >
+          {childItem.title}
+        </Button>
+      );
+    }
 
     return (
       <Link

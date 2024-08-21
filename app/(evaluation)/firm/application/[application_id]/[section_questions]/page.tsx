@@ -19,6 +19,7 @@ import AnswerValue from './AnswerValue'
 import QuestionRenderer from '@/app/(entity)/application/qa-helpers/QuestionRenderer'
 import { useEvaluationDispatch, useEvaluationSelector } from '@/app/(evaluation)/redux/hooks'
 import { setCompletedAnalystQA } from '@/app/(evaluation)/redux/evaluationSlice'
+import useSWR from 'swr'
 
 const SectionQuestions = () => {
   const params = useParams<Params>();
@@ -63,12 +64,12 @@ const SectionQuestions = () => {
 
   const contributorIdToUse = isAnalystQuestionnaire ? matchingContributorId : firstContributorId;
 
-  const { data, isLoading } = useFetchOnce<Question[]>(
+  const { data, isLoading } = useSWR<Question[]>(
     contributorIdToUse ? `${QUESTIONNAIRE_ROUTE}/${contributorIdToUse}/${params.section_questions}` : null,
     fetcher
   );
 
-  const { data: navItems } = useFetchOnce<QuestionnaireItem[]>(
+  const { data: navItems } = useSWR<QuestionnaireItem[]>(
     firstContributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${firstContributorId}` : null,
     fetcher
   );
@@ -175,6 +176,22 @@ const SectionQuestions = () => {
     }
   }, [isAnalystQuestionnaire, data, selectedAnswers, dispatch, params.section_questions]);
 
+  // TODO Update url for hubzone redirect -KJ
+  const handleHUBZoneCalculatorRedirect = () => {
+    const userRole = getUserRole(sessionData?.data?.permissions || []);
+    const accessToken = sessionData?.data?.access;
+    const userId = sessionData?.data?.user_id;
+    const applicationId = params.application_id;
+
+    if (accessToken && firstContributorId && userId && applicationId) {
+      const url = `http://localhost:3001/?wt=${accessToken}&application_contributor_id=${firstContributorId}&user_id=${applicationData?.application_contributor?.[0]?.user_id}&application_id=${applicationId}&role=${userRole}`;
+      window.open(url, '_blank'); // Makes sure it opens in a new tab
+    } else {
+      console.error('Missing required params for HUBZone Calculator');
+    }
+  };
+
+  const showHUBZoneCalculatorButton = params.section_questions?.includes('hubzone-calculator');
   return (
     <div>
       {isLoading && <div>Loading...</div>}
@@ -201,19 +218,29 @@ const SectionQuestions = () => {
                     <div key={question.id}>
                       {question?.grid_questions?.map(q => <AnswerValue question={q} key={q.id} />)}
                     </div>}
-                  <AnswerValue key={index} question={question} />
+                  {!showHUBZoneCalculatorButton && <AnswerValue key={index} question={question} />}
                 </>
               )}
             </React.Fragment>
           ))}
         </form>
-        {(
-          (userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true && showNextButton) ||
-          (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true && showNextButton) ||
-          (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer' && showNextButton) ||
-          (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver' && showNextButton)
-        )
-          && (<Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>)}
+        {showHUBZoneCalculatorButton ? (
+          <>
+            <p>
+              Click the button below to open the HUBZone Calculator. You will be able to review the Calculator entries made by the business, and their calculated eligibility. You can make notes on any of the entries, mark them as reviewed, and even make changes if necessary.  Save your changes in the Calculator, and return to this screen to continue the application review.
+            </p>
+            <Button onClick={handleHUBZoneCalculatorRedirect} className='margin-bottom-2' type='button'>
+              Open HUBZone Answers
+            </Button>
+          </>
+        ) : (
+          (((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
+            (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
+            (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
+            (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
+            showNextButton
+          ) && <Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>
+        )}
       </>
       }
       {isAnalystQuestionnaire && (
@@ -221,7 +248,7 @@ const SectionQuestions = () => {
           onClick={handleNextQuestionnaire}
           className='margin-top-4'
           type='button'
-          // disabled={!completedAnalystQAs[params.section_questions?.replace('analyst-questionnaire-', '') as keyof typeof completedAnalystQAs]}
+          disabled={!completedAnalystQAs[params.section_questions?.replace('analyst-questionnaire-', '') as keyof typeof completedAnalystQAs]}
         >
           {isLastQuestionnaire ? 'Done' : 'Save & Continue'}
         </Button>

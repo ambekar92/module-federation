@@ -18,7 +18,6 @@ import { Answer, Question, Rule } from '@/app/shared/types/questionnaireTypes';
 import { Grid, ModalRef } from '@trussworks/react-uswds';
 import React, { useEffect, useRef } from 'react';
 import { OperatorsQaGrid } from './OperatorsQaGrid';
-import { OwnershipQaGrid } from './OwnershipQaGrid';
 
 interface QuestionRendererProps {
   question: Question;
@@ -133,11 +132,9 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
         );
       case 'grid':
         return (
-          question.name === 'personal_information_owner_and_management_partnership' || question.name === 'personal_information_owner_and_management_llc' || question.name === 'personal_information_owner_and_management_corporation' || question.name === 'personal_information_owner_and_management_sole_proprietorship'
-            ? <OwnershipQaGrid contributorId={contributorId} userId={userId} question={question} isSubQuestion={isSubQuestion} />
-            : question.name === 'legal_management_team_control_and_operation_partnership' || question.name === 'legal_management_team_control_and_operation_llc' || question.name === 'legal_management_team_control_and_operation_corporation' || question.name === 'legal_management_team_control_and_operation_sole_proprietorship'
-              ? <OperatorsQaGrid contributorId={contributorId} userId={userId} question={question} isSubQuestion={isSubQuestion} />
-              : <QaGrid contributorId={contributorId} userId={userId} question={question} isSubQuestion={isSubQuestion} />
+          question.name === 'legal_management_team_control_and_operation_partnership' || question.name === 'legal_management_team_control_and_operation_llc' || question.name === 'legal_management_team_control_and_operation_corporation' || question.name === 'legal_management_team_control_and_operation_sole_proprietorship'
+            ? <OperatorsQaGrid contributorId={contributorId} userId={userId} question={question} isSubQuestion={isSubQuestion} />
+            : <QaGrid contributorId={contributorId} userId={userId} question={question} isSubQuestion={isSubQuestion} />
         );
       case 'date':
         return (

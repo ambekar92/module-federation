@@ -99,6 +99,11 @@ const ClaimInputs = ({
         handleOpen();
         return;
       }
+      if(responseData.message === 'Thank you for your interest! It looks like you don’t have early access. Please return to MySBA Certifications on September 9 to submit your application. We appreciate your patience and understanding. (should match what is shown at the design link).') {
+        setError('serverError', { type: 'submit', message: 'early access' });
+        handleOpen();
+        return;
+      }
       if(responseData.message === 'This business has not been claimed yet') {
         claimFormComplete(responseData);
         return;

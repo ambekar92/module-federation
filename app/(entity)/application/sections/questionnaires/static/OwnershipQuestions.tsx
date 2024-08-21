@@ -1,22 +1,22 @@
 'use client'
-import { ANSWER_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
+import { ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
 import { APPLICATION_STEP_ROUTE, ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
-import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { calculateEligibleSbaPrograms, useOwnerApplicationInfo } from '../../../hooks/useOwnershipApplicationInfo';
-import QuestionRenderer from '../../../qa-helpers/QuestionRenderer';
+import { OwnershipQaGrid } from '../../../qa-helpers/OwnershipQaGrid';
 import { selectApplication, setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
-import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 
 function OwnershipQuestions() {
   // Redux
@@ -30,9 +30,9 @@ function OwnershipQuestions() {
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
 
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [totalOwnershipPercentage, setTotalOwnershipPercentage] = useState(0);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.ownership.stepIndex));
@@ -46,47 +46,15 @@ function OwnershipQuestions() {
     }
   }, [ownerApplicationInfo.owners]);
 
-  const handleAnswerChange = (question: Question, value: any) => {
-    if (userId && contributorId) {
-      setSelectedAnswers(prevState => ({
-        ...prevState,
-        [question.name]: {
-          id: question.id,
-          profile_answer_flag: question.profile_answer_flag,
-          reminder_flag: false,
-          application_contributor_id: contributorId,
-          value: question.question_type === 'multi_select'
-            ? value.map((option: { value: string }) => option.value)
-            : value,
-          question_id: question.id,
-          answer_by: userId,
-        }
-      }));
-
-      // Save the answer immediately
-      const answer = {
-        profile_answer_flag: question.profile_answer_flag,
-        application_contributor_id: contributorId,
-        value: { answer: question.question_type === 'multi_select'
-          ? value.map((option: { value: string }) => option.value)
-          : value
-        },
-        question_id: question.id,
-        answer_by: userId,
-        reminder_flag: false
-      };
-
-      axiosInstance.post(ANSWER_ROUTE, [answer])
-        .catch(error => {
-          console.error('Error saving answer:', error);
-        });
-    }
-  };
-
-  const totalPercentage = owners.reduce((sum, owner) => sum + parseInt(owner.ownershipPercent), 0);
+  useEffect(() => {
+    const total = owners.reduce((sum, owner) => {
+      return sum + parseFloat(owner.ownershipPercent || '0');
+    }, 0);
+    setTotalOwnershipPercentage(total);
+  }, [owners]);
 
   const handleSubmit = async () => {
-    if (Math.abs(totalPercentage - 100) < 0.01) {
+    if (Math.abs(totalOwnershipPercentage - 100) < 0.01) {
       setIsSubmitting(true);
       try {
         const postData = {
@@ -100,21 +68,17 @@ function OwnershipQuestions() {
           stepLink: applicationSteps.controlAndOwnership.link
         });
       } catch (error) {
-        console.error('Error submitting data:', error);
+        console.log('Error submitting data:', error);
       } finally {
         setIsSubmitting(false);
       }
     } else {
-      console.error('Total ownership must be 100%. Current total:', totalPercentage);
+      alert(`Total ownership must be 100%. Current total: ${totalOwnershipPercentage.toFixed(2)}%`);
     }
   };
 
   if (error) {return <div>Error: {error.message}</div>;}
-  if (!data || isLoading) {return <div>Loading...</div>;}
-
-  const sortedAndFilteredQuestions = data
-    .filter(question => question.question_ordinal !== null)
-    .sort((q1, q2) => (q1.question_ordinal! - q2.question_ordinal!));
+  if (!data || isLoading) {return <div>Loading...</div>;};
 
   return (
     <>
@@ -137,18 +101,9 @@ function OwnershipQuestions() {
             <hr className="margin-y-3 width-full" />
 
             <Grid row>
-              {sortedAndFilteredQuestions.map((question, index) => (
-                <QuestionRenderer
-                  key={question.id}
-                  question={question}
-                  index={index}
-                  selectedAnswers={selectedAnswers}
-                  handleAnswerChange={handleAnswerChange}
-                  contributorId={contributorId}
-                  onRefetchQuestionnaires={()=>{}}
-                  userId={userId}
-                />
-              ))}
+              <Grid col={12}>
+                { contributorId && <OwnershipQaGrid questions={data} userId={userId} contributorId={contributorId} setTotalOwnershipPercentage={setTotalOwnershipPercentage} />}
+              </Grid>
             </Grid>
           </>
         }

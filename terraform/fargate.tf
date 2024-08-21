@@ -17,6 +17,7 @@ locals {
     UCP_ATLASSIAN_USERNAME               = "management@certify.sba.gov"
     NEXT_PUBLIC_LOGOUT_URL               = "https://login.test.mysba.ussba.io"
     NEXT_PUBLIC_POST_REDIRECT_URL        = "https://ucp.demo.sba-one.net/"
+    HUBZONE_URL                          = "https://calculator.${local.env.domain_name}"
   }
   container_secrets_parameterstore = {
     OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_ID"

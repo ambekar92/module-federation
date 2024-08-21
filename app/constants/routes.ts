@@ -10,7 +10,7 @@ export const ENTITY_ROUTE = API_ROUTE + '/entity'
 export const GET_NOTIFICATION = API_ROUTE + '/notifications'
 export const GET_DOCUMENTS = API_ROUTE + '/documents'
 export const DOCUMENT_ROUTE = API_ROUTE + '/document'
-export const QUESTIONNAIRE_ROUTE = API_ROUTE + '/questionnaire'
+export const QUESTIONNAIRE_ROUTE = '/questionnaire'
 export const WS_LIVE_NOTIFICATIONS =
   process.env.NEXT_PUBLIC_WS_LIVE_NOTIFICATIONS
 export const INBOX_ROUTE = API_ROUTE + '/inbox'
@@ -25,7 +25,7 @@ export const ELIGIBLE_APPLY_PROGRAMS_ROUTE = API_ROUTE + '/application-eligible-
 export const USER_ROUTE = API_ROUTE + '/users'
 export const INVITATION_ROUTE = API_ROUTE + '/invitation'
 export const UPDATE_APPLICATION_STATE = API_ROUTE + '/update-application-state'
-export const QUESTIONNAIRE_LIST_ROUTE = API_ROUTE + '/questionnaire-list';
+export const QUESTIONNAIRE_LIST_ROUTE = '/questionnaire-list';
 export const ANSWER_ROUTE = API_ROUTE + '/answer'
 export const RTF_ITEMS_ROUTE = API_ROUTE + '/rtf-items';
 export const DRAFT_RTF_ITEMS_ROUTE = API_ROUTE + '/draft-rtf-items';

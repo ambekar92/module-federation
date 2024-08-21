@@ -36,6 +36,8 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
     headingMsg = 'This business has already been claimed.'
   } else if (error === 'not found') {
     headingMsg = 'The information you entered does not match SAM.gov.'
+  } else if(error === 'early access') {
+    headingMsg = 'Thank you for your interest!'
   } else {
     headingMsg =
       'Uh-oh! Looks like something broke on our side. If you need immediate assistance, please contact our support team at (555) 555-5555'
@@ -53,21 +55,29 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
               heading={headingMsg}
               headingLevel="h4"
             >
-              <ul className='padding-left-1'>
-                <li>
-                  If you claimed the business using another email account,
-                  please log in using that account.
-                </li>
-                <li>
-                  If your business has other qualifying owners, please ensure
-                  that they have not already claimed the business. Each business
-                  can only be claimed once.
-                </li>
-                <li>
-                  If none of the above are true, you should contact UCP support
-                  for further assistance.
-                </li>
-              </ul>
+							 {error === 'early access'
+                ? (
+                  <>
+                    <p>It looks like you don’t have early access. Please return to MySBA Certifications on September 9 to submit your application.</p>
+                    <p>We appreciate your patience and understanding.</p>
+                  </>
+                )
+                :
+                <ul className='padding-left-1'>
+                  <li>
+											If you claimed the business using another email account, please log in using that account.
+                  </li>
+                  <li>
+											If your business has other qualifying owners, please ensure
+											that they have not already claimed the business. Each business
+											can only be claimed once.
+                  </li>
+                  <li>
+										If none of the above are true, you should contact UCP support
+										for further assistance.
+                  </li>
+                </ul>
+              }
               <Button
                 type="button"
                 className="float-right"

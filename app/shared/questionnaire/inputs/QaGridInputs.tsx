@@ -14,11 +14,63 @@ export const TextInput: React.FC<{ question: Question; value: string; onChange: 
         id={question.name}
         name={question.name}
         value={value}
+        className={`${question.name.includes('owner_and_management') && 'maxw-full'}`}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>
   );
 };
+
+export const EmailInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
+  return (
+    <div className='usa-form-group'>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+        {question.title}
+      </Label>
+      <UsTextInput
+        type='email'
+        id={question.name}
+        name={question.name}
+        value={value}
+        className={`${question.name.includes('owner_and_management') && 'maxw-full'}`}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+};
+
+export const PhoneInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
+  const formatPhoneNumber = (input: string) => {
+    const cleaned = input.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `(${match[1]})-${match[2]}-${match[3]}`;
+    }
+    return input;
+  };
+
+  return (
+    <div className='usa-form-group'>
+      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+        {question.title}
+      </Label>
+      <UsTextInput
+        type='tel'
+        id={question.name}
+        name={question.name}
+        value={value}
+        onChange={(e) => {
+          const formatted = formatPhoneNumber(e.target.value);
+          onChange(formatted);
+        }}
+        pattern="\(\d{3}\)-\d{3}-\d{4}"
+        className={`${question.name.includes('owner_and_management') && 'maxw-full'}`}
+        maxLength={14}
+      />
+    </div>
+  );
+};
+
 export const NumberInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
   return (
     <div className='usa-form-group'>
@@ -30,6 +82,7 @@ export const NumberInput: React.FC<{ question: Question; value: string; onChange
         id={question.name}
         name={question.name}
         value={value}
+        className={`${question.name.includes('owner_and_management') && 'maxw-full'}`}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>
@@ -63,6 +116,7 @@ export const SelectInput: React.FC<{ question: Question; value: string; onChange
         name={question.name}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        className={`${question.name.includes('owner_and_management') && 'maxw-full'}`}
       >
         <option value="">- Select -</option>
         {question.answer_choice && 'options' in question.answer_choice && question.answer_choice.options.map((option, idx) => (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip } from '@trussworks/react-uswds';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import Image from 'next/image';
 
 interface TooltipIconProps {
   text: string;
@@ -9,7 +9,13 @@ interface TooltipIconProps {
 const TooltipIcon: React.FC<TooltipIconProps> = ({ text }) => {
   return (
     <Tooltip className='padding-0' style={{background: 'none'}} label={text}>
-      <TipsAndUpdatesIcon className='margin-left-1 text-primary'/>
+      <Image
+        src="/icons/tooltip-info.svg"
+        width={20}
+        height={20}
+        alt="Tooltip Icon"
+        className="margin-left-1 text-secondary-dark"
+      />
     </Tooltip>
   );
 };

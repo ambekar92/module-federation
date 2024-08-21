@@ -174,16 +174,13 @@ const ActionsDropdown = () => {
       return
     }
     if (selectedNumericValue === ActionMenuIDs.MAKE_RECOMMENDATION) {
-      makeRecommendationRef.current?.toggleModal()
+      if (areAllAnalystQuestionnairesCompleted) {
+        makeRecommendationRef.current?.toggleModal()
+      } else {
+        alert('Please complete all analyst questionnaires before making a recommendation.');
+        setSelectedValue('Actions');
+      }
       return
-      // TODO Use this after testing
-      // if (areAllAnalystQuestionnairesCompleted) {
-      //   makeRecommendationRef.current?.toggleModal()
-      // } else {
-      //   alert('Please complete all analyst questionnaires before making a recommendation.');
-      //   setSelectedValue('Actions');
-      // }
-      // return
     }
     if (selectedNumericValue === ActionMenuIDs.CHANGE_TIER) {
       changeTierRef.current?.toggleModal()

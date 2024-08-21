@@ -1,0 +1,19 @@
+.lineHeight {
+    line-height: 4rem;
+}
+
+.usa-card-no-border
+   div  {
+    border-width: 0px;
+}
+
+.usa-smaller-card 
+    div {     
+        border-radius: 15px;
+        border-color: #73B3E7;
+        border-width: 2px;
+        background: radial-gradient(circle at center, rgba(0, 80, 216, 0.17) 100%, rgba(22, 46, 81, 0.17) 18%);
+        background-blend-mode: overlay;
+        height: '13rem';
+        box-shadow: '4px 6px 3px rgba(128, 128, 128, 0.2)';      
+    }

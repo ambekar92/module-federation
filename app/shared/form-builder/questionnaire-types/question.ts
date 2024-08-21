@@ -1,7 +1,7 @@
 import { Answer, AnswerChoice } from "./answer";
 import { Rule } from "./rule";
 
-export type Question = {
+export type QuestionAnswer = {
     id: number;
     name: string;
     profile_answer_flag: boolean;
@@ -19,6 +19,6 @@ export type Question = {
 
  
 
-  export type MainQuestionObject = Question &  {
-    grid_questions?: Question[];
+  export type MainQuestionObject = QuestionAnswer &  {
+    grid_questions?: QuestionAnswer[];
   };

@@ -1,4 +1,4 @@
-import { Question } from "./question";
+import { QuestionAnswer } from "./question";
 
 type AnswerGivenValue = {
     boolean: 'TRUE' | 'FALSE';
@@ -13,7 +13,7 @@ document_requirement: string;
 next_question_id: number;
 
 question_id: number;
-sub_question: Question
+sub_question: QuestionAnswer
 
 
 
