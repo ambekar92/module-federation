@@ -1,45 +1,38 @@
 'use client'
-import ActionMenuModal from '@/app/shared/components/modals/ActionMenuModal'
-import React, { useMemo, useRef, useState, useEffect } from 'react'
-import { ActionMenuIDs, actionMenuData } from '../utils/actionMenuData'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { Role } from '@/app/shared/types/role'
-import EscalateReviewModal from '../modals/escalate-review/EscalateReviewModal'
+import ActionMenuModal from '@/app/shared/components/modals/ActionMenuModal'
 import CloseApplication from '@/app/shared/components/modals/CloseApplication'
+import { Role } from '@/app/shared/types/role'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import EscalateReviewModal from '../modals/escalate-review/EscalateReviewModal'
+import { actionMenuData, ActionMenuIDs } from '../utils/actionMenuData'
 
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useCloseApplicationTask } from '@/app/services/mutations/useCloseApplicationTask'
-import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
-import { useParams } from 'next/navigation'
+import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
+import { useFirmSelector } from '@/app/(evaluation)/firm/store/hooks'
 import { ModalRef } from '@trussworks/react-uswds'
+import { useParams } from 'next/navigation'
+import { useCurrentApplication } from '../../firm/useApplicationData'
+import CompleteReviewModal from '../modals/complete-review-modal/CompleteReviewModal'
+import CompleteScreening from '../modals/complete-screening/CompleteScreening'
+import ConfirmVeteranStatusModal from '../modals/confirm-veteran-status-modal/ConfirmVeteranStatusModal'
+import MakeApprovalModal from '../modals/make-approval-modal/MakeApprovalModal'
+import MakeRecommendationModal from '../modals/make-recommendation/MakeRecommendationModal'
 import ReassignUserModal from '../modals/reassign-user-modal/ReassignUserModal'
 import { ReassignType } from '../modals/reassign-user-modal/types'
-import CompleteReviewModal from '../modals/complete-review-modal/CompleteReviewModal'
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
-import ConfirmVeteranStatusModal from '../modals/confirm-veteran-status-modal/ConfirmVeteranStatusModal'
 import ReturnToPreviousTaskModal from '../modals/return-to-previous-task-modal/ReturnToPreviousTaskModal'
-import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
-import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
-import CompleteScreening from '../modals/complete-screening/CompleteScreening'
-import MakeRecommendationModal from '../modals/make-recommendation/MakeRecommendationModal'
-import MakeApprovalModal from '../modals/make-approval-modal/MakeApprovalModal'
-import { useEvaluationSelector } from '../../redux/hooks'
 
 const ActionsDropdown = () => {
   const sessionData = useSessionUCMS()
-  const params = useParams<{ application_id: string }>()
-  const { applicationData } = useApplicationData(
-    ApplicationFilterType.id,
-    params.application_id,
-  )
+  const { applicationData } = useCurrentApplication();
   const selectRef = useRef<HTMLSelectElement>(null)
   const { application_id } = useParams<{ application_id: string }>()
   const [userId, setUserId] = useState<number | null>(null)
   const [reassignType, setReassignType] = useState<ReassignType | null>(null)
   const { trigger: triggerClose } = useCloseApplicationTask()
-  const { trigger: triggerReview } = useCompleteEvalTask()
 
-  const completedAnalystQAs = useEvaluationSelector(state => state.evaluation.completedAnalystQAs);
+  const completedAnalystQAs = useFirmSelector(state => state.evaluation.completedAnalystQAs);
 
   // Modal Refs
   const reassignUserRef = useRef<ModalRef>(null);
@@ -200,6 +193,10 @@ const ActionsDropdown = () => {
     }
     if(selectedNumericValue === ActionMenuIDs.ESCALATE_REVIEW) {
       escalateReviewRef.current?.toggleModal();
+      return;
+    }
+    if(selectedNumericValue === ActionMenuIDs.MAKE_APPROVAL) {
+      makeApprovalRef.current?.toggleModal();
       return;
     }
 

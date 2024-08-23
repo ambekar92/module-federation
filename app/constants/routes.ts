@@ -65,3 +65,4 @@ export const RFI_REQUEST_ROUTE = API_ROUTE + '/rfi-requests';
 export const DOCUMENT_TEMPLATE_ROUTE = API_ROUTE + '/document_templates'
 export const HTML_TO_PDF_ROUTE = API_ROUTE + '/html_to_pdf_document'
 export const CHANGE_APPLICATION_TIER_ROUTE = API_ROUTE + '/change-application-tier';
+export const LETTER_FOR_APPLICATION_ROUTE = API_ROUTE + '/letter-for-application';

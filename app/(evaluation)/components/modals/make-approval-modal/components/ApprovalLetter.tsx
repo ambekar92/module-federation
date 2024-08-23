@@ -1,20 +1,20 @@
+import { COMPLETE_EVALUATION_TASK_ROUTE, HTML_TO_PDF_ROUTE } from '@/app/constants/routes'
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { axiosInstance } from '@/app/services/axiosInstance'
 import { Application } from '@/app/services/types/application-service/Application'
+import { HtmlToPdfDocument } from '@/app/services/types/document-service/HtmlToPdfDocument'
 import Checkbox from '@/app/shared/form-builder/form-controls/Checkbox'
+import { formatProgramText } from '@/app/shared/utility/formatProgramText'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, ButtonGroup, ModalFooter, ModalRef } from '@trussworks/react-uswds'
 import React, { Dispatch, RefObject, useEffect, useState } from 'react'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { approvalLetterSchema } from '../schema'
-import { MakeApprovalFormType, ReviewSummaryType, Steps, Decision, ApprovalLetterType } from '../types'
+import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
 import BodyContentRenderer from '../../../BodyContentRenderer'
-import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate'
-import { formatProgramText } from '@/app/shared/utility/formatProgramText'
-import { axiosInstance } from '@/app/services/axiosInstance'
-import { COMPLETE_EVALUATION_TASK_ROUTE, HTML_TO_PDF_ROUTE } from '@/app/constants/routes'
-import { HtmlToPdfDocument } from '@/app/services/types/document-service/HtmlToPdfDocument'
-import { pdfTabStyles } from '../constants'
+import { approvalLetterSchema } from '../schema'
+import { ApprovalLetterType, Decision, MakeApprovalFormType, ReviewSummaryType, Steps } from '../types'
 import { useProgramStatus } from '../useProgramStatus'
-import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
+import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
 
@@ -34,100 +34,79 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
   processId
 }) => {
   const [currentLetterIdx, setCurrentLetterIdx] = useState<number>(0);
-  const [supplementalLetters, setSupplementalLetters] = useState<DocumentTemplateType[]>([]);
+  const [supplementalLetters, setSupplementalLetters] = useState<string[]>([]);
   const { approvedPrograms, approvedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData);
-  const { getValues, setValue, reset } = useFormContext<MakeApprovalFormType>();
+  const {getValues, setValue, reset} = useFormContext<MakeApprovalFormType>()
+  const { data: session } = useSessionUCMS();
 
   const methods = useForm<ApprovalLetterType>({
     resolver: zodResolver(approvalLetterSchema),
     defaultValues: getValues('approvalLetter'),
     shouldUnregister: true
+  })
+
+  const currentProgram = approvedPrograms[currentLetterIdx];
+  const currentDecision = useWatch({
+    control: methods.control,
+    name: `approvalDecisions.${currentProgram}`,
   });
 
   useEffect(() => {
     if (!isLoading) {
-      if (approvedLetters.length === 0) {
+      if (approvedLetters.length === 0 && declinedPrograms.length > 0) {
         setCurrentStep(Steps.DeclineLetter);
       } else {
-        setSupplementalLetters(approvedLetters);
+        setSupplementalLetters([DocumentTemplateType.generalApproval, ...approvedLetters.filter(letter => letter !== DocumentTemplateType.generalApproval)]);
       }
     }
-  }, [approvedLetters, approvedPrograms, isLoading, setCurrentStep]);
+  }, [approvedLetters, approvedPrograms, declinedPrograms, isLoading, setCurrentStep]);
 
-  // async function onViewPdf() {
-  //   try {
-  //     const bodyContentElement = document.querySelector('.body-content-renderer');
-  //     if (!bodyContentElement) {
-  //       throw new Error('Body content not found');
-  //     }
-
-  //     const html = bodyContentElement.innerHTML;
-
-  //     const formData = new URLSearchParams();
-  //     formData.append('upload_user_id', '32');
-  //     formData.append('html', html);
-  //     formData.append('file_name', 'approval_letter.pdf');
-  //     formData.append('document_type_id', '1');
-  //     formData.append('entity_id', '146');
-  //     formData.append('internal_document', 'true');
-
-  //     const response = await axiosInstance.post<HtmlToPdfDocument>(
-  //       HTML_TO_PDF_ROUTE,
-  //       formData,
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/x-www-form-urlencoded',
-  //         },
-  //       }
-  //     );
-
-  //     if (response.data && response.data.path_name) {
-  //       window.open(response.data.path_name, '_blank');
-  //     } else {
-  //       throw new Error('Invalid response from server');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error generating PDF:', error);
-  //     alert('There was an error generating the PDF. Please try again.');
-  //   }
-  // }
-
-  const openContentInNewTab = () => {
-    const bodyContentElement = document.querySelector('.body-content-renderer');
-    if (!bodyContentElement) {
-      alert('There was an error opening the content. Please try again.');
-      return;
+  useEffect(() => {
+    if (currentDecision) {
+      methods.clearErrors(`approvalDecisions.${currentProgram}`);
     }
+  }, [currentDecision, currentProgram, methods]);
 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${applicationData?.sam_entity.legal_business_name}_${formatProgramText(approvedPrograms[currentLetterIdx])}_approval.pdf</title>
-        <style>
-          ${pdfTabStyles}
-        </style>
-      </head>
-      <body>
-        <div class="page">
-          <div class="content">
-            ${bodyContentElement.innerHTML}
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
+  async function onViewPdf() {
+    try {
+      const bodyContentElement = document.querySelector('.body-content-renderer');
+      if (!bodyContentElement) {
+        throw new Error('Body content not found');
+      }
 
-    const newWindow = window.open();
-    if (newWindow) {
-      newWindow.document.write(htmlContent);
-      newWindow.document.close();
-    } else {
-      alert('Please allow pop-ups for this site to view the content in a new tab.');
+      const html = bodyContentElement.innerHTML;
+
+      const formData = new URLSearchParams();
+      formData.append('html', html);
+      formData.append('internal_document', 'true');
+
+      const legalBusinessName = applicationData?.sam_entity.legal_business_name.replace(/\s+/g, '-');
+      const currentProgram = approvedPrograms[currentLetterIdx - 1];
+
+      const response = await axiosInstance.post<HtmlToPdfDocument>(
+        `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_approved.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+
+      if (response.data && response.data.document.path_name) {
+        let fullUrl = response.data.document.path_name;
+        if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+          fullUrl = `http://${fullUrl}`;
+        }
+        window.open(fullUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('There was an error generating the PDF. Please try again.');
     }
-  };
+  }
 
   async function onSubmit(formData: ApprovalLetterType) {
     try {
@@ -177,12 +156,25 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
   }
 
   async function onContinue() {
-    if (currentLetterIdx < supplementalLetters.length - 1) {
-      setCurrentLetterIdx(currentLetterIdx => currentLetterIdx + 1);
-    } else if(declinedPrograms.length === 0) {
-      methods.handleSubmit(onSubmit)();
+    if (currentLetterIdx === supplementalLetters.length - 1) {
+      if (declinedPrograms.length === 0) {
+        methods.handleSubmit(onSubmit)();
+      } else {
+        setCurrentStep(Steps.DeclineLetter);
+      }
     } else {
-      setCurrentStep(Steps.DeclineLetter);
+      if (currentLetterIdx > 0) {
+        const formData = methods.getValues();
+        const currentProgram = approvedPrograms[currentLetterIdx - 1];
+        if (!formData.approvalDecisions[currentProgram]) {
+          methods.setError(`approvalDecisions.${currentProgram}`, {
+            type: 'manual',
+            message: 'Please approve the certification before continuing.'
+          });
+          return;
+        }
+      }
+      setCurrentLetterIdx(prevIdx => prevIdx + 1);
     }
   }
 
@@ -201,12 +193,13 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
   }
 
   function getContinueButtonTxt() {
-    if (currentLetterIdx === supplementalLetters.length - 1 && declinedPrograms.length > 0) {
+    if (currentLetterIdx === 0) {
+      return `Continue & View ${supplementalLetters.length - 1} Supplemental Letter${supplementalLetters.length > 2 ? 's' : ''}`;
+    } else if (currentLetterIdx < supplementalLetters.length - 1) {
       return 'Sign and Continue';
-    } else if(declinedPrograms.length === 0) {
-      return 'Sign and Submit';
+    } else {
+      return declinedPrograms.length > 0 ? 'Sign and Continue' : 'Sign and Submit';
     }
-    return 'Continue';
   }
 
   if(isLoading) {
@@ -219,27 +212,31 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
 
   const content = (
     <>
-      <div className='display-flex flex-justify-end' style={{border: '1px solid black', borderBottom: 'none', padding: '0.5rem 1rem'}}><Button type='button' onClick={openContentInNewTab} outline>View PDF</Button></div>
+      <div className='display-flex flex-justify-end' style={{border: '1px solid black', borderBottom: 'none', padding: '0.5rem 1rem'}}><Button type='button' onClick={onViewPdf} outline>View PDF</Button></div>
       <div style={containerStyles}>
         <div className="body-content-renderer">
-          <BodyContentRenderer name={supplementalLetters[currentLetterIdx]} />
+          <BodyContentRenderer applicationId={applicationData?.id} name={supplementalLetters[currentLetterIdx]} />
         </div>
       </div>
-      <h5>Signature</h5>
-      {approvedPrograms.map((program, index) => (
-        <div key={program} style={{ display: index === currentLetterIdx ? 'block' : 'none' }}>
-          <Checkbox<ApprovalLetterType>
-            name={`approvalDecisions.${program}`}
-            label={`I have reviewed and approve the ${formatProgramText(program)} certification.`}
-          />
-        </div>
-      ))}
+      {currentLetterIdx > 0 && (
+        <>
+          <h5>Signature</h5>
+          {approvedPrograms.map((program, index) => (
+            <div key={program} style={{ display: index === currentLetterIdx - 1 ? 'block' : 'none' }}>
+              <Checkbox<ApprovalLetterType>
+                name={`approvalDecisions.${program}`}
+                label={`I have reviewed and approve the ${formatProgramText(program)} certification.`}
+              />
+            </div>
+          ))}
+        </>
+      )}
     </>
   );
 
   return (
     <FormProvider {...methods}>
-      <h4>Approval Letter(s)</h4>
+      <h4>{currentLetterIdx === 0 ? 'Approval Letter' : 'Supplemental Letter(s)'}</h4>
       {content}
 
       <ModalFooter style={{ marginTop: '3rem' }}>

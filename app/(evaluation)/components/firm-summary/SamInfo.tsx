@@ -1,14 +1,11 @@
 'use client'
+import { SamEntity } from '@/app/services/types/application-service/Application'
 import { Table } from '@trussworks/react-uswds'
 import moment from 'moment'
-import { useApplicationData } from '../../firm/useApplicationData'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
-import { useParams } from 'next/navigation'
-import { SamEntity } from '@/app/services/types/application-service/Application'
+import { useCurrentApplication } from '../../firm/useApplicationData'
 
 function SamInfo() {
-  const params = useParams<{application_id: string}>();
-  const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const { applicationData } = useCurrentApplication();
   const samEntity = applicationData?.sam_entity ?? null;
 
   return (
@@ -66,7 +63,7 @@ function SamInfo() {
                 <td>{samEntity ? moment(samEntity?.last_update_date).format('MM/DD/yy') : 'N/A'}</td>
                 <td>{samEntity ? moment(samEntity?.expiration_date).format('MM/DD/yy') : 'N/A'}</td>
                 <td>{getAddress(samEntity)}</td>
-                <td>{samEntity?.corporate_url ?? 'N/A'}</td>
+                <td>{samEntity?.entity_url ?? 'N/A'}</td>
                 <td>{samEntity ? moment(samEntity?.business_start_date).format('MM/DD/yy') : 'N/A'}</td>
                 <td>{samEntity?.cage_code ?? 'N/A'}</td>
               </tr>

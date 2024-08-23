@@ -1,23 +1,23 @@
 'use client'
 
-import React, { useRef } from 'react'
+import { NavItem } from '@/app/(evaluation)/types/types'
 import { RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
 import fetcher from '@/app/services/fetcher'
 import { REASON_CODE_ROUTE, ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
+import { getUserRole } from '@/app/shared/utility/getUserRole'
+import { RootState } from '@/app/(evaluation)/firm/store/store'
 import Close from '@mui/icons-material/Close'
 import { Alert, Button, ButtonGroup, Label, ModalRef } from '@trussworks/react-uswds'
-import { useState } from 'react'
+import { useParams, useSelectedLayoutSegment } from 'next/navigation'
+import { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import styles from '../../Evaluation.module.scss'
 import DeleteConfirmationModal from '../../modals/request-info/DeleteConfirmationModal'
 import RequestInfoModal from '../../modals/request-info/RequestInfoModal'
-import { useParams, useSelectedLayoutSegment } from 'next/navigation'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
-import { getUserRole } from '@/app/shared/utility/getUserRole'
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
-import { NavItem } from '@/app/(evaluation)/types/types'
+import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
 
 export interface ReasonState {
   id: number | null;
@@ -30,7 +30,7 @@ interface RtfRfiFormProps {
 
 function RtfRtiForm({ navItems }: RtfRfiFormProps) {
   const params = useParams<{application_id: string, section_questions: any}>();
-  const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const { applicationData } = useCurrentApplication();
   const selectedSegment = useSelectedLayoutSegment()
   const sessionData = useSessionUCMS()
   const userRole = getUserRole(sessionData?.data?.permissions || []);

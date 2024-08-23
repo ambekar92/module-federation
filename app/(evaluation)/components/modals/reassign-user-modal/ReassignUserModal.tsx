@@ -1,21 +1,23 @@
 'use client'
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
+import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData';
+import { USER_ROUTE } from '@/app/constants/routes';
+import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { assignUserToViewflow } from '@/app/services/api/evaluation-service/assignUserToViewflow';
+import fetcher from '@/app/services/fetcher';
 import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote';
-import { useUsers } from '@/app/services/queries/user-service/useUser';
 import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note';
+import { User } from '@/app/services/types/user-service/User';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, ButtonGroup, ComboBoxOption, Modal, ModalFooter, ModalRef } from '@trussworks/react-uswds';
 import { RefObject, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import useSWR from 'swr';
 import Combobox from '../../../../shared/form-builder/form-controls/Combobox';
 import RichText from '../../../../shared/form-builder/form-controls/rich-text/RichText';
 import { stripHtmlTags } from '../../../../shared/utility/stripHtmlTags';
 import { subjectSuffixMap, titleMap, userRolesOptionsMap } from './maps';
 import { ReassignType, ReassignUserType, schema } from './types';
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
-import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 
 type Props = {
     modalRef: RefObject<ModalRef>,
@@ -27,9 +29,19 @@ type Props = {
 const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}: Props ) => {
   const currentUser = useSessionUCMS();
   const {trigger, isMutating} = useCreateNote(false);
-  const {applicationData} = useApplicationData(ApplicationFilterType.id, applicationId);
-  const {data, isLoading} = useUsers('role_slug', userRolesOptionsMap(reassignType, currentUser));
+  const { applicationData } = useCurrentApplication();
   const [userOptions, setUserOptions] = useState<ComboBoxOption[] | null>(null);
+
+	 const isModalOpen = () => {
+    return modalRef.current?.modalIsOpen || false;
+  };
+
+  const { data, isLoading } = useSWR<User[]>(
+    isModalOpen() && reassignType ?
+      `${USER_ROUTE}?role_slug=${userRolesOptionsMap(reassignType, currentUser)}` :
+      null,
+    fetcher
+  );
 
   const methods = useForm<ReassignUserType>({
     defaultValues: {

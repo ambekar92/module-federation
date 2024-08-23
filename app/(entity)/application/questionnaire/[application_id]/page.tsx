@@ -14,6 +14,7 @@ import { applicationSteps, extractLastPart } from '../../utils/constants';
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
 import fetcher from '@/app/services/fetcher';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 
 const QuestionnaireListPage: React.FC = () => {
   const { contributorId, applicationId } = useApplicationContext();
@@ -38,7 +39,10 @@ const QuestionnaireListPage: React.FC = () => {
 
   return (
     <ApplicationLayout>
-      <h3>Please answer the questions about your business or firm in each section below. When all sections are complete, review and sign the application.</h3>
+      <h3>
+				Please answer the questions about your business or firm in each section below. When all sections are complete, review and sign the application.
+        <TooltipIcon text='Applicant must complete each questionnaire associated with the selected certification requests. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.' />
+      </h3>
       <CardGroup>
         {questionnairesData.map((questionnaire, questionIndex) => (
           <Card key={questionIndex} className='tablet:grid-col-4'>

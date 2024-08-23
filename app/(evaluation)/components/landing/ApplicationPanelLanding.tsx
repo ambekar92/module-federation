@@ -39,6 +39,7 @@ const ApplicationPanelLanding = () => {
         subject: 'Updated for evaluation review',
         description: 'Updated for evaluation review'
       }
+      // TODO: Find a better solution to deal with the delay
       await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
       await mutate();
       setShowButton(false)

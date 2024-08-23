@@ -17,6 +17,7 @@ import {
 import { Question, QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
 import { calculateEligibleSbaPrograms, OwnerType, useOwnerApplicationInfo } from '../hooks/useOwnershipApplicationInfo';
 import { setOwners } from '../redux/applicationSlice';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 
 type GridRow = {
   [key: string]: string | string[];
@@ -62,7 +63,10 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
   const renderOwnerTypeSelect = () => {
     return (
       <div className="usa-form-group">
-        <Label htmlFor="owner-type">Owner Type</Label>
+        <div className='display-flex'>
+          <Label htmlFor="owner-type">Owner Type</Label>
+          <TooltipIcon text='If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.' />
+        </div>
         <Select
           id="owner-type"
           name="owner-type"

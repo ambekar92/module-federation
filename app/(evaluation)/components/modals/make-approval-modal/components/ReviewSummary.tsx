@@ -75,7 +75,11 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
                   <strong>{program.programs.title}</strong>
                 </div>
                 <div>
-                  <span>{program.approver_decision}</span>
+                  <span>
+                    {methods.watch(`approval${programName}`) === Decision.Concur ? 'Concur' :
+                      methods.watch(`approval${programName}`) === Decision.Disagree ? 'Disagree' :
+                        ''}
+                  </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Controller

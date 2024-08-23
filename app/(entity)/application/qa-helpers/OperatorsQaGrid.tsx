@@ -13,6 +13,7 @@ import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid, Icon, Label, Table } from '@trussworks/react-uswds';
 import { useEffect, useState } from 'react';
 import { useOperatorApplicationInfo } from '../hooks/useOperatorApplicationInfo';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 
 type GridRow = {
   [key: string]: string | string[];
@@ -219,7 +220,7 @@ export const OperatorsQaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion
   return (
     <div className={`bg-base-lightest padding-y-2 padding-x-3 ${isSubQuestion ? 'padding-left-3' : ''}`}>
       <Label htmlFor='' className='maxw-full text-bold margin-top-0' requiredMarker={question.answer_required_flag}>
-        {question.title}
+        {question.title}<TooltipIcon text='Partners, members, and Controlling Individuals - Secondary users invoiced with the applying firm that may have ownership or control in business. These individuals can manage the entire application process outside of QO (Qualifying Owner) specific tasks.' />
       </Label>
       <Grid className='grid_questions control-questions' row gap='md'>
         {question.grid_questions?.map((gridQuestion) => (

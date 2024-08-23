@@ -1,27 +1,18 @@
-import React from 'react'
 import styles from './Evaluation.module.scss';
-import NotesWidget from './notes-widget/NotesWidget'
-import AnalystDocument from './notes-widget/AnalystDocument'
+import NotesWidget from './notes-widget/NotesWidget';
 
-import { Accordion } from '@trussworks/react-uswds'
-import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion'
-import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { useSessionUCMS } from '@/app/lib/auth';
-import RtfRtiForm from './rtf-rfi/form/RtfRfiForm';
+import { getUserRole } from '@/app/shared/utility/getUserRole';
+import { Accordion } from '@trussworks/react-uswds';
+import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion';
 import { NavItem } from '../types/types';
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
-import { useParams } from 'next/navigation';
+import RtfRtiForm from './rtf-rfi/form/RtfRfiForm';
 
 interface RightPanelProps {
-  isNavItemsLoading: boolean;
   navItems: NavItem[];
-  error: any;
 }
 
-function RightPanel({ isNavItemsLoading, navItems, error }: RightPanelProps) {
-  const params = useParams<{application_id: string}>();
-  const { applicationData, mutate } = useApplicationData(ApplicationFilterType.id, params.application_id)
+function RightPanel({ navItems }: RightPanelProps) {
   const sessionData = useSessionUCMS();
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const rightPanel: AccordionItemProps[] = [

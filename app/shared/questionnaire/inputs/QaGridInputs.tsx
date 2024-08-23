@@ -2,6 +2,7 @@
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { CharacterCount, DatePicker, Label, Select as UsSelect, TextInput as UsTextInput } from '@trussworks/react-uswds';
 import Select from 'react-select';
+import TooltipIcon from '../../components/tooltip/Tooltip';
 
 export const TextInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
   return (
@@ -138,9 +139,12 @@ export const MultiSelectInput: React.FC<{ question: Question; value: string[]; o
 
   return (
     <div>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
-        {question.title}
-      </Label>
+      <div className='display-flex'>
+        <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+          {question.title}
+        </Label>
+        {question.title === '8(a) Social Disadvantage' && <TooltipIcon text="Social Disadvantage - Refers to a number of factors that can impact an individual's ability to compete or advance in society." />}
+      </div>
       <Select
         id={question.name}
         classNamePrefix="react-select"

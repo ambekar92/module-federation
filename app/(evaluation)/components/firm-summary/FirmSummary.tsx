@@ -4,12 +4,10 @@ import {
   Accordion,
 } from '@trussworks/react-uswds'
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion'
-import { useApplicationData } from '../../firm/useApplicationData'
+import { useCurrentApplication } from '../../firm/useApplicationData'
 import NaicsCodes from './NaicsCodes'
 import SamInfo from './SamInfo'
 import VaCert from './VaCert'
-import { useParams } from 'next/navigation'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 
 const accordionItems: AccordionItemProps[] = [
   {
@@ -68,16 +66,14 @@ const accordionItems: AccordionItemProps[] = [
 ]
 
 function FirmSummary() {
-  const params = useParams<{application_id: string}>();
-  const {applicationData, isLoading} = useApplicationData(ApplicationFilterType.id, params.application_id)
-  const appication = applicationData?.application_type ?? null;
+  const { applicationData } = useCurrentApplication();
+  const application = applicationData?.application_type ?? null;
   return (
     <>
       <div className='grid-row'>
         <div className="grid-col-12">
           <h1>Business Summary</h1>
-          {isLoading && <p>Loading...</p>}
-          {!isLoading && <p> {appication?.description ?? 'N/A'} </p>}
+          <p>{application?.description ?? 'N/A'} </p>
         </div>
 
         <div className="grid-col-12 margin-top-4">

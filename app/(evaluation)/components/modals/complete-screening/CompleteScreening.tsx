@@ -46,6 +46,7 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, process
         subject: 'Updated for review',
         description: 'Updated for review'
       }
+      // TODO: Find a better solution to deal with the delay
       await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=completed-screening'
     } catch (error: any) {

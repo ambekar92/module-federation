@@ -18,9 +18,9 @@ const Input = <T extends FieldValues>({name, label, hint, ...props}: InputProps<
         <FormGroup error={!!error}>
           <span className='text-base'>{hint}</span>
           <ErrorMessage>{error?.message}</ErrorMessage>
-          <Checkbox label={label} style={{borderRadius: 0}} 
-          checked={field.value}
-          value={field.value} onChange={field.onChange} id={name} name={name} disabled={props.disabled}/>
+          <Checkbox label={label} style={{borderRadius: 0}}
+            checked={field.value}
+            value={field.value} onChange={field.onChange} id={name} name={name} disabled={props.disabled}/>
         </FormGroup>
       )}
     />

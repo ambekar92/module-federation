@@ -1,17 +1,15 @@
 'use client'
 
+import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 import { IRTFRequestItem } from '@/app/services/types/evaluation-service/RTFItems'
+import { ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
 import { Grid, ModalRef, Table } from '@trussworks/react-uswds'
-import { useParams } from 'next/navigation'
 import React, { useMemo, useRef, useState } from 'react'
-import { useApplicationData } from '../../../firm/useApplicationData'
 import styles from '../RtfRfi.module.scss'
-import ViewSentRTFModal from '../modals/ViewSentRTFModal'
 import ViewSentRFIModal from '../modals/ViewSentRFIModal'
-import { ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
+import ViewSentRTFModal from '../modals/ViewSentRTFModal'
 
 interface SentRtfTableProps {
   requestData: IRTFRequestItem[] | null;
@@ -20,9 +18,8 @@ interface SentRtfTableProps {
 
 const SentRtfTable: React.FC<SentRtfTableProps> = ({ requestData, reasonCodes }) => {
   const sessionData = useSessionUCMS()
-  const params = useParams<{application_id: string}>()
   const userRole = getUserRole(sessionData?.data?.permissions || [])
-  const { applicationData } = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const { applicationData } = useCurrentApplication();
   const [selectedItem, setSelectedItem] = useState<IRTFRequestItem | null>(null);
   const viewSentRTFModalRef = useRef<ModalRef>(null);
   const viewSentRFIModalRef = useRef<ModalRef>(null);

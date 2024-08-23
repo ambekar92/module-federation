@@ -4,7 +4,8 @@ import {
   ASSIGN_USER_TO_VIEWFLOW_ROUTE,
   USER_ROUTE,
 } from '@/app/constants/routes'
-import { fetcherGET, fetcherPUT } from '@/app/services/fetcher-legacy'
+import fetcher from '@/app/services/fetcher'
+import { fetcherPUT } from '@/app/services/fetcher-legacy'
 import {
   Button,
   ButtonGroup,
@@ -96,7 +97,7 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
     veteranInfo: '',
   })
   const [assignedUser, setAssignedUser] = useState('')
-  const { data, error } = useSWR<any>(USER_ROUTE, fetcherGET)
+  const { data, error } = useSWR<any>(USER_ROUTE, fetcher)
   const [userData, setUserData] = useState([])
   const {application_id: process_id } = useParams();
 

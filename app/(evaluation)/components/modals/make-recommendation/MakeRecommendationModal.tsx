@@ -1,12 +1,14 @@
 'use client'
 
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
+import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
 import { GET_DOCUMENTS, PROGRAM_APPLICATION, UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
+import fetcher from '@/app/services/fetcher'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
+import { ProgramApplicationType } from '@/app/services/types/application-service/Application'
+import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
 import {
   Button,
   ButtonGroup,
@@ -20,9 +22,6 @@ import {
 import { useParams } from 'next/navigation'
 import React, { RefObject, useEffect, useState } from 'react'
 import DocumentUploadInput from '../../../../shared/components/forms/DocumentUploadInput'
-import { ProgramApplicationType } from '@/app/services/types/application-service/Application'
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
-import fetcher from '@/app/services/fetcher'
 
 interface MakeRecommendationModalProps {
   modalRef: RefObject<ModalRef>
@@ -40,10 +39,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
   const [fileData, setFileData] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [documentId, setDocumentId] = useState<number>();
-  const { applicationData } = useApplicationData(
-    ApplicationFilterType.id,
-    params.application_id,
-  )
+  const { applicationData } = useCurrentApplication();
 
   const { trigger: triggerSubmit } = useCompleteEvalTask()
 

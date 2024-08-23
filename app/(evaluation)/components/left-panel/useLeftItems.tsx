@@ -1,44 +1,37 @@
 import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
-import fetcher from '@/app/services/fetcher';
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import useSWR from 'swr';
-import { NavItem, Params, QuestionnaireItem } from '../../types/types';
-import { getStaticNavItems, getAnalystQuestionnaires } from './constants';
-import { useApplicationData } from '../../firm/useApplicationData';
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import { useSessionUCMS } from '@/app/lib/auth';
+import fetcher from '@/app/services/fetcher';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
-import {
-  buildRoute,
-  FIRM_EVALUATION_PAGE,
-} from '@/app/constants/url'
+import { useParams } from 'next/navigation';
+import { useMemo } from 'react';
+import useSWR from 'swr';
+import { useCurrentApplication } from '../../firm/useApplicationData';
+import { Params, QuestionnaireItem } from '../../types/types';
+import { getAnalystQuestionnaires, getStaticNavItems } from './constants';
 
 export function useLeftItems() {
   const sessionData = useSessionUCMS();
-  const [questionnaireItems, setQuestionnaireItems] = useState<NavItem[]>([]);
-  const [analystQuestionnaireItems, setAnalystQuestionnaireItems] = useState<NavItem[]>([]);
-  const [staticNavItems, setStaticNavItems] = useState<NavItem[]>([]);
   const params = useParams<Params>();
-  const userRole = getUserRole(sessionData?.data?.permissions || []);
-  const { applicationData } = useApplicationData(ApplicationFilterType.id, params.application_id);
-  const firstContributorId = applicationData?.application_contributor?.[0]?.id;
+  const userRole = useMemo(() => getUserRole(sessionData?.data?.permissions || []), [sessionData?.data?.permissions]);
+  const { applicationData } = useCurrentApplication();
+
+  const firstContributorId = useMemo(() => applicationData?.application_contributor?.[0]?.id, [applicationData]);
+  const programApplications = useMemo(() => applicationData?.program_application || [], [applicationData]);
 
   const { data: navItems, isLoading, error } = useSWR<QuestionnaireItem[]>(
     firstContributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${firstContributorId}` : null,
     fetcher
   );
 
-  useEffect(() => {
-    if (!params.application_id) { return; }
-    const items = getStaticNavItems(params.application_id);
-    setStaticNavItems(items);
-  }, [params]);
+  const staticNavItems = useMemo(() => {
+    if (!params.application_id) {return [];}
+    return getStaticNavItems(params.application_id);
+  }, [params.application_id]);
 
-  useEffect(() => {
+  const analystQuestionnaireItems = useMemo(() => {
     if (firstContributorId && userRole === 'analyst') {
-      const analystQuestions = getAnalystQuestionnaires();
-      const analystItems: NavItem = {
+      const analystQuestions = getAnalystQuestionnaires(programApplications);
+      return [{
         section: 'Analyst Review',
         child: analystQuestions.map((url, index) => ({
           id: index,
@@ -50,31 +43,33 @@ export function useLeftItems() {
             .replace(/Analyst Questionnaire/g,'')
             .replace(/Eight A/g, '8(a)') || ''
         }))
-      };
-      setAnalystQuestionnaireItems([analystItems]);
-    } else {
-      setAnalystQuestionnaireItems([]);
+      }];
     }
-  }, [firstContributorId, userRole, params.application_id]);
+    return [];
+  }, [firstContributorId, userRole, params.application_id, programApplications]);
 
-  const applicationItem: NavItem = {
+  const applicationItem = useMemo(() => ({
     section: 'Application',
-    child: [
-      ...(navItems?.map(item => ({
-        id: item.id,
-        title: item.title,
-        url: item.url,
-        section: 'Application',
-      })) || [])
-    ]
-  };
-  const homeItem: NavItem = {
+    child: navItems?.map(item => ({
+      id: item.id,
+      title: item.title,
+      url: item.url,
+      section: 'Application',
+    })) || []
+  }), [navItems]);
+
+  const homeItem = useMemo(() => ({
     section: 'Home',
     child: [{ section: 'Home', url: applicationData?.id + '/evaluation', title: 'Home', id: 0 }]
-  };
+  }), [applicationData?.id]);
+
+  const allNavItems = useMemo(() =>
+    [homeItem, applicationItem, ...analystQuestionnaireItems, ...staticNavItems],
+  [homeItem, applicationItem, analystQuestionnaireItems, staticNavItems]
+  );
 
   return {
-    navItems: [homeItem, applicationItem, ...questionnaireItems, ...analystQuestionnaireItems, ...staticNavItems],
+    navItems: allNavItems,
     isLoading,
     error
   };

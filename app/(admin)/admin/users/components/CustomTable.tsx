@@ -1,16 +1,16 @@
 'use client'
-import React, { FC, useState, useRef, useEffect } from 'react'
-import { Table, Grid, Icon, Button, Pagination } from '@trussworks/react-uswds'
-import { TableHeader } from './CustomTableHeader'
+import { Button, Grid, Icon, Pagination, Table } from '@trussworks/react-uswds'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import CustomAlert from './Alerts'
-import ModalsDeleteUser from './DeleteUserForm'
+import { TableHeader } from './CustomTableHeader'
 import styles from './DeleteUser.module.scss'
+import ModalsDeleteUser from './DeleteUserForm'
 //fetch api
-import useSWR from 'swr'
-import { users, CustomTableProps } from '../components/utils/types'
 import { USER_ROUTE } from '@/app/constants/routes'
+import fetcher from '@/app/services/fetcher'
 import { Avatar } from '@mui/material'
-import { fetcherGET } from '@/app/services/fetcher-legacy'
+import useSWR from 'swr'
+import { CustomTableProps, users } from '../components/utils/types'
 
 const CustomTable: FC<CustomTableProps> = ({
   headers,
@@ -19,7 +19,7 @@ const CustomTable: FC<CustomTableProps> = ({
   onRowCountChange,
   newRow,
 }) => {
-  const { data, error } = useSWR<users>(USER_ROUTE, fetcherGET)
+  const { data, error } = useSWR<users>(USER_ROUTE, fetcher)
   const [editingUserRowId, setEditingUserRowId] = useState<number | null>(null)
   const [successRowId, setSuccessRowId] = useState<number | null>(null)
   const [showSuccessAlert, setShowSuccessAlert] = useState(false)
@@ -114,7 +114,7 @@ const CustomTable: FC<CustomTableProps> = ({
                     <td key={`${tableRow.id}`}>
                       <Grid row>
                         <Grid className="margin-left-2">
-                          <Avatar>{`${tableRow.first_name} ${tableRow.last_name}`}</Avatar> 
+                          <Avatar>{`${tableRow.first_name} ${tableRow.last_name}`}</Avatar>
                         </Grid>
                         <Grid className="margin-left-2 margin-top-2">
                           {tableRow.first_name} {tableRow.last_name}

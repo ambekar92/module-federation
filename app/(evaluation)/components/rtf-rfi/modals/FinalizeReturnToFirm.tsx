@@ -16,7 +16,8 @@ import {
   TextInput
 } from '@trussworks/react-uswds'
 import { useParams } from 'next/navigation'
-import React, { RefObject, useState } from 'react'
+import React, { RefObject, useState, useMemo } from 'react'
+import ReactDOMServer from 'react-dom/server'
 import styles from '../RtfRfi.module.scss'
 
 interface EditFormModalProps {
@@ -45,10 +46,51 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
 
   const userRole = getUserRole(sessionData?.data?.permissions || []);
 
+  const contentComponents = useMemo(() => {
+    const issuesList = tableData.map((item: IRTFItems, index: number) => (
+      <div className='margin-bottom-3' key={index}>
+        <p className='margin-bottom-1'>{item?.reason.title}</p>
+        {item.explanation && <p className='margin-y-0'>{item.explanation}</p>}
+      </div>
+    ));
+
+    const additionalInfo = (
+      <p>
+        Once you have addressed all issues listed above, please resubmit your application.
+        Upon resubmission, your application will be assigned to a screener, who will review the contents of your application package to ensure it is complete.
+        If you have not resubmitted your application within 30 days, your application may be removed for inactivity.
+        If you have questions, please contact {sessionData.data?.user.name} at 636-555-3226 or our main help desk at 317-555-0113.
+        We also encourage you to visit our resource library at <a href="#">www.xxx.sba.gov</a> or meet with a local SBA Resource Partner or District Office for assistance.
+        Visit <a href="https://www.sba.gov/tools/local-assistance" target="_blank" rel="noopener noreferrer">https://www.sba.gov/tools/local-assistance</a> to locate the one nearest you.
+      </p>
+    );
+
+    return { issuesList, additionalInfo };
+  }, [tableData, sessionData]);
+
+  const generateHTMLContent = () => {
+    return `
+      <h3>${userRole === 'reviewer' || userRole === 'analyst'
+    ? 'Request for Information'
+    : 'Return to Business'}</h3>
+      <p>Subject: ${subject}</p>
+      <p>
+        Your application #${params.application_id} has been returned for correction and is now available to edit.
+        The following issues were identified and must be resolved before you resubmit your application:
+      </p>
+      <h4>List of Issues</h4>
+      ${ReactDOMServer.renderToString(<>{contentComponents.issuesList}</>)}
+      ${ReactDOMServer.renderToString(contentComponents.additionalInfo)}
+    `;
+  };
+
   const handleReturnApp = async () => {
     setIsSubmitting(true);
     try {
-      await axiosInstance.post(RETURN_APPLICATION_TO_FIRM, {application_id: params.application_id})
+      await axiosInstance.post(RETURN_APPLICATION_TO_FIRM, {
+        application_id: parseInt(params.application_id),
+        message: generateHTMLContent()
+      })
       mutateDraft();
       mutateRequest();
     } catch(error) {
@@ -71,7 +113,7 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
       <ModalHeading id="invite-modal-heading" className="full-width">
         <Label htmlFor="session-modal" className="text-bold">
           <h3>
-              Finalize
+            Finalize
             {userRole === 'reviewer' || userRole === 'analyst'
               ? ' Request for Information'
               : ' Return to Business'}
@@ -95,30 +137,18 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
 
         <div>
           <p>
-								Your application #{params.application_id} has been returned for correction and is now available to edit.
-								The following issues were identified and must be resolved before you resubmit your application:
+            Your application #{params.application_id} has been returned for correction and is now available to edit.
+            The following issues were identified and must be resolved before you resubmit your application:
           </p>
         </div>
 
         <div>
           <h4>List of Issues</h4>
-          {tableData.map((item: IRTFItems, index: number) => (
-            <div className='margin-bottom-3' key={index}>
-              <p className='margin-bottom-1'>{item?.reason.title}</p>
-              {item.explanation && <p className='margin-y-0'>{item.explanation}</p>}
-            </div>
-          ))}
+          {contentComponents.issuesList}
         </div>
 
         <div>
-          <p>
-								Once you have addressed all issues listed above, please resubmit your application.
-								Upon resubmission, your application will be assigned to a screener, who will review the contents of your application package to ensure it is complete.
-								If you have not resubmitted your application within 30 days, your application may be removed for inactivity.
-								If you have questions, please contact {sessionData.data?.user.name} at 636-555-3226 or our main help desk at 317-555-0113.
-								We also encourage you to visit our resource library at <a href="#">www.xxx.sba.gov</a> or meet with a local SBA Resource Partner or District Office for assistance.
-								Visit <a href="https://www.sba.gov/tools/local-assistance" target="_blank" rel="noopener noreferrer">https://www.sba.gov/tools/local-assistance</a> to locate the one nearest you.
-          </p>
+          {contentComponents.additionalInfo}
         </div>
       </div>
 
@@ -138,7 +168,7 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
             className={`${styles['actionButton']}`}
             onClick={onClose}
           >
-              Cancel
+            Cancel
           </span>
         </ButtonGroup>
       </ModalFooter>

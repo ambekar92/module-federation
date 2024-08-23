@@ -6,9 +6,8 @@ import HubMock from '../../../components/questionnaire/HubMock';
 import { setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
-import { QuestionnaireProps } from '../../../utils/types';
 
-function HubzoneCalculator({contributorId}: QuestionnaireProps) {
+function HubzoneCalculator() {
   const dispatch = useApplicationDispatch();
   useUpdateApplicationProgress('Hubzone Calculator');
 

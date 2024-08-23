@@ -19,6 +19,7 @@ import { applicationSteps } from '../utils/constants';
 import { convertOperatorAnswerToContributors, convertOwnerAnswerToContributors } from '../utils/convertToContributor';
 import { useUserApplicationInfo } from '../utils/useUserApplicationInfo';
 import useSWR from 'swr';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 
 function ContributorInvitation() {
   useUpdateApplicationProgress('Contributor Invitation');
@@ -306,9 +307,7 @@ function ContributorInvitation() {
 
   return (
     <>
-		  <div>
-        <h1>Contributor Invitations</h1>
-      </div>
+      <h1>Contributor Invitations<TooltipIcon text='A contributor may add information to the application; however, the contributor can only see the information he/she is providing. Everyone contributing to your Firm must provide their contribution details before you can submit your Firm’s application.' /></h1>
       <InviteContributorModal
         contributors={contributors}
         open={showModal}
@@ -393,7 +392,7 @@ function ContributorInvitation() {
 
       {ownerTableRows.length > 0 && (
         <>
-          <h2>Owners</h2>
+          <h2>Owners<TooltipIcon text='An applicant or Participant must be at least 51 percent unconditionally and directly owned by one or more socially and economically disadvantaged individuals who are citizens of the United States, except for concerns owned by Indian tribes, Alaska Native Corporations, Native Hawaiian Organizations, or Community Development Corporations.' /></h2>
           <p>Your firm must be at least 51% owned by one or more economically disadvantaged individuals to qualify for the SBA program. If you do not own 51% or more of the firm, send the other owner(s) who are claiming economic disadvantage an invitation to submit their information and questionnaire.</p>
           <p>Note: An individual can only claim disadvantage for SBA certification once in their lifetime. If you own 51% or more of the firm, the other owner(s) do not need to submit their information and questionnaire</p>
           <CustomTable

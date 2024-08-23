@@ -1,13 +1,33 @@
 import { NavItem } from '../../types/types';
-export const getAnalystQuestionnaires = () => [
-  '/analyst-questionnaire-ownership',
-  '/analyst-questionnaire-control',
-  '/analyst-questionnaire-additional-questions',
-  '/analyst-questionnaire-hubzone-specific',
-  '/analyst-questionnaire-economic-disadvantage',
-  '/analyst-questionnaire-eight-a-specific',
-  '/analyst-questionnaire-social-disadvantage'
-];
+export const getAnalystQuestionnaires = (programApplications: any[]) => {
+  const baseQuestionnaires = [
+    '/analyst-questionnaire-ownership',
+    '/analyst-questionnaire-control',
+    '/analyst-questionnaire-additional-questions',
+  ];
+
+  const programSpecificQuestionnaires = [];
+
+  const hasProgram = (programName: string) =>
+    programApplications.some(app => app.programs.name === programName);
+
+  if (hasProgram('eight_a') || hasProgram('ed_wosb')) {
+    programSpecificQuestionnaires.push('/analyst-questionnaire-economic-disadvantage');
+  }
+
+  if (hasProgram('eight_a')) {
+    programSpecificQuestionnaires.push(
+      '/analyst-questionnaire-eight-a-specific',
+      '/analyst-questionnaire-social-disadvantage'
+    );
+  }
+
+  if (hasProgram('hubzone')) {
+    programSpecificQuestionnaires.push('/analyst-questionnaire-hubzone-specific');
+  }
+
+  return [...baseQuestionnaires, ...programSpecificQuestionnaires];
+};
 
 export const getStaticNavItems = (application_id: string): NavItem[] => [
   {

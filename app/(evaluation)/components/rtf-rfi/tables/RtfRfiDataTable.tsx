@@ -169,8 +169,8 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
           </Table>
         </div>
 
-        {((userRole === 'screener' && applicationData?.process.data.step === 'screening' && applicationData?.workflow_state === 'under_review') ||
-          (userRole === 'analyst' && applicationData?.process.data.step === 'analyst' && applicationData?.process.data?.review_start === true )) && (
+        {((userRole === 'screener' && applicationData?.process?.data.step === 'screening' && applicationData?.workflow_state === 'under_review') ||
+          (userRole === 'analyst' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true )) && (
           <div className="margin-top-2">
             <Button
               type="button"
@@ -179,7 +179,8 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
             >
               {userRole === 'screener' ? 'Finalize Return to Business' : 'Finalize Request for Information' }
             </Button>
-          </div>)}
+          </div>
+        )}
       </Grid>
 
       <RequestInfoModal

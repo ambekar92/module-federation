@@ -1,11 +1,10 @@
 'use client'
 
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData'
+import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote'
 import { useChangeTier } from '@/app/services/mutations/useChangeTier'
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters'
 import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note'
 import {
   Button,
@@ -31,10 +30,7 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
 }) => {
   const sessionData = useSessionUCMS()
   const params = useParams<{ application_id: string }>()
-  const { applicationData } = useApplicationData(
-    ApplicationFilterType.id,
-    params.application_id,
-  )
+  const { applicationData } = useCurrentApplication();
 
   const [description, setDescription] = useState('')
   const [userId, setUserId] = useState<number | null>(null)

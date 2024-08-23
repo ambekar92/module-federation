@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import TurndownService from 'turndown';
 import { marked } from 'marked';
-import { DOCUMENT_TEMPLATE_ROUTE } from '@/app/constants/routes';
+import { DOCUMENT_TEMPLATE_ROUTE, LETTER_FOR_APPLICATION_ROUTE } from '@/app/constants/routes';
 import fetcher from '@/app/services/fetcher';
 import { DocumentTemplate } from '@/app/services/types/document-service/DocumentTemplate';
 import { Button } from '@trussworks/react-uswds';
@@ -10,6 +10,7 @@ import { Button } from '@trussworks/react-uswds';
 interface BodyContentRendererProps {
   name: string;
   isEditable?: boolean;
+	applicationId: number | null;
 }
 
 const containerStyles: React.CSSProperties = {
@@ -19,7 +20,7 @@ const containerStyles: React.CSSProperties = {
 
 const turndownService = new TurndownService();
 
-const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEditable = false }) => {
+const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEditable = false, applicationId }) => {
   const [fullHtmlContent, setFullHtmlContent] = useState('');
   const [bodyContent, setBodyContent] = useState('');
   const [markdownContent, setMarkdownContent] = useState('');
@@ -27,7 +28,7 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
   const [isSaving, setIsSaving] = useState(false);
 
   const { data: documentTemplates, error } = useSWR<DocumentTemplate[]>(
-    DOCUMENT_TEMPLATE_ROUTE,
+    applicationId && name ? `${LETTER_FOR_APPLICATION_ROUTE}?template_name=${name}&application_id=${applicationId}` : null,
     fetcher
   );
 

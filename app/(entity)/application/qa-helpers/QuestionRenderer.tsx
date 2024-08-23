@@ -206,7 +206,9 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
               case 'text':
               case 'number':
               case 'select':
-                shouldRenderSubQuestion = answer === rule.answer_given_value[question.question_type] as any;
+                shouldRenderSubQuestion =
+                  answer === rule.answer_given_value[question.question_type] as any ||
+                  rule.answer_given_value[question.question_type] === null;
                 break;
             }
           }
@@ -215,9 +217,10 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
             return (
               <Grid col={12} key={`sub-${index}-${ruleIndex}`}>
                 <QuestionRenderer
-                  contributorId={contributorId} userId={userId}
+                  contributorId={contributorId}
+                  userId={userId}
                   question={rule.sub_question}
-                  index={index * 1000 + ruleIndex}  // Ensure unique index
+                  index={index * 1000 + ruleIndex}
                   selectedAnswers={selectedAnswers}
                   handleAnswerChange={handleAnswerChange}
                   isSubQuestion={true}

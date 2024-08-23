@@ -1,17 +1,17 @@
 'use client'
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 //import { NavbarHome2 } from './shared/components/layout-temp/NavbarHome2'
 import Footer from './layout/Footer'
 import Navbar from './layout/Navbar'
 //import Footer from './shared/layout/Footer'
-import './globals.scss'
-import { SessionProvider } from 'next-auth/react'
-import type { Session } from 'next-auth'
 import { useTheme } from '@mui/material/styles'
-import UserSessionModal from './shared/components/user-session-management-modal/UserSessionModal'
 import { GovBanner } from '@trussworks/react-uswds'
-import SWRProvider from './services/SWRProvider'
+import type { Session } from 'next-auth'
+import { SessionProvider } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
+import './globals.scss'
+import SWRProvider from './services/SWRProvider'
+import UserSessionModal from './shared/components/user-session-management-modal/UserSessionModal'
 
 type RootLayoutProps = {
   children: React.ReactNode

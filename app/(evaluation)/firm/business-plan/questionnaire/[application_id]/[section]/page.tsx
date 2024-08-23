@@ -1,18 +1,16 @@
 'use client';
 import { QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
-import { fetcherGET } from '@/app/services/fetcher';
+import fetcher from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import { Provider } from 'react-redux';
 import useSWR from 'swr';
 import { useParams } from 'next/navigation';
 import { QuestionnaireListType } from '@/app/(entity)/application/components/questionnaire/utils/types';
 import HubzoneResults from '@/app/(entity)/application/sections/HubzoneResults';
 import HubMock from '@/app/(entity)/application/components/questionnaire/HubMock';
 import Questions from '@/app/(entity)/application/qa-helpers/Questions';
-import applicationStore from '@/app/(entity)/application/redux/applicationStore';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -21,7 +19,7 @@ const QuestionnairePage: React.FC = () => {
   const contributorId = parseInt(params.contributor_id as string, 10);
   const { data: questionnairesData, error } = useSWR(
     params.contributor_id ? `${QUESTIONNAIRE_LIST_ROUTE}/${params.contributor_id}` : null,
-    fetcherGET<QuestionnaireListType>
+    fetcher<QuestionnaireListType>
   );
 
   useEffect(() => {
@@ -54,20 +52,16 @@ const QuestionnairePage: React.FC = () => {
 
   if (section === 'hubzone-results') {
     return (
-      <Provider store={applicationStore}>
-
-        <QAWrapper
-          fill
-          mainContent={
-            <HubzoneResults contributorId={contributorId} />
-          }
-        />
-      </Provider>
+      <QAWrapper
+        fill
+        mainContent={
+          <HubzoneResults />
+        }
+      />
     )
   }
   return (
-    <Provider store={applicationStore}>
-
+    <>
       {section === 'hubzone-calculator' ? (
         <QAWrapper
           fill
@@ -83,6 +77,8 @@ const QuestionnairePage: React.FC = () => {
               url={`${QUESTIONNAIRE_ROUTE}/${params.contributor_id}/${section}`}
               title={sectionTitle}
               contributorId={contributorId}
+              onRefetchQuestionnaires={()=>{}}
+              setCanNavigate={()=>{}}
             />
           }
         />
@@ -119,7 +115,7 @@ const QuestionnairePage: React.FC = () => {
           </Link>
         )}
       </ButtonGroup>
-    </Provider>
+    </>
   );
 };
 

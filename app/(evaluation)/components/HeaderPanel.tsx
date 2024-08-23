@@ -1,15 +1,11 @@
-// Todo need to find a better way not to include useApplicationData everywhere to check view permission
 'use client'
 
 import { SamEntity } from '@/app/services/types/application-service/Application';
-import { useApplicationData } from '../firm/useApplicationData';
-import { useParams } from 'next/navigation';
-import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import humanizeString from 'humanize-string';
+import { useCurrentApplication } from '../firm/useApplicationData';
 
 function HeaderPanel() {
-  const params = useParams<{application_id: string}>();
-  const {applicationData} = useApplicationData(ApplicationFilterType.id, params.application_id)
+  const { applicationData } = useCurrentApplication();
   const samEntity = applicationData?.sam_entity ?? null;
   const stateOrder = ['screening', 'analyst', 'reviewer', 'ogc', 'oss', 'approver'];
 
@@ -60,7 +56,7 @@ function HeaderPanel() {
           <div className="grid-col-2 margin-right-3">
             <p className="margin-0 text-bold">Status</p>
             <div className="margin-top-1" style={{textTransform: 'capitalize'}}>
-              <span>{applicationData && humanizeString(applicationData?.workflow_state)}</span>
+              <span>{applicationData && humanizeString(applicationData?.workflow_state_status.title_internal)}</span>
             </div>
           </div>
           <div className="grid-col-3 margin-right-3">

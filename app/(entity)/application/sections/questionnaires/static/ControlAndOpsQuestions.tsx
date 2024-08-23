@@ -18,7 +18,7 @@ import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplic
 
 function ControlAndOpsQuestions() {
   const dispatch = useApplicationDispatch();
-  const { applicationId, userId, contributorId } = useApplicationContext();
+  const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : '';
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
@@ -88,7 +88,7 @@ function ControlAndOpsQuestions() {
             </div>
             <div>
               <h2>Management Structure</h2>
-              <p>Based on the information provided, [Business Name] is designated as a Partnership.</p>
+              <p>Based on the information provided, {applicationData?.sam_entity.legal_business_name} is designated as a {applicationData?.sam_entity.entity_structure}.</p>
               <p>If this designation is incorrect, please discontinue this application and update your information on <a href="/application">SAM.gov</a></p>
             </div>
 

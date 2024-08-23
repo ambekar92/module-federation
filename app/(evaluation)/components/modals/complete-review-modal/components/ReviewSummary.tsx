@@ -46,7 +46,7 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
   async function onContinue(formData: ReviewSummaryType) {
     setValue('step', Steps.ApprovalLetter)
     setValue('reviewSummary', formData)
-
+    console.log(formData)
     setReviewSummaryData(formData)
     setCurrentStep(Steps.ApprovalLetter)
   }
@@ -75,7 +75,7 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
                   <strong>{program.programs.title}</strong>
                 </div>
                 <div>
-                  <span>{program.approver_decision}</span>
+                  <span>{program.analyst_recommendation}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Controller

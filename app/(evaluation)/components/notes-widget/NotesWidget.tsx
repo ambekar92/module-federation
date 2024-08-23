@@ -10,7 +10,7 @@ function NotesWidget() {
     resolver: zodResolver(schema),
     defaultValues: {description: '', subject: ''},
     shouldUnregister: true
-});
+  });
   const { mutate } = useNotes()
 
   return (
