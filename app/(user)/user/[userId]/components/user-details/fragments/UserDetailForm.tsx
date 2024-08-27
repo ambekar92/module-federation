@@ -48,10 +48,6 @@ function UserDetailForm({ userProfileData }: userDetailFormProps) {
     defaultValues: {
       role: userProfileData.role,
       status: userProfileData.status,
-      dateJoined: userProfileData.date_joined,
-      firstName: userProfileData.first_name + ' ' + userProfileData.last_name,
-      lastLogin: userProfileData.last_login,
-      email: userProfileData.email,
     },
   })
 
@@ -107,7 +103,7 @@ function UserDetailForm({ userProfileData }: userDetailFormProps) {
         </Grid>
         {openEdit ? (
           <FormInputs
-            setUserData={setUserData}
+            setUserData={setUserData as any}
             control={control}
             errors={errors}
             handleSubmit={handleSubmit}

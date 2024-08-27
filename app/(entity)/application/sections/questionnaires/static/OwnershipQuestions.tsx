@@ -17,6 +17,7 @@ import { OwnershipQaGrid } from '../../../qa-helpers/OwnershipQaGrid';
 import { selectApplication, setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 function OwnershipQuestions() {
   // Redux
@@ -33,6 +34,12 @@ function OwnershipQuestions() {
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [totalOwnershipPercentage, setTotalOwnershipPercentage] = useState(0);
+
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.ownership.stepIndex));
@@ -78,7 +85,7 @@ function OwnershipQuestions() {
   };
 
   if (error) {return <div>Error: {error.message}</div>;}
-  if (!data || isLoading) {return <div>Loading...</div>;};
+  if (!data || isLoading) {return <Spinner center />;};
 
   return (
     <>
@@ -94,7 +101,7 @@ function OwnershipQuestions() {
             </div>
             <div>
       			<h2>Business Structure</h2>
-              <p>Based on the information provided by SAM, {applicationData?.sam_entity.legal_business_name} is designated as a Partnership.</p>
+              <p>Based on the information provided by SAM, {applicationData?.sam_entity.legal_business_name} is designated as a {applicationData?.entity.structure}.</p>
               <p>If this designation is incorrect, please discontinue this application and update your information on <a href="/application">SAM.gov</a></p>
             </div>
 

@@ -24,7 +24,6 @@ import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoginResponse } from '../types'
 import { SignInFormData, SignInFormSchema } from './Schema'
-type RoleType = `${Role}`;
 
 export default {
   title: 'Page Templates/Sign In',
@@ -43,17 +42,10 @@ export default {
   },
 }
 
-const returnToTop = (
-  <GridContainer className="usa-footer__return-to-top">
-    <a href="#">Return to top</a>
-  </GridContainer>
-)
-
 export const SignIn = (): React.ReactElement => {
   const [showPassword, setShowPassword] = React.useState(false);
   const router = useRouter()
   const {
-    trigger,
     control,
     handleSubmit,
     getValues,

@@ -3,7 +3,7 @@ import { Label, TextInput } from '@trussworks/react-uswds';
 import { QaInputProps } from './types';
 import { useState } from 'react';
 
-export const HiddenTextInput = ({ question, inputId, handleChange, isSubQuestion, selectedAnswers }: QaInputProps) => {
+export const HiddenTextInput = ({ question, ordinalLabel, handleChange, isSubQuestion, selectedAnswers }: QaInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const currentValue = selectedAnswers[question.name]?.value !== undefined
     ? selectedAnswers[question.name].value
@@ -11,8 +11,8 @@ export const HiddenTextInput = ({ question, inputId, handleChange, isSubQuestion
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
-        <span>{question.title}</span>
+      <Label className={`maxw-full ${ordinalLabel ? 'margin-top-0' : 'text-bold'} display-flex`} requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+        {ordinalLabel && `${question.question_ordinal}. `}<span>{question.title}</span>
       </Label>
       <div className='display-flex flex-column' style={{maxWidth: '480px'}}>
         <TextInput

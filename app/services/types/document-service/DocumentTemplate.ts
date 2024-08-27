@@ -10,6 +10,7 @@ export enum DocumentTemplateType {
 	generalApproval = 'ucp_approval_letter',
 	hubzoneDecline = 'ucp_decline_letter_hz_supp',
 	wosbApproval = 'ucp_approval_letter_wosb_supp',
+	wosbDecline = 'ucp_decline_letter_wosb_supp',
 	generalDecline = 'ucp_decline_letter',
 	eightADeclineAppeal = 'ucp_decline_letter_8a_supp_appeal',
 	vetCertDecline = 'ucp_decline_letter_vet_cert_supp_no_appeal',

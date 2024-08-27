@@ -17,6 +17,7 @@ import {
 import ProgramCard from '../../../../shared/components/ownership/ProgramCard'
 import { ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url'
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 
 const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`;
 
@@ -109,7 +110,7 @@ function Programs() {
   }
 
   if(isLoading) {
-    return <h2>Loading...</h2>
+    return <Spinner center />
   }
 
   return (

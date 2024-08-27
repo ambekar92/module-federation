@@ -8,6 +8,7 @@ import styles from '../WorkloadDashboard.module.scss';
 import { IProductivity } from '../types';
 import { Role } from '@/app/shared/types/role';
 import { useCurrentPath } from '../hooks/useCurrentPath';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const Productivity = () => {
   const {data: {user_id, permissions}} = useSessionUCMS();
@@ -23,7 +24,7 @@ const Productivity = () => {
   return (
     <div>
       <h3>{isReviewersDashboard ? 'Team Productivity' : 'Productivity'}</h3>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Spinner center />}
       {!isLoading && <>
         <Show>
           <Show.When isTrue={isTasksDashboard}>

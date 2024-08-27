@@ -17,12 +17,13 @@ import Questions from '../../../qa-helpers/Questions';
 import applicationStore from '../../../redux/applicationStore';
 import HubzoneResults from '../../../sections/HubzoneResults';
 import { applicationSteps, extractLastPart } from '../../../utils/constants';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const params = useParams()
   const section = params.section.toString();
-  const { contributorId, applicationId } = useApplicationContext();
+  const { contributorId, applicationId, applicationData } = useApplicationContext();
   const closeApplicationRef = useRef<ModalRef>(null);
   const [canNavigate, setCanNavigate] = useState(true);
   const [title, setTitle] = useState<string>('');
@@ -54,6 +55,12 @@ const QuestionnairePage: React.FC = () => {
   }, [questionnairesData]);
 
   useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
+
+  useEffect(() => {
     if (allSections.length > 0) {
       const index = allSections.findIndex((item) => item.includes(section));
       setCurrentIndex(index !== -1 ? index : 0);
@@ -79,14 +86,14 @@ const QuestionnairePage: React.FC = () => {
   }, [questionnairesData, section]);
 
   if (!questionnairesData) {
-    return <h3>Loading...</h3>;
+    return <Spinner center />
   }
 
   if(error) {
     return <div>Error: {error.message}</div>;
   }
 
-  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!canNavigate) {
       e.preventDefault();
       closeApplicationRef.current?.toggleModal();
@@ -136,7 +143,7 @@ const QuestionnairePage: React.FC = () => {
             <Link
               className="usa-button usa-button--outline"
               href={buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId })}
-              onClick={(e) => handleNavigation(e, buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }))}
+              onClick={(e) => handleNavigation(buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }))}
             >
       				Previous
             </Link>
@@ -149,7 +156,7 @@ const QuestionnairePage: React.FC = () => {
                   section: allSections[currentIndex - 1]
                 })
               }
-              onClick={(e) => handleNavigation(e,
+              onClick={() => handleNavigation(
                 buildRoute(QUESTIONNAIRE_PAGE, {
                   applicationId: applicationId,
                   section: allSections[currentIndex - 1]
@@ -166,7 +173,7 @@ const QuestionnairePage: React.FC = () => {
                 applicationId: applicationId,
                 stepLink: applicationSteps.documentUpload.link
               })}
-              onClick={(e) => handleNavigation(e,
+              onClick={() => handleNavigation(
                 buildRoute(APPLICATION_STEP_ROUTE, {
                   applicationId: applicationId,
                   stepLink: applicationSteps.documentUpload.link
@@ -182,7 +189,7 @@ const QuestionnairePage: React.FC = () => {
                 applicationId: applicationId,
                 section: allSections[currentIndex + 1]
               })}
-              onClick={(e) => handleNavigation(e,
+              onClick={() => handleNavigation(
                 buildRoute(QUESTIONNAIRE_PAGE, {
                   applicationId: applicationId,
                   section: allSections[currentIndex + 1]

@@ -5,7 +5,7 @@ import styles from './DocumentsList.module.scss'
 import { DocumentsType } from '@/app/services/types/document'
 import { faker } from '@faker-js/faker'
 
-function DocumentsListFoldersTable({documentsData}: {documentsData: DocumentsType | undefined}) {
+function DocumentsListFoldersTable({documentsData}: {documentsData: DocumentsType}) {
   const LoadTableRow = () => {
     if(documentsData) {
       return documentsData.map((item: any, index: number) => {

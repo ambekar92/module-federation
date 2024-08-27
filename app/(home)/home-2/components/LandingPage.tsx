@@ -4,21 +4,21 @@ import { TopLinks } from './TopLinks'
 
 export const LandingPage = () => {
   return (
-    <>
+    <div className='margin-top-1 position-relative'>
       <div
         className="width-full maxw-full"
         style={{
-          backgroundColor: '#1a4480',
+          backgroundColor: '#002e6d',
           marginTop: '-8px',
           height: '250px',
         }}
       >
         <div className="padding-left-5 padding-y-2">
           <h1 style={{ color: 'white', fontWeight: '700' }}>
-            Unified Certification Platform
+						MySBA Certification Portal
           </h1>
           <div
-            className="padding-bottom-2"
+            className="padding-bottom-2 padding-top-1"
             style={{
               font: 'Source Sans 3',
               fontWeight: '100',
@@ -27,7 +27,7 @@ export const LandingPage = () => {
               marginTop: '-18px',
             }}
           >
-            Your one-stop destination for all SBA certification requirements.
+            If you see someone without a smile, give them one of yours!
           </div>
         </div>
       </div>
@@ -40,7 +40,7 @@ export const LandingPage = () => {
       <div>
         <OurProgram />
       </div>
-    </>
+    </div>
   )
 }
 

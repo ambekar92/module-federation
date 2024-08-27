@@ -11,7 +11,7 @@ const Audit = ({page, pageSize}: {page: number, pageSize: number}) => {
     <>
       <h1>Audit</h1>
       <p>
-        Below is a detailed, timestamped list of actions taken during this application’s review. You can sort any column by clicking the arrows in the column header.
+        Below is a detailed, timestamped list of actions taken during this application&apos;s review. You can sort any column by clicking the arrows in the column header.
       </p>
       <Button style={{marginLeft: 'auto', display: 'flex'}} type='button' outline>Export</Button>
       <Table bordered fullWidth>

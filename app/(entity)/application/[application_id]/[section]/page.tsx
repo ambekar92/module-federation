@@ -1,18 +1,16 @@
 'use client'
 import dynamic from 'next/dynamic'
+import { useParams } from 'next/navigation'
 import React from 'react'
 import { Provider } from 'react-redux'
 import ApplicationLayout from '../../components/ApplicationLayout'
 import applicationStore from '../../redux/applicationStore'
 import ContributorInvitation from '../../sections/ContributorInvitation'
-import ControlAndOperations from '../../sections/ControlAndOperations'
 import DocumentUpload from '../../sections/DocumentUpload'
 import EligiblePrograms from '../../sections/EligiblePrograms'
-import Ownership from '../../sections/Ownership'
+import EntityOwned from '../../sections/EntityOwned'
 import ControlAndOpsQuestions from '../../sections/questionnaires/static/ControlAndOpsQuestions'
 import OwnershipQuestions from '../../sections/questionnaires/static/OwnershipQuestions'
-import EntityOwned from '../../sections/EntityOwned'
-import { useParams } from 'next/navigation'
 
 // Import the Attestation component dynamically and disable SSR
 // NOTE: This is really just to allow the build to work will need to be fixed once API is up -KJ

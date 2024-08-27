@@ -7,6 +7,7 @@ import TableHeader from '../components/TableHeader'
 import styles from './Entities.module.scss'
 import TablePagination from './TablePagination'
 import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 const PAGE_SIZE = 8
 
 interface IApplication {
@@ -155,7 +156,7 @@ const ApplicationTable = async ({
         <tbody className={styles['table']}>
           {isLoading ? (
             <tr>
-              <td>Loading...</td>
+              <td><Spinner center /></td>
             </tr>
           ) : (
             data

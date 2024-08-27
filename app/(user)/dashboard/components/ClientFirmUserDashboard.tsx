@@ -12,6 +12,7 @@ import styles from '../utils/FirmDashboard.module.scss'
 import ApplicationCards from './ApplicationCards'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
 import { Application } from '@/app/services/types/application-service/Application'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 
 export default function ClientFirmUserDashboard() {
   const { data: session, status } = useSessionUCMS()
@@ -57,48 +58,51 @@ export default function ClientFirmUserDashboard() {
     // Prevent default action and event bubbling if needed
     event.preventDefault()
     event.stopPropagation()
+    if(!data) {return;}
+    const currentApplication = data.find(app => app.id === id)
+    if (!currentApplication) {return;}
 
-    const status = event.currentTarget.getAttribute('data-status')
-
+    const status = currentApplication.workflow_state
+    console.log(currentApplication)
     // Conditional rendering based on status
     const buttons =
-      status === 'In progress' ? (
-        <div className={styles.buttonContainer}>
-          <Button
-            type="button"
-            data-type="delete"
-            className={styles.actionButton}
-            onClick={handleActionButtonClick}
-          >
-            Delete Application
-          </Button>
-          <Button
-            type="button"
-            className={styles.closeIcon}
-            onClick={() => setClickedId(null)}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </Button>
-        </div>
-      ) : (
-        <div className={styles.buttonContainer}>
-          <Button
-            type="button"
-            data-type="withdraw"
-            className={styles.actionButton}
-            onClick={handleActionButtonClick}
-          >
-            <div className={styles.container}>Withdraw Application</div>
-          </Button>
-          <Button
-            type="button"
-            className={styles.closeIcon}
-            onClick={() => setClickedId(null)}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </Button>
-        </div>
-      )
+    status === 'submitted' ? (
+      <div className={styles.buttonContainer}>
+        <Button
+          type="button"
+          data-type="withdraw"
+          className={styles.actionButton}
+          onClick={handleActionButtonClick}
+        >
+          <div className={styles.container}>Withdraw Application</div>
+        </Button>
+        <Button
+          type="button"
+          className={styles.closeIcon}
+          onClick={() => setClickedId(null)}
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </Button>
+      </div>
+    ) : (
+      <div className={styles.buttonContainer}>
+        <Button
+          type="button"
+          data-type="delete"
+          className={styles.actionButton}
+          onClick={handleActionButtonClick}
+        >
+          Delete Application
+        </Button>
+        <Button
+          type="button"
+          className={styles.closeIcon}
+          onClick={() => setClickedId(null)}
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </Button>
+      </div>
+    )
 
     setActionButton(buttons)
     setClickedId(id)
@@ -120,7 +124,7 @@ export default function ClientFirmUserDashboard() {
   }
 
   if (!data) {
-    return <div>Loading...</div>
+    return <Spinner center />
   }
 
   return (

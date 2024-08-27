@@ -2,7 +2,6 @@ import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import { FieldValues, useFormContext } from 'react-hook-form'
 import {
   selectApplication,
-  setIsEditingOwnedEntity,
 } from '../../../redux/applicationSlice'
 import {
   useApplicationDispatch,
@@ -19,7 +18,6 @@ const ActionButtons = ({ handleAddEntity }: { handleAddEntity: any }) => {
 
   const { isEditingOwnedEntity, ownedEntity } =
     useApplicationSelector(selectApplication)
-  const dispatch = useApplicationDispatch()
 
   function onSubmit(data: FieldValues) {
     if (errors && Object.entries(errors).length > 0) {
@@ -31,7 +29,7 @@ const ActionButtons = ({ handleAddEntity }: { handleAddEntity: any }) => {
 
   function handleCancel() {
     if (isEditingOwnedEntity) {
-      reset(ownedEntity)
+      reset()
       return
     }
     reset(defaultValues)
@@ -44,7 +42,7 @@ const ActionButtons = ({ handleAddEntity }: { handleAddEntity: any }) => {
         onClick={handleSubmit(onSubmit)}
         disabled={
           (errors && Object.entries(errors).length > 0) ||
-          (ownedEntity && !isEditingOwnedEntity)
+          (!!ownedEntity && !isEditingOwnedEntity)
         }
       >
         {isEditingOwnedEntity ? 'Update' : 'Add'}

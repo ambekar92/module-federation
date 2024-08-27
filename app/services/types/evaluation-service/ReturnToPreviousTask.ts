@@ -1,3 +1,3 @@
 export type ReturnToPreviousTaskPayload = {
-    process_id: number, 
+    process_id: number,
 }

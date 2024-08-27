@@ -14,14 +14,13 @@ import { CustomTableProps, users } from '../components/utils/types'
 
 const CustomTable: FC<CustomTableProps> = ({
   headers,
-  bordered,
   addSuccessUser,
   onRowCountChange,
   newRow,
 }) => {
-  const { data, error } = useSWR<users>(USER_ROUTE, fetcher)
+  const { data } = useSWR<users>(USER_ROUTE, fetcher)
   const [editingUserRowId, setEditingUserRowId] = useState<number | null>(null)
-  const [successRowId, setSuccessRowId] = useState<number | null>(null)
+  const [, setSuccessRowId] = useState<number | null>(null)
   const [showSuccessAlert, setShowSuccessAlert] = useState(false)
   const [showBlankMessage, setShowBlankMessage] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
@@ -77,7 +76,7 @@ const CustomTable: FC<CustomTableProps> = ({
     }
     if (newRole !== '--' && newPermission !== '--' && newStatus !== '--') {
       setBodyData((prevBodyData: any) =>
-        prevBodyData.map((combinedData: any, i: number) =>
+        prevBodyData.map((combinedData: any) =>
           combinedData.id === index
             ? {
               id: combinedData.id,

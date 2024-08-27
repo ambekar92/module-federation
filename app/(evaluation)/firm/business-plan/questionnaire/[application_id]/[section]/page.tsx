@@ -11,6 +11,7 @@ import { QuestionnaireListType } from '@/app/(entity)/application/components/que
 import HubzoneResults from '@/app/(entity)/application/sections/HubzoneResults';
 import HubMock from '@/app/(entity)/application/components/questionnaire/HubMock';
 import Questions from '@/app/(entity)/application/qa-helpers/Questions';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -40,7 +41,7 @@ const QuestionnairePage: React.FC = () => {
   }, [questionnairesData, section]);
 
   if (!questionnairesData) {
-    return <h3>Loading...</h3>;
+    return <Spinner center />
   }
 
   if (error) {

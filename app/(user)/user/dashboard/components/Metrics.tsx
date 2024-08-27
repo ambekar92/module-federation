@@ -6,7 +6,7 @@ import OpenAssignments from './OpenAssignments';
 import Productivity from './Productivity';
 import { UserTaskDashboard } from '@/app/services/types/evaluation-service/UserTaskDashboard';
 
-const Metrics: React.FC<{tasks: UserTaskDashboard[] | undefined}> = ({ tasks }) => {
+const Metrics: React.FC<{tasks?: UserTaskDashboard[]}> = ({ tasks }) => {
   const session = useSessionUCMS();
   if (!session.data || isRole(session.data?.permissions, Role.EXTERNAL)) {return null;}
 

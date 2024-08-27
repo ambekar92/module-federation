@@ -7,14 +7,14 @@ export type Answer = {
     answer_by: string | null;
   };
 
-  export type AnswerChoice = {
+export type AnswerChoice = {
     max_rows: number | null;
     min_rows: number | null;
     grid_question_names: string[];
     options?: AnswerChoiceOption[];
   };
 
-  export type AnswerChoiceOption = {
+export type AnswerChoiceOption = {
     option: string;
     description: string | null;
   };

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import useFetchOnce from '../../hooks/useFetchOnce';
 import { isUrlAnswerChoice } from '../questionnaireHelpers';
 import Questions from '@/app/(entity)/application/qa-helpers/Questions';
+import Spinner from '../../components/spinner/Spinner';
 
 interface ApiGetUrlInputProps {
   question: Question;
@@ -45,10 +46,10 @@ const ApiGetUrlInput: React.FC<ApiGetUrlInputProps> = ({
   }, [data, question, handleChange, contributorId]);
 
   if (error) {return <div>Failed to load</div>;}
-  if (!data) {return <div>Loading...</div>;}
+  if (!data) {return <Spinner center />}
 
   if (shouldRenderQuestions) {
-    return <Questions url={questionsUrl} title={''} contributorId={contributorId} onRefetchQuestionnaires={onRefetchQuestionnaires} />;
+    return <Questions setCanNavigate={() => {}} url={questionsUrl} title={''} contributorId={contributorId} onRefetchQuestionnaires={onRefetchQuestionnaires} />;
   }
 
   return null;

@@ -15,18 +15,18 @@ describe('roleFetcherGET', () => {
   it('fetches data and returns an array of objects with name, description, and other various fields', async () => {
     const mockData = [
       {
-        "id": 1,
-        "slug": "internal_user",
-        "name": "Internal User",
-        "description": "",
-        "parameters": "set()"
+        'id': 1,
+        'slug': 'internal_user',
+        'name': 'Internal User',
+        'description': '',
+        'parameters': 'set()'
       },
       {
-        "id": 2,
-        "slug": "external_user",
-        "name": "External User",
-        "description": "",
-        "parameters": "set()"
+        'id': 2,
+        'slug': 'external_user',
+        'name': 'External User',
+        'description': '',
+        'parameters': 'set()'
       },
     ]
 

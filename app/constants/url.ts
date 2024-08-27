@@ -30,6 +30,7 @@ export const USER_PROFILE_PAGE = '/user'
 export const MESSAGE_PAGE = '/messages'
 export const NOTES_PAGE = '/firm/application/:applicationId/notes'
 export const DOCUMENT_PAGE = '/documents'
+export const APPILCATION = '/application'
 export const APPLICATION_QUESTIONNAIRE_LIST_PAGE = '/application/questionnaire/:applicationId'
 export const APPLICATION_VIEW_PAGE = '/application/view/:applicationId'
 

@@ -116,7 +116,7 @@ export const sbaProgramOptions: ProgramOption[] = [
     description: `Service-Disabled Veteran-Owned Small Business (SDVOSB) Program: The SDVOSB Program is an
 		extension of the VOSB Program and offers additional benefits to veterans with
 		service-connected disabilities.`,
-    disadvantages: ['disabledVeteran'],
+    disadvantages: ['disabled_veteran'],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/veteran-contracting-assistance-programs',
     registration: 'sdvosb',

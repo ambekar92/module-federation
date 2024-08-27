@@ -23,7 +23,7 @@ interface QuestionRendererProps {
   question: Question;
   index: number;
   selectedAnswers: Record<string, Answer>;
-  handleAnswerChange: (question: Question, value: any) => void;
+  handleAnswerChange: (q: any, selectedOpt: any) => void;
   isSubQuestion?: boolean;
   userId: number | null;
   contributorId: number | null | undefined;

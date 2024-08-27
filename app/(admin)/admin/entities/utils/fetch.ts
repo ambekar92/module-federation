@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/app/services/fetcher'
+import { axiosInstance } from '@/app/services/axiosInstance'
 
 export const entitiesFetcherGET = async (url: string): Promise<[]> => {
   const response = await axiosInstance.get<[]>(url)

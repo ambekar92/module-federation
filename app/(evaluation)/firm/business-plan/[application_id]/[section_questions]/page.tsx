@@ -4,6 +4,7 @@ import { Params } from '@/app/(evaluation)/types/types'
 import { ANSWER_ROUTE, API_ROUTE, QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes'
 import { axiosInstance } from '@/app/services/axiosInstance'
 import fetcher from '@/app/services/fetcher'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import { useParams, useRouter } from 'next/navigation'
@@ -94,14 +95,14 @@ const BusinessPlanPage = () => {
         setTitle(currentSection.title);
       }
       const current = navItems?.find(item => item.url.includes(params.section_questions));
-      const currIdx = navItems?.indexOf(current);
+      const currIdx = current ? navItems?.indexOf(current) : 0;
       currIdx === 0 ? setShowPreviousButton(false) : setShowPreviousButton(true)
     }
   }, [navItems, data, params.section_questions]);
 
   return (
     <div className='display-flex flex-column height-full'>
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Spinner center />}
       {!isLoading && !data && <div>No data found</div>}
       {!!data && !isLoading && <>
         <h1>{title}</h1>

@@ -22,7 +22,8 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
   const theme = useTheme()
   const pathname = usePathname()
 
-  const isApplicationPage = pathname?.includes('/firm/application/')
+  const isApplicationPage = pathname?.includes('/firm/application/');
+  const isHomePage = pathname === '/'
 
   return (
     <html lang="en">
@@ -33,7 +34,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
             <div className={`${theme.palette.mode} layout`}>
               <Navbar />
               <UserSessionModal />
-              <div className={`start grid-container-widescreen display-flex ${isApplicationPage ? 'padding-x-0 bg-gray-5' : ''}`}>
+              <div className={`start grid-container-widescreen display-flex ${isHomePage && 'padding-x-0'} ${isApplicationPage ? 'padding-x-0 bg-gray-5' : ''}`}>
                 <main className="flex-fill display-flex flex-column">
                   {children}
                 </main>

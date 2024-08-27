@@ -1,5 +1,4 @@
-import { SocialDisadvantageOption } from "./shared/types";
-
+import { SocialDisadvantageOption } from './shared/types';
 
 export const socialDisadvantages: SocialDisadvantageOption[] = [
   { label: 'Not Claiming Social Disadvantage', value: 'not_claiming' },
@@ -40,7 +39,7 @@ export const formatPhoneNumber = (phoneNumber: string) => {
 };
 
 export const formatSSN = (ssn: string) => {
-  if (!ssn) return ssn;
+  if (!ssn) {return ssn;}
   const cleaned = ssn.replace(/\D/g, ''); // Remove all non-digits
   const length = cleaned.length;
 

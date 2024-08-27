@@ -11,7 +11,7 @@ function EntityOwned() {
 
   useEffect(() => {
     dispatch(setDisplayStepNavigation(true))
-  }, [])
+  }, [dispatch])
 
   return (
     <EntityLayout>

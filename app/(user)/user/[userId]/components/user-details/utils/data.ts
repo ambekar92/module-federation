@@ -1,6 +1,6 @@
 import { UserProfileType } from './types'
 
-export const userProfileData: UserProfileType = {
+export const userProfileData: any = {
   userId: '18',
   name: 'Courtney Schaefer',
   title: 'Sr. Small Business Loan Officer',

@@ -2,17 +2,16 @@ import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
 import fetcher from '@/app/services/fetcher';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Button, ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import DocumentUploads from '../components/document-uploads/DocumentUploads';
+import useSWR from 'swr';
 import { QuestionnaireListType } from '../components/questionnaire/utils/types';
 import { setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps, extractLastPart } from '../utils/constants';
-import useSWR from 'swr';
+import Documents from '../components/document-uploads/Documents';
 
 function DocumentUpload() {
   const dispatch = useApplicationDispatch();
@@ -26,6 +25,12 @@ function DocumentUpload() {
     contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
     fetcher
   );
+
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.documentUpload.stepIndex));
@@ -59,7 +64,7 @@ function DocumentUpload() {
 
   return (
     <>
-      <DocumentUploads contributorId={contributorId} entityId={applicationData?.entity.entity_id} />
+      <Documents />
       <ButtonGroup className='display-flex flex-justify margin-top-2 margin-right-2px'>
         {questionnairesData
           ? (

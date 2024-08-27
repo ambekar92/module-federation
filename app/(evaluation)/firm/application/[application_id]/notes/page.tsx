@@ -1,4 +1,4 @@
-import Notes from "@/app/(evaluation)/components/notes/Notes"
+import Notes from '@/app/(evaluation)/components/notes/Notes'
 
 const NotesPage = () => {
   return (

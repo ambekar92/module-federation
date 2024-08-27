@@ -6,11 +6,11 @@ export type InboxItem = {
     total_unread: number
     last_message: string
   }
-  export type Sender = {
+export type Sender = {
     display_name: string,
     is_user: boolean
   }
-  export type InboxResponse = {
+export type InboxResponse = {
     links: {
       next: string | null
       previous: string | null

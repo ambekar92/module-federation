@@ -74,6 +74,10 @@ export type Application = {
   application_type: ApplicationType
   program_application: ProgramApplication[]
   workflow_state: string
+  workflow_state_status: {
+    title_internal: string
+    title_external: string
+  }
   application_contributor: Array<{
     id: number,
     deleted_at: string | null,
@@ -187,6 +191,7 @@ export type EntitiesType = {
 
 export type ProgramApplicationType = {
 	id: number,
+  program_id: number
 	name: string,
 	title: string,
 	application_id: number,

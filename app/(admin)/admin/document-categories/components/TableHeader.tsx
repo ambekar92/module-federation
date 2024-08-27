@@ -6,46 +6,46 @@ import styles from './DocumentCategories.module.scss';
 import { useEffect } from 'react';
 
 const TableHeader = () => {
-    const searchParams = useSearchParams();
-    const searchParamsState = new URLSearchParams(Array.from(searchParams.entries()));
-    const pathName = usePathname();
-    const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchParamsState = new URLSearchParams(Array.from(searchParams.entries()));
+  const pathName = usePathname();
+  const router = useRouter();
 
-    useEffect(() => {
-        if (!searchParamsState.get('sortColumn')) {
-            searchParamsState.set('sortColumn', 'name')
-            searchParamsState.set('sortOrder', 'asc')
-        }
-        if (!searchParamsState.get('page')) {
-            searchParamsState.set('page', '1')
-        }
-        const q = searchParamsState.toString();
-        router.push(`${pathName}?${q}`)
-    }, [pathName])
-
-    function setQueryParams(colName: string) {
-        const sortOrder = colName === searchParamsState.get('sortColumn') ? searchParamsState.get('sortOrder') === 'asc' ? 'desc' : 'asc' : 'asc';
-        searchParamsState.set('sortColumn', colName);
-        searchParamsState.set('sortOrder', sortOrder);
-        const q = searchParamsState.toString();
-        router.push(`${pathName}?${q}`)
+  useEffect(() => {
+    if (!searchParamsState.get('sortColumn')) {
+      searchParamsState.set('sortColumn', 'name')
+      searchParamsState.set('sortOrder', 'asc')
     }
+    if (!searchParamsState.get('page')) {
+      searchParamsState.set('page', '1')
+    }
+    const q = searchParamsState.toString();
+    router.push(`${pathName}?${q}`)
+  }, [pathName])
 
-    return (
-        <thead>
-            <tr>
-                <th onClick={() => setQueryParams('name')}>
-                    <span className={styles.tableHeadCell}>Name {searchParams.get('sortColumn') === 'name' &&
+  function setQueryParams(colName: string) {
+    const sortOrder = colName === searchParamsState.get('sortColumn') ? searchParamsState.get('sortOrder') === 'asc' ? 'desc' : 'asc' : 'asc';
+    searchParamsState.set('sortColumn', colName);
+    searchParamsState.set('sortOrder', sortOrder);
+    const q = searchParamsState.toString();
+    router.push(`${pathName}?${q}`)
+  }
+
+  return (
+    <thead>
+      <tr>
+        <th onClick={() => setQueryParams('name')}>
+          <span className={styles.tableHeadCell}>Name {searchParams.get('sortColumn') === 'name' &&
                         <FontAwesomeIcon icon={(searchParams.get('sortOrder') === 'asc') ? faChevronDown : faChevronUp} />}</span>
 
-                </th>
-                <th onClick={() => setQueryParams('description')}>
-                    <span className={styles.tableHeadCell}>Description {searchParams.get('sortColumn') === 'description' && <FontAwesomeIcon icon={(searchParams.get('sortOrder') === 'asc') ? faChevronDown : faChevronUp} />}</span>
+        </th>
+        <th onClick={() => setQueryParams('description')}>
+          <span className={styles.tableHeadCell}>Description {searchParams.get('sortColumn') === 'description' && <FontAwesomeIcon icon={(searchParams.get('sortOrder') === 'asc') ? faChevronDown : faChevronUp} />}</span>
 
-                </th>
-            </tr>
-        </thead>
-    )
+        </th>
+      </tr>
+    </thead>
+  )
 }
 
 export default TableHeader

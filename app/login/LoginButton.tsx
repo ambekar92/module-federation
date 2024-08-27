@@ -5,7 +5,7 @@ import { signIn } from 'next-auth/react'
 import React from 'react'
 
 /**
- * 
+ *
  * @deprecated login action now happens through LoginMenu.tsx component
  */
 const LoginButton = ({

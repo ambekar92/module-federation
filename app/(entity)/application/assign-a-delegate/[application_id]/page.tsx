@@ -3,7 +3,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import store from '../store/store'
 import AddDelegateForm from '../components/AddDelegateForm'
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip'
 
 const AddDelegatePage = () => {
   return (

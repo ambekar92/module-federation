@@ -23,10 +23,7 @@ import { useFormDispatch, useFormSelector } from '../store/hooks'
 import { DelegateFormSchema } from '../utils/schemas'
 import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
 import DelegateFormInputs from './DelegateFormInputs'
-
-type DeleteDelegateType = {
-  invitation_id: number
-}
+import Spinner from '@/app/shared/components/spinner/Spinner'
 
 function AddDelegateForm() {
   const [option, setOption] = useState('')
@@ -117,7 +114,7 @@ function AddDelegateForm() {
   }
 
   if (isLoading) {
-    return <h2>Loading...</h2>
+    return <Spinner center />
   }
 
   return (

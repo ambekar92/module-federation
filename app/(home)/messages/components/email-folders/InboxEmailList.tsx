@@ -2,12 +2,12 @@ import { useSessionUCMS } from '@/app/lib/auth'
 import { useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import styles from '../Messages.module.scss'
-import { mock_inbox_emails, useMockInboxEmails } from '../mock-inbox-emails'
 import EmailListItem from './EmailListItem'
 import { InboxItem, InboxResponse } from '@/app/services/types/communication-service/Inbox'
 import { useInbox } from '@/app/services/queries/communication-service/useInbox'
-import { axiosInstance } from '@/app/services/fetcher'
 import { INBOX_ROUTE } from '@/app/constants/routes'
+import Spinner from '@/app/shared/components/spinner/Spinner'
+import { axiosInstance } from '@/app/services/axiosInstance'
 
 const InboxEmailList = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -20,15 +20,13 @@ const InboxEmailList = () => {
   const  {data, isLoading}  = useInbox()
   // const  {data, isLoading}  = useMockInboxEmails()
 
-
   useEffect(() => {
     if (data) {
       setLoadedEmails([...loadedEmails, ...data.results])
       setHasMore(data.pagination.next_page !== null);
       if (data.results.length > 20) {
         setHeight(750)
-      }
-      else if (data.results.length >= 10) {
+      } else if (data.results.length >= 10) {
         setHeight(500)
       } else {
         setHeight(200)
@@ -41,7 +39,7 @@ const InboxEmailList = () => {
     const response = await axiosInstance.get<InboxResponse>(`${session.data?.user_id ? `${INBOX_ROUTE}/${session.data?.user_id}` : ''}`);
     setHasMore(response.data.pagination.next_page !== null)
     setLoadedEmails(prev => [...prev, ...response.data.results])
-    
+
     // const response = await axiosInstance.get<InboxResponse>(`${session.data?.user_id ? `${INBOX_ROUTE}/20` : ''}`);
     // const response = await new Promise(res => setTimeout(() => res(mock_inbox_emails as any) , 1000)) as InboxResponse
     // setHasMore(page < 3)
@@ -49,12 +47,12 @@ const InboxEmailList = () => {
   }
 
   return (
-    <InfiniteScroll 
+    <InfiniteScroll
       style={{overflowX: 'hidden'}}
       height={height}
-      next={fetchMoreData} 
-      hasMore={hasMore} 
-      loader={<p>Loading...</p>} 
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={<Spinner center />}
       endMessage={
         <p style={{ textAlign: 'center' }}>
           <b>All emails loaded</b>
@@ -63,8 +61,8 @@ const InboxEmailList = () => {
       dataLength={loadedEmails.length} >
       {loadedEmails.length > 0 && loadedEmails.map((email: InboxItem, idx: number) => (
         <>
-        <EmailListItem email={email}  key={email.uuid} />
-        {idx < (loadedEmails.length-1) && <div className={styles.line}></div>}
+          <EmailListItem email={email}  key={email.uuid} />
+          {idx < (loadedEmails.length-1) && <div className={styles.line}></div>}
         </>
       ))}
       {!isLoading && loadedEmails.length === 0 && <p>No emails found</p>}

@@ -8,9 +8,9 @@ export function useApplication(filterType: ApplicationFilterType, filterValue: a
   const q = filterValue ? `?${filterType}=${filterValue}` : '';
   return useSWR<Application[]>(`${APPLICATION_ROUTE}${q}`, fetcher, {
     dedupingInterval: 60000,
-    errorRetryInterval: 60000,
+    errorRetryInterval: 30000,
     focusThrottleInterval: 60000,
     loadingTimeout: 60000,
-    shouldRetryOnError: false,
+    shouldRetryOnError: true,
   })
 }

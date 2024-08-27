@@ -8,7 +8,8 @@ import { cookies } from "next/headers";
 import { axiosInstance } from "@/app/services/axiosInstance";
 import BoxyHQSAMLProvider from "next-auth/providers/boxyhq-saml"
 
-async function auth(req: NextApiRequest, res: NextApiResponse) {
+// @ts-ignore
+async function auth(req: NextRequest, res: NextResponse ) {
     return await NextAuth(req, res, {
         providers: [
           OktaProvider({

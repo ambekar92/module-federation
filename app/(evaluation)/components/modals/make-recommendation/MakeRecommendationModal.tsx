@@ -1,7 +1,7 @@
 'use client'
 
 import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
-import { GET_DOCUMENTS, PROGRAM_APPLICATION, UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
+import { DOCUMENTS_ROUTE, PROGRAM_APPLICATION, UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
@@ -120,7 +120,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
         formData.append('internal_document', 'true')
         formData.append('hubzone_key', '1');
 
-        const response = await axiosInstance.post(`${GET_DOCUMENTS}?application_contributor_id=${applicationData.application_contributor[0].id}&entity_id=${applicationData.entity.entity_id}&upload_user_id=${userId}`, formData, {
+        const response = await axiosInstance.post(`${DOCUMENTS_ROUTE}?application_contributor_id=${applicationData.application_contributor[0].id}&entity_id=${applicationData.entity.entity_id}&upload_user_id=${userId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         })
         setDocumentId(response.data.document.id);
@@ -180,7 +180,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
                     name={`action-modal-table-input-tr-${i}`}
                     onChange={(e) => {
                       e.stopPropagation();
-                      updateMakeRecommendation(program.id, 'Approve');
+                      updateMakeRecommendation(program.program_id, 'approved');
                     }}
                     onClick={(e) => e.stopPropagation()}
                   />
@@ -203,7 +203,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
                     name={`action-modal-table-input-tr-${i}`}
                     onChange={(e) => {
                       e.stopPropagation();
-                      updateMakeRecommendation(program.id, 'Decline');
+                      updateMakeRecommendation(program.program_id, 'declined');
                     }}
                     onClick={(e) => e.stopPropagation()}
                   />

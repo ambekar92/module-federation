@@ -113,7 +113,7 @@ export interface ConfirmModalProps {
   handleClose: () => void;
 	handleOpen: () => void;
   business: CmbResponseType;
-  setErrorMsg: (msg: string) => void;
-	setPostSuccessful: (success: boolean) => void;
-	setApplicationId: (id: number) => void;
+  setErrorMsg: () => void;
+	setPostSuccessful: () => void;
+	setApplicationId: () => void;
 }

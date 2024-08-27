@@ -131,7 +131,6 @@ const Search = () => {
     router.push('?page=1')
   }, [router])
 
-
   return (
     <form onSubmit={handleChangeSearch}>
       {!showAdvanceSearch ? (
@@ -146,7 +145,6 @@ const Search = () => {
                     label={'Select Search Criteria'}
                     placeholder="Business Name"
                     IconComponent={KeyboardArrowDownIcon}
-                    onChange={handleOptionChange}
                   >
                     {' '}
                     <MenuItem disabled value="instruction">
@@ -168,10 +166,6 @@ const Search = () => {
                     style={{ height: '38px', width: '800px' }}
                     className="width-full maxw-full"
                     value={flag1 ? searchTerm1 : flag2 ? searchTerm2 : ''}
-                    //onChange={handleNameChange}
-                    onChange={
-                      flag1 ? handleNameChange : flag2 ? handleUEIChange : ''
-                    }
                   />
                 </InputGroup>{' '}
               </div>

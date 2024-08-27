@@ -17,13 +17,13 @@ const Search = async () => {
   }
   return (
     <FormGroup>
-    <InputGroup>
-      <TextInput id="search" name="search" type="search" onChange={handleChangeSearch} />
-      <InputSuffix>
-        <Icon.Search />
-      </InputSuffix>
-    </InputGroup>
-  </FormGroup>
+      <InputGroup>
+        <TextInput id="search" name="search" type="search" onChange={handleChangeSearch} />
+        <InputSuffix>
+          <Icon.Search />
+        </InputSuffix>
+      </InputGroup>
+    </FormGroup>
   )
 }
 

@@ -5,9 +5,8 @@
  */
 import axios from 'axios';
 import {
-  GET_DOCUMENTS, GET_NOTIFICATION, USER_ROUTE, } from '../constants/routes'
+  DOCUMENTS_ROUTE, GET_NOTIFICATION, USER_ROUTE, } from '../constants/routes'
 import { axiosInstance as axiosWithAuth } from './axiosInstance';
-
 
 interface ApiResponse<T> {
   data: T
@@ -129,7 +128,7 @@ async function getNotifications(
 async function getDocuments(
   user_id: string | number,
 ): Promise<{ data: any; message?: string }> {
-  const api_url = GET_DOCUMENTS + '?user_id=' + user_id
+  const api_url = DOCUMENTS_ROUTE + '?user_id=' + user_id
   return fetcherGET(api_url)
 }
 

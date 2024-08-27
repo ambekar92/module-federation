@@ -13,7 +13,7 @@ import styles from './EditNameModal.module.scss'
 
 interface EditNameProps {
   openModal?: boolean,
-  closeModal?: (status: boolean) => {}
+  closeModal?: (status: boolean) => void
 }
 
 const EditNameModal: React.FC<EditNameProps> = ({ openModal, closeModal }) => {
@@ -63,7 +63,7 @@ const EditNameModal: React.FC<EditNameProps> = ({ openModal, closeModal }) => {
                     id='enterName'
                     name='enterName'
                     type="text"
-                    className={`icon width-full maxw-full border-secondary-vivid`}
+                    className={'icon width-full maxw-full border-secondary-vivid'}
                     value={firstName}
                   />
                 </Grid>
@@ -75,7 +75,7 @@ const EditNameModal: React.FC<EditNameProps> = ({ openModal, closeModal }) => {
                     id='publictName'
                     name='publictName'
                     type="text"
-                    className={`icon width-full maxw-full border-secondary-vivid`}
+                    className={'icon width-full maxw-full border-secondary-vivid'}
                     value={publicName}
                   />
                 </Grid>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CharacterCount, Label } from '@trussworks/react-uswds';
 import { QaInputProps } from './types';
 
-export const QaTextarea: React.FC<QaInputProps> = ({ question, inputId, handleChange, isSubQuestion, selectedAnswers, isGridQuestion }) => {
+export const QaTextarea: React.FC<QaInputProps> = ({ question, inputId, ordinalLabel, handleChange, isSubQuestion, selectedAnswers, isGridQuestion }) => {
   const initialValue = !isGridQuestion && selectedAnswers[question.name]?.value !== undefined
     ? selectedAnswers[question.name].value
     : question.answer?.value?.answer || '';
@@ -19,8 +19,8 @@ export const QaTextarea: React.FC<QaInputProps> = ({ question, inputId, handleCh
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
-        <span>{question.title}</span>
+      <Label className={`maxw-full ${ordinalLabel ? 'margin-top-0' : 'text-bold'} display-flex`} requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+        {ordinalLabel && `${question.question_ordinal}. `}<span className={`${ordinalLabel && 'padding-left-1'}`}>{question.title}</span>
       </Label>
       <CharacterCount
         className="maxw-full"

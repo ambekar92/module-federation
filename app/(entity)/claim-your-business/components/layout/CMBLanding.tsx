@@ -1,4 +1,3 @@
-import { toolTipCmbInvitationInfo } from '@/app/constants/tooltips'
 import Tooltip from '@/app/shared/components/tooltip/Tooltip'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import Link from 'next/link'

@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/app/services/fetcher'
+import { axiosInstance } from '@/app/services/axiosInstance'
 
 export const documentCategoriesFetcherGET = async (
   url: string,

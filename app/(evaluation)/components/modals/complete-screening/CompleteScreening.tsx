@@ -31,11 +31,11 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, process
   const handleActionSubmit = async () => {
     try {
       const postData = {
-        process_id: processId || 1,
+        process_id: processId,
         data: {
           approved: true,
           create_return_to_firm_note: false,
-          tier: applicationTier || 1,
+          application_tier: applicationTier,
         },
       }
       await trigger(postData)

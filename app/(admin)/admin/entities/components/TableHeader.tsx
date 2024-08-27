@@ -66,7 +66,7 @@ const TableHeader = () => {
   return (
     <thead>
       <tr >
-      {tableHeader.map((item: any, index: number) => (
+        {tableHeader.map((item: any, index: number) => (
           <th key={index} onClick={() => setQueryParams(`${item.endpointName}`)}>
             <span className={styles.tableHeadCell}>
               {item.headerName}

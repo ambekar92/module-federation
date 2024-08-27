@@ -1,11 +1,11 @@
-import { QuestionAnswer } from "./question";
+import { QuestionAnswer } from './question';
 
 type AnswerGivenValue = {
     boolean: 'TRUE' | 'FALSE';
   };
 
 export type Rule = {
-    
+
 alert_message: string;
 answer_given_value: AnswerGivenValue;
 
@@ -14,7 +14,5 @@ next_question_id: number;
 
 question_id: number;
 sub_question: QuestionAnswer
-
-
 
 }

@@ -6,10 +6,8 @@ import {
   InputSuffix,
   TextInput,
 } from '@trussworks/react-uswds'
-import MenuItem from '@mui/material/MenuItem'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React, {useState} from 'react'
-
+import React from 'react'
 
 const Search = async () => {
   const searchParams = useSearchParams()
@@ -27,19 +25,19 @@ const Search = async () => {
   }
 
   return (
-      <FormGroup>
-        <InputGroup className="control-questions">
-          <TextInput
-            id="search"
-            name="search"
-            type="search"
-            onChange={handleChangeSearch}
-          />
-          <InputSuffix>
-            <Icon.Search />
-          </InputSuffix>
-        </InputGroup>
-      </FormGroup>
+    <FormGroup>
+      <InputGroup className="control-questions">
+        <TextInput
+          id="search"
+          name="search"
+          type="search"
+          onChange={handleChangeSearch}
+        />
+        <InputSuffix>
+          <Icon.Search />
+        </InputSuffix>
+      </InputGroup>
+    </FormGroup>
   )
 }
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Label, TextInput } from '@trussworks/react-uswds';
 import { QaInputProps } from './types';
 
-export const QaTextInput = ({ question, inputId, handleChange, isSubQuestion, selectedAnswers, isGridQuestion }: QaInputProps) => {
+export const QaTextInput = ({ question, ordinalLabel, handleChange, isSubQuestion, selectedAnswers, isGridQuestion }: QaInputProps) => {
   const initialValue = !isGridQuestion && selectedAnswers[question.name]?.value !== undefined
     ? selectedAnswers[question.name].value
     : question.answer?.value?.answer || '';
@@ -19,14 +19,15 @@ export const QaTextInput = ({ question, inputId, handleChange, isSubQuestion, se
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
-        <span>{question.title}</span>
+      <Label className={`maxw-full ${ordinalLabel ? 'margin-top-0' : 'text-bold'} display-flex`} requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+        {ordinalLabel && `${question.question_ordinal}. `}<span className={`${ordinalLabel && 'padding-left-1'}`}>{question.title}</span>
       </Label>
       <TextInput
         type='text'
         id={question.name}
         name={question.name}
         value={localValue}
+        className={`${ordinalLabel && 'margin-left-3'}`}
         onChange={handleLocalChange}
         onBlur={handleBlur}
       />

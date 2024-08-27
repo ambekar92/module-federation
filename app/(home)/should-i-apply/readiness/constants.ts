@@ -1,8 +1,8 @@
-import { ReadinessFormType } from "./schema";
+import { ReadinessFormType } from './schema';
 
 export const defaultReadinessValues: ReadinessFormType = {
-    isGeneratingRevenue: '',
-    recordOfQualityGoods: '',
-    electronicPayments: '',
-    coverCost: '',
+  isGeneratingRevenue: '',
+  recordOfQualityGoods: '',
+  electronicPayments: '',
+  coverCost: '',
 }

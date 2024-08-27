@@ -1,7 +1,25 @@
+'use client'
 import React from 'react'
 import { Table } from '@trussworks/react-uswds'
+import { NaicsCodeType } from '@/app/(home)/should-i-apply-legacy/components/utils/types'
+import { useCurrentApplication } from '../../firm/useApplicationData';
+import useSWR from 'swr';
+import fetcher from '@/app/services/fetcher';
+import { API_ROUTE } from '@/app/constants/routes';
 
 function NaicsCodes() {
+  const { applicationData } = useCurrentApplication();
+  const { data: responseData, error: responseError } = useSWR<NaicsCodeType[]>(
+    applicationData && applicationData.sam_entity.naics_code_string
+      ? `${API_ROUTE}/amount-awarded?naics_code=${applicationData.sam_entity.naics_code_string}`
+      : null,
+    fetcher
+  );
+
+  if (!responseData || responseError) {
+    return null;
+  }
+
   return (
     <>
       <div className='grid-row margin-0'>
@@ -15,21 +33,19 @@ function NaicsCodes() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>898658745</td>
-                <td>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                  eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</td>
-                <td>Extra Medium Small Size</td>
-              </tr>
+              {responseData.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.naics_code}</td>
+                  <td>{item.description}</td>
+                  <td>Small Size Business</td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </div>
-
       </div>
     </>
   )
 }
 
 export default NaicsCodes
-

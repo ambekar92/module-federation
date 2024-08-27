@@ -72,7 +72,7 @@ const applicationSlice = createSlice({
       state.selectedStructure = action.payload
     },
     setOwnerType(state, action: PayloadAction<OwnershipType | null>) {
-      state.ownerType = action.payload
+      state.ownerType = action.payload as any
     },
     setOwnerTypeSelected(state, action: PayloadAction<boolean>) {
       state.ownerTypeSelected = action.payload
@@ -98,7 +98,7 @@ const applicationSlice = createSlice({
     setOperators(state, action: PayloadAction<Operator[]>) {
       state.operators = action.payload
     },
-    setOwnedEntity(state, action: PayloadAction<EntityFormType>) {
+    setOwnedEntity(state, action: PayloadAction<EntityFormType | null>) {
       state.ownedEntity = action.payload
     },
     setCurrentOperatorEditIndex(state, action: PayloadAction<number | null>) {

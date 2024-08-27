@@ -1,6 +1,5 @@
 'use client'
 import { useSessionUCMS } from '@/app/lib/auth'
-import ActionMenuModal from '@/app/shared/components/modals/ActionMenuModal'
 import CloseApplication from '@/app/shared/components/modals/CloseApplication'
 import { Role } from '@/app/shared/types/role'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
@@ -10,7 +9,6 @@ import { actionMenuData, ActionMenuIDs } from '../utils/actionMenuData'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useCloseApplicationTask } from '@/app/services/mutations/useCloseApplicationTask'
 import ChangeTierModal from '@/app/shared/components/modals/ChangeTierModal'
-import { useFirmSelector } from '@/app/(evaluation)/firm/store/hooks'
 import { ModalRef } from '@trussworks/react-uswds'
 import { useParams } from 'next/navigation'
 import { useCurrentApplication } from '../../firm/useApplicationData'
@@ -19,9 +17,12 @@ import CompleteScreening from '../modals/complete-screening/CompleteScreening'
 import ConfirmVeteranStatusModal from '../modals/confirm-veteran-status-modal/ConfirmVeteranStatusModal'
 import MakeApprovalModal from '../modals/make-approval-modal/MakeApprovalModal'
 import MakeRecommendationModal from '../modals/make-recommendation/MakeRecommendationModal'
+import ProvideOpinionModal from '../modals/provide-opinion/ProvideOpinionModal'
 import ReassignUserModal from '../modals/reassign-user-modal/ReassignUserModal'
 import { ReassignType } from '../modals/reassign-user-modal/types'
 import ReturnToPreviousTaskModal from '../modals/return-to-previous-task-modal/ReturnToPreviousTaskModal'
+import { getAnalystQuestionnaires } from './constants'
+import { useQuestionnaireState } from './useQuestionnaireState'
 
 const ActionsDropdown = () => {
   const sessionData = useSessionUCMS()
@@ -31,8 +32,6 @@ const ActionsDropdown = () => {
   const [userId, setUserId] = useState<number | null>(null)
   const [reassignType, setReassignType] = useState<ReassignType | null>(null)
   const { trigger: triggerClose } = useCloseApplicationTask()
-
-  const completedAnalystQAs = useFirmSelector(state => state.evaluation.completedAnalystQAs);
 
   // Modal Refs
   const reassignUserRef = useRef<ModalRef>(null);
@@ -45,8 +44,13 @@ const ActionsDropdown = () => {
   const returnToPreviousTaskRef = useRef<ModalRef>(null);
   const completeScreeningRef = useRef<ModalRef>(null);
   const escalateReviewRef = useRef<ModalRef>(null);
+  const provideOpinionRef = useRef<ModalRef>(null);
 
   const [selectedValue, setSelectedValue] = useState('')
+  const analystQuestionnaires = useMemo(() => {
+    if (!applicationData?.program_application) {return [];}
+    return getAnalystQuestionnaires(applicationData.program_application);
+  }, [applicationData?.program_application]);
 
   useEffect(() => {
     if (sessionData.status === 'authenticated' && sessionData?.data?.user_id) {
@@ -54,40 +58,11 @@ const ActionsDropdown = () => {
     }
   }, [sessionData, sessionData.status])
 
-  const [showModal, setShowModal] = useState(false)
-  const [actionModalProps, setActionModalProps] = useState({
-    title: '',
-    actionLabel: '',
-    userIdType: '',
-    modalType: 'default',
-    description: '',
-    inputDescription: '',
-    steps: [],
-    id: 0,
-    table: {
-      step: -1,
-      tableHeader: [],
-      tableRows: [],
-    },
-    signature: {
-      step: -1,
-      description: '',
-    },
-    upload: false,
-    uploadStep: -1,
-    notes: {
-      step: -1,
-      rows: [],
-    },
-    approvalLetter: {
-      step: -1,
-      rows: [],
-    },
-  })
+  const { completedQuestionnaires } = useQuestionnaireState(applicationData, analystQuestionnaires);
 
   const areAllAnalystQuestionnairesCompleted = useMemo(() => {
-    return Object.values(completedAnalystQAs).every(value => value === true);
-  }, [completedAnalystQAs]);
+    return Object.values(completedQuestionnaires).every(value => value === true);
+  }, [completedQuestionnaires]);
 
   const handleCloseAppAction = async (description: any) => {
     try {
@@ -96,7 +71,7 @@ const ActionsDropdown = () => {
         explanation: description,
         user_id: userId,
       }
-      const response = await triggerClose(postData)
+      await triggerClose(postData)
       setSelectedValue('Actions')
       // Todo - need to validate the response to display error message or redirect on success
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id }) + '?name=application-closed'
@@ -107,25 +82,6 @@ const ActionsDropdown = () => {
 
   const handleResetActionDropdownRequest = async () => {
     setSelectedValue('Actions')
-  }
-
-  const handleAction = () => {
-    setShowModal(false)
-  }
-
-  const resetModalType = () => {
-    setActionModalProps((prevState) => ({
-      ...prevState,
-      modalType: 'default',
-    }))
-  }
-
-  const handleCancel = () => {
-    setShowModal(false)
-    resetModalType()
-    if (selectRef.current) {
-      selectRef.current.selectedIndex = 0
-    }
   }
 
   const handleActionSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -163,7 +119,12 @@ const ActionsDropdown = () => {
       return
     }
     if (selectedNumericValue === ActionMenuIDs.COMPLETE_REVIEW) {
-      completeReviewRef.current?.toggleModal()
+      if (areAllAnalystQuestionnairesCompleted) {
+        completeReviewRef.current?.toggleModal()
+      } else {
+        alert('Please complete all reviewer questionnaires before completing a review.');
+        setSelectedValue('Actions');
+      }
       return
     }
     if (selectedNumericValue === ActionMenuIDs.MAKE_RECOMMENDATION) {
@@ -199,41 +160,9 @@ const ActionsDropdown = () => {
       makeApprovalRef.current?.toggleModal();
       return;
     }
-
-    const modalProp = actionMenuData.find(
-      (item) => item.id === selectedNumericValue,
-    ) as any;
-    if (modalProp) {
-      setActionModalProps({
-        title: modalProp?.title || '',
-        actionLabel: modalProp?.actionLabel || '',
-        userIdType: modalProp?.userIdType || '',
-        modalType: modalProp?.modalType || 'default',
-        description: modalProp?.description || '',
-        inputDescription: modalProp?.inputDescription || '',
-        steps: modalProp?.steps || [],
-        id: modalProp?.id,
-        table: {
-          step: modalProp?.table?.step,
-          tableHeader: modalProp?.table?.tableHeader || [],
-          tableRows: modalProp?.table?.tableRows || [],
-        },
-        signature: {
-          step: modalProp?.signature?.step,
-          description: modalProp?.signature?.description || '',
-        },
-        upload: modalProp?.upload,
-        uploadStep: modalProp?.uploadStep,
-        notes: {
-          step: modalProp?.notes.step,
-          rows: modalProp?.notes.rows || [],
-        },
-        approvalLetter: {
-          step: modalProp?.approvalLetter.step,
-          rows: modalProp?.approvalLetter.rows || [],
-        },
-      })
-      setShowModal(true)
+    if(selectedNumericValue === ActionMenuIDs.PROVIDE_OPINION) {
+      provideOpinionRef.current?.toggleModal();
+      return
     }
   }
 
@@ -250,39 +179,6 @@ const ActionsDropdown = () => {
       )
     })
   }, [sessionData.data?.permissions])
-
-  const renderModal = () => {
-    switch (actionModalProps.modalType) {
-      case 'default':
-      case 'textarea':
-      case 'confirmVeteranStatus':
-      case 'reassign':
-        return (
-          <ActionMenuModal
-            open={showModal}
-            title={actionModalProps.title}
-            actionLabel={actionModalProps.actionLabel}
-            userIdType={actionModalProps.userIdType}
-            modalType={actionModalProps.modalType}
-            description={actionModalProps.description}
-            inputDescription={actionModalProps.inputDescription}
-            steps={actionModalProps.steps}
-            id={actionModalProps.id}
-            table={actionModalProps.table as any}
-            signature={actionModalProps.signature}
-            upload={actionModalProps.upload}
-            uploadStep={actionModalProps.uploadStep}
-            notes={actionModalProps.notes as any}
-            approvalLetter={actionModalProps.approvalLetter as any}
-            handleAction={handleAction}
-            handleCancel={handleCancel}
-            process_id={0}
-          />
-        )
-      default:
-        return null
-    }
-  }
 
   return (
     <div>
@@ -304,7 +200,6 @@ const ActionsDropdown = () => {
           ))}
         </select>
       </div>
-      {renderModal()}
 
       <ReassignUserModal
         applicationId={Number(application_id)}
@@ -345,6 +240,7 @@ const ActionsDropdown = () => {
         handleAction={handleResetActionDropdownRequest}
       />
 
+      <ProvideOpinionModal modalRef={provideOpinionRef} processId={applicationData?.process?.id} handleAction={handleResetActionDropdownRequest} />
       <EscalateReviewModal applicationData={applicationData} modalRef={escalateReviewRef} handleAction={handleResetActionDropdownRequest} />
     </div>
   )

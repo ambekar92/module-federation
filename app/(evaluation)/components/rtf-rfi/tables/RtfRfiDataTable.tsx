@@ -16,6 +16,7 @@ import FinalizeRequestForInformation from '../modals/FinalizeRequestForInformati
 import FinalizeReturnToFirm from '../modals/FinalizeReturnToFirm'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
+import Spinner from '@/app/shared/components/spinner/Spinner'
 
 export interface ReasonState {
   id: number | null;
@@ -118,7 +119,7 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
     }
   }
 
-  if (!draftData || !reasonCodes) {return <div>Loading...</div>}
+  if (!draftData || !reasonCodes) {return <Spinner center />}
 
   return (
     <>

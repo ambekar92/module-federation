@@ -1,5 +1,5 @@
-import { Answer, AnswerChoice } from "./answer";
-import { Rule } from "./rule";
+import { Answer, AnswerChoice } from './answer';
+import { Rule } from './rule';
 
 export type QuestionAnswer = {
     id: number;
@@ -17,8 +17,6 @@ export type QuestionAnswer = {
     rules: Rule[];
   };
 
- 
-
-  export type MainQuestionObject = QuestionAnswer &  {
+export type MainQuestionObject = QuestionAnswer &  {
     grid_questions?: QuestionAnswer[];
   };

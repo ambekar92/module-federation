@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Audit from './Audit';
 import { Pagination } from '@trussworks/react-uswds';
 import { useAudit } from '@/app/services/queries/useAudit';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const AuditWrapper = () => {
   const [page, setPage] = useState(1);
@@ -27,7 +28,7 @@ const AuditWrapper = () => {
     setPage(1)
   }
 
-  if (isLoading) {return <p>Loading...</p>;}
+  if (isLoading) {return <Spinner center />}
 
   return (
     <div>

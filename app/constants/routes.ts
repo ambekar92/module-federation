@@ -8,14 +8,15 @@ export const VALIDATE_SAM_ENTITY_ROUTE =
 export const ENTITIES_ROUTE = API_ROUTE + '/entities'
 export const ENTITY_ROUTE = API_ROUTE + '/entity'
 export const GET_NOTIFICATION = API_ROUTE + '/notifications'
-export const GET_DOCUMENTS = API_ROUTE + '/documents'
+export const NOTIFYING_READ_MESSAGE = API_ROUTE + '/notifying-read-message'
+export const DOCUMENTS_ROUTE = API_ROUTE + '/documents'
 export const DOCUMENT_ROUTE = API_ROUTE + '/document'
 export const QUESTIONNAIRE_ROUTE = '/questionnaire'
 export const WS_LIVE_NOTIFICATIONS =
   process.env.NEXT_PUBLIC_WS_LIVE_NOTIFICATIONS
-export const INBOX_ROUTE = API_ROUTE + '/inbox'
-export const DOCUMENT_REQUIRED_ROUTE =
-  API_ROUTE + '/document-required-questions'
+export const INBOX_ROUTE = API_ROUTE + '/inbox';
+export const EXTENDED_MESSAGES_ROUTE = '/extendedmessages';
+export const DOCUMENT_REQUIRED_ROUTE = '/document-required-questions'
 export const FIRM_APPLICATIONS_ROUTE = API_ROUTE + '/application'
 export const FIRM_EVALUATIONS_ROUTE = API_ROUTE + '/evaluation'
 export const OKTA_POST_LOGIN_ROUTE = API_ROUTE + '/okta-post-login'
@@ -24,6 +25,7 @@ export const CREATING_APPLICATION_ROUTE = API_ROUTE + '/creating-program-applica
 export const ELIGIBLE_APPLY_PROGRAMS_ROUTE = API_ROUTE + '/application-eligible-to-apply-programs'
 export const USER_ROUTE = API_ROUTE + '/users'
 export const INVITATION_ROUTE = API_ROUTE + '/invitation'
+export const SEND_INVITATION_ROUTE = API_ROUTE + '/send-invitation'
 export const UPDATE_APPLICATION_STATE = API_ROUTE + '/update-application-state'
 export const QUESTIONNAIRE_LIST_ROUTE = '/questionnaire-list';
 export const ANSWER_ROUTE = API_ROUTE + '/answer'

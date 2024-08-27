@@ -19,7 +19,7 @@ const ContactInfo = () => {
         </Label>
 
         <Controller
-          render={({ field, fieldState: { error } }) => (
+          render={({ field}) => (
             <TextInput
               className="maxw-full"
               type="email"

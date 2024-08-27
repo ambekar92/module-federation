@@ -9,7 +9,7 @@ import {
 } from '@trussworks/react-uswds'
 import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useState, useCallback, useEffect } from 'react'
-import Select from '@mui/material/Select'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -60,7 +60,7 @@ const Search = () => {
     },
     [],
   )
-  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleOptionChange = (event: SelectChangeEvent<any>) => {
     const selectedOption = event.target.value
     setSelectedValue(selectedOption)
   }
@@ -84,79 +84,78 @@ const Search = () => {
     router.push('?page=1')
   }, [router])
 
-
   return (
-  
+
     <form onSubmit={handleChangeSearch}>
-        {!showAdvanceSearch ? (
-      <FormGroup>
-        <Grid row>
-          <Grid className="grid-col flex-1"></Grid>
-          <Grid>
-            <ThemeProvider theme={theme}>
-              <div style={{ paddingTop: '8px', paddingLeft: '2px' }}>
-                <StyledSelect
-                  value={selectedValue}
-                  label={'Select Search Criteria'}
-                  placeholder="Business Name"
-                  IconComponent={KeyboardArrowDownIcon}
-                  onChange={handleOptionChange}
-                >
-                  {' '}
-                  <MenuItem disabled value="instruction">
+      {!showAdvanceSearch ? (
+        <FormGroup>
+          <Grid row>
+            <Grid className="grid-col flex-1"></Grid>
+            <Grid>
+              <ThemeProvider theme={theme}>
+                <div style={{ paddingTop: '8px', paddingLeft: '2px' }}>
+                  <StyledSelect
+                    value={selectedValue}
+                    label={'Select Search Criteria'}
+                    placeholder="Business Name"
+                    IconComponent={KeyboardArrowDownIcon}
+                    onChange={handleOptionChange}
+                  >
+                    {' '}
+                    <MenuItem disabled value="instruction">
                     Select Search Criteria
-                  </MenuItem>
-                  <MenuItem value="searchTerm1">Application Number</MenuItem>
-                </StyledSelect>
+                    </MenuItem>
+                    <MenuItem value="searchTerm1">Application Number</MenuItem>
+                  </StyledSelect>
+                </div>
+              </ThemeProvider>
+            </Grid>
+            <Grid>
+              <div style={{ width: '350px' }}>
+                <InputGroup className="">
+                  <TextInput
+                    id="search-business"
+                    name="search"
+                    type="search"
+                    style={{ height: '38px', width: '800px' }}
+                    className="width-full maxw-full"
+                    value={searchTerm}
+                    onChange={handleBNameChange}
+                  />
+                </InputGroup>{' '}
               </div>
-            </ThemeProvider>
-          </Grid>
-          <Grid>
-            <div style={{ width: '350px' }}>
-              <InputGroup className="">
-                <TextInput
-                  id="search-business"
-                  name="search"
-                  type="search"
-                  style={{ height: '38px', width: '800px' }}
-                  className="width-full maxw-full"
-                  value={searchTerm}
-                  onChange={handleBNameChange}
-                />
-              </InputGroup>{' '}
-            </div>
-          </Grid>
-          <Grid>
-            {' '}
-            <div style={{ paddingTop: '8px' }}>
-              <Button type="submit">Search</Button>
-            </div>
-          </Grid>
-          <Grid>
-            <div className="padding-top-2 padding-left-2">
-              <Button unstyled type="button" onClick={handleClear}>
+            </Grid>
+            <Grid>
+              {' '}
+              <div style={{ paddingTop: '8px' }}>
+                <Button type="submit">Search</Button>
+              </div>
+            </Grid>
+            <Grid>
+              <div className="padding-top-2 padding-left-2">
+                <Button unstyled type="button" onClick={handleClear}>
                 Clear
-              </Button>
-            </div>
+                </Button>
+              </div>
+            </Grid>
+            <Grid className="grid-col flex-1"></Grid>
           </Grid>
-          <Grid className="grid-col flex-1"></Grid>
-        </Grid>
-        <Grid row>
-          <Grid className="grid-col flex-1"></Grid>
-          <Grid>
-            <div className="padding-top-2 padding-left-2 padding-bottom-3">
-              <Button
-                unstyled
-                type="button"
-                onClick={() => setShowAdvanceSearch(!showAdvanceSearch)}
-              >
+          <Grid row>
+            <Grid className="grid-col flex-1"></Grid>
+            <Grid>
+              <div className="padding-top-2 padding-left-2 padding-bottom-3">
+                <Button
+                  unstyled
+                  type="button"
+                  onClick={() => setShowAdvanceSearch(!showAdvanceSearch)}
+                >
                 Advance Search
-              </Button>
-            </div>
+                </Button>
+              </div>
+            </Grid>
+            <Grid className="grid-col flex-1"></Grid>
           </Grid>
-          <Grid className="grid-col flex-1"></Grid>
-        </Grid>
-      </FormGroup>):(<div></div>)}
+        </FormGroup>):(<div></div>)}
       {showAdvanceSearch ? (
         <FormGroup>
           <div style={{ fontSize: '16px', fontWeight: '400', width: '700px' }}>

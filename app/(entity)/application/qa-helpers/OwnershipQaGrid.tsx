@@ -19,7 +19,7 @@ import { calculateEligibleSbaPrograms, OwnerType, useOwnerApplicationInfo } from
 import { setOwners } from '../redux/applicationSlice';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 
-type GridRow = {
+export type GridRow = {
   [key: string]: string | string[];
 };
 
@@ -268,8 +268,19 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
 
   const saveAnswer = (rows: GridRow[]) => {
     if (userId && contributorId) {
-      const individualAnswers = rows.filter(row => row.owner_type === 'Individual');
-      const organizationAnswers = rows.filter(row => row.owner_type === 'Organization');
+      const individualAnswers = rows
+        .filter(row => row.owner_type === 'Individual')
+        .map(row => ({
+          ...row,
+          id: row.id
+        }));
+
+      const organizationAnswers = rows
+        .filter(row => row.owner_type === 'Organization')
+        .map(row => ({
+          ...row,
+          id: row.id
+        }));
 
       if (individualQuestion) {
         const individualAnswer = {
@@ -336,13 +347,24 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
       return;
     }
     if (validateAllFields()) {
+      const generateId = (row: GridRow) => {
+        let _id = `owner_${row.owner_type === 'Individual'
+          ? `${String(getFieldValue(row, 'first_name'))}_${String(getFieldValue(row, 'last_name'))}`
+          : String(getFieldValue(row, 'organization_name'))}_${Date.now()}`;
+        _id = _id.toLowerCase();
+        return _id;
+      };
+
       let newRows;
       if (editingRowIndex !== null) {
         newRows = gridRows.map((row, index) =>
-          index === editingRowIndex ? { ...row, ...currentRow, owner_type: ownerType } : row
+          index === editingRowIndex
+            ? { ...row, ...currentRow, owner_type: ownerType, id: generateId({ ...row, ...currentRow, owner_type: ownerType }) }
+            : row
         );
       } else {
-        newRows = [...gridRows, { ...currentRow, owner_type: ownerType }];
+        const newRow = { ...currentRow, owner_type: ownerType, id: generateId({ ...currentRow, owner_type: ownerType }) };
+        newRows = [...gridRows, newRow];
       }
       setGridRows(newRows);
       setCurrentRow({});
@@ -397,7 +419,9 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
           </thead>
           <tbody>
             {rows.map((row, rowIndex) => (
-              <tr key={rowIndex}>
+              <tr id={`${row.owner_type === 'Individual'
+                ? `${String(getFieldValue(row, 'first_name'))}_${String(getFieldValue(row, 'last_name'))}`
+                : String(getFieldValue(row, 'organization_name'))}_${Date.now()}`} key={rowIndex}>
                 {relevantFields.map((field) => {
                   const value = getFieldValue(row, field);
                   return <td key={field}>{Array.isArray(value) ? value.join(', ') : value}</td>;

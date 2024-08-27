@@ -32,27 +32,27 @@ export const getAnalystQuestionnaires = (programApplications: any[]) => {
 export const getStaticNavItems = (application_id: string): NavItem[] => [
   {
     section: 'Business Summary',
-    child: [{ section: 'Business Summary', url: `${application_id}/business-summary`, title: 'Business Summary' }]
+    child: [{id: 1, section: 'Business Summary', url: `${application_id}/business-summary`, title: 'Business Summary' }]
   },
   {
     section: 'Documents',
-    child: [{ section: 'Documents', url: `${application_id}/documents`, title: 'Documents' }]
+    child: [{id: 2, section: 'Documents', url: `${application_id}/documents`, title: 'Documents' }]
   },
   {
     section: 'Notes',
-    child: [{ section: 'Notes', url: `${application_id}/notes`, title: 'Notes' }]
+    child: [{id: 3, section: 'Notes', url: `${application_id}/notes`, title: 'Notes' }]
   },
   {
     section: 'Messages',
-    child: [{ section: 'Messages', url: `${application_id}/messages`, title: 'Messages' }]
+    child: [{id: 4, section: 'Messages', url: `${application_id}/messages`, title: 'Messages' }]
   },
   {
     section: 'Audit',
-    child: [{ section: 'Audit', url: `${application_id}/audit`, title: 'Audit' }]
+    child: [{id: 5, section: 'Audit', url: `${application_id}/audit`, title: 'Audit' }]
   },
   {
     section: 'Task Timers',
-    child: [{ section: 'Task Timers', url: `${application_id}/task-timers`, title: 'Task Timers' }]
+    child: [{id: 6, section: 'Task Timers', url: `${application_id}/task-timers`, title: 'Task Timers' }]
   }
 ]
 

@@ -23,4 +23,5 @@ export interface MultiStepQuestionsProps {
 
 export interface QuestionnaireProps {
   applicationId: number;
+  contributorId: number | string;
 }

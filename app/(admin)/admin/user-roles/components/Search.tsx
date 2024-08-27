@@ -12,7 +12,7 @@ import {
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import React, { useCallback, useState, useEffect } from 'react'
-import Select from '@mui/material/Select'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -66,11 +66,11 @@ const Search = () => {
   )
   const handleAdNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm1Adv(e.target.value)
+      setSearchTerm1Adv(e.target.value)
     },
     [],
   )
-  const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleOptionChange = (event: SelectChangeEvent<any>) => {
     const selectedOption = event.target.value
     setSelectedValue(selectedOption)
   }

@@ -65,7 +65,7 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
   const contentComponents = useMemo(() => {
     const issuesList = tableData.map((item: IRTFItems, index: number) => (
       <div className='margin-bottom-3' key={index}>
-        <p className='margin-bottom-1'>{reasonCodeMap[item.reason] || 'Unknown Reason'}</p>
+        <p className='margin-bottom-1'>{reasonCodeMap[item.reason.id] || 'Unknown Reason'}</p>
         {item.explanation && <p className='margin-y-0'>{item.explanation}</p>}
       </div>
     ));
@@ -81,7 +81,6 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
 
   const generateHTMLContent = () => {
     return `
-      <h3>Request for Information</h3>
       <p>Subject: ${subject}</p>
       <p>
         Additional information is required to complete the review of your MySBA Certification application #${params.application_id}.

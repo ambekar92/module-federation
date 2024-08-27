@@ -27,7 +27,7 @@ export const firmDoneData = [
   },
   {
     name: 'completed-screening',
-    header: 'You’ve completed screening!',
+    header: 'You’ve completed screening.',
     alertText: 'Screening complete.',
     body: 'You’ve successfully completed the screening process on this application. It is now being routed to the next available Analyst for further review.',
     buttonText: 'Return to your Dashboard',
@@ -35,7 +35,7 @@ export const firmDoneData = [
   },
   {
     name: 'made-recommendation',
-    header: 'You’ve made a recommendation!',
+    header: 'You’ve made a recommendation.',
     alertText: 'Recommendation complete.',
     body: 'You’ve successfully completed the analysis process on this application and have made your recommendation. It is now being routed to the next available Reviewer for further processing.',
     buttonText: 'Return to your Dashboard',
@@ -43,7 +43,7 @@ export const firmDoneData = [
   },
   {
     name: 'completed-review',
-    header: 'You’ve completed your review!',
+    header: 'You’ve completed your review.',
     alertText: 'Review complete.',
     body: 'You’ve successfully completed the review process on this application. A decision letter has been sent to the business.',
     buttonText: 'Return to your Dashboard',
@@ -51,7 +51,7 @@ export const firmDoneData = [
   },
   {
     name: 'completed-approval',
-    header: 'You’ve completed an approval!',
+    header: 'You’ve completed an approval.',
     alertText: 'Approval complete.',
     body: 'You’ve successfully completed the approval process on this application.  A decision letter has been sent to the business.',
     buttonText: 'Return to your Dashboard',
@@ -67,7 +67,7 @@ export const firmDoneData = [
   },
   {
     name: 'returned-application',
-    header: 'You’ve returned this application to the previous stage of review!',
+    header: 'You’ve returned this application to the previous stage of review.',
     alertText: 'The application has been returned to the previous stage.',
     body: 'You’ve successfully returned this application to the person it was assigned to (prior to you) in the previous stage of review. It has been removed from your dashboard.',
     buttonText: 'Return to your Dashboard',
@@ -75,7 +75,7 @@ export const firmDoneData = [
   },
   {
     name: 'escalate-review',
-    header: 'You’ve escalated the review!',
+    header: 'You’ve escalated the review.',
     alertText: 'Request sent.',
     body: 'You’ve successfully escalated the review. It will no longer be assigned to you. Once the expert provides a response the application will be reassigned back to you.',
     buttonText: 'Return to your Dashboard',
@@ -83,7 +83,7 @@ export const firmDoneData = [
   },
   {
     name: 'provided-expert-opinion',
-    header: 'You’ve provided your professional opinion!',
+    header: 'You’ve provided your professional opinion.',
     alertText: 'Response sent.',
     body: 'You’ve successfully provided your response to an expert opinion request. It has been reassigned back to the person who made the request and has been removed from your dashboard.',
     buttonText: 'Return to your Dashboard',
@@ -99,7 +99,7 @@ export const firmDoneData = [
   },
   {
     name: 'changed-tier',
-    header: 'You’ve changed the tier of this application!',
+    header: 'You’ve changed the tier of this application.',
     alertText: 'Application tier has been changed.',
     body: 'You’ve successfully changed the tier of this application. It is now being routed to the appropriate person.',
     buttonText: 'Return to your Dashboard',

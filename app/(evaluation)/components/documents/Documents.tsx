@@ -5,7 +5,7 @@ import HeightIcon from '@mui/icons-material/Height'
 import { Table } from '@trussworks/react-uswds'
 import { useParams } from 'next/navigation'
 import useSWR from 'swr'
-import { GET_DOCUMENTS } from '../../../constants/routes'
+import { DOCUMENTS_ROUTE } from '../../../constants/routes'
 import styles from './Documents.module.scss'
 
 function Documents() {
@@ -14,7 +14,7 @@ function Documents() {
   const { data: responseData, error: responseError } =
     useSWR<DocumentsType>(
       application_id
-        ? `${GET_DOCUMENTS}/?application_id=${application_id}`
+        ? `${DOCUMENTS_ROUTE}/?application_id=${application_id}`
         : null,
       fetcherGET,
     )
@@ -25,7 +25,7 @@ function Documents() {
         <div className="grid-col-12">
           <h1>Documents</h1>
           <p>
-            Below is a table of documents uploaded by the business specific to this application. You can sort any column by clicking the arrows in the column header. Once selected, documents will open in a new tab. 
+            Below is a table of documents uploaded by the business specific to this application. You can sort any column by clicking the arrows in the column header. Once selected, documents will open in a new tab.
           </p>
         </div>
 

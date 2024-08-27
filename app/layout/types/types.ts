@@ -2,8 +2,5 @@ export interface adminNavBar {
     id: string
     url: string
   }
-  
-  export type adminNavBarTypes = adminNavBar[]
 
-
-  
+export type adminNavBarTypes = adminNavBar[]

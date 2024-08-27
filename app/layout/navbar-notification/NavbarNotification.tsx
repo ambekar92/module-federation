@@ -1,110 +1,105 @@
 'use client'
 import { Grid } from '@trussworks/react-uswds'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './NavbarNotification.module.scss'
-// Icons
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
-
-//API
-import Service from '../../services/fetcher-legacy'
-
-// Data
-import notificationData from './notificationData.json'
-
-//Icons
+import { GET_NOTIFICATION, NOTIFYING_READ_MESSAGE } from '@/app/constants/routes'
+import { useSessionUCMS } from '@/app/lib/auth'
+import fetcher from '@/app/services/fetcher'
 import CloseIcon from '@mui/icons-material/Close'
 import DraftsIcon from '@mui/icons-material/Drafts'
 import EmailIcon from '@mui/icons-material/Email'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { Avatar, IconButton } from '@mui/material'
+import useSWR from 'swr'
+import { INotification } from '@/app/services/types/communication-service/Notification'
+import Spinner from '@/app/shared/components/spinner/Spinner'
+import { axiosInstance } from '@/app/services/axiosInstance'
 
 export const NavbarNotification: React.FC = () => {
-  const [getMenuFilter, setMenuFilter] = useState<HTMLElement | null>(null)
-  const [getMenu, setMenu] = useState<HTMLElement | null>(null)
-  const [filterReadMenu, setFilterReadMenu] = useState(false)
-  const [filterUnreadMenu, setFilterUnreadMenu] = useState(false)
-
   const [showFilterReadUnread, setShowFilterReadUnread] = useState(false)
   const [showMarkReadUnread, setShowMarkReadUnread] = useState(false)
+  const [filterType, setFilterType] = useState<'all' | 'read' | 'unread'>('all')
+  const session = useSessionUCMS()
+  const { data: notificationData, error, isLoading, mutate } = useSWR<INotification[]>(
+    session ? `${GET_NOTIFICATION}?user_id=${session.data.user_id}` : null,
+    fetcher
+  )
 
-  const open = Boolean(getMenu)
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setShowMarkReadUnread(!showMarkReadUnread)
-    setShowFilterReadUnread(false)
-  }
-  const handleMarkAllRead = () => {
-    setMarkAsAllUnReadStatus(false)
-    setMarkAsAllReadStatus(true)
-    setFilterReadMenu(false)
-    setFilterUnreadMenu(false)
-  }
-  const handleMarkAllUnRead = () => {
-    setMarkAsAllUnReadStatus(true)
-    setMarkAsAllReadStatus(false)
-    setFilterReadMenu(false)
-    setFilterUnreadMenu(false)
-  }
+  const [filteredNotifications, setFilteredNotifications] = useState<INotification[]>([])
 
-  const openFilter = Boolean(getMenuFilter)
-  const handleClickFilter = (event: React.MouseEvent<HTMLElement>) => {
+  useEffect(() => {
+    if (notificationData) {
+      setFilteredNotifications(
+        filterType === 'all'
+          ? notificationData
+          : notificationData.filter((item) =>
+            filterType === 'read' ? !item.unread : item.unread
+          )
+      )
+    }
+  }, [notificationData, filterType])
+
+  const handleClickFilter = () => {
     setShowFilterReadUnread(!showFilterReadUnread)
     setShowMarkReadUnread(false)
   }
 
-  const handleCloseFilterMenu = () => {
-    setFilterReadMenu(false)
-    setFilterUnreadMenu(false)
-  }
-  const handleSelectFilter = (item: any) => {
-    if (item !== 'Read') {
-      setFilterReadMenu(false)
-      setFilterUnreadMenu(true)
-      setMenuFilter(null)
-    } else {
-      setFilterUnreadMenu(false)
-      setFilterReadMenu(true)
-      setMenuFilter(null)
-    }
+  const handleClickMore = () => {
+    setShowMarkReadUnread(!showMarkReadUnread)
     setShowFilterReadUnread(false)
   }
 
-  const dataFetchedRef = useRef(false)
-  const [getNotificationData, setNotificationData] = useState<any>([])
-  const [visibleIcons, setVisibleIcons] = useState([])
-  const [markAsAllReadStatus, setMarkAsAllReadStatus] = useState(false)
-  const [markAsAllUnReadStatus, setMarkAsAllUnReadStatus] = useState(true)
+  const handleSelectFilter = (type: 'read' | 'unread') => {
+    setFilterType(type)
+    setShowFilterReadUnread(false)
+  }
 
-  useEffect(() => {
-    if (dataFetchedRef.current) {
-      return
+  const handleCloseFilterMenu = () => {
+    setFilterType('all')
+  }
+
+  const markAsRead = async (id: number) => {
+    try {
+      const payload = {
+        user_id: session.data.user_id,
+        id
+      }
+      await axiosInstance.put(NOTIFYING_READ_MESSAGE, payload)
+      mutate()
+    } catch (error) {
+      // Error handled
     }
-    dataFetchedRef.current = true
-    fetchNotificationData() // Calling only once
-  }, [])
-
-  const fetchNotificationData = async () => {
-    const user_id = 1
-    const response = await Service.getNotifications(user_id)
-    setNotificationData(response?.data)
   }
 
-  const handleToggleIcon = (id: any) => {
-    setVisibleIcons((prevState: any) => ({
-      ...prevState,
-      [id]: !prevState[id],
-    }))
+  const markAllAsRead = async () => {
+    if (!notificationData) {return}
+
+    try {
+      const promises = notificationData
+        .filter(item => item.unread)
+        .map(item => markAsRead(item.id))
+
+      await Promise.all(promises)
+      mutate()
+    } catch (error) {
+      // Error handled
+    }
   }
 
-  const markAsAllRead = async () => {
-    setMarkAsAllUnReadStatus(false)
-    setMarkAsAllReadStatus(true)
-  }
-
-  const markAsAllUnRead = async () => {
-    setMarkAsAllUnReadStatus(true)
-    setMarkAsAllReadStatus(false)
+  const markAllAsUnread = async () => {
+    try {
+      const payload = {
+        user_id: session.data.user_id,
+        mark_all_as_unread: true
+      }
+      await axiosInstance.put(NOTIFYING_READ_MESSAGE, payload)
+      mutate()
+    } catch (error) {
+      // Error handled
+    }
   }
 
   return (
@@ -114,56 +109,21 @@ export const NavbarNotification: React.FC = () => {
           <Grid col={5} className="display-flex">
             <h3 className="flex-fill margin-0">
               Notifications
-              <span className={styles['notification-count']}>20</span>
+              <span className={styles['notification-count']}>{filteredNotifications.length}</span>
             </h3>
           </Grid>
 
           <Grid col={3}>
-            {/* filter Selected */}
             <div className="display-flex flex-column">
-              {filterReadMenu && (
+              {filterType !== 'all' && (
                 <div className={styles['filterSelected']}>
                   <IconButton
-                    id="fade-button"
-                    aria-controls={openFilter ? 'fade-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={openFilter ? 'true' : undefined}
                     className={styles['notification-mainMenu']}
                     disableRipple
                   >
-                    <DraftsIcon fontSize="small" />
+                    {filterType === 'read' ? <DraftsIcon fontSize="small" /> : <EmailIcon fontSize="small" />}
                   </IconButton>
                   <IconButton
-                    id="fade-button"
-                    aria-controls={openFilter ? 'fade-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={openFilter ? 'true' : undefined}
-                    onClick={handleCloseFilterMenu}
-                    className={styles['notification-mainMenu']}
-                    disableRipple
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                </div>
-              )}
-
-              {filterUnreadMenu && (
-                <div className={styles['filterSelected']}>
-                  <IconButton
-                    id="fade-button"
-                    aria-controls={openFilter ? 'fade-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={openFilter ? 'true' : undefined}
-                    className={styles['notification-mainMenu']}
-                    disableRipple
-                  >
-                    <EmailIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    id="fade-button"
-                    aria-controls={openFilter ? 'fade-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={openFilter ? 'true' : undefined}
                     onClick={handleCloseFilterMenu}
                     className={styles['notification-mainMenu']}
                     disableRipple
@@ -176,13 +136,8 @@ export const NavbarNotification: React.FC = () => {
           </Grid>
 
           <Grid col={2}>
-            {/* filter */}
             <div className="display-flex flex-column">
               <IconButton
-                id="fade-button"
-                aria-controls={openFilter ? 'fade-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={openFilter ? 'true' : undefined}
                 onClick={handleClickFilter}
                 className={styles['notification-mainMenu']}
                 disableRipple
@@ -193,14 +148,9 @@ export const NavbarNotification: React.FC = () => {
           </Grid>
 
           <Grid col={2}>
-            {/* More */}
             <div className="display-flex flex-column">
               <IconButton
-                id="fade-button"
-                aria-controls={open ? 'fade-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
+                onClick={handleClickMore}
                 className={styles['notification-mainMenu']}
                 disableRipple
               >
@@ -214,7 +164,7 @@ export const NavbarNotification: React.FC = () => {
               <Grid col={6}>
                 <div
                   className={styles['navFilterMenu']}
-                  onClick={() => handleSelectFilter('Read')}
+                  onClick={() => handleSelectFilter('read')}
                 >
                   Read
                 </div>
@@ -222,7 +172,7 @@ export const NavbarNotification: React.FC = () => {
               <Grid col={6}>
                 <div
                   className={styles['navFilterMenu']}
-                  onClick={() => handleSelectFilter('Unread')}
+                  onClick={() => handleSelectFilter('unread')}
                 >
                   Unread
                 </div>
@@ -235,7 +185,7 @@ export const NavbarNotification: React.FC = () => {
               <Grid col={6}>
                 <div
                   className={styles['navFilterMenu']}
-                  onClick={handleMarkAllRead}
+                  onClick={markAllAsRead}
                 >
                   Mark All As Read
                 </div>
@@ -243,7 +193,7 @@ export const NavbarNotification: React.FC = () => {
               <Grid col={6}>
                 <div
                   className={styles['navFilterMenu']}
-                  onClick={handleMarkAllUnRead}
+                  onClick={markAllAsUnread}
                 >
                   Mark All As Unread
                 </div>
@@ -252,55 +202,50 @@ export const NavbarNotification: React.FC = () => {
           )}
         </Grid>
 
-        {notificationData.data?.map((item, index) => {
-          return (
-            <div
-              key={index}
-              className={styles['notification-lineItem']}
-              onClick={() => handleToggleIcon(item.id)}
-            >
-              <hr />
-              <Grid row>
-                <Grid
-                  col={2}
-                  className="display-flex flex-justify-center flex-align-center"
-                >
-                  <Avatar
-                    className={`height-6 width-6 ${styles['icons-account']}`}
-                  ></Avatar>
-                </Grid>
-                <Grid col={9}>
-                  <h4 className={`margin-0 ${styles['title-description']}`}>
-                    {item.title}
-                  </h4>
-                  <p className={`margin-0 ${styles['title-description']}`}>
-                    {item.description}
-                  </p>
-                  <h6 className={`margin-0 text-normal ${styles['text-h6']}`}>
-                    {item.created_at}
-                  </h6>
-                </Grid>
-                <Grid
-                  col={1}
-                  className="display-flex flex-justify-center flex-align-center"
-                >
-                  {markAsAllUnReadStatus && (
-                    <>
-                      {visibleIcons[item.id] ? (
-                        <RadioButtonUncheckedIcon />
-                      ) : (
-                        <FiberManualRecordIcon
-                          className={styles['notify-status']}
-                        />
-                      )}
-                    </>
-                  )}
-                  {markAsAllReadStatus && <></>}
-                </Grid>
+        {isLoading && <div className={styles['notification-lineItem']}><Spinner center /></div>}
+        {error && <div className={styles['notification-lineItem']}><p>An error has occurred.</p></div>}
+        {filteredNotifications.map((item, index) => (
+          <div
+            key={index}
+            className={styles['notification-lineItem']}
+            onClick={() => markAsRead(item.id)}
+          >
+            <hr />
+            <Grid row>
+              <Grid
+                col={2}
+                className="display-flex flex-justify-center flex-align-center"
+              >
+                <Avatar
+                  className={`height-6 width-6 ${styles['icons-account']}`}
+                ></Avatar>
               </Grid>
-            </div>
-          )
-        })}
+              <Grid col={9}>
+                <h4 className={`margin-0 ${styles['title-description']}`}>
+                  {item.title ?? ''}
+                </h4>
+                <p className={`margin-0 ${styles['title-description']}`}>
+                  {item.message}
+                </p>
+                <h6 className={`margin-0 text-normal ${styles['text-h6']}`}>
+                  {item.created_at ?? ''}
+                </h6>
+              </Grid>
+              <Grid
+                col={1}
+                className="display-flex flex-justify-center flex-align-center"
+              >
+                {item.unread ? (
+                  <FiberManualRecordIcon
+                    className={styles['notify-status']}
+                  />
+                ) : (
+                  <RadioButtonUncheckedIcon />
+                )}
+              </Grid>
+            </Grid>
+          </div>
+        ))}
       </div>
     </>
   )

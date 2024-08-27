@@ -11,6 +11,7 @@ import { Fragment, ReactElement, useState } from 'react'
 import FirmApplicationCard from '../../components/FirmApplicationCard'
 import DeleteWithdrawConfirmationModal from '../../components/delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
 import styles from '../../utils/FirmDashboard.module.scss'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 
 interface FirmUserDashboardPageProps {
   params: {
@@ -92,7 +93,7 @@ const FirmUserDashboard: React.FC<FirmUserDashboardPageProps> = ({ params: {enti
   }
 
   if (!data) {
-    return <div>Loading...</div>;
+    return <Spinner center />
   }
 
   return (

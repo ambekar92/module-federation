@@ -42,15 +42,22 @@ export type UrlAnswerChoice = {
 
 export type AnswerChoice = GridAnswerChoice | SelectAnswerChoice | UrlAnswerChoice | null;
 
+export type AnswerGivenValue = {
+  boolean?: 'TRUE' | 'FALSE' | null;
+  multi_select?: string | null;
+  select?: string[] | null;
+  text?: string | null;
+  number?: number | null;
+  date?: string | null;
+  address?: string | null;
+  grid?: any | null; // You might want to define a more specific type for grid
+  'api.get.url'?: string | null;
+  'document_upload'?: string | null;
+};
+
 export type Rule = {
   question_id: number;
-  answer_given_value: {
-    boolean?: 'TRUE' | 'FALSE';
-    multi_select?: string;
-    select?: string[];
-    text?: string;
-    number?: number;
-  };
+  answer_given_value: AnswerGivenValue;
   next_question_id: number | null;
   alert_message: string | null;
   document_requirement: any | null;

@@ -15,15 +15,22 @@ import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
 import fetcher from '@/app/services/fetcher';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const QuestionnaireListPage: React.FC = () => {
-  const { contributorId, applicationId } = useApplicationContext();
+  const { contributorId, applicationId, applicationData } = useApplicationContext();
   const dispatch = useApplicationDispatch();
 
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(
     contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
     fetcher
   );
+
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
@@ -34,7 +41,7 @@ const QuestionnaireListPage: React.FC = () => {
   }
 
   if (!questionnairesData) {
-    return <h1>Loading...</h1>;
+    return <Spinner center />
   }
 
   return (

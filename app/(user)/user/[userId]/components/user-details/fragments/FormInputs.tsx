@@ -55,7 +55,7 @@ const FormInputs = ({
         body: JSON.stringify({ message: JSON.stringify(data) }),
       })
       console.log('Kafka POST response: ', response)
-      const formData: FormData = data
+      const formData: any = data
 
       setUserData({ ...formData })
       handleCloseEdit()

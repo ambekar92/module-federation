@@ -203,7 +203,7 @@ const Questionnaire = ({
                               <th
                                 key={`${inputId}-th-${option.label}`}
                                 style={question.question__answer_choice.options && question.question__answer_choice.options.length ? {
-                                   width: 
+                                  width:
                                     (
                                       100 /
                                       question.question__answer_choice.options.length

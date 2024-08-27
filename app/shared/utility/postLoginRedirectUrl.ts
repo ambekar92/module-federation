@@ -26,8 +26,6 @@ export function postLoginRedirectUrl(firstPermissionSlug: Role, lastPermissionSl
     case Role.EXTERNAL:
       switch (lastPermissionSlug) {
         case Role.EXTERNAL:
-          // Todo
-          // Need to validate application progress for router.push
           return CLAIM_YOUR_BUSINESS;
         case Role.PRIMARY_QUALIFYING_OWNER:
           // Todo

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export enum ReassignType {
     REASSIGN_SCREENER,
@@ -8,9 +8,8 @@ export enum ReassignType {
 }
 
 export const schema = z.object({
-    user: z.any().refine(val => !!val, 'Please select a user'),
-    comments: z.string().min(1, 'Please provide a reason for reassigning the user'),
+  user: z.any().refine(val => !!val, 'Please select a user'),
+  comments: z.string().min(1, 'Please provide a reason for reassigning the user'),
 })
-
 
 export type ReassignUserType = z.infer<typeof schema>;

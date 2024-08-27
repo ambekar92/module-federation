@@ -11,7 +11,7 @@ function Ownership() {
 
   useEffect(() => {
     dispatch(setDisplayStepNavigation(true));
-  }, []);
+  }, [dispatch]);
 
   return (
     <OwnershipLayout>

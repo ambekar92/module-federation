@@ -64,7 +64,7 @@ export const useUserApplicationInfo = () => {
   return { updateUserApplicationInfo };
 };
 
-export const convertOwnerToContributor = (owner: OwnerType): Contributor => {
+export const convertOwnerToContributor = (owner: any): Contributor => {
   return {
     contributorRole: owner.isEligibleOwner ? 'role_owner_eligible' : 'role_owner',
     firstName: owner.firstName,

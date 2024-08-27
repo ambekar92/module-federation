@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
 import React, { useState } from 'react';
-import SubsidiaryPage from "../../components/subsidiary/SubsidiaryPage"
+import SubsidiaryPage from '../../components/subsidiary/SubsidiaryPage'
 
 const Subsidiaries = () => {
 

@@ -8,8 +8,6 @@ export interface CustomTableHeaderProps {
 }
 export const TableHeader: FC<CustomTableHeaderProps> = ({
   headers,
-  editable,
-  remove,
 }) => {
   return (
     <thead>

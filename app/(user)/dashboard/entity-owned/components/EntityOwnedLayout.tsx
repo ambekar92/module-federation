@@ -3,7 +3,6 @@ import { Grid } from '@trussworks/react-uswds'
 import ControllEntitySideBar from './ControllEntitySideBar'
 import ControllEntityMainContent from './ControllEntityMainContent'
 
-
 const EntityOwned = () => {
 
   return (

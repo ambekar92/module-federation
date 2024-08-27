@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import TurndownService from 'turndown';
 import { marked } from 'marked';
-import { DOCUMENT_TEMPLATE_ROUTE, LETTER_FOR_APPLICATION_ROUTE } from '@/app/constants/routes';
+import { LETTER_FOR_APPLICATION_ROUTE } from '@/app/constants/routes';
 import fetcher from '@/app/services/fetcher';
-import { DocumentTemplate } from '@/app/services/types/document-service/DocumentTemplate';
 import { Button } from '@trussworks/react-uswds';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 interface BodyContentRendererProps {
   name: string;
   isEditable?: boolean;
-	applicationId: number | null;
+  applicationId: number | null;
 }
 
 const containerStyles: React.CSSProperties = {
@@ -27,7 +27,7 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { data: documentTemplates, error } = useSWR<DocumentTemplate[]>(
+  const { data: apiHtmlContent, error } = useSWR<string>(
     applicationId && name ? `${LETTER_FOR_APPLICATION_ROUTE}?template_name=${name}&application_id=${applicationId}` : null,
     fetcher
   );
@@ -49,17 +49,14 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
   };
 
   useEffect(() => {
-    if (documentTemplates) {
-      const matchingTemplate = documentTemplates.find(template => template.name === name);
-      if (matchingTemplate) {
-        const cleanedContent = cleanHtmlContent(matchingTemplate.content);
-        setFullHtmlContent(cleanedContent);
-        const extractedBodyContent = extractBodyContent(cleanedContent);
-        setBodyContent(extractedBodyContent);
-        setMarkdownContent(turndownService.turndown(extractedBodyContent));
-      }
+    if (apiHtmlContent) {
+      const cleanedContent = cleanHtmlContent(apiHtmlContent);
+      setFullHtmlContent(cleanedContent);
+      const extractedBodyContent = extractBodyContent(cleanedContent);
+      setBodyContent(extractedBodyContent);
+      setMarkdownContent(turndownService.turndown(extractedBodyContent));
     }
-  }, [documentTemplates, name]);
+  }, [apiHtmlContent]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -77,7 +74,7 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
       setBodyContent(newHtmlContent);
       setIsEditing(false);
     } catch (error) {
-      console.error('Dang, there was an error converting markdown to html:', error);
+      console.error('Error converting markdown to html:', error);
     } finally {
       setIsSaving(false);
     }
@@ -89,7 +86,7 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
   };
 
   if (error) {return <div>Failed to load content</div>;}
-  if (!documentTemplates) {return <div>Loading...</div>;}
+  if (!apiHtmlContent) {return <Spinner center />}
 
   return (
     <div>
@@ -103,7 +100,9 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
           <Button type='button' onClick={handleSaveClick} disabled={isSaving}>
             {isSaving ? 'Saving...' : 'Save'}
           </Button>
-          <Button type='button' outline onClick={handleCancelClick} disabled={isSaving}>Cancel</Button>
+          <Button type='button' outline onClick={handleCancelClick} disabled={isSaving}>
+            Cancel
+          </Button>
         </div>
       ) : (
         <div>

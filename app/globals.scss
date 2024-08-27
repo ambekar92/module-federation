@@ -225,3 +225,13 @@ li.usa-card {
   margin: 0rem !important;
   max-width: 100% !important;
 }
+
+#loading-spinner {
+  width: 30px;
+  height: 30px;
+}
+#loading-spinner.center {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+}

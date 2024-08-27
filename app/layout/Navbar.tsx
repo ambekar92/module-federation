@@ -11,7 +11,7 @@ import Cookies from 'js-cookie'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { SBA_LOGO_SQUARE_WHITE_URL } from '../constants/icons'
+import { SBA_LOGO_SQUARE_BLUE_RED_URL, SBA_LOGO_SQUARE_WHITE_URL, } from '../constants/icons'
 import { NavbarNotification } from './navbar-notification/NavbarNotification'
 import {adminNavBar}  from './types/constant'
 import styles from './Layout.module.scss'
@@ -34,7 +34,8 @@ import {
   REVIEWERS_DASHBOARD_PAGE,
   USER_PROFILE_PAGE,
   MESSAGE_PAGE,
-  DOCUMENT_PAGE
+  DOCUMENT_PAGE,
+  DASHBOARD
 } from '@/app/constants/url'
 
 const Navbar = () => {
@@ -45,6 +46,9 @@ const Navbar = () => {
   const [selectedNameId, setSelectedNameId] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const params = useParams<{application_id: string}>();
+  const session = useSessionUCMS()
+  const userRole = getUserRole(session?.data?.permissions || []);
+  const path = usePathname()
 
   const isInApplicationFlow = () => {
     if (typeof window !== 'undefined') {
@@ -90,13 +94,10 @@ const Navbar = () => {
 
   const styleSettings = {
     hoverColor: '',
-    bg: 'bg-primary-dark',
+    bg: '#002e6d',
     textColor: 'text-white',
     logo: SBA_LOGO_SQUARE_WHITE_URL,
   }
-  const session = useSessionUCMS()
-  const userRole = getUserRole(session?.data?.permissions || []);
-  const path = usePathname()
 
   useEffect(() => {
     const emailPasswordAuthToken = Cookies.get('email_password_auth_token')
@@ -308,7 +309,7 @@ const Navbar = () => {
     </React.Fragment>,
     <React.Fragment key="primaryNav_3">
       <a onClick={handleClickGetHelp}
-        className="usa-nav_link"
+        className="usa-nav_link margin-left-4"
         href="https://sbaone.atlassian.net/servicedesk/customer/portal/12"
       >
         <span>Get Help</span>
@@ -321,6 +322,15 @@ const Navbar = () => {
       <React.Fragment key="auth_1">
         <Link className="usa-nav_link" href={buildRoute(FIRM_EVALUATION_PAGE, { application_id: params.application_id })}>
           <span>Home</span>
+        </Link>
+      </React.Fragment>
+    ] : []),
+    ...(userRole === 'external' ? [
+      <React.Fragment key="auth_4">
+        <Link
+          className="usa-nav_link"
+          href={DASHBOARD}>
+          <span>Dashboard</span>
         </Link>
       </React.Fragment>
     ] : []),
@@ -355,7 +365,8 @@ const Navbar = () => {
   return (
     <>
       <Header
-        className={`${styleSettings.bg} border-bottom-1px border-base-light ${styles['mobile-border--none']}`}
+        style={{backgroundColor: styleSettings.bg}}
+        className={`${isAuthenticated && adminBanner === 'admin' ? 'border-base-light border-bottom-1px' : ''} ${styles['mobile-border--none']}`}
         basic
         showMobileOverlay={mobileNavOpen}
       >
@@ -396,15 +407,16 @@ const Navbar = () => {
           )}
         </div>
       </Header>
-      <Header
-        style={{ borderColor: '#F8DFE2' }}
-        className={`border-bottom-1px padding-x-4 ${styles['mobile-border--none']}`}
-      >
-        <div className="usa-nav float-left">
-          <div className="usa-nav__primary float-left usa-accordion">
-            {isAuthenticated && adminBanner === 'admin' ? (
-              adminNavBar.map((header: any, index: number) => (
-                <ul key={index}>
+      {isAuthenticated && adminBanner === 'admin' ? (
+        adminNavBar.map((header: any, index: number) => (
+          <Header
+            key={index}
+            style={{ borderColor: '#F8DFE2' }}
+            className={`border-bottom-1px padding-x-4 ${styles['mobile-border--none']}`}
+          >
+            <div className="usa-nav float-left">
+              <div className="usa-nav__primary float-left usa-accordion">
+                <ul>
                   <li
                     key={index}
                     className="usa-nav__primary-item"
@@ -424,26 +436,28 @@ const Navbar = () => {
                     </a>
                   </li>
                 </ul>
-              ))
-            ) : isAuthenticated ? (
-              <PrimaryNav
-                aria-label="Primary navigation"
-                items={authenticatedItems}
-                onToggleMobileNav={toggleMobileNav}
-                mobileExpanded={mobileNavOpen}
-              ></PrimaryNav>
-            ) : (
-              <PrimaryNav
-                aria-label="Primary navigation"
-                items={unAuthenticatedItems}
-                onToggleMobileNav={toggleMobileNav}
-                mobileExpanded={mobileNavOpen}
-              ></PrimaryNav>
-            )}
-          </div>
-        </div>
-        <ClientSideBusinessName />
-      </Header>
+              </div>
+            </div>
+            <ClientSideBusinessName />
+          </Header>
+        ))
+      ) : isAuthenticated ? (
+        <PrimaryNav
+          aria-label="Primary navigation"
+          items={authenticatedItems}
+          onToggleMobileNav={toggleMobileNav}
+          mobileExpanded={mobileNavOpen}
+        ></PrimaryNav>
+      ) : (
+        <>
+          {/* <PrimaryNav
+                  aria-label="Primary navigation"
+                  items={unAuthenticatedItems}
+                  onToggleMobileNav={toggleMobileNav}
+                  mobileExpanded={mobileNavOpen}
+                ></PrimaryNav> */}
+        </>
+      )}
     </>
   )
 }

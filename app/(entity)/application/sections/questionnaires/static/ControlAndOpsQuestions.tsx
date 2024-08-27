@@ -15,6 +15,7 @@ import { setDisplayStepNavigation, setStep } from '../../../redux/applicationSli
 import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 function ControlAndOpsQuestions() {
   const dispatch = useApplicationDispatch();
@@ -23,6 +24,12 @@ function ControlAndOpsQuestions() {
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : '';
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
   useUpdateApplicationProgress('Control and Operations');
+
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.controlAndOwnership.stepIndex));
@@ -68,7 +75,7 @@ function ControlAndOpsQuestions() {
   };
 
   if (error) {return <div>Error: {error.message}</div>;}
-  if (!data || isLoading) {return <div>Loading...</div>;}
+  if (!data || isLoading) {return <Spinner center />}
 
   const sortedAndFilteredQuestions = data
     .filter(question => question.question_ordinal !== null)
@@ -88,7 +95,7 @@ function ControlAndOpsQuestions() {
             </div>
             <div>
               <h2>Management Structure</h2>
-              <p>Based on the information provided, {applicationData?.sam_entity.legal_business_name} is designated as a {applicationData?.sam_entity.entity_structure}.</p>
+              <p>Based on the information provided, {applicationData?.sam_entity.legal_business_name} is designated as a {applicationData?.entity.structure}.</p>
               <p>If this designation is incorrect, please discontinue this application and update your information on <a href="/application">SAM.gov</a></p>
             </div>
 

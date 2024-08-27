@@ -11,6 +11,7 @@ declare module 'next-auth' {
 			accessToken?: string;
 			id: number;
 			okta_id?: string;
+      idToken: string;
     }
 		expires: string
   }

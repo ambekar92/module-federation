@@ -7,8 +7,8 @@ const EntityList = ({
   handleDelete,
 }: {
   entities: EntityFormType[]
-  handleEdit: (idx: number) => void
-  handleDelete: (idx: number) => void
+  handleEdit: (index: number) => void
+  handleDelete: () => void
 }) => {
   const entityHeaders = [
     { id: 'entityType', headerName: 'Entity Type' },

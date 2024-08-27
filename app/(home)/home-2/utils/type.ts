@@ -6,6 +6,6 @@ export interface TopPartLayoutProps {
     buttonName: string,
   }
 
-  export interface MediumPartLayoutProps {
+export interface MediumPartLayoutProps {
     description: string,
   }

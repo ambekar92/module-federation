@@ -9,16 +9,15 @@ import Checkbox from '@/app/shared/form-builder/form-controls/Checkbox'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, ButtonGroup, ModalFooter, ModalRef } from '@trussworks/react-uswds'
 import React, { Dispatch, RefObject, useEffect, useRef, useState } from 'react'
-import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import BodyContentRenderer from '../../../BodyContentRenderer'
 import { declineLetterSchema } from '../schema'
-import { CompleteReviewFormType, Decision, DeclineLetterType, ReviewSummaryType, Steps } from '../types'
+import { Decision, DeclineLetterType, CompleteReviewFormType, ReviewSummaryType, Steps } from '../types'
 import { useProgramStatus } from '../useProgramStatus'
-import { formatProgramText } from '@/app/shared/utility/formatProgramText'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
 
-interface CompleteReviewDeclineLetterProps {
+interface DeclineLetterProps {
   modalRef: RefObject<ModalRef>;
   setCurrentStep: Dispatch<React.SetStateAction<number>>;
   applicationData: Application | null;
@@ -26,7 +25,7 @@ interface CompleteReviewDeclineLetterProps {
   processId: number | undefined;
 }
 
-const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = ({
+const DeclineLetter: React.FC<DeclineLetterProps> = ({
   modalRef,
   setCurrentStep,
   applicationData,
@@ -36,42 +35,25 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
   const [currentLetterIdx, setCurrentLetterIdx] = useState<number>(0);
   const [supplementalLetters, setSupplementalLetters] = useState<DocumentTemplateType[]>([]);
   const { approvedLetters, declinedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData);
-  const {getValues, setValue, reset} = useFormContext<CompleteReviewFormType>();
+  const {setValue, reset} = useFormContext<CompleteReviewFormType>();
   const { data: session } = useSessionUCMS();
   const bodyContentRef = useRef<HTMLDivElement>(null);
 
   const methods = useForm<DeclineLetterType>({
     resolver: zodResolver(declineLetterSchema),
-    defaultValues: getValues('declineLetter'),
+    defaultValues: { approvalDecisions: false },
     shouldUnregister: true
   })
 
-  const currentProgram = declinedPrograms[currentLetterIdx];
-  const currentDecision = useWatch({
-    control: methods.control,
-    name: `decisions.${currentProgram}`,
-  });
-
-  useEffect(() => {
-    if (currentDecision) {
-      methods.clearErrors(`decisions.${currentProgram}`);
-    }
-  }, [currentDecision, currentProgram, methods]);
-
   useEffect(() => {
     if (!isLoading) {
-      if (declinedLetters.length === 0) {
+      if (declinedLetters.length === 1 && approvedLetters[0].includes(DocumentTemplateType.generalDecline)) {
         setCurrentStep(Steps.ApprovalLetter);
       } else {
         setSupplementalLetters([DocumentTemplateType.generalDecline, ...declinedLetters.filter(letter => letter !== DocumentTemplateType.generalDecline)]);
       }
     }
   }, [declinedPrograms, declinedLetters, isLoading, setCurrentStep]);
-
-  useEffect(() => {
-    const declineLetter = getValues('declineLetter')
-    methods.reset(declineLetter)
-  }, [])
 
   if(!applicationData) {
     return <h3>No application data found...</h3>
@@ -118,19 +100,15 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
 
   function onContinue() {
     if (currentLetterIdx === supplementalLetters.length - 1) {
+      if (!methods.getValues().approvalDecisions) {
+        methods.setError('approvalDecisions', {
+          type: 'manual',
+          message: 'Please confirm the declination before continuing.'
+        });
+        return;
+      }
       methods.handleSubmit(onSubmit)();
     } else {
-      if (currentLetterIdx > 0) {
-        const formData = methods.getValues();
-        const currentProgram = declinedPrograms[currentLetterIdx - 1];
-        if (!formData.decisions[currentProgram]) {
-          methods.setError(`decisions.${currentProgram}`, {
-            type: 'manual',
-            message: 'Please decline the certification before continuing.'
-          });
-          return;
-        }
-      }
       setCurrentLetterIdx(prevIdx => prevIdx + 1);
     }
   }
@@ -161,10 +139,10 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
         const programApplication = applicationData?.program_application || []
         const programDecisions = programApplication.map((program) => {
           const programName = program.programs.name
-          const decision = reviewSummaryData[programName]
+          const decision = reviewSummaryData[`${programName}`]
           const baseDecision = {
             program_id: program.program_id,
-            approved: decision === Decision.Concur ? 1 : 0,
+            approved: 1
           }
 
           if (decision === Decision.Disagree) {
@@ -183,7 +161,7 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
         const postData = {
           process_id: processId,
           data: {
-            program_decisions: programDecisions
+            program_decisions: JSON.stringify(programDecisions)
           }
         }
 
@@ -192,7 +170,7 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
         setCurrentStep(Steps.ReviewSummary);
         reset();
         modalRef.current?.toggleModal();
-        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-review'
+        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-approval'
       } else {
         throw new Error('Process id not found or review summary data is missing')
       }
@@ -212,7 +190,7 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
   }
 
   if(isLoading) {
-    return null;
+    return
   }
 
   const content = (
@@ -220,20 +198,16 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
       <div className='display-flex flex-justify-end' style={{border: '1px solid black', borderBottom: 'none', padding: '0.5rem 1rem'}}><Button type='button' onClick={onViewPdf} outline>View PDF</Button></div>
       <div style={containerStyles}>
         <div className="body-content-renderer">
-          <BodyContentRenderer applicationId={applicationData?.id} name={supplementalLetters[currentLetterIdx]} />
+          <BodyContentRenderer applicationId={applicationData?.id} isEditable name={supplementalLetters[currentLetterIdx]} />
         </div>
       </div>
-      {currentLetterIdx > 0 && (
+      {currentLetterIdx === supplementalLetters.length - 1 && (
         <>
           <h5>Signature</h5>
-          {declinedPrograms.map((program, index) => (
-            <div key={program} style={{ display: index === currentLetterIdx - 1 ? 'block' : 'none' }}>
-              <Checkbox<DeclineLetterType>
-                name={`decisions.${program}`}
-                label={`I have reviewed and decline the ${formatProgramText(program)} certification.`}
-              />
-            </div>
-          ))}
+          <Checkbox<DeclineLetterType>
+            name="approvalDecisions"
+            label={'By clicking this checkbox, you are attesting that you’ve done a thorough review and are ready to officially approve or deny the certifications listed in this application. Once you select “Sign and Submit”, the applicant will be notified and receive their official letters.'}
+          />
         </>
       )}
     </>
@@ -242,8 +216,7 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
-        <h4>{currentLetterIdx === 0 ? 'Decline Letter' : 'Supplemental Decline Letter(s)'}</h4>
-        {supplementalLetters.length > 1 && <p>Letter {currentLetterIdx + 1} of {supplementalLetters.length}</p>}
+        <h4>Decline Letter(s)</h4>
         {content}
 
         <ModalFooter style={{ marginTop: '3rem' }}>
@@ -277,4 +250,4 @@ const CompleteReviewDeclineLetter: React.FC<CompleteReviewDeclineLetterProps> = 
   )
 }
 
-export default CompleteReviewDeclineLetter
+export default DeclineLetter

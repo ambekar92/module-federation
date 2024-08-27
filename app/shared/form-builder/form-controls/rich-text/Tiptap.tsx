@@ -18,16 +18,15 @@ const Tiptap = ({ value, onChange, itemId, size = 'lg' }: { value: string, onCha
       },
     }, [onChange, itemId])
 
-  if (!editor) return null
-
+  if (!editor) {return null}
 
   return <>
-  {size === 'lg' ? <FormatButtons editor={editor} /> : 
-  <BubbleMenu editor={editor}>
-    <FormatButtons editor={editor} />
-  </BubbleMenu>
-  }
-  <EditorContent editor={editor} />
+    {size === 'lg' ? <FormatButtons editor={editor} /> :
+      <BubbleMenu editor={editor}>
+        <FormatButtons editor={editor} />
+      </BubbleMenu>
+    }
+    <EditorContent editor={editor} />
   </>
 }
 

@@ -15,7 +15,7 @@ import { useCurrentPath } from '../hooks/useCurrentPath';
 import TableContent from './TableContent';
 import { UserTaskDashboard } from '@/app/services/types/evaluation-service/UserTaskDashboard';
 
-const TableProvider: React.FC<{searchParams: DashboardSearchParams, tasks: UserTaskDashboard[] | undefined}> = ({ searchParams, tasks }) => {
+const TableProvider: React.FC<{searchParams: DashboardSearchParams, tasks?: UserTaskDashboard[]}> = ({ searchParams, tasks }) => {
   const sessionData = useSessionUCMS();
   const { isReviewersDashboard } = useCurrentPath();
   const [columns, setColumns] = useState<IColumn[]>(isReviewersDashboard ? supervisorColumns : userColumns);

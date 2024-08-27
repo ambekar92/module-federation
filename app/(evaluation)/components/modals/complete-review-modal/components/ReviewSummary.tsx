@@ -7,6 +7,7 @@ import React, { Dispatch, RefObject, useMemo } from 'react'
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { generateReviewSummarySchema } from '../schema'
 import { Decision, CompleteReviewFormType, ReviewSummaryType, Steps } from '../types'
+import { capitalize } from '@mui/material'
 
 interface ReviewSummaryProps {
   modalRef: RefObject<ModalRef>;
@@ -71,11 +72,11 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
           return (
             <React.Fragment key={program.id}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'baseline' }}>
-                <div>
+                <div className='padding-right-1'>
                   <strong>{program.programs.title}</strong>
                 </div>
                 <div>
-                  <span>{program.analyst_recommendation}</span>
+                  <span>{program.analyst_recommendation && capitalize(program.analyst_recommendation)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Controller
@@ -103,29 +104,27 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
                       label='Provide more information about your disagreement'
                     />
                   </div>
-                  {program.reviewer_can_appeal
-									&& ((program.reviewer_decision === Decision.Concur && methods.watch(programName) === Decision.Disagree)
-									|| (program.reviewer_decision === Decision.Disagree && methods.watch(programName) === Decision.Concur))
-									&& (
-									  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-									    <Controller
-									      name={`reviewerAppeal-${programName}`}
-									      control={methods.control}
-									      render={({ field }) => (
-									        <ToggleButtonGroup<ReviewSummaryType, string>
-									          {...field}
-									          style={{ display: 'flex', gap: '0.5rem' }}
-									          label='Can the applicant appeal this decision?'
-									          grid
-									          options={[
-									            { label: 'Concur', value: Decision.Concur },
-									            { label: 'Disagree', value: Decision.Disagree }
-									          ]}
-									        />
-									      )}
-									    />
-									  </div>
-									)}
+                  {['eight_a', 'sd_vosb', 'vosb'].includes(program.programs.name) &&
+                     (methods.watch(programName) === Decision.Disagree) && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Controller
+                        name={`reviewerAppeal-${programName}`}
+                        control={methods.control}
+                        render={({ field }) => (
+                          <ToggleButtonGroup<ReviewSummaryType, string>
+                            {...field}
+                            style={{ display: 'flex', gap: '0.5rem' }}
+                            label='Can the applicant appeal this decision?'
+                            grid
+                            options={[
+                              { label: 'Yes', value: Decision.Concur },
+                              { label: 'No', value: Decision.Disagree }
+                            ]}
+                          />
+                        )}
+                      />
+                    </div>
+                  )}
                 </>
               )}
             </React.Fragment>

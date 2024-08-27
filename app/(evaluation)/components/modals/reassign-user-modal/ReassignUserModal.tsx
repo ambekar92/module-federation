@@ -23,7 +23,7 @@ type Props = {
     modalRef: RefObject<ModalRef>,
    reassignType: ReassignType | null,
    applicationId: number,
-	 handleAction: () => void
+	 handleAction?: () => void
 }
 
 const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}: Props ) => {
@@ -107,7 +107,7 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
     const comboboxClearButton = document.querySelector('.usa-combo-box__clear-input') as unknown as any;
     comboboxClearButton?.click();
     modalRef.current?.toggleModal();
-    handleAction();
+    handleAction && handleAction();
   }
 
   return (
@@ -120,7 +120,7 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
       aria-describedby="reassign-user-modal">
       <FormProvider {...methods}>
         <form>
-          <h1> {reassignType !== null && titleMap[reassignType]} </h1>
+          <h1>Reassign Application</h1>
           {userOptions && <Combobox<ReassignUserType> name='user' required={true} label='Select User' options={userOptions}/>}
           <RichText<ReassignUserType> name='comments' label='Provide more information' required={true} itemId={Math.random()} />
           <ModalFooter>

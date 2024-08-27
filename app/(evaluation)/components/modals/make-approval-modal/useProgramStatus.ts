@@ -64,10 +64,9 @@ export const useProgramStatus = (reviewSummaryData: ReviewSummaryType | null): P
         newStatus.approvedPrograms.push('eight_a');
         newStatus.approvedLetters.push(DocumentTemplateType.eightAApproval);
       }
-      if ((reviewSummaryData.approvalwosb === Decision.Disagree || reviewSummaryData.approvaled_wosb === Decision.Disagree) ||
-        ((reviewSummaryData.approvalwosb === Decision.Concur || reviewSummaryData.approvaled_wosb === Decision.Concur) &&
-        (reviewSummaryData['reviewerAppeal-wosb'] === 'yes' || reviewSummaryData['reviewerAppeal-ed_wosb'] === 'yes'))) {
+      if ((reviewSummaryData.approvalwosb === Decision.Disagree || reviewSummaryData.approvaled_wosb === Decision.Disagree)) {
         newStatus.declinedPrograms.push('wosb');
+        newStatus.declinedLetters.push(DocumentTemplateType.wosbDecline);
       }
       if (reviewSummaryData.approvalhubzone === Decision.Disagree ||
         (reviewSummaryData.approvalhubzone === Decision.Concur && reviewSummaryData['reviewerAppeal-hubzone'] === 'yes')) {

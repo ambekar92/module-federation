@@ -42,7 +42,7 @@ const TablePagination = ({ total }: { total: number }) => {
       onClickPageNumber={(e, p) => updatePageSearchParam(e, p)}
       currentPage={parseInt(searchParamsState.get('page') ?? '1') ?? 1}
       pathname={'#'} totalPages={total} />
-     </div>
+    </div>
   )
 }
 

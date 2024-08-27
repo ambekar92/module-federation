@@ -25,7 +25,7 @@ const middlewares: { [key: string]: any } = {
   '/(.*)': [handleProtectedRoute],
   '/dashboard/:path*': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
-     if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
+    if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/admin/dashboard`)
     } else if (!isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) && !isRole(permissions, Role.CONTRIBUTOR) && !isRole(permissions, Role.ADMIN)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard`);
@@ -77,7 +77,7 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.redirect(`${request.nextUrl.origin}/login`);
     }
   }],
-  
+
 };
 
 export const config = {
@@ -103,7 +103,7 @@ export const config = {
     '/dashboard/(.*)',
     '/login-tester',
     '/tester-login',
-     '/entity-owned/(.*)',
+    '/entity-owned/(.*)',
   ],
 }
 

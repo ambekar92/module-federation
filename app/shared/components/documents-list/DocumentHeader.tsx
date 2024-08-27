@@ -234,7 +234,7 @@ function DocumentHeader() {
       )}
       {view === 'table' && (
         <div>
-          <DocumentsListFilesTable documentsData={documentsData} />
+          <DocumentsListFilesTable documentsData={documentsData as any} />
         </div>
       )}
     </div>

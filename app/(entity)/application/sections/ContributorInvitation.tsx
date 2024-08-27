@@ -5,7 +5,6 @@ import fetcher from '@/app/services/fetcher';
 import { InvitationType } from '@/app/services/types/application-service/Application';
 import { CustomTable } from '@/app/shared/components/CustomTable';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid, GridContainer, Label, TextInput } from '@trussworks/react-uswds';
@@ -40,6 +39,12 @@ function ContributorInvitation() {
   const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null, fetcher);
   const { data: ownerData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : null, fetcher);
   const { data: operatorData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null, fetcher);
+
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   useEffect(() => {
     if (ownerData && ownerData[0].answer) {

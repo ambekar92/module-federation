@@ -16,6 +16,6 @@ export enum YesNo {
 }
 
 export enum OwnershipType {
-  individual = 'individual',
-  organization = 'organization'
+  individual = 'Individual',
+  organization = 'Organization'
 }

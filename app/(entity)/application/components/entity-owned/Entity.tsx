@@ -31,7 +31,7 @@ function Entity() {
     dispatch(setIsEditingOwnedEntity(false))
   }
 
-  const handleDelete = (index: number) => {
+  const handleDelete = () => {
     dispatch(setOwnedEntity(null))
   }
 
@@ -44,7 +44,7 @@ function Entity() {
       <Show>
         <Show.When isTrue={ownedEntity ? true : false}>
           <EntityList
-            entities={[ownedEntity]}
+            entities={[ownedEntity] as any}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
           />

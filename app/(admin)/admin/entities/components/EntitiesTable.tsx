@@ -73,8 +73,8 @@ const EntitiesTable = async ({
                           : searchParams.sortColumn === 'sam_extract_code' &&
                               searchParams.sortOrder === 'desc'
                             ? b.sam_extract_code.localeCompare(
-                                a.sam_extract_code,
-                              )
+                              a.sam_extract_code,
+                            )
                             : 0,
       )
       .filter((item: any) => {
@@ -123,7 +123,7 @@ const EntitiesTable = async ({
   const [data, setData] = useState([] as any | IDocument[])
   const [shouldFetch, setShouldFetch] = useState(true)
   const [showDisplay, setShowDisplay] = useState(false)
-  
+
   const { data: responseData, error: responseError } = useSWR(
     () => shouldFetch && ENTITIES_ROUTE,
     fetcher,
@@ -153,12 +153,10 @@ const EntitiesTable = async ({
     responseData
       ? setData([...sortData(convertToTableData(responseData))])
       : setData([...sortData(convertToTableData(entities))])
-      if(searchParams.q){
-        setShowDisplay(true)
+    if(searchParams.q){
+      setShowDisplay(true)
     }
   }, [searchParams, responseData])
-
-
 
   const formatDate = (isoString: string) => {
     const date = new Date(isoString)

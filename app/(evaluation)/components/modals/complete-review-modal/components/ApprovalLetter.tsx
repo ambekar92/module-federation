@@ -3,30 +3,29 @@ import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
 import { Application } from '@/app/services/types/application-service/Application'
+import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate'
 import { HtmlToPdfDocument } from '@/app/services/types/document-service/HtmlToPdfDocument'
 import Checkbox from '@/app/shared/form-builder/form-controls/Checkbox'
-import { formatProgramText } from '@/app/shared/utility/formatProgramText'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, ButtonGroup, ModalFooter, ModalRef } from '@trussworks/react-uswds'
 import React, { Dispatch, RefObject, useEffect, useState } from 'react'
-import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import BodyContentRenderer from '../../../BodyContentRenderer'
 import { approvalLetterSchema } from '../schema'
 import { ApprovalLetterType, Decision, CompleteReviewFormType, ReviewSummaryType, Steps } from '../types'
 import { useProgramStatus } from '../useProgramStatus'
-import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
 
-interface CompleteReviewApprovalLetterProps {
+interface ApprovalLetterProps {
   modalRef: RefObject<ModalRef>;
   setCurrentStep: Dispatch<React.SetStateAction<number>>;
   applicationData: Application | null;
   reviewSummaryData: ReviewSummaryType | null;
-  processId: number | undefined;
+	processId: number | undefined;
 }
 
-const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> = ({
+const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
   modalRef,
   setCurrentStep,
   applicationData,
@@ -36,24 +35,18 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
   const [currentLetterIdx, setCurrentLetterIdx] = useState<number>(0);
   const [supplementalLetters, setSupplementalLetters] = useState<string[]>([]);
   const { approvedPrograms, approvedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData);
-  const {getValues, setValue, reset} = useFormContext<CompleteReviewFormType>()
+  const {setValue, reset} = useFormContext<CompleteReviewFormType>()
   const { data: session } = useSessionUCMS();
 
   const methods = useForm<ApprovalLetterType>({
     resolver: zodResolver(approvalLetterSchema),
-    defaultValues: getValues('approvalLetter'),
+    defaultValues: { approvalDecisions: false },
     shouldUnregister: true
   })
 
-  const currentProgram = approvedPrograms[currentLetterIdx];
-  const currentDecision = useWatch({
-    control: methods.control,
-    name: `decisions.${currentProgram}`,
-  });
-
   useEffect(() => {
     if (!isLoading) {
-      if (approvedLetters.length === 0 && declinedPrograms.length > 0) {
+      if (approvedLetters.length === 1 && approvedLetters[0].includes(DocumentTemplateType.generalApproval) && declinedPrograms.length > 0) {
         setCurrentStep(Steps.DeclineLetter);
       } else {
         setSupplementalLetters([DocumentTemplateType.generalApproval, ...approvedLetters.filter(letter => letter !== DocumentTemplateType.generalApproval)]);
@@ -61,46 +54,42 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
     }
   }, [approvedLetters, approvedPrograms, declinedPrograms, isLoading, setCurrentStep]);
 
-  useEffect(() => {
-    if (currentDecision) {
-      methods.clearErrors(`decisions.${currentProgram}`);
-    }
-  }, [currentDecision, currentProgram, methods]);
-
   async function onViewPdf() {
     try {
-      const bodyContentElement = document.querySelector('.body-content-renderer');
-      if (!bodyContentElement) {
+      const bodyContentElements = document.querySelectorAll('.body-content-renderer');
+      if (bodyContentElements.length === 0) {
         throw new Error('Body content not found');
       }
 
-      const html = bodyContentElement.innerHTML;
+      for (let i = 0; i < bodyContentElements.length; i++) {
+        const html = bodyContentElements[i].innerHTML;
 
-      const formData = new URLSearchParams();
-      formData.append('html', html);
-      formData.append('internal_document', 'true');
+        const formData = new URLSearchParams();
+        formData.append('html', html);
+        formData.append('internal_document', 'true');
 
-      const legalBusinessName = applicationData?.sam_entity.legal_business_name.replace(/\s+/g, '-');
-      const currentProgram = approvedPrograms[currentLetterIdx - 1];
+        const legalBusinessName = applicationData?.sam_entity.legal_business_name.replace(/\s+/g, '-');
+        const currentProgram = approvedPrograms[i];
 
-      const response = await axiosInstance.post<HtmlToPdfDocument>(
-        `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_approved.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+        const response = await axiosInstance.post<HtmlToPdfDocument>(
+          `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_approved.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        );
+
+        if (response.data && response.data.document.path_name) {
+          let fullUrl = response.data.document.path_name;
+          if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+            fullUrl = `http://${fullUrl}`;
+          }
+          window.open(fullUrl, '_blank', 'noopener,noreferrer');
+        } else {
+          throw new Error('Invalid response from server');
         }
-      );
-
-      if (response.data && response.data.document.path_name) {
-        let fullUrl = response.data.document.path_name;
-        if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
-          fullUrl = `http://${fullUrl}`;
-        }
-        window.open(fullUrl, '_blank', 'noopener,noreferrer');
-      } else {
-        throw new Error('Invalid response from server');
       }
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -115,19 +104,19 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
         const programApplication = applicationData?.program_application || []
         const programDecisions = programApplication.map((program) => {
           const programName = program.programs.name
-          const decision = reviewSummaryData[`approval${programName}`]
+          const decision = reviewSummaryData[`${programName}`]
           const baseDecision = {
             program_id: program.program_id,
-            approved: decision === Decision.Concur ? 1 : 0,
+            approved: 1
           }
 
           if (decision === Decision.Disagree) {
-            const reviewerAppealValue = reviewSummaryData[`approvalReviewerAppeal-${programName}`] === Decision.Concur ? 1 : 0
+            const reviewerAppealValue = reviewSummaryData[`reviewerAppeal-${programName}`] === Decision.Concur ? 1 : 0
 
             return {
               ...baseDecision,
-              approver_decline_reason: reviewSummaryData[`approvalCommentsOnDisagreement-${programName}`],
-              firm_can_appeal: reviewerAppealValue,
+              reviewer_decline_reason: reviewSummaryData[`commentsOnDisagreement-${programName}`],
+              reviewer_can_appeal: reviewerAppealValue,
             }
           }
 
@@ -137,16 +126,20 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
         const postData = {
           process_id: processId,
           data: {
-            program_decisions: programDecisions
+            program_decisions: JSON.stringify(programDecisions)
           }
         }
 
         await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, postData)
 
-        setCurrentStep(Steps.ReviewSummary);
-        reset();
-        modalRef.current?.toggleModal();
-        window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-approval'
+        if (declinedPrograms.length > 0) {
+          setCurrentStep(Steps.DeclineLetter);
+        } else {
+          setCurrentStep(Steps.ReviewSummary);
+          reset();
+          modalRef.current?.toggleModal();
+          window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-approval'
+        }
       } else {
         throw new Error('Process id not found or review summary data is missing')
       }
@@ -157,23 +150,16 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
 
   async function onContinue() {
     if (currentLetterIdx === supplementalLetters.length - 1) {
-      if (declinedPrograms.length === 0) {
-        methods.handleSubmit(onSubmit)();
-      } else {
-        setCurrentStep(Steps.DeclineLetter);
+      const formData = methods.getValues();
+      if (!formData.approvalDecisions) {
+        methods.setError('approvalDecisions', {
+          type: 'manual',
+          message: 'Please approve the certifications before continuing.'
+        });
+        return;
       }
+      methods.handleSubmit(onSubmit)();
     } else {
-      if (currentLetterIdx > 0) {
-        const formData = methods.getValues();
-        const currentProgram = approvedPrograms[currentLetterIdx - 1];
-        if (!formData.decisions[currentProgram]) {
-          methods.setError(`decisions.${currentProgram}`, {
-            type: 'manual',
-            message: 'Please approve the certification before continuing.'
-          });
-          return;
-        }
-      }
       setCurrentLetterIdx(prevIdx => prevIdx + 1);
     }
   }
@@ -193,12 +179,10 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
   }
 
   function getContinueButtonTxt() {
-    if (currentLetterIdx === 0) {
-      return `Continue & View ${supplementalLetters.length - 1} Supplemental Letter${supplementalLetters.length > 2 ? 's' : ''}`;
-    } else if (currentLetterIdx < supplementalLetters.length - 1) {
-      return 'Sign and Continue';
+    if (currentLetterIdx === supplementalLetters.length - 1) {
+      return 'Sign and Submit';
     } else {
-      return declinedPrograms.length > 0 ? 'Sign and Continue' : 'Sign and Submit';
+      return `Continue & View ${supplementalLetters.length - currentLetterIdx - 1} Supplemental Letter${supplementalLetters.length - currentLetterIdx - 1 > 1 ? 's' : ''}`;
     }
   }
 
@@ -210,25 +194,27 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
     return <h3>No application data found...</h3>
   }
 
+  const isLastLetter = currentLetterIdx === supplementalLetters.length - 1;
+
   const content = (
     <>
-      <div className='display-flex flex-justify-end' style={{border: '1px solid black', borderBottom: 'none', padding: '0.5rem 1rem'}}><Button type='button' onClick={onViewPdf} outline>View PDF</Button></div>
+      {isLastLetter && (
+        <div className='display-flex flex-justify-end' style={{border: '1px solid black', borderBottom: 'none', padding: '0.5rem 1rem'}}>
+          <Button type='button' onClick={onViewPdf} outline>View PDF</Button>
+        </div>
+      )}
       <div style={containerStyles}>
         <div className="body-content-renderer">
           <BodyContentRenderer applicationId={applicationData?.id} name={supplementalLetters[currentLetterIdx]} />
         </div>
       </div>
-      {currentLetterIdx > 0 && (
+      {isLastLetter && (
         <>
           <h5>Signature</h5>
-          {approvedPrograms.map((program, index) => (
-            <div key={program} style={{ display: index === currentLetterIdx - 1 ? 'block' : 'none' }}>
-              <Checkbox<ApprovalLetterType>
-                name={`decisions.${program}`}
-                label={`I have reviewed and approve the ${formatProgramText(program)} certification.`}
-              />
-            </div>
-          ))}
+          <Checkbox<ApprovalLetterType>
+            name="approvalDecisions"
+            label={'By clicking this checkbox, you are attesting that you’ve done a thorough review and are ready to officially approve or deny the certifications listed in this application. Once you select “Sign and Submit”, the applicant will be notified and receive their official letters.'}
+          />
         </>
       )}
     </>
@@ -269,4 +255,4 @@ const CompleteReviewApprovalLetter: React.FC<CompleteReviewApprovalLetterProps> 
   )
 }
 
-export default CompleteReviewApprovalLetter
+export default ApprovalLetter

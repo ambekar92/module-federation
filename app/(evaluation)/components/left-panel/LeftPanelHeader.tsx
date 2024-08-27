@@ -51,9 +51,6 @@ const LeftPanelHeader: React.FC<LeftPanelHeaderProps> = React.memo(({ applicatio
         <p className="text-bold margin-right-1">Certification</p>
         {renderProgram(applicationData?.program_application)}
       </div>
-      <div className="margin-top-1 margin-bottom-3">
-        <span className="usa-tag margin-top-2">Entity Owned</span>
-      </div>
       {shouldShowActionsDropdown && <ActionsDropdown />}
     </div>
   );

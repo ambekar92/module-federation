@@ -7,7 +7,6 @@ import {
   Modal,
   ModalFooter,
   ModalHeading,
-  Table,
   ModalRef,
 } from '@trussworks/react-uswds'
 
@@ -61,9 +60,9 @@ const AcceptRequestModal: React.FC<AcceptRequestModalProps> = ({
             <Button
               type="button"
               className="float-left"
-              onClick={(e)=>handleActionSubmit(data?.buttonText)}
+              onClick={()=>handleActionSubmit(data?.buttonText)}
             >
-            {data?.buttonText}
+              {data?.buttonText}
             </Button>
             <Button
               type="button"

@@ -3,7 +3,7 @@ import { Divider } from '@mui/material'
 import styles from './ProfileSettings.module.scss'
 
 function ProfileDetailForm({ userProfileData }: any) {
-  console.log(">> userProfileData", userProfileData);
+  console.log('>> userProfileData', userProfileData);
 
   return (
     <GridContainer containerSize="widescreen">

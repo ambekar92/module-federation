@@ -1,5 +1,5 @@
 // TODO update type once api is complete [mdev]
 export type TaskTimer = {
-    name: string, 
+    name: string,
     time: string
 }

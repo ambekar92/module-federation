@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { schema } from "./schema";
+import { z } from 'zod';
+import { schema } from './schema';
 
 export enum ReturnToType {
     Screener = 'Screener',

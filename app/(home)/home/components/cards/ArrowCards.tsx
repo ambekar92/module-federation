@@ -11,19 +11,19 @@ function ArrowCards() {
           <Grid key={index} col={4} className={`margin-x-0 ${Styles[data.class]} ${Styles['arrow-box']} maxh-full`}>
             <div className={Styles['arrow-box-content']}>
               <Link  href={`${data.link}`}
-              variant="unstyled" className=""
-           >
-              {/* <span className={Styles['arrow-box_number']}>{index+1}</span> */}
-              <img
-                src={'/images/image-placeholder.png'}
-                className='width-full'
-                alt="A placeholder image"
-                style={{
-                  backgroundImage: `linear-gradient(90deg, rgba(204, 0, 0, 0.59), rgba(204, 0, 0, 0.0)), url(${data.img})`,
-                  backgroundPosition: 'top',
-                  backgroundSize: 'cover',
-                }}
-              /></Link>
+                variant="unstyled" className=""
+              >
+                {/* <span className={Styles['arrow-box_number']}>{index+1}</span> */}
+                <img
+                  src={'/images/image-placeholder.png'}
+                  className='width-full'
+                  alt="A placeholder image"
+                  style={{
+                    backgroundImage: `linear-gradient(90deg, rgba(204, 0, 0, 0.59), rgba(204, 0, 0, 0.0)), url(${data.img})`,
+                    backgroundPosition: 'top',
+                    backgroundSize: 'cover',
+                  }}
+                /></Link>
 
               <div className={Styles['arrow-box_text']}>
                 <div className='padding-top-2'>

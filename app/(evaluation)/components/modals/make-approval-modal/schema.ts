@@ -42,10 +42,10 @@ export function generateReviewSummarySchema(programApplications: any[]) {
 }
 
 export const approvalLetterSchema = z.object({
-  approvalDecisions: z.record(z.boolean())
+  approvalDecisions: z.boolean()
 });
 export const declineLetterSchema = z.object({
-  approvalDecisions: z.record(z.boolean())
+  approvalDecisions: z.boolean()
 });
 
 export const schema = z.object({

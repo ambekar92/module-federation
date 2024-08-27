@@ -2,7 +2,7 @@
 import { Show } from '@/app/shared/components/Show';
 import { Grid, Label, Select as UsSelect } from '@trussworks/react-uswds';
 import { useState } from 'react';
-import { selectApplication, setIsEditingOwner, setOwnerType, setOwnerTypeSelected, setOwners, setOwnershipPercentageTotal } from '../../redux/applicationSlice';
+import { selectApplication, setIsEditingOwner, setOwnerType, setOwnerTypeSelected, setOwnershipPercentageTotal } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
 import { useUserApplicationInfo } from '../../utils/useUserApplicationInfo';
 import { Contributor } from '../contributor-invite/types';
@@ -36,7 +36,7 @@ function Partnership() {
 
   const handleOwnerTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value as OwnershipType | '';
-    if (value === 'individual' || value === 'organization') {
+    if (value === OwnershipType.individual || value === OwnershipType.organization) {
       dispatch(setOwnerType(value as OwnershipType));
     } else {
       dispatch(setOwnerType(null));
@@ -48,11 +48,11 @@ function Partnership() {
     if (owner) {
       dispatch(setOwnerType(owner.ownerType as OwnershipType));
       dispatch(setOwnerTypeSelected(true));
-      if (owner.ownerType === 'individual') {
-        setIndividualOwnerBeingEdited(owner);
+      if (owner.ownerType === OwnershipType.individual) {
+        setIndividualOwnerBeingEdited(owner as any);
         setOrgOwnerBeingEdited(null);
-      } else if (owner.ownerType === 'organization') {
-        setOrgOwnerBeingEdited(owner);
+      } else if (owner.ownerType === OwnershipType.organization) {
+        setOrgOwnerBeingEdited(owner as any);
         setIndividualOwnerBeingEdited(null);
       }
       dispatch(setIsEditingOwner(true));
@@ -61,13 +61,13 @@ function Partnership() {
 
   function onOwnerAdd(owner: Owner) {
     let updatedOwners;
-    let index = -1;
+    const index = -1;
 
     if (individualOwnerBeingEdited || orgOwnerBeingEdited) {
-      index = owners.findIndex(o => o === (individualOwnerBeingEdited || orgOwnerBeingEdited));
+      // index = owners.findIndex(o => o === (individualOwnerBeingEdited || orgOwnerBeingEdited));
       if (index > -1) {
         updatedOwners = [...owners];
-        updatedOwners[index] = owner;
+        // updatedOwners[index] = owner;
       } else {
         updatedOwners = [...owners, owner];
       }
@@ -75,13 +75,13 @@ function Partnership() {
       updatedOwners = [...owners, owner];
     }
 
-    const updatedContributors = updatedOwners.map(convertOwnerToContributor);
+    const updatedContributors = updatedOwners.map(convertOwnerToContributor as any);
     dispatch(setIsEditingOwner(false));
 
     updateUserApplicationInfo({
       totalPercent: updatedOwners.reduce((acc, owner) => acc + Number(owner.ownershipPercent), 0),
-      owners: updatedOwners,
-      contributors: updatedContributors,
+      owners: updatedOwners as any,
+      contributors: updatedContributors as any,
     });
 
     setIndividualOwnerBeingEdited(null);
@@ -94,12 +94,12 @@ function Partnership() {
 
   const handleDeleteOwner = (index: number) => {
     const updatedOwners = owners.filter((_, i) => i !== index);
-    const updatedContributors = updatedOwners.map(convertOwnerToContributor);
+    const updatedContributors = updatedOwners.map(convertOwnerToContributor as any);
 
     updateUserApplicationInfo({
       totalPercent: updatedOwners.reduce((acc, owner) => acc + Number(owner.ownershipPercent), 0),
       owners: updatedOwners,
-      contributors: updatedContributors,
+      contributors: updatedContributors as any,
     });
 
     updateTotalOwnershipPercentageOnDelete(index);
@@ -153,14 +153,14 @@ function Partnership() {
         </Show>
         <Show>
           <Show.When isTrue={ownerType === 'organization'}>
-            <OrganizationForm handleAddOwner={onOwnerAdd} editedItem={orgOwnerBeingEdited} />
+            <OrganizationForm handleAddOwner={onOwnerAdd as any} editedItem={orgOwnerBeingEdited} />
           </Show.When>
         </Show>
       </>}
 
       <Show>
         <Show.When isTrue={owners.length > 0}>
-          <OwnersList owners={owners} handleEditOwner={handleEditOwner} handleDeleteOwner={handleDeleteOwner} />
+          <OwnersList owners={owners as any} handleEditOwner={handleEditOwner as any} handleDeleteOwner={handleDeleteOwner} />
         </Show.When>
       </Show>
     </>

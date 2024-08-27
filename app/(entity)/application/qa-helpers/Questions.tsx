@@ -13,12 +13,13 @@ import CloseApplicationModal from './CloseApplicationModal';
 import QuestionRenderer from './QuestionRenderer';
 import useSWR from 'swr';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 interface QuestionnaireProps {
   url: string;
   title: string;
   contributorId: number | null | undefined;
   onRefetchQuestionnaires: () => void;
-  setCanNavigate: (canNavigate: boolean) => void;
+  setCanNavigate: (shouldBlock: boolean) => void;
 }
 
 const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, onRefetchQuestionnaires, setCanNavigate }) => {
@@ -112,7 +113,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
   }
 
   if (error) {return <h3>Error: {error.message}</h3>;}
-  if (!data || isLoading) {return <h3>Loading...</h3>;}
+  if (!data || isLoading) {return <Spinner center />}
 
   if (!data || !Array.isArray(data) || data.length === 0) {
     return <h3>This questionnaire was not found.</h3>;
@@ -156,6 +157,8 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
         modalRef={closeApplicationRef}
         handleAction={handleCloseApplication}
       />
+
+      <p className='float-right text-size-2xs'>OMB Control Number 3245-0374</p>
     </>
   );
 };

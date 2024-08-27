@@ -1,13 +1,13 @@
-import { Operator } from "./schema";
+import { Operator } from './schema';
 
 export const defaultValues: Operator = {
-    firstName: "",
-    lastName: "",
-    emailAddress: "",
-    position: "",
-    principalType: null,
-    licenseHolder: null,
-    middleName: ""
+  firstName: '',
+  lastName: '',
+  emailAddress: '',
+  position: '',
+  principalType: null as unknown as PrincipalType,
+  licenseHolder: null as unknown as any,
+  middleName: ''
 }
 
 export enum PrincipalType {

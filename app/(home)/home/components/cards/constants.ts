@@ -2,7 +2,7 @@ export const arrowCardData = [
   {
     title: 'Should I Apply?',
     img: '/images/should-i-apply.jpg',
-    text: 'See if your business qualifies for certification',
+    text: 'See if the time is right for your business',
     class: 'arrow-box-one',
     link: '/should-i-apply/ownership'
   },
@@ -57,11 +57,6 @@ export const programCardData = [
     subTitle: 'WOSB',
     title: 'Women-Owned',
     link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program',
-  },
-  {
-    subTitle: 'MPP',
-    title: 'Mentor-Protégé Program',
-    link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/sba-mentor-protege-program',
   },
   {
     subTitle: 'Entity-Owned',

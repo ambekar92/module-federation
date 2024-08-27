@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import styles from './Entities.module.scss'
 import { useEffect } from 'react'
 
-
 const TableHeader = () => {
   const searchParams = useSearchParams()
   const searchParamsState = new URLSearchParams(
@@ -47,11 +46,11 @@ const TableHeader = () => {
       endpointName: 'description',
       headerName: 'Description',
     },
-    
+
   ]
   return (
     <thead>
-     <tr>
+      <tr>
         {tableHeader.map((item: any, index: number) => (
           <th key={index} onClick={() => setQueryParams(`${item.endpointName}`)}>
             <span className={styles.tableHeadCell}>

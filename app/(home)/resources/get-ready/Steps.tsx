@@ -24,9 +24,9 @@ export default function Steps(): JSX.Element {
       {Cards && Cards.length && (
         Cards.map((item: any, index) => (
           <div key={index} className="margin-left-3">
-          <Link href={`${item.linkPath}`} style={{textDecoration: 'none', color: 'black'}}><h3>{item.title}</h3></Link>
+            <Link href={`${item.linkPath}`} style={{textDecoration: 'none', color: 'black'}}><h3>{item.title}</h3></Link>
             <Grid style={{ font: '16px', fontWeight: '400' }}>
-            {item.description}
+              {item.description}
             </Grid>
             <Grid
               className="margin-top-1 margin-bottom-2"
@@ -42,37 +42,37 @@ export default function Steps(): JSX.Element {
                       <div key={card.index}><Link href={`${card.linkPath}`} style={{textDecoration: 'none'}}>
                         <table className={styles['usa-table']}>
                           <tbody>
-                          <tr style={{ border: '1px' }}>
-                            <td
-                              rowSpan={2}
-                              className={styles['td']}
-                              style={{ paddingRight: '8px' }}
-                            >
-                              <img src={card.iconName} alt="iconName" />
-                            </td>
-                            <td
-                              style={{
-                                fontSize: '13px',
-                                fontWeight: '300',
-                                color: '#71767A',
-                                paddingRight: '8px',
-                              }}
-                            >
-                              {card.grayText}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td
-                              style={{
-                                fontSize: '16px',
-                                fontWeight: '600',
-                                paddingRight: '8px',
-                                color: 'black'
-                              }}
-                            >
-                              <b>{card.boldText}</b>
-                            </td>
-                          </tr>
+                            <tr style={{ border: '1px' }}>
+                              <td
+                                rowSpan={2}
+                                className={styles['td']}
+                                style={{ paddingRight: '8px' }}
+                              >
+                                <img src={card.iconName} alt="iconName" />
+                              </td>
+                              <td
+                                style={{
+                                  fontSize: '13px',
+                                  fontWeight: '300',
+                                  color: '#71767A',
+                                  paddingRight: '8px',
+                                }}
+                              >
+                                {card.grayText}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td
+                                style={{
+                                  fontSize: '16px',
+                                  fontWeight: '600',
+                                  paddingRight: '8px',
+                                  color: 'black'
+                                }}
+                              >
+                                <b>{card.boldText}</b>
+                              </td>
+                            </tr>
                           </tbody>
                         </table></Link>
                       </div>

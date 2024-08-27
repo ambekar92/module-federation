@@ -1,4 +1,4 @@
-import { Role } from "@/app/lib/next-auth";
+import { Role } from '@/app/lib/next-auth';
 
 export type User = {
     id: number;

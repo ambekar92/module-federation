@@ -28,5 +28,5 @@ export default function UserDetails({ userId }: userDetailProps): JSX.Element {
     }
   }, [responseData, responseError])
 
-  return <UserDetailForm userProfileData={userData} />
+  return <UserDetailForm userProfileData={userData as any} />
 }

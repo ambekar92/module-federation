@@ -18,9 +18,8 @@ export type IAction = {
     };
   };
 
-  export type ActivityResponse = {
+export type ActivityResponse = {
     total_actions: number,
     actions: IAction[]
 
   }
-  

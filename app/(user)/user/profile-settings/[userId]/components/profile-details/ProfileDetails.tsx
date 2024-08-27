@@ -17,7 +17,7 @@ export default function ProfileDetails({
 
   const fetchUserData = async () => {
     try {
-      const response = await Service.getUserProfileInfo(userId)      
+      const response = await Service.getUserProfileInfo(userId)
       setUserData(response)
     } catch (error) {
       setUserData('')

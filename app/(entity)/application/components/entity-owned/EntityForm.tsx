@@ -40,7 +40,7 @@ const EntityForm = ({ handleAddEntity, editedItem }: Props) => {
     if (editedItem) {
       methods.reset(editedItem as EntityFormType)
     }
-  }, [editedItem])
+  }, [editedItem, methods])
 
   return (
     <>
@@ -60,10 +60,9 @@ const EntityForm = ({ handleAddEntity, editedItem }: Props) => {
               <Select
                 className="maxw-full"
                 id={'entityType'}
-                value={field.value}
+                value={field.value as any}
                 name={'entityType'}
                 onChange={field.onChange}
-                options={entityOptions}
               >
                 <>
                   <option>--</option>

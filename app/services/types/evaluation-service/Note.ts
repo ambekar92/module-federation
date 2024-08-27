@@ -13,16 +13,16 @@ export type NoteListItem = {
         id: number,
         first_name: string,
         last_name: string,
+				role: string
     }
 } & NoteBase
 
 export type CreateNotePayload = {
     application_id: number,
     user_id: number,
-    
+
 } & NoteBase
 
 export type UpdateNotePayload = {
     id: number,
 } & NoteBase
-

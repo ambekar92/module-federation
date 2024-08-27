@@ -2,7 +2,7 @@
 import Cookies from 'js-cookie';
 import { NextAuthOptions, getServerSession } from 'next-auth';
 import OktaProvider from 'next-auth/providers/okta';
-import BoxyHQSAMLProvider from "next-auth/providers/boxyhq-saml";
+import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { useSession } from 'next-auth/react';
 import { LoginResponseUser } from '../(admin)/login-tester/types';
 import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken';

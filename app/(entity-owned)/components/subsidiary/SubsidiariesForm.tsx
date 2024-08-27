@@ -17,7 +17,7 @@ interface SubsidiariesFormProps {
     phone_number: string;
     notes: string;
   }]
-  target: {
+  target?: {
     name: any
     value: any
   }
@@ -35,20 +35,20 @@ const SubsidiariesForm: React.FC<SubsidiariesFormProps> = ({
   const deleteRequestRef = useRef<ModalRef>(null)
 
   const intialData = {
-    id:"",
-    subsidiary_name: "",
-    parent_company: "",
-    address: "",
-    owner: "",
-    email: "",
-    phone_number: "",
-    notes: ""
+    id:'',
+    subsidiary_name: '',
+    parent_company: '',
+    address: '',
+    owner: '',
+    email: '',
+    phone_number: '',
+    notes: ''
   }
   const [formInputs, setFormInputs] = useState(intialData);
   const [modalData, setModalData] = useState('')
   const [saveStatus, setSaveStatus] = useState(true)
 
-  const onInputChange: React.FC<SubsidiariesFormProps> = ({ target: { name, value } }) => {
+  const onInputChange = ({ target: { name , value }}: {target: any}) => {
     setFormInputs((formInputs) => ({ ...formInputs, [name]: value }));
     if(name === 'subsidiary_name'){
       if(value === ''){
@@ -71,17 +71,17 @@ const SubsidiariesForm: React.FC<SubsidiariesFormProps> = ({
     handleCancelFrom()
   }
   const handleSave = () => {
-    formInputs.id = Math.floor(1000 + Math.random() * 9000);
+    formInputs.id = Math.floor(1000 + Math.random() * 9000).toString();
     handleSaveFrom(formInputs)
   }
   const handleDelete = () => {
-    let obj = {
+    const obj = {
       selectedId: formInputs.id,
-      title: "Delete Subsidiary",
-      description: "Do you wish to delete " + formInputs.subsidiary_name,
-      buttonText: "Delete"
+      title: 'Delete Subsidiary',
+      description: 'Do you wish to delete ' + formInputs.subsidiary_name,
+      buttonText: 'Delete'
     }
-    setModalData(obj);
+    setModalData(obj as any);
     deleteRequestRef.current?.toggleModal()
   }
   const handleDeleteRequestFromModal = (id:any) => {
@@ -110,7 +110,6 @@ const SubsidiariesForm: React.FC<SubsidiariesFormProps> = ({
             id='parent_company'
             value={formInputs.parent_company}
             name={'parent_company'}
-            placeholder='--'
             onChange={onInputChange}
           >
             <option>--</option>
@@ -199,12 +198,11 @@ const SubsidiariesForm: React.FC<SubsidiariesFormProps> = ({
           </ButtonGroup>
         </Grid>
 
-
       </Grid>
 
       <DeleteRequestModal
         modalRef={deleteRequestRef}
-        data={modalData}
+        data={modalData as any}
         handleAction={handleDeleteRequestFromModal}
       />
     </>

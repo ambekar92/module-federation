@@ -1,8 +1,7 @@
 'use client'
 
-import { INVITATION_ROUTE } from '@/app/constants/routes'
+import { INVITATION_ROUTE, SEND_INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
-import { fetcherPOST } from '@/app/services/fetcher-legacy'
 import {
   Button,
   ButtonGroup,
@@ -57,11 +56,11 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
             first_name: contributors[index].firstName,
             last_name: contributors[index].lastName
           }
-          // console.log(postData)
-          // const res = await fetcherPOST(INVITATION_ROUTE, postData);
-          // console.log(res ? 'Successful' : 'Failed')
-          // console.log(res)
-          await axiosInstance.post(INVITATION_ROUTE, postData);
+
+          const response = await axiosInstance.post(INVITATION_ROUTE, postData);
+          if (response && response.data && response.data.id) {
+            await axiosInstance.post(SEND_INVITATION_ROUTE, {invitation_id: response.data.id});
+          }
         }
 
         window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {

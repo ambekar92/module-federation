@@ -1,8 +1,9 @@
+import Spinner from '@/app/shared/components/spinner/Spinner'
 import React from 'react'
 
 const loading = () => {
   return (
-    <div>Loading...</div>
+    <Spinner center />
   )
 }
 

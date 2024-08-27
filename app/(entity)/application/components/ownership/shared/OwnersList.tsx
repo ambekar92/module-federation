@@ -4,7 +4,7 @@ import { IndividualFormType } from '../individual/schema';
 import { Owner } from './types';
 import { OrganizationFormType } from '../organization/schema';
 
-const OwnersList = ({ owners, handleEditOwner, handleDeleteOwner }: { owners: Owner[], handleEditOwner: (idx: number) => void, handleDeleteOwner: (idx: number) => void }) => {
+const OwnersList = ({ owners, handleEditOwner, handleDeleteOwner }: { owners: Owner[], handleEditOwner: () => void, handleDeleteOwner: (idx: number) => void }) => {
   const individualHeaders = [
     { id: 'legalName', headerName: 'Legal Name' },
     { id: 'email', headerName: 'Email' },

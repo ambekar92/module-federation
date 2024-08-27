@@ -10,15 +10,15 @@ import Underline from '@tiptap/extension-underline';
 import StarterKit from '@tiptap/starter-kit';
 
 export const extensions = [
-    StarterKit.configure(),
-    Document,
-    Paragraph,
-    Text,
-    Heading,
-    TextAlign.configure({
-      types: ['heading', 'paragraph'],
-    }),
-    Highlight.configure(),
-    Underline.configure()
+  StarterKit.configure(),
+  Document,
+  Paragraph,
+  Text,
+  Heading,
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+  }),
+  Highlight.configure(),
+  Underline.configure()
 
-  ]
+]

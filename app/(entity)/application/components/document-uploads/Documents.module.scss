@@ -1,0 +1,15 @@
+.delete {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: all .1s;
+    color: grey;
+    &:hover:not(:disabled) {
+        color: black;
+    }
+    &:disabled {
+        cursor: not-allowed;
+    }
+    
+}

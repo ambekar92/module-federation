@@ -3,7 +3,7 @@ export const TopPartInfo = [
     id: 1,
     iconName: '/navbaricons/question.svg',
     title: 'Should I Apply',
-    description: 'See if your business qualifies for certification',
+    description: 'See if the time is right for your business',
     buttonName: 'Find Out',
     link: '/should-i-apply/ownership',
   },
@@ -59,15 +59,5 @@ export const MediumLowerPartInfo = [
     subTitle: 'WOSB',
     title: 'Women-Owned',
     link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/women-owned-small-business-federal-contract-program',
-  },
-  {
-    subTitle: 'MPP',
-    title: 'Mentor-Protégé Program',
-    link: 'https://www.sba.gov/federal-contracting/contracting-assistance-programs/sba-mentor-protege-program',
-  },
-  {
-    subTitle: '',
-    title: '',
-    link: '',
-  },
+  }
 ]

@@ -63,7 +63,7 @@ const DeleteRequestModal: React.FC<DeleteRequestModalProps> = ({
               className="float-left"
               onClick={handleActionSubmit}
             >
-            {data?.buttonText}
+              {data?.buttonText}
             </Button>
             <Button
               type="button"

@@ -6,15 +6,15 @@ function AnalystDocument() {
     <>
       <div className="margin-top-2">
 
-          <div className='grid-row'>
-            <div className="grid-col-5">
-              <p className={`${styles['textbox-content']}`}> Analyst templates?</p>
-            </div>
-
-            <div className="grid-col-5">
-            <p className={`${styles['textbox-content']}`}> Policy Documents?</p>
-            </div>
+        <div className='grid-row'>
+          <div className="grid-col-5">
+            <p className={`${styles['textbox-content']}`}> Analyst templates?</p>
           </div>
+
+          <div className="grid-col-5">
+            <p className={`${styles['textbox-content']}`}> Policy Documents?</p>
+          </div>
+        </div>
 
       </div>
     </>

@@ -26,17 +26,17 @@ describe('NotificationList', () => {
       {
         recipient_id: 0,
         unread: true,
-        message: "Test 1 Notification message",
+        message: 'Test 1 Notification message',
       },
       {
         recipient_id: 1,
         unread: true,
-        message: "Test 2 Notification message",
+        message: 'Test 2 Notification message',
       },
       {
         recipient_id: 2,
         unread: true,
-        message: "Test 3 Notification message",
+        message: 'Test 3 Notification message',
       },
     ]
 

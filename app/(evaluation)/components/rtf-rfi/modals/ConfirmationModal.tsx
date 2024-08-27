@@ -11,6 +11,7 @@ import {
 } from '@trussworks/react-uswds'
 import React from 'react'
 import styles from '../RtfRfi.module.scss'
+import { Role } from '@/app/shared/types/role'
 
 interface ConfirmationModalProps {
   open: boolean
@@ -38,7 +39,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <ModalHeading id="invite-modal-heading">
             <Label htmlFor="session-modal" className="text-bold">
               <h3>Are you sure you want to delete this
-                {sessionData?.data?.permissions[0]?.slug === 'reviewer' ||
+                {sessionData?.data?.permissions[0]?.slug === Role.REVIEWER ||
               	sessionData?.data?.permissions[0]?.slug === 'analyst'
                   ? ' RFI?'
                   : sessionData?.data?.permissions[0]?.slug === 'screener'

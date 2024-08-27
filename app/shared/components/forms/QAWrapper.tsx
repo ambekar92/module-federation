@@ -11,7 +11,7 @@ const QAWrapper: React.FC<QAWrapperProps> = ({ sidebar, mainContent, fill }) => 
   return (
     <Grid row gap='lg' className={`border-top ${fill && 'flex-fill'}`}>
       {sidebar && (
-        <Grid col={4} className={`border-right padding-bottom-3`}>
+        <Grid col={4} className={'border-right padding-bottom-3'}>
           {sidebar}
         </Grid>
       )}

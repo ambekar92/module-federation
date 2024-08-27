@@ -1,6 +1,6 @@
-import { SocialDisadvantageOption, Option } from './shared/types'
+import { SocialDisadvantageOption } from '../ownership/shared/types'
 
-export const entityTypes: Option[] = [
+export const entityTypes: any[] = [
   { label: 'Agricultural Co-op (AGC)', value: 'agc' },
   { label: 'American Indian Tribe (AIT)', value: 'ait' },
   { label: 'Alaska Native Corporation (ANC)', value: 'anc' },

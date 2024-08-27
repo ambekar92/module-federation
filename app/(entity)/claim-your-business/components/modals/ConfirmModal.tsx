@@ -18,8 +18,8 @@ interface ConfirmModalProps {
   handleClose: () => void;
 	handleOpen: () => void;
   business: CmbResponseType;
-  setErrorMsg: (msg: string) => void;
-	setPostSuccessful: (success: boolean) => void;
+  setErrorMsg: (errorMsg: string) => void;
+	setPostSuccessful: (isSuccess: boolean) => void;
 	setEntityId: (id: number) => void;
 }
 

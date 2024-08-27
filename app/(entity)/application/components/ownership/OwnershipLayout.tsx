@@ -6,7 +6,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { selectApplication, setOwnerTypeSelected, setStep } from '../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../redux/hooks';
-import { applicationSteps, calculateEligiblePrograms, qaAppLinkPrefix } from '../../utils/constants';
+import { applicationSteps, qaAppLinkPrefix } from '../../utils/constants';
 import { fetcherPUT } from '@/app/services/fetcher-legacy';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 
@@ -27,8 +27,8 @@ function OwnershipLayout({children}: OwnershipLayoutProps) {
 
   useEffect(() => {
     dispatch(setStep(0))
-    const programs = calculateEligiblePrograms(owners);
-    setEligiblePrograms(programs);
+    // const programs = calculateEligiblePrograms(owners);
+    setEligiblePrograms([]);
   }, [dispatch, owners]);
 
   const handleNextClick = async () => {

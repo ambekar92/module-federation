@@ -10,9 +10,9 @@ const ProductivityProvider = () => {
   useEffect(() => {
     setIsSupervisor(true)
   }, [])
-  
+
   return (
-    <Productivity isSupervisor={isSupervisor} />
+    <Productivity />
   )
 }
 

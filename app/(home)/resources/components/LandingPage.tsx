@@ -2,19 +2,18 @@
 import React  from 'react'
 import { Grid, Button } from '@trussworks/react-uswds'
 import Link from 'next/link';
-import ReactGA from "react-ga4";
+import ReactGA from 'react-ga4';
 import {REACT_GA_REPORT} from '../../../constants/routes'
-
 
 export const LandingPage: React.FC = () => {
   ReactGA.initialize(`${REACT_GA_REPORT}`);
 
   const handleClickResourceLearnMore = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault(); 
+    event.preventDefault();
     ReactGA.event({
-      category: "Engagement",
-      action: "Clicked Learn More from Resource",
-      label: "Resource"
+      category: 'Engagement',
+      action: 'Clicked Learn More from Resource',
+      label: 'Resource'
     });
   }
 

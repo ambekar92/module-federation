@@ -1,5 +1,5 @@
-'use client';
-import { CREATING_APPLICATION_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE } from '@/app/constants/routes';
+import React, { useState, useEffect } from 'react';
+import { CREATING_APPLICATION_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_LIST_PAGE } from '@/app/constants/url';
 import { axiosInstance } from '@/app/services/axiosInstance';
@@ -8,19 +8,31 @@ import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext'
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
-import { calculateEligibleSbaPrograms } from '../hooks/useOwnershipApplicationInfo';
+import { calculateEligibleSbaPrograms, OwnerType } from '../hooks/useOwnershipApplicationInfo';
+import useSWR from 'swr';
+import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
+import fetcher from '@/app/services/fetcher';
+import { GridRow } from '../qa-helpers/OwnershipQaGrid';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { applicationId } = useApplicationContext();
+  const { applicationId, contributorId, applicationData } = useApplicationContext();
+  const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
+  const { data: ownersData, error, isLoading: isLoadingOwnership } = useSWR<QaQuestionsType>(url, fetcher);
   useUpdateApplicationProgress('Eligible Programs');
+
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   const dispatch = useApplicationDispatch();
 
@@ -34,8 +46,7 @@ function EligiblePrograms() {
       await axiosInstance.put(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
       await axiosInstance.post(`${CREATING_APPLICATION_ROUTE}`, postData);
     } catch (error: any) {
-      console.log('PUT request error:', error);
-      throw error;
+      // Error handled
     }
   }
 
@@ -45,7 +56,7 @@ function EligiblePrograms() {
       await handlePostRequest();
       window.location.href = buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId })
     } catch (error: unknown) {
-      // console.log('Error submitting data:', error);
+      // Handled error
     } finally {
       setIsLoading(false);
     }
@@ -54,25 +65,63 @@ function EligiblePrograms() {
   useEffect(() => {
     dispatch(setStep(applicationSteps.eligiblePrograms.stepIndex));
     dispatch(setDisplayStepNavigation(false));
-
-    const ownerApplicationInfo = localStorage.getItem('ownerApplicationInfo');
-    if (ownerApplicationInfo) {
-      const parsedInfo = JSON.parse(ownerApplicationInfo);
-      if (parsedInfo && Array.isArray(parsedInfo.owners)) {
-        const mappedOwners = parsedInfo.owners.map((owner: any) => ({
-          ...owner
-        }));
-        const programs = calculateEligibleSbaPrograms(mappedOwners);
-        setEligiblePrograms(programs);
-      } else {
-        // console.error('Invalid owner application info structure');
-        setEligiblePrograms([]);
-      }
-    } else {
-      // console.log('No owner application info found');
-      setEligiblePrograms([]);
-    }
   }, [dispatch]);
+
+  const getFieldValue = (row: GridRow, fieldName: string): string | string[] => {
+    const fullFieldName = Object.keys(row).find(key => key.includes(fieldName));
+    return fullFieldName ? row[fullFieldName] : '';
+  };
+
+  useEffect(() => {
+    if (ownersData && !isLoadingOwnership) {
+      const processAnswers = (answer: unknown): GridRow[] => {
+        if (Array.isArray(answer)) {
+          return answer;
+        } else if (typeof answer === 'object' && answer !== null) {
+          return [answer as GridRow];
+        }
+        return [];
+      };
+
+      const individualAnswers = processAnswers(ownersData.find(q => q.name.includes('personal_information_owner_and_management'))?.answer?.value?.answer);
+      const organizationAnswers = processAnswers(ownersData.find(q => q.name.includes('organization_information_owner_and_management'))?.answer?.value?.answer);
+
+      const answers = [...individualAnswers, ...organizationAnswers];
+
+      const newOwners = answers
+        .map(createOwnerObject)
+        .filter((owner): owner is OwnerType => owner !== null);
+
+      const programs = calculateEligibleSbaPrograms(newOwners);
+      setEligiblePrograms(programs);
+    }
+  }, [ownersData, isLoadingOwnership]);
+
+  const createOwnerObject = (row: GridRow): OwnerType | null => {
+    if (row.owner_type === 'Individual') {
+      return {
+        ownerType: 'Individual',
+        firstName: String(getFieldValue(row, 'first_name')),
+        lastName: String(getFieldValue(row, 'last_name')),
+        ownershipPercent: String(getFieldValue(row, 'ownership_percentage')),
+        emailAddress: String(getFieldValue(row, 'email')),
+        socialDisadvantages: Array.isArray(getFieldValue(row, 'individual_contributor_eight_a_social_disadvantage'))
+          ? getFieldValue(row, 'individual_contributor_eight_a_social_disadvantage') as string[]
+          : [],
+        citizenship: String(getFieldValue(row, 'citizenship')),
+        gender: String(getFieldValue(row, 'gender')),
+        veteranStatus: String(getFieldValue(row, 'veteran_status')),
+      };
+    } else if (row.owner_type === 'Organization') {
+      return {
+        ownerType: 'Organization',
+        organizationName: String(getFieldValue(row, 'organization_name')),
+        ownershipPercent: String(getFieldValue(row, 'organization_ownership_percentage')),
+        emailAddress: String(getFieldValue(row, 'organization_email')),
+      };
+    }
+    return null;
+  };
 
   const handleCheckboxChange = (program: ProgramOption) => {
     setSelectedPrograms(prev => {
@@ -103,13 +152,21 @@ function EligiblePrograms() {
     handleCheckboxChange(program);
   };
 
+  if (isLoadingOwnership || !ownersData) {
+    return <Spinner center />
+  }
+
+  if (error) {
+    return <div>Error loading owner data</div>;
+  }
+
   return (
     <>
       <h1>
         {eligiblePrograms.length === 0
           ? 'Your business does not qualify for any programs'
           : 'To which programs would you like to apply today?'
-        }<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the “visit here” link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/>
+        }<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the "visit here" link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/>
       </h1>
       {eligiblePrograms.length > 0 ? <h3>You appear to be eligible for the program(s) below select which you&apos;d like to apply to.</h3> : null}
       <Grid row gap>
@@ -143,11 +200,11 @@ function EligiblePrograms() {
           applicationId: applicationId,
           stepLink: applicationSteps.controlAndOwnership.link
         })} className='usa-button usa-button--outline'>
-    			Back
+          Back
         </Link>
         {eligiblePrograms.length === 0 ? (
           <Button disabled type='button'>
-      			Next
+            Next
           </Button>
         ) : (
           <Button

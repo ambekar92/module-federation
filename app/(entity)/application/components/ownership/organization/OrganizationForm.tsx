@@ -12,7 +12,7 @@ import { defaultValues } from './constants'
 import { OrganizationFormType, schema } from './schema'
 
 type Props = {
-    handleAddOwner: (data: any) => void,
+    handleAddOwner: () => void,
     editedItem: Owner | null
 }
 
@@ -25,13 +25,13 @@ const OrganizationForm = ({handleAddOwner, editedItem}: Props) => {
     if (editedItem) {
       methods.reset(editedItem as OrganizationFormType)
     }
-  }, [editedItem])
+  }, [editedItem, methods])
 
   useEffect(() => {
-    const sub = methods.watch((data) => {
+    const sub = methods.watch(() => {
     })
     return () => sub.unsubscribe()
-  }, [])
+  }, [methods])
 
   return (
     <>

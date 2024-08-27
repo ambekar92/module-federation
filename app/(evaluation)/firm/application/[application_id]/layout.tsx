@@ -4,11 +4,12 @@ import LeftPanel from '@/app/(evaluation)/components/left-panel/LeftPanel';
 import { useLeftItems } from '@/app/(evaluation)/components/left-panel/useLeftItems';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
-import { useParams, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { PropsWithChildren, useMemo } from 'react';
-import { useCurrentApplication } from '../../useApplicationData';
 import { Provider } from 'react-redux';
 import firmStore from '../../store/store';
+import { useCurrentApplication } from '../../useApplicationData';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const routesWithoutRightNav = ['business-summary', 'documents', 'analysis', 'messages', 'audit', 'task-timers', 'done', 'evaluation', 'review', 'notes', 'analyst-questionnaire'];
 const routesWithoutLeftNav = ['done'];
@@ -27,7 +28,7 @@ const Layout = ({ children }: PropsWithChildren) => {
   const {isLoading: isNavItemsLoading, navItems, error} = useLeftItems();
 
   if(isLoading) {
-    return <h3>Loading...</h3>
+    return <Spinner center />
   }
 
   const showRightPanel = (
@@ -38,7 +39,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 
   return (
     <Provider store={firmStore}>
-      <div className="grid-row">
+      <div className="grid-row" style={{maxWidth: '100vw'}}>
         {!hideLeftPanel && (
           <div className="grid-col-2 bg-white">
             <LeftPanel

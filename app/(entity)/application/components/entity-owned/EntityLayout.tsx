@@ -14,7 +14,7 @@ type EntityLayoutProps = {
 function EntityLayout({ children }: EntityLayoutProps) {
   const { applicationId, contributorId } = useApplicationContext();
   const dispatch = useApplicationDispatch()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, ] = useState<boolean>(false)
 
   useEffect(() => {
     dispatch(setStep(0))

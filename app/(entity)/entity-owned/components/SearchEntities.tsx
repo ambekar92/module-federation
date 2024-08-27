@@ -1,6 +1,5 @@
 'use client'
-import React, { useState } from 'react'
-import { redirect } from 'next/navigation'
+import React, { SyntheticEvent, useState } from 'react'
 import Select from 'react-select'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import {
@@ -53,9 +52,6 @@ const SearchEntities = () => {
   ]
 
   const handleTypeChange = (e: any) => {
-    if (selectRef.current) {
-      selectRef.current.focus()
-    }
     setSelectedEntityType(e.target.value)
   }
 
@@ -92,14 +88,6 @@ const SearchEntities = () => {
 
   const handleNext = () => {
     isEntityOwned && setCurrentStep(currentStep + 1)
-  }
-
-  async function handleNewEntityRegistration() {
-    setShowNewEntityModal(false)
-    window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
-      contributorId: 1,
-      stepLink: '/entity-owned',
-    })
   }
 
   async function handleNewEntityRegistration() {
@@ -167,7 +155,6 @@ const SearchEntities = () => {
             <Select
               id="ControllingEntitySearchSelect"
               openMenuOnFocus={true}
-              ref={selectRef}
               value={selectedOption}
               options={controllingEntityOptions.filter(
                 (option) =>

@@ -2,6 +2,7 @@ import React from 'react'
 import { Suspense } from 'react'
 import ApplicationTable from './components/ApplicationTable'
 import Search from './components/Search'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 
 const Applications = async ({ searchParams }: any) => {
   return (
@@ -13,7 +14,7 @@ const Applications = async ({ searchParams }: any) => {
       <section>
         <h2 className="padding-y-2">Application Search</h2>
         <Search />
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Spinner center />}>
           <ApplicationTable searchParams={searchParams} />
         </Suspense>
       </section>

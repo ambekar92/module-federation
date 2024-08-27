@@ -6,6 +6,7 @@ import { useSessionUCMS } from '@/app/lib/auth';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { Button } from '@trussworks/react-uswds';
 import { useParams } from 'next/navigation';
@@ -13,10 +14,11 @@ import { useState } from 'react';
 
 const ApplicationPanelLanding = () => {
   const params = useParams<{application_id: string}>();
-  const { applicationData, mutate } = useApplicationData(ApplicationFilterType.id, params.application_id)
-  const [showButton, setShowButton] = useState(true);
-  const sessionData = useSessionUCMS()
-  const { trigger } = useCompleteEvalTask()
+  const { applicationData, mutate } = useApplicationData(ApplicationFilterType.id, params.application_id);
+  const [ disableButton, setDisableButton] = useState(false);
+  const [ showButton, setShowButton ] = useState(true);
+  const sessionData = useSessionUCMS();
+  const { trigger } = useCompleteEvalTask();
 
   if(!applicationData?.process || !applicationData.process.data) {
     return
@@ -24,6 +26,7 @@ const ApplicationPanelLanding = () => {
   const userRole = getUserRole(sessionData?.data?.permissions || []);
 
   const handleCompleteTask = async () => {
+    setDisableButton(true);
     try {
       const postData = {
         process_id: applicationData?.process?.id || 1,
@@ -42,8 +45,10 @@ const ApplicationPanelLanding = () => {
       // TODO: Find a better solution to deal with the delay
       await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
       await mutate();
-      setShowButton(false)
+      setShowButton(false);
     } catch (error: any) {
+      setDisableButton(false);
+      setShowButton(true);
       // Error handled lol -KJ
       return
     }
@@ -110,13 +115,17 @@ const ApplicationPanelLanding = () => {
             ) && (
               <div className="margin-top-2">
                 <div className="usa-card__footer">
-                  <Button
-                    type="button"
-                    className="usa-button"
-                    onClick={handleCompleteTask}
-                  >
-                    {getButtonText()}
-                  </Button>
+                  {disableButton
+                    ? <Spinner />
+                    :<Button
+                      type="button"
+                      className="usa-button"
+                      disabled={disableButton}
+                      onClick={handleCompleteTask}
+                    >
+                      {getButtonText()}
+                    </Button>
+                  }
                 </div>
               </div>
             )}

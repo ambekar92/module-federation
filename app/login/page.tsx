@@ -16,7 +16,7 @@ import LoginButton from './LoginButton';
 type RoleType = `${Role}`;
 
 /**
- * 
+ *
  * @deprecated login action now happens through LoginMenu.tsx component
  */
 export default async function Login({searchParams}: {searchParams: {next: string}}) {

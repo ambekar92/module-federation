@@ -41,17 +41,17 @@ function HomePage() {
         <ProgramCards />
       </section>
 
-      <section style={{backgroundColor: '#002E6D'}} className='display-flex flex-justify-center flex-column flex-align-center padding-4'>
+      <section style={{backgroundColor: '#002e6d'}} className='display-flex flex-justify-center flex-column flex-align-center padding-4'>
         <h2 className='margin-top-0 margin-bottom-4 text-center text-size-2xl text-white line-height-base'>
 					Stand out from the crowd.<br />
 					Get Certified!
         </h2>
 
-        <div>
+        {/* <div>
           <Link className="usa-button" style={{backgroundColor: '#D83933'}} href={'/login'} >
               Create Account
           </Link>
-        </div>
+        </div> */}
       </section>
     </>
   </>;

@@ -70,9 +70,6 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
 
   const generateHTMLContent = () => {
     return `
-      <h3>${userRole === 'reviewer' || userRole === 'analyst'
-    ? 'Request for Information'
-    : 'Return to Business'}</h3>
       <p>Subject: ${subject}</p>
       <p>
         Your application #${params.application_id} has been returned for correction and is now available to edit.

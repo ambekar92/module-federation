@@ -1,4 +1,3 @@
-import { Box, Chip } from '@mui/material';
 import { ErrorMessage, Grid, Label } from '@trussworks/react-uswds';
 import { Controller } from 'react-hook-form';
 import Select from 'react-select';
@@ -20,7 +19,7 @@ const SocialDisadvantages = () => {
             <Label className='margin-top-0 maxw-full' htmlFor='social_disadvantages' requiredMarker={true}>
               Are you claiming social disadvantage under the 8(a) program (if not, please select ‘Not Claiming Social Disadvantage’)?
             </Label>
-            
+
             <Select
               id="social_disadvantages"
               isMulti

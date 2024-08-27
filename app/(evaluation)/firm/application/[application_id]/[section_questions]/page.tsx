@@ -1,7 +1,5 @@
 'use client'
-import QuestionRenderer from '@/app/(entity)/application/qa-helpers/QuestionRenderer'
 import { getAnalystQuestionnaires } from '@/app/(evaluation)/components/left-panel/constants'
-import { useFirmSelector } from '@/app/(evaluation)/firm/store/hooks'
 import { Params, QuestionnaireItem } from '@/app/(evaluation)/types/types'
 import { ANSWER_ROUTE, QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
@@ -17,6 +15,9 @@ import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { useCurrentApplication } from '../../../useApplicationData'
 import AnswerValue from './AnswerValue'
+import FirmQuestionRenderer from './FirmQuestionRenderer'
+import Spinner from '@/app/shared/components/spinner/Spinner'
+import { useQuestionnaireState } from '@/app/(evaluation)/components/left-panel/useQuestionnaireState'
 
 const SectionQuestions = () => {
   const params = useParams<Params>();
@@ -26,33 +27,74 @@ const SectionQuestions = () => {
   const { applicationData } = useCurrentApplication();
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const firstContributorId = applicationData?.application_contributor?.[0]?.id;
-  const completedAnalystQAs = useFirmSelector(state => state.evaluation.completedAnalystQAs);
+  const [isComplete, setIsComplete] = useState(false);
+  const [showNextButton, setShowNextButton] = useState<boolean>(true);
+  const router = useRouter();
 
-  const matchingContributorId = useMemo(() => {
-    if (!applicationData?.application_contributor || userRole !== 'analyst') {
+  const analystContributorId = useMemo(() => {
+    if (!applicationData?.application_contributor) {
       return null;
     }
 
-    const analystRoles: Role[] = [
-      Role.ANALYST,
-      Role.ANALYST_HIGH_TIER,
-      Role.ANALYST_LOW_TIER,
-      Role.ANALYST_HIGH,
-      Role.ANALYST_LOW,
-      Role.ANALYST_CONTRIBUTOR_OGC,
-      Role.ANALYST_CONTRIBUTOR_OSS
-    ];
+    if (userRole === 'analyst' || userRole === 'reviewer') {
+      const analystRoles: Role[] = [
+        Role.ANALYST,
+        Role.ANALYST_HIGH_TIER,
+        Role.ANALYST_LOW_TIER,
+        Role.ANALYST_HIGH,
+        Role.ANALYST_LOW,
+        Role.ANALYST_CONTRIBUTOR_OGC,
+        Role.ANALYST_CONTRIBUTOR_OSS,
+      ];
 
-    const matchingContributor = applicationData.application_contributor.find(contributor => {
-      return analystRoles.some(role => role.toLowerCase().replace(/_/g, '-') === contributor.application_role.name);
-    });
-
-    return matchingContributor?.id || null;
+      const analystContributor = applicationData.application_contributor.find(contributor => {
+        return analystRoles.some(role => role.toLowerCase().replace(/_/g, '-') === contributor.application_role.name);
+      });
+      return analystContributor?.id || null;
+    }
   }, [applicationData, userRole]);
 
-  const isAnalystQuestionnaire = useMemo(() => {
-    return params.section_questions?.startsWith('analyst-questionnaire');
-  }, [params.section_questions]);
+  const analystContributorName = useMemo(() => {
+    if (!applicationData?.application_contributor) {
+      return null;
+    }
+
+    if (userRole === 'analyst' || userRole === 'reviewer') {
+      const analystRoles: Role[] = [
+        Role.ANALYST,
+        Role.ANALYST_HIGH_TIER,
+        Role.ANALYST_LOW_TIER,
+        Role.ANALYST_HIGH,
+        Role.ANALYST_LOW,
+        Role.ANALYST_CONTRIBUTOR_OGC,
+        Role.ANALYST_CONTRIBUTOR_OSS,
+      ];
+
+      const analystContributor = applicationData.application_contributor.find(contributor => {
+        return analystRoles.some(role => role.toLowerCase().replace(/_/g, '-') === contributor.application_role.name);
+      });
+      return `${analystContributor?.user.first_name} ${analystContributor?.user.last_name} - ${analystContributor?.application_role.title}` || null;
+    }
+  }, [applicationData, userRole]);
+
+  const reviewerContributorId = useMemo(() => {
+    if (!applicationData?.application_contributor || userRole !== 'reviewer') {
+      return null;
+    }
+
+    const reviewerRoles: Role[] = [
+      Role.REVIEWER,
+      Role.REVIEWER_HIGH,
+      Role.REVIEWER_HIGH_TIER,
+      Role.REVIEWER_LOW,
+      Role.REVIEWER_LOW_TIER
+    ]
+
+    const reviewerContributorId = applicationData.application_contributor.find(contributor => {
+      return reviewerRoles.some(role => role.toLowerCase().replace(/_/g, '-') === contributor.application_role.name);
+    });
+    return reviewerContributorId?.id || null;
+  }, [applicationData, userRole]);
 
   const analystQuestionnaires = useMemo(() => {
     if (!applicationData?.program_application) {return [];}
@@ -65,10 +107,28 @@ const SectionQuestions = () => {
     return params.section_questions === lastQuestionnaire.replace(/^\//, '');
   }, [params.section_questions, analystQuestionnaires]);
 
-  const contributorIdToUse = isAnalystQuestionnaire ? matchingContributorId : firstContributorId;
+  const isAnalystQuestionnaire = useMemo(() => {
+    return params.section_questions?.startsWith('analyst-questionnaire');
+  }, [params.section_questions]);
 
-  const { data, isLoading } = useSWR<Question[]>(
-    contributorIdToUse ? `${QUESTIONNAIRE_ROUTE}/${contributorIdToUse}/${params.section_questions}` : null,
+  const { data: reviewerData, isLoading: reviewerLoading } = useSWR<Question[]>(
+    userRole === 'reviewer' && reviewerContributorId && isAnalystQuestionnaire
+      ? `${QUESTIONNAIRE_ROUTE}/${reviewerContributorId}/${params.section_questions}`
+      : null,
+    fetcher
+  );
+
+  const { data: analystData, isLoading: analystLoading } = useSWR<Question[]>(
+    (userRole === 'analyst' || userRole === 'reviewer') && analystContributorId && isAnalystQuestionnaire
+      ? `${QUESTIONNAIRE_ROUTE}/${analystContributorId}/${params.section_questions}`
+      : null,
+    fetcher
+  );
+
+  const { data: regularData, isLoading: regularLoading } = useSWR<Question[]>(
+    !isAnalystQuestionnaire && firstContributorId
+      ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}/${params.section_questions}`
+      : null,
     fetcher
   );
 
@@ -93,8 +153,7 @@ const SectionQuestions = () => {
     return [...navItems, ...analystItems];
   }, [navItems, params.application_id, userRole, analystQuestionnaires]);
 
-  const [showNextButton, setShowNextButton] = useState<boolean>(true);
-  const router = useRouter();
+  const { updateQuestionnaireCompletion } = useQuestionnaireState(applicationData, analystQuestionnaires);
 
   function onContinue() {
     const current = combinedNavItems.find(q => q.title === title);
@@ -106,41 +165,49 @@ const SectionQuestions = () => {
   }
 
   const handleAnswerChange = async (question: Question, value: any) => {
-    if (sessionData.data.user_id && matchingContributorId) {
+    if (sessionData.data.user_id && (analystContributorId || reviewerContributorId)) {
+      const isReviewerQuestion = question.name.startsWith('reviewer-');
+      const contributorId = isReviewerQuestion ? reviewerContributorId : analystContributorId;
+
+      if (contributorId === null || contributorId === undefined) {
+        return;
+      }
+
+      const newAnswer: Answer = {
+        id: question.id,
+        profile_answer_flag: question.profile_answer_flag,
+        reminder_flag: false,
+        application_contributor_id: contributorId,
+        value: question.question_type === 'multi_select'
+          ? value.map((option: { value: string }) => option.value)
+          : value,
+        question_id: question.id,
+        answer_by: sessionData.data.user_id,
+      };
+
       setSelectedAnswers(prevState => ({
         ...prevState,
-        [question.name]: {
-          id: question.id,
-          profile_answer_flag: question.profile_answer_flag,
-          reminder_flag: false,
-          application_contributor_id: matchingContributorId,
-          value: question.question_type === 'multi_select'
-            ? value.map((option: { value: string }) => option.value)
-            : value,
-          question_id: question.id,
-          answer_by: sessionData.data.user_id,
-        }
+        [question.name]: newAnswer
       }));
 
       // Saves the answer immediately
-      const answer = {
+      const answerForAPI = {
         profile_answer_flag: question.profile_answer_flag,
-        application_contributor_id: matchingContributorId,
-        value: { answer: question.question_type === 'multi_select'
-          ? value.map((option: { value: string }) => option.value)
-          : value
-        },
+        application_contributor_id: contributorId,
+        value: { answer: newAnswer.value },
         question_id: question.id,
         answer_by: sessionData.data.user_id,
         reminder_flag: false
       };
 
       try {
-        await axiosInstance.post(ANSWER_ROUTE, [answer]);
+        await axiosInstance.post(ANSWER_ROUTE, [answerForAPI]);
       } catch (error) {
-        // Error caught haha -KJ
+        // Handled
       }
     }
+    const questionnaireKey = params.section_questions?.replace('analyst-questionnaire-', '') as string;
+    updateQuestionnaireCompletion(questionnaireKey, true);
   };
 
   const handleNextQuestionnaire = () => {
@@ -155,6 +222,90 @@ const SectionQuestions = () => {
     }
   };
 
+  // TODO Update url for hubzone redirect -KJ
+  const handleHUBZoneCalculatorRedirect = () => {
+    const userRole = getUserRole(sessionData?.data?.permissions || []);
+    const accessToken = sessionData?.data?.access;
+    const userId = sessionData?.data?.user_id;
+    const applicationId = params.application_id;
+
+    if (accessToken && firstContributorId && userId && applicationId) {
+      const url = `http://localhost:3001/?wt=${accessToken}&application_contributor_id=${firstContributorId}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
+      window.open(url, '_blank'); // Makes sure it opens in a new tab
+    } else {
+      // Handled
+    }
+  };
+
+  const showHUBZoneCalculatorButton = params.section_questions?.includes('hubzone-calculator');
+
+  const renderQuestions = (questions: Question[] | undefined, isAnalyst: boolean) => {
+    if (!questions) {return null;}
+
+    return questions.map((question, index) => (
+      <React.Fragment key={index}>
+        {isAnalyst ? (
+          <FirmQuestionRenderer
+            contributorId={analystContributorId}
+            userId={sessionData?.data?.user_id}
+            key={question.id}
+            question={question}
+            index={index}
+            userName={analystContributorName}
+            selectedAnswers={selectedAnswers}
+            handleAnswerChange={handleAnswerChange}
+            onRefetchQuestionnaires={() => {}}
+            reviewerQuestion={userRole === 'reviewer' ? analystData?.find(q => q.name === question.name) : undefined}
+            isReviewer={userRole === 'reviewer'}
+          />
+        ) : (
+          <>
+            {question.question_type === QuestionType.GRID &&
+              <div key={question.id}>
+                {question?.grid_questions?.map(q => <AnswerValue question={q} key={q.id} />)}
+              </div>}
+            {!showHUBZoneCalculatorButton && <AnswerValue key={index} question={question} />}
+          </>
+        )}
+      </React.Fragment>
+    ));
+  };
+
+  useEffect(() => {
+    if (combinedNavItems.length > 0) {
+      const currentSection = combinedNavItems.find(item =>
+        item.url.includes(params.section_questions as string) ||
+        (params.section_questions as string).includes(item.url.split('/').pop() as string)
+      );
+      if (currentSection) {
+        let newTitle = currentSection.title;
+        if (newTitle.startsWith('Analyst Questionnaire')) {
+          newTitle = newTitle.replace('Analyst Questionnaire ', '');
+        }
+        setTitle(newTitle);
+      } else if (params.section_questions?.startsWith('analyst-questionnaire-')) {
+        const questionnaireTitle = params.section_questions
+          .replace('analyst-questionnaire-', '')
+          .replace(/-/g, ' ')
+          .replace(/(\b\w)/g, l => l.toUpperCase());
+        setTitle(questionnaireTitle);
+      }
+    }
+  }, [combinedNavItems, params.section_questions])
+
+  useEffect(() => {
+    if (isAnalystQuestionnaire) {
+      const relevantData = userRole === 'analyst' ? analystData : reviewerData;
+      if (relevantData && relevantData.length > 0) {
+        const firstQuestion = relevantData[0];
+        const isFirstQuestionAnswered = firstQuestion.answer &&
+          firstQuestion.answer.value !== null &&
+          firstQuestion.answer.value !== undefined;
+        setIsComplete(isFirstQuestionAnswered);
+      }
+    }
+  }, [isAnalystQuestionnaire, userRole, analystData, reviewerData]);
+
   useEffect(() => {
     if (combinedNavItems.length > 0) {
       const currentSection = combinedNavItems.find(item => item.url.includes(params.section_questions as string));
@@ -168,86 +319,85 @@ const SectionQuestions = () => {
     }
   }, [combinedNavItems, params.section_questions]);
 
-  // TODO Update url for hubzone redirect -KJ
-  const handleHUBZoneCalculatorRedirect = () => {
-    const userRole = getUserRole(sessionData?.data?.permissions || []);
-    const accessToken = sessionData?.data?.access;
-    const userId = sessionData?.data?.user_id;
-    const applicationId = params.application_id;
+  useEffect(() => {
+    if (isAnalystQuestionnaire) {
+      const relevantData = userRole === 'analyst' ? analystData : reviewerData;
+      if (relevantData && relevantData.length > 0) {
+        const firstQuestion = relevantData[0];
+        const isFirstQuestionAnswered = firstQuestion.answer &&
+          firstQuestion.answer.value !== null &&
+          firstQuestion.answer.value !== undefined;
 
-    if (accessToken && firstContributorId && userId && applicationId) {
-      const url = `http://localhost:3001/?wt=${accessToken}&application_contributor_id=${firstContributorId}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
-      window.open(url, '_blank'); // Makes sure it opens in a new tab
-    } else {
-      console.error('Missing required params for HUBZone Calculator');
+        const hasSelectedAnswers = Object.keys(selectedAnswers).length > 0;
+
+        setIsComplete(isFirstQuestionAnswered || hasSelectedAnswers);
+      }
     }
-  };
+  }, [isAnalystQuestionnaire, userRole, analystData, reviewerData, selectedAnswers]);
 
-  const showHUBZoneCalculatorButton = params.section_questions?.includes('hubzone-calculator');
+  useEffect(() => {
+    if (isAnalystQuestionnaire) {
+      const relevantData = userRole === 'analyst' ? analystData : reviewerData;
+      if (relevantData && relevantData.length > 0) {
+        const firstQuestion = relevantData[0];
+        const isFirstQuestionAnswered = firstQuestion.answer &&
+          firstQuestion.answer.value !== null &&
+          firstQuestion.answer.value !== undefined;
+
+        const questionnaireKey = params.section_questions?.replace('analyst-questionnaire-', '') as string;
+        updateQuestionnaireCompletion(questionnaireKey, isFirstQuestionAnswered);
+      }
+    }
+  }, [isAnalystQuestionnaire, userRole, analystData, reviewerData, params.section_questions, updateQuestionnaireCompletion]);
+
   return (
     <div>
-      {isLoading && <div>Loading...</div>}
-      {!isLoading && !data && <div>No data found</div>}
-      {!!data && !isLoading && <>
-        <h1>{title}</h1>
-        <form>
-          {data.map((question, index) => (
-            <React.Fragment key={index}>
-              {isAnalystQuestionnaire && matchingContributorId ? (
-                <QuestionRenderer
-                  contributorId={matchingContributorId}
-                  userId={sessionData?.data?.user_id}
-                  key={question.id}
-                  question={question}
-                  index={index}
-                  selectedAnswers={selectedAnswers}
-                  handleAnswerChange={handleAnswerChange}
-                  onRefetchQuestionnaires={() => {}}
-                />
-              ) : (
-                <>
-                  {question.question_type === QuestionType.GRID &&
-                    <div key={question.id}>
-                      {question?.grid_questions?.map(q => <AnswerValue question={q} key={q.id} />)}
-                    </div>}
-                  {!showHUBZoneCalculatorButton && <AnswerValue key={index} question={question} />}
-                </>
-              )}
-            </React.Fragment>
-          ))}
-        </form>
-        {showHUBZoneCalculatorButton ? (
-          <>
-            <p>
-              Click the button below to open the HUBZone Calculator. You will be able to review the Calculator entries made by the business, and their calculated eligibility. You can make notes on any of the entries, mark them as reviewed, and even make changes if necessary.  Save your changes in the Calculator, and return to this screen to continue the application review.
-            </p>
-            <Button onClick={handleHUBZoneCalculatorRedirect} className='margin-bottom-2' type='button'>
-              Open HUBZone Answers
+      {(reviewerLoading || analystLoading || regularLoading) && <Spinner center />}
+      {!reviewerLoading && !analystLoading && !regularLoading && !reviewerData && !analystData && !regularData && <div>No data found</div>}
+      {(reviewerData || analystData || regularData) && !reviewerLoading && !analystLoading && !regularLoading && (
+        <>
+          <h1>{title}</h1>
+          <form>
+            {isAnalystQuestionnaire ? (
+              <>
+                {userRole === 'reviewer' && renderQuestions(reviewerData, true)}
+                {(userRole === 'analyst') && renderQuestions(analystData, true)}
+              </>
+            ) : (
+              renderQuestions(regularData, false)
+            )}
+          </form>
+          {showHUBZoneCalculatorButton ? (
+            <>
+              <p>
+                Click the button below to open the HUBZone Calculator. You will be able to review the Calculator entries made by the business, and their calculated eligibility. You can make notes on any of the entries, mark them as reviewed, and even make changes if necessary. Save your changes in the Calculator, and return to this screen to continue the application review.
+              </p>
+              <Button onClick={handleHUBZoneCalculatorRedirect} className='margin-bottom-2' type='button'>
+                Open HUBZone Answers
+              </Button>
+            </>
+          ) : (
+            (((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
+              (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
+              (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
+              (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
+              showNextButton
+            ) && <Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>
+          )}
+          {isAnalystQuestionnaire && (
+            <Button
+              onClick={handleNextQuestionnaire}
+              className={isAnalystQuestionnaire ? 'float-right margin-left-auto' : 'margin-top-4'}
+              type='button'
+              disabled={!isComplete}
+            >
+              {isLastQuestionnaire ? 'Done' : 'Save & Continue'}
             </Button>
-          </>
-        ) : (
-          (((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
-            (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
-            (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
-            (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
-            showNextButton
-          ) && <Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>
-        )}
-      </>
-      }
-      {isAnalystQuestionnaire && (
-        <Button
-          onClick={handleNextQuestionnaire}
-          className='margin-top-4'
-          type='button'
-          disabled={!completedAnalystQAs[params.section_questions?.replace('analyst-questionnaire-', '') as keyof typeof completedAnalystQAs]}
-        >
-          {isLastQuestionnaire ? 'Done' : 'Save & Continue'}
-        </Button>
+          )}
+        </>
       )}
     </div>
   )
-
 }
 
 export default SectionQuestions

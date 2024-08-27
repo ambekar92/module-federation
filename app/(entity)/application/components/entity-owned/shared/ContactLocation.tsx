@@ -8,7 +8,6 @@ import {
 import React from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { EntityFormType } from '../schema'
-import { formatPhoneNumber } from '../helpers'
 import { USA_STATES } from '@/app/constants/usa-states'
 
 const ContactLocation = () => {
@@ -28,7 +27,7 @@ const ContactLocation = () => {
           </Label>
 
           <Controller
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <TextInput
                 className="maxw-full"
                 type="text"
@@ -67,7 +66,7 @@ const ContactLocation = () => {
           </Label>
 
           <Controller
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <TextInput
                 className="maxw-full"
                 type="text"
@@ -111,7 +110,7 @@ const ContactLocation = () => {
           </Label>
 
           <Controller
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <TextInput
                 className="maxw-full"
                 type="text"
@@ -152,7 +151,7 @@ const ContactLocation = () => {
           </Label>
 
           <Controller
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <Select
                 className="maxw-full"
                 id={'state'}
@@ -186,7 +185,7 @@ const ContactLocation = () => {
           </Label>
 
           <Controller
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <TextInput
                 className="maxw-full"
                 type="text"
@@ -222,7 +221,7 @@ const ContactLocation = () => {
           </Label>
 
           <Controller
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <TextInput
                 className="maxw-full"
                 type="text"
@@ -249,7 +248,7 @@ const ContactLocation = () => {
           />
           <ErrorMessage>
             {
-              control.getFieldState('contactLocation.zurbanizationip').error
+              control.getFieldState('contactLocation.urbanization').error
                 ?.message
             }
           </ErrorMessage>

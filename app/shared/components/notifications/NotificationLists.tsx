@@ -86,7 +86,7 @@ const NotificationLists = () => {
                   }
                   {(markAsAllReadStatus) &&
                     <>
-                      
+
                     </>
                   }
                 </Grid>

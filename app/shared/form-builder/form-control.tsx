@@ -10,61 +10,61 @@ import DocumentUpload from '@/app/shared/form-builder/form-controls/document-upl
 import { useFormContext } from 'react-hook-form'
 
 const FormControl = ({question}: {question: MainQuestionObject}) => {
-    const {getValues, watch} = useFormContext();
+  const {getValues, watch} = useFormContext();
 
   return (
     <>
-        {question.question_type === 'boolean' && <ToggleButtonGroup<MainQuestionObject, string> 
-            label={question.title} 
-            name={question.name as any} 
-            hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-            options={[{label: 'Yes', value: 'TRUE'}, {label: 'No', value: 'FALSE'}]}/>}
-
-        {question.question_type === QuestionType.TEXT && <Input<MainQuestionObject> 
+      {question.question_type === 'boolean' && <ToggleButtonGroup<MainQuestionObject, string>
+        label={question.title}
+        name={question.name as any}
         hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-        name={question.name as any} 
+        options={[{label: 'Yes', value: 'TRUE'}, {label: 'No', value: 'FALSE'}]}/>}
+
+      {question.question_type === QuestionType.TEXT && <Input<MainQuestionObject>
+        hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
+        name={question.name as any}
         label={question.title} />}
 
-        {question.question_type === QuestionType.TEXT_AREA && <TextArea<MainQuestionObject> 
+      {question.question_type === QuestionType.TEXT_AREA && <TextArea<MainQuestionObject>
         hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-        name={question.name as any} 
+        name={question.name as any}
         label={question.title} />}
 
-        {question.question_type === QuestionType.DATE && <Date<MainQuestionObject> 
+      {question.question_type === QuestionType.DATE && <Date<MainQuestionObject>
         hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-        name={question.name as any} 
+        name={question.name as any}
         label={question.title} />}
 
-        {question.question_type === QuestionType.READ_ONLY && <Input<MainQuestionObject> 
+      {question.question_type === QuestionType.READ_ONLY && <Input<MainQuestionObject>
         disabled={true}
         hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-        name={question.name as any} 
+        name={question.name as any}
         label={question.title} />}
 
-        {question.question_type === QuestionType.DOCUMENT_UPLOAD && <DocumentUpload<MainQuestionObject> 
+      {question.question_type === QuestionType.DOCUMENT_UPLOAD && <DocumentUpload<MainQuestionObject>
         hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-        name={question.name as any} 
+        name={question.name as any}
         label={question.title} />}
 
-        {question.question_type === QuestionType.MULTI_SELECT && <Dropdown<MainQuestionObject> 
-            hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-            name={question.name as any} 
-            multiple={true}
-            label={question.title}>
-            {question.answer_choice?.options?.map(option => (
-                <option key={option.option} value={option.option}>{option.option}</option>
-            ))}
-        </Dropdown>}
+      {question.question_type === QuestionType.MULTI_SELECT && <Dropdown<MainQuestionObject>
+        hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
+        name={question.name as any}
+        multiple={true}
+        label={question.title}>
+        {question.answer_choice?.options?.map(option => (
+          <option key={option.option} value={option.option}>{option.option}</option>
+        ))}
+      </Dropdown>}
 
-        {question.question_type === QuestionType.SELECT && <Dropdown<MainQuestionObject> 
-            hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
-            name={question.name as any} 
-            multiple={false}
-            label={question.title}>
-            {question.answer_choice?.options?.map(option => (
-                <option key={option.option} value={option.option}>{option.option}</option>
-            ))}
-        </Dropdown>}
+      {question.question_type === QuestionType.SELECT && <Dropdown<MainQuestionObject>
+        hint={question.description?.toLowerCase() !== question.title?.toLowerCase() ? question.description : ''}
+        name={question.name as any}
+        multiple={false}
+        label={question.title}>
+        {question.answer_choice?.options?.map(option => (
+          <option key={option.option} value={option.option}>{option.option}</option>
+        ))}
+      </Dropdown>}
     </>
   )
 }

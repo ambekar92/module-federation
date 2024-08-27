@@ -111,7 +111,7 @@ export const calculateEligibleSbaPrograms = (owners: OwnerType[]): ProgramOption
 
       manageDisadvantage(owner.gender === 'F', 'female');
       manageDisadvantage(owner.veteranStatus === 'Veteran', 'veteran');
-      manageDisadvantage(owner.veteranStatus === 'Service Disabled Veteran', 'disabledVeteran');
+      manageDisadvantage(owner.veteranStatus === 'Service-Disabled Veteran', 'disabled_veteran');
 
       const mappedDisadvantages = updatedDisadvantages.map(disadvantage => {
         switch (disadvantage) {

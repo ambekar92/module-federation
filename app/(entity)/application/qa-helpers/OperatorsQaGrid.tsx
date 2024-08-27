@@ -72,15 +72,26 @@ export const OperatorsQaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion
     }
   };
 
+  const getFieldValue = (row: GridRow, fieldName: string): string | string[] => {
+    const fullFieldName = Object.keys(row).find(key => key.includes(fieldName));
+    return fullFieldName ? row[fullFieldName] : '';
+  };
+
+  const generateId = (row: GridRow) => {
+    let _id = `owner_${String(getFieldValue(row, 'first_name'))}_${String(getFieldValue(row, 'last_name'))}_${Date.now()}`;
+    _id = _id.toLowerCase();
+    return _id;
+  };
+
   const handleAddOrUpdateRow = () => {
     if (validateAllFields()) {
       let newRows;
       if (editingRowIndex !== null) {
         newRows = gridRows.map((row, index) =>
-          index === editingRowIndex ? currentRow : row
+          index === editingRowIndex ? { ...currentRow, id: generateId(currentRow) } : row
         );
       } else {
-        newRows = [...gridRows, currentRow];
+        newRows = [...gridRows, { ...currentRow, id: generateId(currentRow) }];
       }
       setGridRows(newRows);
       setCurrentRow({});

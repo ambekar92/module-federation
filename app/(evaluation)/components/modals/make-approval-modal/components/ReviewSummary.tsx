@@ -7,6 +7,7 @@ import React, { Dispatch, RefObject, useMemo } from 'react'
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { generateReviewSummarySchema } from '../schema'
 import { Decision, MakeApprovalFormType, ReviewSummaryType, Steps } from '../types'
+import { capitalize } from '@mui/material'
 
 interface ReviewSummaryProps {
   modalRef: RefObject<ModalRef>;
@@ -71,14 +72,12 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
           return (
             <React.Fragment key={program.id}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', alignItems: 'baseline' }}>
-                <div>
+                <div className='padding-right-1'>
                   <strong>{program.programs.title}</strong>
                 </div>
                 <div>
                   <span>
-                    {methods.watch(`approval${programName}`) === Decision.Concur ? 'Concur' :
-                      methods.watch(`approval${programName}`) === Decision.Disagree ? 'Disagree' :
-                        ''}
+                    {capitalize(program.reviewer_decision ? program.reviewer_decision.replace('approved', 'Approve') : '')}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -109,10 +108,8 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
                   </div>
                 </>
               )}
-              {program.reviewer_can_appeal
-							&& ((program.reviewer_decision === Decision.Concur && methods.watch(`approval${programName}`) === Decision.Disagree)
-							|| (program.reviewer_decision === Decision.Disagree && methods.watch(`approval${programName}`) === Decision.Concur))
-							&& (
+              {['eight_a', 'sd_vosb', 'vosb'].includes(program.programs.name) &&
+                  (methods.watch(`approval${programName}`) === Decision.Disagree) && (
 							  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
 							    <Controller
 							      name={`approvalReviewerAppeal-${programName}`}
@@ -124,14 +121,14 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
 							          label='Can the applicant appeal this decision?'
 							          grid
 							          options={[
-							            { label: 'Concur', value: Decision.Concur },
-							            { label: 'Disagree', value: Decision.Disagree }
+							            { label: 'Yes', value: Decision.Concur },
+							            { label: 'No', value: Decision.Disagree }
 							          ]}
 							        />
 							      )}
 							    />
 							  </div>
-							)}
+              )}
             </React.Fragment>
           )
         })}

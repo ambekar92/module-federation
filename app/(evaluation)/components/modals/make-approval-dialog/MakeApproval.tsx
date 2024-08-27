@@ -19,19 +19,19 @@ interface MakeApprovalProps {
 
 const approvalLetter = {
   data: {
-    date: "06/08/2024",
-    businessPOC: "Business POC",
-    businessName: "Business name",
-    businessAddress: "Business address",
-    businessDevelopmentProgram: "8(a) Business Development (8(a) BD) Program",
-    hUBZoneProgram: "HUBZone Program",
-    womenOwnedSmallBusiness: "Women-Owned Small Business (WOSB)",
-    economicallyDisadvantaged: "Economically Disadvantaged Women-Owned Small Business (EDWOSB)",
-    veteranOwnedSmallBusiness: "Veteran-Owned Small Business (VOSB)",
-    serviceDisabledVeteranOwnedSmallBusiness: "Service-Disabled Veteran-Owned Small Business (SDVOSB)",
-    eligible: "8(a)/HUBZone/WOSB/EDWOSB/VOSB/SDVOSB",
-    publicSearchName: "Public search name",
-    dateYear: "06, 2024",
+    date: '06/08/2024',
+    businessPOC: 'Business POC',
+    businessName: 'Business name',
+    businessAddress: 'Business address',
+    businessDevelopmentProgram: '8(a) Business Development (8(a) BD) Program',
+    hUBZoneProgram: 'HUBZone Program',
+    womenOwnedSmallBusiness: 'Women-Owned Small Business (WOSB)',
+    economicallyDisadvantaged: 'Economically Disadvantaged Women-Owned Small Business (EDWOSB)',
+    veteranOwnedSmallBusiness: 'Veteran-Owned Small Business (VOSB)',
+    serviceDisabledVeteranOwnedSmallBusiness: 'Service-Disabled Veteran-Owned Small Business (SDVOSB)',
+    eligible: '8(a)/HUBZone/WOSB/EDWOSB/VOSB/SDVOSB',
+    publicSearchName: 'Public search name',
+    dateYear: '06, 2024',
   }
 }
 
@@ -47,7 +47,7 @@ const MakeApproval: React.FC<MakeApprovalProps> = ({
     onClose()
   }
 
-  const onChange = (e: ChangeEvent<HTMLInputElement>, field: string) => {
+  const onChange = (e: any, field: string) => {
     if (field === 'signature') {
       setRequiredFields(!e.target.checked)
     }
@@ -109,13 +109,13 @@ const MakeApproval: React.FC<MakeApprovalProps> = ({
 
                   <p>Responsibilities</p>
 
-                  <p>The information below sets forth requirements related to your business’ continued eligibility and its responsibilities as a certified program participant:</p>
+                  <p>The information below sets forth requirements related to your business&apos; continued eligibility and its responsibilities as a certified program participant:</p>
 
                   <p>Reporting Changes: You are required to notify SBA in writing of changes to your business that could affect its eligibility. Please refer to the attached supplemental pages for more details and examples.</p>
 
-                  <p>System for Award Management (SAM.gov): You must keep the business' SAM.gov profile and DSBS records up-to-date in order for the business to receive benefits from our Programs (i.e., to be identified by contracting officers as eligible to be awarded small business set-aside contracts and to be paid under any such contracts). You must validate your business’ SAM.gov information at least annually or your SAM.gov registration will become inactive. If you need assistance in updating the business' SAM.gov or DSBS information, please go to the SAM.gov Help Desk at https://fsd.gov/fsd-gov/home.do.</p>
+                  <p>System for Award Management (SAM.gov): You must keep the business&apos; SAM.gov profile and DSBS records up-to-date in order for the business to receive benefits from our Programs (i.e., to be identified by contracting officers as eligible to be awarded small business set-aside contracts and to be paid under any such contracts). You must validate your business&apos; SAM.gov information at least annually or your SAM.gov registration will become inactive. If you need assistance in updating the business&apos; SAM.gov or DSBS information, please go to the SAM.gov Help Desk at https://fsd.gov/fsd-gov/home.do.</p>
 
-                  <p>Notices from SBA: You are responsible for responding to notices from SBA, including but not limited to notices regarding certification renewals, eligibility reviews, protests, proposed decertification and termination actions, and recertification requirements. All SBA Programs send such notices to the business' email address listed in its MySBA Profile. If the business fails to respond to these notices, SBA will propose the business for decertification or termination and may subsequently decertify or terminate it from participation in SBA Programs. Therefore, it is critical that you keep the business' SAM.gov and MySBA profiles current, including listing an active email address for contacting the business, and check your email's SPAM folder to make sure that you are receiving emails from SBA.</p>
+                  <p>Notices from SBA: You are responsible for responding to notices from SBA, including but not limited to notices regarding certification renewals, eligibility reviews, protests, proposed decertification and termination actions, and recertification requirements. All SBA Programs send such notices to the business&apos; email address listed in its MySBA Profile. If the business fails to respond to these notices, SBA will propose the business for decertification or termination and may subsequently decertify or terminate it from participation in SBA Programs. Therefore, it is critical that you keep the business&apos; SAM.gov and MySBA profiles current, including listing an active email address for contacting the business, and check your email&apos;s SPAM folder to make sure that you are receiving emails from SBA.</p>
 
                   <p>Contracting Requirements: You are required to comply with limitations on subcontracting requirements and nonmanufacturer rule when performing any small business set-aside contracts (see 13 CFR 125.6)</p>
 
@@ -150,7 +150,7 @@ const MakeApproval: React.FC<MakeApprovalProps> = ({
               className="usa-checkbox__label maxw-full width-full"
               htmlFor="action-modal-signature-checkbox"
             >
-              By clicking this checkbox, you are attesting that you’ve done a thorough review and are ready to officially approve or deny the certifications listed in this application. Once you select “Sign and Submit”, the applicant will be notified and receive their official letters.
+              By clicking this checkbox, you are attesting that you&apos;ve done a thorough review and are ready to officially approve or deny the certifications listed in this application. Once you select “Sign and Submit”, the applicant will be notified and receive their official letters.
             </Label>
           </div>
         </div>

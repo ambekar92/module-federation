@@ -9,6 +9,9 @@ CONTRIBUTOR = 'contributor',
 DELEGATE = 'delegate',
 SPOUSE = 'spouse',
 PRIMARY_QUALIFYING_OWNER = 'primary_qualifying_owner',
+QUALIFYING_OWNER = 'qualifying_owner',
+OTHER_INDIVIDUALS = 'other_individuals',
+NON_QUALIFYING_OWNER = 'non_qualifying_owner',
 
 // Screener Roles (RTB)
 SCREENER = 'screener',
@@ -33,6 +36,5 @@ REVIEWER_LOW = 'reviewer_low_tier',
 // Approver Roles
 APPROVER = 'approver',
 APPROVER_8a_aabd = 'approver_8a_aabd',
-APPROVER_AABD = 'approver_8a_aabd',
 APPROVER_DELEGATE = 'approver_8a_delegate',
 }

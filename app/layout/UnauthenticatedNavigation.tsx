@@ -6,6 +6,7 @@ import { MouseEvent, useState } from 'react'
 import { SBA_LOGO_SQUARE_WHITE_URL } from '../constants/icons'
 import LoginMenu from './LoginMenu'
 import SignupMenu from './SignupMenu'
+import { usePathname } from 'next/navigation'
 
 export interface StyleSetting {
   bg: string
@@ -15,7 +16,7 @@ export interface StyleSetting {
 }
 const styleSettings = {
   hoverColor: '',
-  bg: 'bg-primary-dark',
+  bg: '#002e6d',
   textColor: 'text-white',
   logo: SBA_LOGO_SQUARE_WHITE_URL,
 }
@@ -23,7 +24,12 @@ export const UnauthenticatedNavigation = () => {
   const [isLinkActive, setIsLinkActive] = useState(false);
   const [loginAnchorEl, setLoginAnchorEl] = useState<null | HTMLElement>(null);
   const [signupAnchorEl, setSignupAnchorEl] = useState<null | HTMLElement>(null);
-  
+
+  const path = usePathname()
+
+  const isGetReadyPage = path.includes('/get-ready');
+  const isHomePage = path === '/';
+
   const loginMenuOpen = Boolean(loginAnchorEl);
   const signupMenuOpen = Boolean(signupAnchorEl);
 
@@ -45,91 +51,107 @@ export const UnauthenticatedNavigation = () => {
   }
   return (
     <>
-    <Header
-      className={`${styleSettings.bg} border-bottom-1px border-base-light padding-botom-1 flex-fill display-flex flex-row flex-justify-end`}
-      basic
-    >
-      <Grid className=" padding-bottom-2">
-        <Grid className="flex-fill display-flex flex-row flex-justify-end padding-top-0 margin-right-1">
-          <Grid row>
-            <Grid>
-              <img
-                className="padding-right-1 padding-top-1"
-                src="/navbaricons/resources.svg"
-                alt="logo"
-                height={30}
-              />
-            </Grid>
-            <Grid>
-              <div
-                className={`padding-top-1 padding-right-1`}
-                style={{
-                  borderBottom: isLinkActive ? selectedBottomRedBorder : '',
-                }}
-              >
-                <Link
-                  href="/resources/get-ready"
-                  onClick={handleLinkClick}
-                  style={{ textDecoration: 'none', color: 'white' }}
+      <Header
+        style={{backgroundColor: styleSettings.bg}}
+        className={'border-base-light padding-botom-1 flex-fill display-flex flex-row flex-justify-end'}
+        basic
+      >
+        <Grid className=" padding-bottom-2">
+          <Grid className="flex-fill display-flex flex-row flex-justify-end padding-top-0 margin-right-1">
+            <Grid row>
+              <Grid>
+                <div
+                  className={'padding-top-1 padding-right-1'}
+                  style={{
+                    borderBottom: isHomePage ? selectedBottomRedBorder : '',
+                  }}
                 >
+                  <Link
+                    href="/"
+                    onClick={handleLinkClick}
+                    style={{ textDecoration: 'none', color: 'white' }}
+                  >
+                  	Home
+                  </Link>
+                </div>
+              </Grid>
+              <Grid className='display-flex margin-x-2'>
+                <img
+                  className="padding-right-1 padding-top-1"
+                  src="/navbaricons/resources.svg"
+                  alt="logo"
+                  height={30}
+                />
+                <div
+                  className={'padding-top-1 padding-right-1'}
+                  style={{
+                    borderBottom: isGetReadyPage ? selectedBottomRedBorder : '',
+                  }}
+                >
+                  <Link
+                    href="/resources/get-ready"
+                    style={{ textDecoration: 'none', color: 'white' }}
+                  >
                   Resources
-                </Link>
-              </div>
-            </Grid>
-          </Grid>
-          <Grid row>
-            <Grid>
+                  </Link>
+                </div>
+              </Grid>
+              <Grid className='display-flex'>
+              </Grid>
               <img
                 className="padding-right-1 padding-top-1"
                 src="/navbaricons/gethelp.svg"
                 alt="logo"
                 height={30}
               />
-            </Grid>
-            <Grid>
-              <div
-                className="padding-top-1 padding-right-2"
-                style={{ color: 'white' }}
-              >
+              <Grid>
+                <div
+                  className="padding-top-1 padding-right-2"
+                  style={{ color: 'white' }}
+                >
                 Get Help
-              </div>
+                </div>
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid>
-            <img
-              className="padding-right-2"
-              src="/navbaricons/navbarline.svg"
-              alt="logo"
-              height={40}
-            />
-          </Grid>
-          <Grid>
-            <Button
-              onClick={openLoginMenu}
-              className="usa-button usa-button--outline usa-button--inverse"
-              type="button"
-            >
-              <span className={styleSettings.textColor}>Login</span>
-            </Button>
-          </Grid>
-          <Grid>
-            <Button
-              onClick={openSignupMenu}
-              className="usa-button usa-button--outline usa-button--inverse"
-              type="button"
-            >
-              <span className={styleSettings.textColor}>Signup</span>
-            </Button>
+            {/* {process.env.NODE_ENV !== 'production' && (
+              <>
+                <Grid>
+                  <img
+                    className="padding-right-2"
+                    src="/navbaricons/navbarline.svg"
+                    alt="logo"
+                    height={40}
+                  />
+                </Grid>
+                <Grid>
+                  <Button
+                    onClick={openLoginMenu}
+                    className="usa-button usa-button--outline usa-button--inverse"
+                    type="button"
+                  >
+                    <span className={styleSettings.textColor}>Login</span>
+                  </Button>
+                </Grid>
+                <Grid>
+                  <Button
+                    onClick={openSignupMenu}
+                    className="usa-button usa-button--outline usa-button--inverse"
+                    type="button"
+                  >
+                    <span className={styleSettings.textColor}>Signup</span>
+                  </Button>
+                </Grid>
+                <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={loginMenuOpen} anchorEl={loginAnchorEl} onClose={handleClose}>
+                  <LoginMenu />
+                </Menu>
+                <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={signupMenuOpen} anchorEl={signupAnchorEl} onClose={handleClose}>
+                  <SignupMenu />
+                </Menu>
+              </>
+            )} */}
           </Grid>
         </Grid>
-        <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={loginMenuOpen} anchorEl={loginAnchorEl} onClose={handleClose}>
-          <LoginMenu />
-        </Menu>
-        <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={signupMenuOpen} anchorEl={signupAnchorEl} onClose={handleClose}>
-          <SignupMenu />
-        </Menu>
-      </Grid>
-    </Header>
+      </Header>
     </>
   )
 }

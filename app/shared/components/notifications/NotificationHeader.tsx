@@ -123,7 +123,6 @@ function NotificationHeader(props:any) {
             </div>
           }
 
-
         </div>
 
         {/* filter */}

@@ -8,6 +8,7 @@ import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accor
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRtfRequestData } from '../rtf-rfi/hooks/useRtfRequestData';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const TaskTimers = () => {
   const params = useParams<{application_id: string}>();
@@ -80,7 +81,7 @@ const TaskTimers = () => {
   return (
     <div>
       <h1>Task Timers</h1>
-      {isLoading && <p>Loading...</p>}
+      {isLoading && <Spinner center />}
       {!isLoading && (
         <>
           <p>Task timers represent the amount of time spent on each task. Time is rounded up to the nearest hour and/or day.</p>

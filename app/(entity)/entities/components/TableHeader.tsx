@@ -24,7 +24,7 @@ const TableHeader = () => {
     }
     const q = searchParamsState.toString()
     router.push(`${pathName}?${q}`)
-  }, [pathName])
+  }, [pathName, router, searchParamsState])
 
   function setQueryParams(colName: string) {
     const sortOrder =

@@ -1,4 +1,4 @@
-import { Application, News } from "./types";
+import { Application, News } from './types';
 
 export const mockNews = [
   { id: 1, title: 'Scientists Discover New Species of Orchid in Amazon Rainforest', description: 'A team of biologists has uncovered a previously unknown species of orchid deep within the Amazon rainforest. The discovery highlights the importance of conservation efforts in protecting the world\'s biodiversity.' },

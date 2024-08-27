@@ -176,7 +176,6 @@ const EscalateReviewModal: React.FC<EscalateReviewProps> = ({
                 id="request-expert-textarea"
                 name="request-expert-textarea"
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setNotes(e.target.value)}
-                placeholder='The business is Entity-Owned, OGC review is required. Thanks!'
               />
             </>
           )

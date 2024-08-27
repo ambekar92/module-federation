@@ -13,7 +13,7 @@ import CustomAlert from './Alerts'
 export default function OrganizeUsers(): JSX.Element {
 
   const [showNewUserAlert, setShowNewUserAlert] = useState(false)
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false)
+  const [showSuccessAlert, ] = useState(false)
 
   const [rowCount, setRowCount] = useState(0)
   const [newRow, setNewRow] = useState([])

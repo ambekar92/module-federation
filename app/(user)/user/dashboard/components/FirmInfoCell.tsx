@@ -13,7 +13,6 @@ const FirmInfoCell = ({task}:{task: UserTaskDashboard}) => {
   function handleCopyUei(uei: string) {
     navigator.clipboard.writeText(uei).then(() => {
       setTimeout(() => setCopied(true) ,100)
-      
 
       setTimeout(() => {
         setCopied(false)
@@ -23,13 +22,13 @@ const FirmInfoCell = ({task}:{task: UserTaskDashboard}) => {
 
   return (
     <div className={styles.copiedContainer  }>
-    {copied && <div className={styles.copiedText}>Copied!</div>}
-    <span onClick={() => handleCopyUei(task.uei)} > 
-    ({task.uei}) 
-    <FontAwesomeIcon 
-    size={copied ? 'xs' : '1x'}
-    className={styles.copyIcon} icon={faCopy} /> 
-    </span>
+      {copied && <div className={styles.copiedText}>Copied!</div>}
+      <span onClick={() => handleCopyUei(task.uei)} >
+    ({task.uei})
+        <FontAwesomeIcon
+          size={copied ? 'xs' : '1x'}
+          className={styles.copyIcon} icon={faCopy} />
+      </span>
     </div>
   )
 }

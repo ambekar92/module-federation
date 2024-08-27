@@ -36,4 +36,3 @@ function VaCert() {
 }
 
 export default VaCert
-

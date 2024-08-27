@@ -1,7 +1,6 @@
 import { Editor } from '@tiptap/react';
 import classes from './Tiptap.module.scss';
 
-
 const FormatButtons = ({editor}: {editor: Editor}) => {
   return (
     <div className="control-group">
@@ -78,7 +77,7 @@ const FormatButtons = ({editor}: {editor: Editor}) => {
         </button>
 
       </div>
-  </div>
+    </div>
   )
 }
 

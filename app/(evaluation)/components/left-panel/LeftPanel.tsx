@@ -1,13 +1,12 @@
-import React from 'react';
 import { useCurrentApplication } from '../../firm/useApplicationData';
+import { NavItem } from '../../types/types';
 import LeftPanelHeader from './LeftPanelHeader';
 import NavigationItems from './NavigationItems';
-import { NavItem } from '../../types/types';
 
 interface LeftPanelProps {
-  isNavItemsLoading: boolean;
-  navItems: NavItem[];
-  error: any;
+  isNavItemsLoading?: boolean;
+  navItems?: NavItem[];
+  error?: any;
 }
 
 function LeftPanel({ isNavItemsLoading, navItems, error }: LeftPanelProps) {
@@ -18,13 +17,14 @@ function LeftPanel({ isNavItemsLoading, navItems, error }: LeftPanelProps) {
   }
 
   return (
-    <div className='bg-white padding-top-2'>
+    <div className='bg-white padding-top-2 minh-screen'>
       <LeftPanelHeader applicationData={applicationData} />
-      <div className="grid-container">
+      <div className="grid-container padding-x-1">
         <NavigationItems
-          navItems={navItems}
-          isNavItemsLoading={isNavItemsLoading}
+          navItems={navItems ?? []}
+          isNavItemsLoading={isNavItemsLoading ?? false}
           error={error}
+          applicationData={applicationData}
         />
       </div>
     </div>

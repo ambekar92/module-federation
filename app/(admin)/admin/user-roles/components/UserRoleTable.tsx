@@ -9,8 +9,6 @@ import TablePagination from './TablePagination'
 import { USER_ROLES_ROUTE } from '@/app/constants/routes'
 import styles from './Entities.module.scss'
 
-
-
 const PAGE_SIZE = 10
 
 interface IDocument {
@@ -36,7 +34,7 @@ const UserRoleTable = async ({
     return dataToSort
 
       .sort((a: any, b: any) =>
-        searchParams.sortColumn === 'name' 
+        searchParams.sortColumn === 'name'
       && searchParams.sortOrder === 'asc'
           ? a.name.localeCompare(b.name)
           : searchParams.sortColumn === 'name' &&
@@ -60,9 +58,9 @@ const UserRoleTable = async ({
 
   const [data, setData] = useState([] as any | IDocument[])
   const [shouldFetch, setShouldFetch] = useState(true)
-const [showDisplay, setShowDisplay] = useState(false)
+  const [showDisplay, setShowDisplay] = useState(false)
 
- const  {
+  const  {
     data: responseData,
     error: responseError,
     isLoading,
@@ -92,9 +90,9 @@ const [showDisplay, setShowDisplay] = useState(false)
       setData([...sortData(convertToTableData(UserRole))])
     }
     if(searchParams.q){
-        setShowDisplay(true)
+      setShowDisplay(true)
     }
-   
+
   }, [responseData, responseError, searchParams, showDisplay])
 
   return (
@@ -104,28 +102,28 @@ const [showDisplay, setShowDisplay] = useState(false)
         fullWidth={true}>
         <TableHeader />
         <tbody>
-            {data?.slice(
-                (parseInt(searchParams.page) - 1) * PAGE_SIZE,
-                (parseInt(searchParams.page) - 1) * PAGE_SIZE + PAGE_SIZE,
-              )
-              .map((item: any) => (
-                <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.description}</td>
-                </tr>
-                ))}
+          {data?.slice(
+            (parseInt(searchParams.page) - 1) * PAGE_SIZE,
+            (parseInt(searchParams.page) - 1) * PAGE_SIZE + PAGE_SIZE,
+          )
+            .map((item: any) => (
+              <tr key={item.id}>
+                <td>{item.name}</td>
+                <td>{item.description}</td>
+              </tr>
+            ))}
         </tbody>
       </Table>) : (searchParams.q !== null && data.length === 0 && showDisplay===true ) ?( <div className="padding-top-5">
-        <Alert type="info" heading="No Results Found" headingLevel="h4">
-          {'I’m sorry, we couldn’t find any results matching your criteria.'}
-        </Alert>
-      </div>):(<div></div>)}
+      <Alert type="info" heading="No Results Found" headingLevel="h4">
+        {'I’m sorry, we couldn’t find any results matching your criteria.'}
+      </Alert>
+    </div>):(<div></div>)}
 
-      {Math.ceil(data?.length / PAGE_SIZE) > 1 && (
-         <div className="display-flex flex-column flex-align-end">
+    {Math.ceil(data?.length / PAGE_SIZE) > 1 && (
+      <div className="display-flex flex-column flex-align-end">
         <TablePagination total={Math.ceil(data?.length / PAGE_SIZE)} />
-        </div>
-      )}
+      </div>
+    )}
     </>
   )
 }

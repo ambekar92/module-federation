@@ -4,7 +4,6 @@ import { permissionsMap } from '../modals/reassign-user-modal/maps';
 import { ReassignType } from '../modals/reassign-user-modal/types';
 
 export enum ActionMenuIDs {
-  SCREENER_ACCEPT_FOR_REVIEW = 1,
   CLOSE_APPLICATION = 2,
   RETURN_TO_ANALYST = 3,
   MAKE_RECOMMENDATION = 4,
@@ -25,70 +24,6 @@ export enum ActionMenuIDs {
 
 export const actionMenuData = [
   {
-    'id': 1,
-    'optionLabel': 'Screener: Accept for Review',
-    'permissions': [''],
-    'title': 'Accept for Review',
-    'actionLabel': 'Confirm',
-    'modalType': 'default',
-    'description': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
-    'steps': [],
-    'table': {
-      'step': -1,
-      'tableHeader': [],
-      'tableRows': []
-    },
-    'signature': {
-      'step': -1,
-      'description': ''
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': -1,
-      'rows': []
-    }
-  },
-  {
-    'id': 2,
-    'optionLabel': 'Close Application',
-    'permissions': ['screener_common_app', 'analyst_high_criteria', 'analyst_high_criteria', 'supervisor_high_criteria', 'supervisor_low_criteria'],
-    'title': 'Close This Application',
-    'actionLabel': 'Close Application',
-    'modalType': 'textarea',
-    'description': 'Closing this application will end the review process. The applicant will be notified, and they will be allowed to re-apply at anytime',
-    'inputDescription': 'Please, provide more information regarding why you wish to close this application*',
-    'steps': [],
-    'table': {
-      'step': -1,
-      'tableHeader': [],
-      'tableRows': []
-    },
-    'signature': {
-      'step': -1,
-      'description': ''
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': -1,
-      'rows': []
-    }
-  },
-  {
-    id: ActionMenuIDs.RETURN_TO_ANALYST,
-    optionLabel: 'Return to Analyst',
-    permissions: [Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW_TIER, Role.REVIEWER],
-  },
-  {
     id: ActionMenuIDs.RETURN_TO_ANALYST,
     optionLabel: 'Return to Analyst',
     permissions: [Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW_TIER, Role.REVIEWER],
@@ -101,75 +36,43 @@ export const actionMenuData = [
       Role.ANALYST_HIGH_TIER,
       Role.ANALYST_LOW_TIER,
       Role.ANALYST_LOW,
-      Role.ANALYST_HIGH
+      Role.ANALYST_HIGH,
     ],
   },
-
   {
-    'id': ActionMenuIDs.COMPLETE_REVIEW,
-    'optionLabel': 'Complete Review',
-    'permissions': [Role.REVIEWER, Role.REVIEWER_HIGH, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW, Role.REVIEWER_LOW_TIER],
+    id: ActionMenuIDs.CLOSE_APPLICATION,
+    optionLabel: 'Close Application',
+    permissions: [
+      Role.ANALYST,
+      Role.ANALYST_HIGH_TIER,
+      Role.ANALYST_LOW_TIER,
+      Role.ANALYST_LOW,
+      Role.ANALYST_HIGH,
+      Role.REVIEWER, Role.REVIEWER_HIGH, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW,
+      Role.REVIEWER_LOW_TIER,
+      Role.SCREENER, Role.SCREENER_COMMON_APP,
+      Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE
+    ],
   },
   {
-    'id': 7,
-    'optionLabel': 'Escalate Review',
-    'permissions': ['analyst_low_criteria', 'analyst_high_criteria', 'supervisor_low_criteria', 'supervisor_high_criteria'],
-    'title': 'Escalate Review',
-    'actionLabel': 'Submit',
-    'modalType': 'requestExpert',
-    'description': 'Reason for request.',
-    'steps': [],
-    'table': {
-      'step': -1,
-      'tableHeader': [],
-      'tableRows': []
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': 1,
-      'rows': []
-    }
+    id: ActionMenuIDs.COMPLETE_REVIEW,
+    optionLabel: 'Complete Review',
+    permissions: [Role.REVIEWER, Role.REVIEWER_HIGH, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW, Role.REVIEWER_LOW_TIER],
   },
   {
-    'id': 8,
-    'optionLabel': 'Provide Opinion',
-    'permissions': ['analyst_contributor_ogc', 'analyst_contributor_oss'],
-    'title': 'Provide Opinion',
-    'actionLabel': 'Submit',
-    'modalType': 'textarea',
-    'description': 'Your professional opinion has been requested on this application. If you haven’t already, review the request in the Notes section of this application review.',
-    'inputDescription': 'Please provide your professional opinion on this application*',
-    'steps': [],
-    'table': {
-      'step': -1,
-      'tableHeader': [],
-      'tableRows': []
-    },
-    'upload': false,
-    'uploadStep': -1,
-    'notes': {
-      'step': -1,
-      'rows': []
-    },
-    'approvalLetter': {
-      'step': -1,
-      'rows': []
-    }
+    id: ActionMenuIDs.PROVIDE_OPINION,
+    optionLabel: 'Provide Opinion',
+    permissions: [Role.ANALYST_CONTRIBUTOR_OGC, Role.ANALYST_CONTRIBUTOR_OSS],
   },
   {
     id: ActionMenuIDs.RETURN_TO_REVIEWER,
     optionLabel: 'Return to Reviewer',
-    permissions: [Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE, Role.APPROVER_AABD],
+    permissions: [Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE],
   },
   {
     id: ActionMenuIDs.MAKE_APPROVAL,
     optionLabel: 'Make an Approval',
-    permissions: [Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE, Role.APPROVER_AABD],
+    permissions: [Role.APPROVER, Role.APPROVER_8a_aabd, Role.APPROVER_DELEGATE],
   },
   {
     id: ActionMenuIDs.RETURN_TO_SCREENER,
@@ -207,16 +110,16 @@ export const actionMenuData = [
   {
     id: ActionMenuIDs.CHANGE_TIER,
     optionLabel: 'Change Tier',
-    permissions: [Role.REVIEWER_LOW_TIER, Role.REVIEWER_HIGH_TIER],
+    permissions: [Role.REVIEWER_LOW_TIER, Role.REVIEWER_HIGH_TIER, ],
   },
   {
     id: ActionMenuIDs.COMPLETE_SCREENING,
     optionLabel: 'Complete Screening',
-    permissions: [Role.SCREENER, Role.SCREENER_COMMON_APP],
+    permissions: [Role.SCREENER, Role.SCREENER_COMMON_APP, ],
   },
   {
     id: ActionMenuIDs.REASSIGN_EXPERT,
-    optionLabel: 'Reassign Expert',
+    optionLabel: 'Reassign Application',
     permissions: permissionsMap[ReassignType.REASSIGN_EXPERT],
   },
   {

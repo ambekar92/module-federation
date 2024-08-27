@@ -4,6 +4,7 @@ import { useParams, usePathname, useRouter, useSelectedLayoutSegment } from 'nex
 import { useEffect, useState } from 'react'
 import { Params, QuestionnaireItem } from '../../../types/types'
 import { useLeftItems } from '@/app/(evaluation)/components/left-panel/useLeftItems'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 
 function BusinessPlanLeftPanel() {
   const {isLoading, navItems, error} = useLeftItems()
@@ -30,7 +31,7 @@ function BusinessPlanLeftPanel() {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Spinner center />
   }
 
   if (error) {
@@ -41,7 +42,7 @@ function BusinessPlanLeftPanel() {
     <>
       <div className="grid-container width-full">
         <nav aria-label="Side navigation">
-          {isLoading && <div>Loading...</div>}
+          {isLoading && <Spinner center />}
           {!isLoading && <ul className="usa-sidenav">
             <h3 className='text-primary bg-white height-full margin-y-0 padding-y-2 padding-left-2'>Table of Contents</h3>
             {navItems.map((item, index) => {

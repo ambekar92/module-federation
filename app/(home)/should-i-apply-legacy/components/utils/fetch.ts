@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/app/services/fetcher';
+import { axiosInstance } from '@/app/services/axiosInstance';
 import { NaicsCodeType } from './types';
 
 export const naicsFetcherGET = async (url: string): Promise<NaicsCodeType[]> => {

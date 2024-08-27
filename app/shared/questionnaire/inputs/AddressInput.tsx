@@ -2,7 +2,7 @@ import { Fieldset, Label, RequiredMarker, Select, TextInput } from '@trussworks/
 import { QaInputProps } from './types';
 import { USA_STATES } from '@/app/constants/usa-states';
 
-export const AddressInput = ({ question, inputId, handleChange, isSubQuestion, selectedAnswers }: QaInputProps) => {
+export const AddressInput = ({ question, ordinalLabel, handleChange, isSubQuestion, selectedAnswers }: QaInputProps) => {
   const currentValue = selectedAnswers[question.name]?.value !== undefined
     ? selectedAnswers[question.name].value
     : question.answer?.value?.answer || {};
@@ -15,8 +15,8 @@ export const AddressInput = ({ question, inputId, handleChange, isSubQuestion, s
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
       <Fieldset>
-        <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
-          <span>{question.title}</span>
+        <Label className={`maxw-full ${ordinalLabel ? 'margin-top-0' : 'text-bold'} display-flex`} requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+          {ordinalLabel && `${question.question_ordinal}. `}<span>{question.title}</span>
         </Label>
         <p>
           Required fields are marked with an asterisk (<RequiredMarker />

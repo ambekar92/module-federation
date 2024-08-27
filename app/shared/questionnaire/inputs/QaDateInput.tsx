@@ -2,7 +2,7 @@ import React from 'react';
 import { DatePicker, Label } from '@trussworks/react-uswds';
 import { QaInputProps } from './types';
 
-export const QaDateInput = ({ question, inputId, handleChange, isSubQuestion, selectedAnswers, isGridQuestion }: QaInputProps) => {
+export const QaDateInput = ({ question, ordinalLabel, handleChange, isSubQuestion, selectedAnswers, isGridQuestion }: QaInputProps) => {
   const dateFromApi = selectedAnswers[question.name]?.value ?? question.answer?.value?.answer;
 
   // converts 'MM/DD/YYYY' to 'YYYY-MM-DD'
@@ -20,8 +20,8 @@ export const QaDateInput = ({ question, inputId, handleChange, isSubQuestion, se
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
-      <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
-        <span>{question.title}</span>
+      <Label className={`maxw-full ${ordinalLabel ? 'margin-top-0' : 'text-bold'} display-flex`} requiredMarker={question.answer_required_flag} htmlFor={question.name}>
+        {ordinalLabel && `${question.question_ordinal}. `}<span>{question.title}</span>
       </Label>
       <DatePicker
         aria-describedby={`${question.name}-info ${question.name}-hint`}

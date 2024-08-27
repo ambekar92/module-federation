@@ -1,10 +1,10 @@
-import { axiosInstance } from '@/app/services/fetcher'
+import { axiosInstance } from '@/app/services/axiosInstance'
 
 export const entitiesFetcherGET = async (url: string): Promise<[]> => {
   const response = await axiosInstance.get<[]>(url)
 
   if (response.status >= 200 && response.status < 300) {
-    return response.data // Successfully returning data
+    return response.data
   } else {
     throw new Error('API call unsuccessful')
   }
