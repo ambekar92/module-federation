@@ -109,7 +109,7 @@ async function getNaicsCodeDetails(prevState: any, formData: FormData): Promise<
   });
   try {
     const searchTerm = data.naics_code.replace(/[^0-9]/g, '') ? `naics_code=${data.naics_code.replace(/[^0-9]/g, '')}` : `keyword=${data.naics_code.replace(/[0-9]/g, '').trim()}`;
-    const response = await fetch(`https://ucms-internal-api.demo.sba-one.net/api/v1/amount-awarded?&${searchTerm}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/amount-awarded?&${searchTerm}`);
     const results = await response.json();
     const saved = JSON.parse(localStorage.getItem('should-i-apply') || '{}');
     saved.match = {results: results, searchTerm: data.naics_code};

@@ -4,7 +4,6 @@ import {
   DASHBOARD,
   REVIEWERS_DASHBOARD_PAGE,
   TASKS_DASHBOARD_PAGE,
-  USER_DASHBOARD_PAGE
 } from '@/app/constants/url';
 import { Role } from '@/app/shared/types/role';
 import { Card } from '@trussworks/react-uswds';

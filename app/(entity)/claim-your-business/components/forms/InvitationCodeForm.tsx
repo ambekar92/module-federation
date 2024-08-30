@@ -56,10 +56,10 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFor
     const response = await axiosInstance.post(ACCEPT_INVITATION_ROUTE,
       {
         invitation_code: getValues('invitationCode'),
-        user_id: session.data?.user?.id+'',
+        user_id: session.data?.user?.id,
 
       });
-    if (response.status === 200 ) {
+    if (response.status === 200 && response.data.detail !== 'No invitation record found.' && response.data.invitation_code !== 'This field may not be blank.') {
       reset({
         invitationCode: '',
       })
@@ -153,11 +153,6 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFor
               )}
               <Button
                 type="button"
-                disabled={
-                  errors['invitationCode'] || !touchedFields['invitationCode']
-                    ? true
-                    : false
-                }
                 onClick={onSubmit}
               >
                 Submit

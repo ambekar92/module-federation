@@ -64,21 +64,16 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
       for (let i = 0; i < bodyContentElements.length; i++) {
         const html = bodyContentElements[i].innerHTML;
 
-        const formData = new URLSearchParams();
-        formData.append('html', html);
-        formData.append('internal_document', 'true');
+        const payload = {
+          html: html
+        }
 
         const legalBusinessName = applicationData?.sam_entity.legal_business_name.replace(/\s+/g, '-');
         const currentProgram = approvedPrograms[i];
 
         const response = await axiosInstance.post<HtmlToPdfDocument>(
-          `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_approved.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1`,
-          formData,
-          {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-          }
+          `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_approved.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1&document_type=approval_letters`,
+          payload
         );
 
         if (response.data && response.data.document.path_name) {
@@ -101,6 +96,7 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
     try {
       setValue('approvalLetter', formData)
       if (processId !== undefined && reviewSummaryData) {
+
         const programApplication = applicationData?.program_application || []
         const programDecisions = programApplication.map((program) => {
           const programName = program.programs.name
@@ -123,22 +119,23 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
           return baseDecision
         })
 
-        const postData = {
-          process_id: processId,
-          data: {
-            program_decisions: JSON.stringify(programDecisions)
+        if (declinedPrograms.length === 0) {
+          const postData = {
+            process_id: processId,
+            data: {
+              program_decisions: JSON.stringify(programDecisions),
+            }
           }
-        }
 
-        await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, postData)
+          await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, postData);
+          await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, { process_id: processId, data: {approved: true} });
 
-        if (declinedPrograms.length > 0) {
-          setCurrentStep(Steps.DeclineLetter);
-        } else {
           setCurrentStep(Steps.ReviewSummary);
           reset();
           modalRef.current?.toggleModal();
           window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData?.id }) + '?name=completed-approval'
+        } else {
+          setCurrentStep(Steps.DeclineLetter);
         }
       } else {
         throw new Error('Process id not found or review summary data is missing')

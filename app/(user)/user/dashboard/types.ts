@@ -38,7 +38,7 @@ export const userColumns: IColumn[] = [
     sortable: true
   },
   {
-    val: 'status',
+    val: 'application_workflow_state',
     label: 'Status',
     sortable: true
   }

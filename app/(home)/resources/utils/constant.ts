@@ -6,8 +6,10 @@ export const Cards = [{
   linkPath: `${PREPARE_LINK}`,
   cards: [
     { id: 1, iconName:'/resourceApplication/preview.svg', grayText:'Initial Application' , boldText: 'Application Preview', linkPath: `${APPLICATION_PREVIEW_LINK}`},
-    { id: 2, iconName:'/resourceApplication/tips_and_updates.svg', grayText:'Initial Application' ,boldText: 'Tip For Success', linkPath: `${TIPS_FOR_SUCCESS_LINK}`},
-    { id: 3, iconName:'/resourceApplication/rocket_launch.svg', grayText:'Initial Application', boldText: 'Quick Start Guide', linkPath:`${QUICK_START_GUIDE_LINK}`},
+    { id: 2, iconName:'/resourceApplication/tips_and_updates.svg', grayText:'Initial Application' ,boldText: 'Tips For Success (Coming Soon)', linkPath: ''},
+    { id: 3, iconName:'/resourceApplication/rocket_launch.svg', grayText:'Initial Application', boldText: 'Quick Start Guide (Coming Soon)', linkPath:''},
+    // { id: 2, iconName:'/resourceApplication/tips_and_updates.svg', grayText:'Initial Application' ,boldText: 'Tips For Success (Coming Soon)', linkPath: `${TIPS_FOR_SUCCESS_LINK}`},
+    // { id: 3, iconName:'/resourceApplication/rocket_launch.svg', grayText:'Initial Application', boldText: 'Quick Start Guide (Coming Soon)', linkPath:`${QUICK_START_GUIDE_LINK}`},
   ]
 
 },
@@ -17,11 +19,11 @@ export const Cards = [{
   information: '',
   linkPath: `${GATHER_DOCUMENTS_LINK}`,
   cards: [
-    { id: 1, iconName:'/resourceApplication/account_circle.svg', grayText:'Company Structure' , boldText: 'Sole Proprietorship', linkPath:''},
-    { id: 2, iconName:'/resourceApplication/handshake.svg', grayText:'Company Structure' ,boldText: 'Partnership', linkPath: ''},
-    { id: 3, iconName:'/resourceApplication/store.svg', grayText:'Company Structure', boldText: 'LLC*', linkPath:''},
-    { id: 4, iconName:'/resourceApplication/business.svg', grayText:'Company Structure' ,boldText: 'Corporation', linkPath:'' },
-    { id: 5, iconName:'/resourceApplication/groups.svg', grayText:'Comapny Structure', boldText: 'Entity-Owned', linkPath:''},
+    { id: 1, iconName:'/resourceApplication/account_circle.svg', grayText:'Company Structure' , boldText: 'Sole Proprietorship (Coming Soon)', linkPath:''},
+    { id: 2, iconName:'/resourceApplication/handshake.svg', grayText:'Company Structure' ,boldText: 'Partnership (Coming Soon)', linkPath: ''},
+    { id: 3, iconName:'/resourceApplication/store.svg', grayText:'Company Structure', boldText: 'LLC* (Coming Soon)', linkPath:''},
+    { id: 4, iconName:'/resourceApplication/business.svg', grayText:'Company Structure' ,boldText: 'Corporation (Coming Soon)', linkPath:'' },
+    { id: 5, iconName:'/resourceApplication/groups.svg', grayText:'Company Structure', boldText: 'Entity-Owned (Coming Soon)', linkPath:''},
   ]
 
 },

@@ -105,50 +105,54 @@ export const UnauthenticatedNavigation = () => {
                 height={30}
               />
               <Grid>
-                <div
-                  className="padding-top-1 padding-right-2"
-                  style={{ color: 'white' }}
+                <Link
+                  href="/help"
+                  onClick={handleLinkClick}
+                  style={{ textDecoration: 'none', color: 'white' }}
                 >
-                Get Help
-                </div>
+
+                  <div
+                    className="padding-top-1 padding-right-2"
+                  >
+                  Get Help
+                  </div>
+                </Link>
               </Grid>
             </Grid>
-            {/* {process.env.NODE_ENV !== 'production' && (
-              <>
-                <Grid>
-                  <img
-                    className="padding-right-2"
-                    src="/navbaricons/navbarline.svg"
-                    alt="logo"
-                    height={40}
-                  />
-                </Grid>
-                <Grid>
-                  <Button
-                    onClick={openLoginMenu}
-                    className="usa-button usa-button--outline usa-button--inverse"
-                    type="button"
-                  >
-                    <span className={styleSettings.textColor}>Login</span>
-                  </Button>
-                </Grid>
-                <Grid>
-                  <Button
-                    onClick={openSignupMenu}
-                    className="usa-button usa-button--outline usa-button--inverse"
-                    type="button"
-                  >
-                    <span className={styleSettings.textColor}>Signup</span>
-                  </Button>
-                </Grid>
-                <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={loginMenuOpen} anchorEl={loginAnchorEl} onClose={handleClose}>
-                  <LoginMenu />
-                </Menu>
-                <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={signupMenuOpen} anchorEl={signupAnchorEl} onClose={handleClose}>
-                  <SignupMenu />
-                </Menu>
-              </>
-            )} */}
+            <>
+              <Grid>
+                <img
+                  className="padding-right-2"
+                  src="/navbaricons/navbarline.svg"
+                  alt="logo"
+                  height={40}
+                />
+              </Grid>
+              <Grid>
+                <Button
+                  onClick={openLoginMenu}
+                  className="usa-button usa-button--outline usa-button--inverse"
+                  type="button"
+                >
+                  <span className={styleSettings.textColor}>Login</span>
+                </Button>
+              </Grid>
+              <Grid>
+                <Button
+                  onClick={openSignupMenu}
+                  className="usa-button usa-button--outline usa-button--inverse"
+                  type="button"
+                >
+                  <span className={styleSettings.textColor}>Signup</span>
+                </Button>
+              </Grid>
+              <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={loginMenuOpen} anchorEl={loginAnchorEl} onClose={handleClose}>
+                <LoginMenu />
+              </Menu>
+              <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={signupMenuOpen} anchorEl={signupAnchorEl} onClose={handleClose}>
+                <SignupMenu />
+              </Menu>
+            </>
           </Grid>
         </Grid>
       </Header>

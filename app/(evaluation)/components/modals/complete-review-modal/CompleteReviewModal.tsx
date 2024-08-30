@@ -33,8 +33,8 @@ const CompleteReviewModal: React.FC<CompleteReviewProps> = ({
     defaultValues: {
       step: Steps.ReviewSummary,
       reviewSummary: {},
-      approvalLetter: { decisions: {} },
-      declineLetter: { decisions: {} },
+      approvalLetter: { approvalDecisions: undefined },
+      declineLetter: { approvalDecisions: undefined },
     }
   });
 

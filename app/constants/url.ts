@@ -9,8 +9,10 @@ export const FIRM_EVALUATION_PAGE =
 export const APPLICATION_STEP_ROUTE = '/application/:applicationId:stepLink'
 export const INITIAL_APPLICATION_LINK =
   'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/edit-v2/3193700407?draftShareId=1a714a35-0807-45f0-ac5d-8182ccfc9abb'
+// export const APPLICATION_PREVIEW_LINK =
+//   'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3193241633/Application+Preview'
 export const APPLICATION_PREVIEW_LINK =
-  'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3193241633/Application+Preview'
+  'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3292463118/Full+Application+Preview'
 export const TIPS_FOR_SUCCESS_LINK =
   'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3193241648/Tips+for+Success'
 export const QUICK_START_GUIDE_LINK =
@@ -20,7 +22,6 @@ export const GATHER_DOCUMENTS_LINK =
   'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3193700379/Gather+Documents'
 export const FIRM_APPLICATION_DONE_PAGE =
   '/firm/application/:application_id/done'
-export const USER_DASHBOARD_PAGE = '/user/dashboard'
 export const REVIEWERS_DASHBOARD_PAGE = '/user/dashboard/reviewers'
 export const TASKS_DASHBOARD_PAGE = '/user/dashboard/tasks'
 export const ASSIGN_DELEGATE_PAGE = '/application/assign-a-delegate/:applicationId'

@@ -66,21 +66,16 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
       }
 
       const html = bodyContentRef.current.innerHTML;
-      const formData = new URLSearchParams();
-      formData.append('html', html);
-      formData.append('internal_document', 'true');
+      const payload = {
+        html: html
+      }
 
       const legalBusinessName = applicationData?.sam_entity.legal_business_name.replace(/\s+/g, '-');
       const currentProgram = declinedPrograms[currentLetterIdx];
 
       const response = await axiosInstance.post<HtmlToPdfDocument>(
-        `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_declined.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
+        `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_approved.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1&document_type=approval_letters`,
+        payload
       );
 
       if (response.data && response.data.document.path_name) {
@@ -161,11 +156,12 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
         const postData = {
           process_id: processId,
           data: {
-            program_decisions: JSON.stringify(programDecisions)
+            program_decisions: JSON.stringify(programDecisions),
           }
         }
 
-        await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, postData)
+        await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, postData);
+        await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, { process_id: processId, data: {approved: true} });
 
         setCurrentStep(Steps.ReviewSummary);
         reset();

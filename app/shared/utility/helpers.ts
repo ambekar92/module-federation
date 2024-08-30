@@ -46,8 +46,67 @@ export const filterText = (
   return text.replace(/[^a-zA-Z0-9]/g, '')
 }
 
+import { APPLICATION_STEP_ROUTE, APPLICATION_VIEW_PAGE, buildRoute, CLAIM_YOUR_BUSINESS, QUESTIONNAIRE_LIST_PAGE, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
 import { Question } from '../types/questionnaireTypes';
+import { Application } from '@/app/services/types/application-service/Application'
+import { applicationSteps } from '@/app/(entity)/application/utils/constants'
+import { Entity } from '../types/responses'
 
 export function areAllQuestionsAnswered(questions: Question[]): boolean {
   return questions.every(question => question.answer.value !== null);
+}
+
+export function getApplicationRedirect(application: Application): string {
+  if (application.workflow_state === 'submitted' || application.workflow_state === 'under_review') {
+    return buildRoute(APPLICATION_VIEW_PAGE, { applicationId: application.id });
+  }
+
+  const progressToStepMap: Record<string, string> = {
+    'Contributor Invitation': applicationSteps.contributorInvitation.link,
+    'Control & Operations': applicationSteps.controlAndOwnership.link,
+    'Document Upload': applicationSteps.documentUpload.link,
+    'Eligible Programs': applicationSteps.eligiblePrograms.link,
+    'Ownership': applicationSteps.ownership.link,
+    'Sign Application': applicationSteps.sign.link,
+    'Questionnaires': 'questionnaire-list'
+  };
+
+  const stepLink = progressToStepMap[application.progress] || applicationSteps.ownership.link;
+
+  if (application.progress === 'Questionnaires') {
+    return buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: application.id });
+  }
+
+  return buildRoute(APPLICATION_STEP_ROUTE, {
+    applicationId: application.id,
+    stepLink: stepLink
+  });
+}
+
+export function handlePrimaryQualifyingOwner(applicationData: Application[] | null, entityData: Entity[] | null): string {
+  if (applicationData?.length) {
+    const lastApplication = applicationData[applicationData.length - 1];
+    return lastApplication.progress
+      ? getApplicationRedirect(lastApplication)
+      : getEntityRedirect(entityData);
+  }
+
+  return getEntityRedirect(entityData);
+}
+
+export function handleNonPrimaryRoles(applicationData: Application[] | null): string {
+  if (applicationData?.length) {
+    const lastApplication = applicationData[applicationData.length - 1];
+    return getApplicationRedirect(lastApplication);
+  }
+  return CLAIM_YOUR_BUSINESS;
+}
+
+function getEntityRedirect(entityData: Entity[] | null): string {
+  if (entityData?.length) {
+    const lastEntity = entityData[entityData.length - 1];
+    return buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, { entity_id: lastEntity.id });
+  }
+
+  return CLAIM_YOUR_BUSINESS;
 }

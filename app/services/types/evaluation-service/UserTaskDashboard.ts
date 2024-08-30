@@ -1,16 +1,18 @@
 export type UserTaskDashboard = {
+  status: string;
+  assignment_date: string;
+  days_in_queue: number;
   application_id: number;
   application_type_name: string;
-  assigned_to: AssignedTo;
-  assignment_date: string;
-  certifications: string[];
-  days_in_queue: number;
-  due_on: string;
+  application_workflow_state: string;
+  certification_workflow_state: string | null;
   entity_id: number;
-  legal_business_name: string;
-  status: string;
-  submitted_on: null | string;
   uei: string;
+  legal_business_name: string;
+  due_on: string;
+  submitted_on: string | null;
+  assigned_to: AssignedTo;
+  certifications: string[];
 };
 
 export type AssignedTo = {

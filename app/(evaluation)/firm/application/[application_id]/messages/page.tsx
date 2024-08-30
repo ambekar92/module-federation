@@ -6,13 +6,13 @@ import moment from 'moment'
 import { useState } from 'react'
 import RichTextMessageContent from './RichTextMessageContent'
 
-const page = () => {
+const MessagesPage = () => {
   const {data, isLoading, error} = useExtendedmessages();
   const [messageViewed, setMessageViewed] = useState<number | null>(null);
-  
-  if (isLoading) return <Spinner />
-  if (error) return <Alert headingLevel='h1' type="error">An error occurred while loading messages</Alert>
-  
+
+  if (isLoading) {return <Spinner />}
+  if (error) {return <Alert headingLevel='h1' type="error">An error occurred while loading messages</Alert>}
+
   return (
     <div>
       <h1>Messages</h1>
@@ -53,4 +53,4 @@ const page = () => {
   )
 }
 
-export default page
+export default MessagesPage

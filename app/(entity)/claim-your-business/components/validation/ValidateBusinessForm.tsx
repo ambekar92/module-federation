@@ -41,22 +41,25 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
   const handleOpen = () => setOpen(true);
 
   const validateBusinessAccordionProps = (): IAccordionItem[] => {
-    return ([{
+    return samData.sam_entity.map((entity, index) => ({
       title: (
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {samData.sam_entity.legal_business_name}
+          {entity.legal_business_name}
         </div>
       ),
       content: (
         <div className="default-table">
-          <ValidationTable profiles={samData} />
+          <ValidationTable profiles={{
+            ...samData,
+            sam_entity: [entity]
+          }} />
         </div>
       ),
       expanded: true,
-      id: `accordion-item-${1}`,
+      id: `accordion-item-${index}`,
       className: 'myCustomAccordionItem',
       headingLevel: 'h4',
-    }]);
+    }));
   };
 
   useEffect(() => window.scrollTo({ top: 0, behavior: 'smooth' }), [])

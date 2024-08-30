@@ -33,8 +33,8 @@ const MakeApprovalModal: React.FC<MakeApprovalProps> = ({
     defaultValues: {
       step: Steps.ReviewSummary,
       reviewSummary: {},
-      approvalLetter: { approvalDecisions: {} },
-      declineLetter: { approvalDecisions: {} },
+      approvalLetter: { approvalDecisions: undefined },
+      declineLetter: { approvalDecisions: undefined },
     }
   })
 

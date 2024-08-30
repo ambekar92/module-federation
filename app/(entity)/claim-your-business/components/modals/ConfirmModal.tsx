@@ -4,26 +4,26 @@ import { axiosInstance } from '@/app/services/axiosInstance'
 import { Box } from '@mui/material'
 import Modal from '@mui/material/Modal'
 import { Button, ButtonGroup, Icon } from '@trussworks/react-uswds'
-import React from 'react'
+import React, { useState } from 'react'
 import { CmbResponseType } from '../../utils/types'
 import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
 
 interface IPostResponse {
-	id: number;
-	sam_entity_id: number;
-	owner_user_id: number;
+  id: number;
+  sam_entity_id: number;
+  owner_user_id: number;
 }
+
 interface ConfirmModalProps {
   open: boolean;
   handleClose: () => void;
-	handleOpen: () => void;
+  handleOpen: () => void;
   business: CmbResponseType;
   setErrorMsg: (errorMsg: string) => void;
-	setPostSuccessful: (isSuccess: boolean) => void;
-	setEntityId: (id: number) => void;
+  setPostSuccessful: (isSuccess: boolean) => void;
+  setEntityId: (id: number) => void;
 }
 
-// Only way to style the box component
 const boxStyles = {
   position: 'absolute',
   top: '50%',
@@ -44,22 +44,37 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 }) => {
   const session = useSessionUCMS();
   const user_id = session?.data?.user_id;
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentEntityIndex, setCurrentEntityIndex] = useState(0);
+  const [firstEntityId, setFirstEntityId] = useState<number | null>(null);
 
   const handlePostRequest = async () => {
+    setIsProcessing(true);
     try {
+      const currentEntity = business.sam_entity[currentEntityIndex];
       const postData = [{
         owner_user_id: user_id,
-        sam_entity_id: business.sam_entity.sam_entity_id
+        sam_entity_id: currentEntity.sam_entity_id
       }];
 
       const response = await axiosInstance.post(`${ENTITY_ROUTE}`, postData);
 
       if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
         const res: IPostResponse[] = response.data;
+        if (currentEntityIndex === 0) {
+          setFirstEntityId(res[0].id);
+        }
         setEntityId(res[0].id);
-        setPostSuccessful(true);
-        handleClose();
-        window.location.href = buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, {entity_id: res[0].id})
+
+        if (currentEntityIndex < business.sam_entity.length - 1) {
+          setCurrentEntityIndex(currentEntityIndex + 1);
+        } else {
+          setPostSuccessful(true);
+          handleClose();
+          if (firstEntityId !== null) {
+            window.location.href = buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, {entity_id: firstEntityId});
+          }
+        }
       } else {
         throw 'POST Request Failed'
       }
@@ -67,9 +82,12 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       setErrorMsg('network error');
       setPostSuccessful(false);
       handleOpen();
-      return;
+    } finally {
+      setIsProcessing(false);
     }
   }
+
+  const currentEntity = business.sam_entity[currentEntityIndex];
 
   return (
     <>
@@ -84,20 +102,19 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             <h2 className='margin-top-0'>Confirm your Business and Entity Structure</h2>
             <ul className='padding-left-2'>
               <li>
-								You are confirming that the structure of <strong>{business.sam_entity.legal_business_name}</strong> is a <strong>{business.sam_entity_structure}</strong>
+                You are confirming that the structure of <strong>{currentEntity.legal_business_name}</strong> is a <strong>{business.sam_entity_structure}</strong>
               </li>
             </ul>
-
             <p>
-							If this designation is incorrect, please update your information on SAM.gov immediately.
+              If this designation is incorrect, please update your information on SAM.gov immediately.
             </p>
             <ButtonGroup>
-              <Button type="button" onClick={handlePostRequest}>
-								Continue
+              <Button type="button" onClick={handlePostRequest} disabled={isProcessing}>
+                {isProcessing ? 'Processing...' : (currentEntityIndex < business.sam_entity.length - 1 ? 'Continue' : 'Finish')}
               </Button>
               <div className='width-1'></div>
               <Button type="button" unstyled className="text-underline" onClick={handleClose}>
-              	Go Back
+                Go Back
               </Button>
             </ButtonGroup>
           </div>

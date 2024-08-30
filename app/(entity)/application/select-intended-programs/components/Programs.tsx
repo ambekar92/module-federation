@@ -1,11 +1,11 @@
 'use client'
-import { API_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
+import { API_ROUTE, ENTITIES_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
 import fetcher from '@/app/services/fetcher'
 import { ApplicationEligibilityType } from '@/app/services/types/application-service/Application'
 import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
-import { ApplicationsType } from '@/app/shared/types/responses'
+import { ApplicationsType, EntitiesType } from '@/app/shared/types/responses'
 import { Button, Grid } from '@trussworks/react-uswds'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
@@ -15,9 +15,11 @@ import {
   sbaProgramOptions,
 } from '../../../../constants/sba-programs'
 import ProgramCard from '../../../../shared/components/ownership/ProgramCard'
-import { ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url'
+import { ASSIGN_DELEGATE_PAGE, buildRoute, CLAIM_YOUR_BUSINESS } from '@/app/constants/url'
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip'
 import Spinner from '@/app/shared/components/spinner/Spinner'
+import { redirect } from 'next/navigation';
+import useSWR from 'swr'
 
 const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`;
 
@@ -29,6 +31,7 @@ function Programs() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([])
   const [userId, setUserId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: entityData, isLoading: isLoadingEntity } = useSWR<EntitiesType>(`${ENTITIES_ROUTE}?id=${entityId}`, fetcher);
   const { data: applicationData } = useFetchOnce<ApplicationsType>(`${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}&application_type_id=1`, fetcher);
   const { data: eligibilityData, isLoading } = useFetchOnce<ApplicationEligibilityType[] | []>(
     applicationData && applicationData.length > 0 ?`${APPLICATION_ELIGIBILITY_ROUTE}?application_id=${applicationData[applicationData.length - 1].id}` : null,
@@ -109,10 +112,13 @@ function Programs() {
     handleCheckboxChange(program)
   }
 
-  if(isLoading) {
+  if(isLoading || isLoadingEntity) {
     return <Spinner center />
   }
 
+  if(!entityData || entityData.length === 0 ||  (entityData.length > 0 && entityData[0].owner_user_id !== session.user_id)) {
+    redirect(CLAIM_YOUR_BUSINESS);
+  }
   return (
     <>
       <h1>Select Intended Program(s) for Application<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the “visit here” link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/></h1>

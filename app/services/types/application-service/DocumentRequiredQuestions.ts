@@ -20,4 +20,5 @@ export type DocumentRequiredQuestions = {
     application_section: string;
     answer: any | null;
     valid_documents: ValidDocument[];
+		hubzone_key?: number
   };

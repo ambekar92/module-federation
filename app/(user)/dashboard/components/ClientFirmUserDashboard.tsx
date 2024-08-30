@@ -25,7 +25,6 @@ export default function ClientFirmUserDashboard() {
   )
   const [userId, setUserId] = useState<number | null>(null)
   const [entityId, setEntityId] = useState<number | null>(null)
-
   const hasDelegate = session?.permissions?.some(permission => permission.slug.includes('delegate'))
 
   useEffect(() => {

@@ -48,7 +48,7 @@ const EligibilityForm = () => {
           <p>Net worth: $850,000</p>
           <ul>
             <li>
-                (Value of everything you owe: $850,000 not including the value of your home, company or retirement accounts)
+                (Value of everything you owe: $850,000 not including the value of your home, business, or retirement accounts)
             </li>
           </ul>
           <p>Total assets: $6.5 million (Not including retirement accounts).</p>
@@ -77,10 +77,20 @@ const EligibilityForm = () => {
               </Show>
             </FormGroup>)} />
 
-          <Controller control={control} name='eligibility.businessLocation' render={({ field }) => (<FormGroup className="bg-white radius-sm padding-4">
+          {/* <Controller control={control} name='eligibility.businessLocation' render={({ field }) => (<FormGroup className="bg-white radius-sm padding-4">
             <TextInput
               value={field.value}
-              onChange={field.onChange} style={{border: 'none'}} id={'businessLocation'} name={'eligibility.businessLocation'} type='text' placeholder='Business Location'  />
+              onChange={field.onChange} style={{border: 'none'}} id={'businessLocation'} name={'eligibility.businessLocation'} type='text' placeholder='Do you believe your principal office is located in a HUBZone?'  />
+          </FormGroup>)} /> */}
+
+          <Controller name='eligibility.businessLocation' control={control} render={({ field }) => (<FormGroup className="bg-white radius-sm padding-4">
+            <Label htmlFor="employeesResideInHubZone">Do you believe your principal office is located in a HUBZone? </Label>
+            <Radio onChange={field.onChange} name="businessLocation" id='businessLocation-yes'
+              value={'yes'}
+              label='Yes' checked={field.value === 'yes'}></Radio>
+            <Radio
+              value={'no'}
+              onChange={field.onChange} name="businessLocation" id='businessLocation-no' label='No' checked={field.value === 'no'}></Radio>
           </FormGroup>)} />
 
           <Controller name='eligibility.employeesResideInHubZone' control={control} render={({ field }) => (<FormGroup className="bg-white radius-sm padding-4">
@@ -95,7 +105,7 @@ const EligibilityForm = () => {
 
           <Controller name='eligibility.businessRegisteredInSAM' control={control} render={({ field }) => (
             <FormGroup className="bg-white radius-sm padding-4">
-              <Label htmlFor="USCitizen">2. Is your business registered in SAM.gov?</Label>
+              <Label htmlFor="USCitizen">2. Is your business registered at SAM.gov?</Label>
               <Radio
                 checked={field.value === 'yes'}
                 value='yes' onChange={field.onChange} name="businessRegisteredInSAM" id='businessRegisteredInSAM-yes' label='Yes'></Radio>
@@ -133,7 +143,7 @@ const EligibilityForm = () => {
                 value='no' onChange={field.onChange} name="underFinancialLimits" id='underFinancialLimits-no' label='No'></Radio>
 
               <Show>
-                <Show.When isTrue={underFinancialLimits === 'yes'}>
+                <Show.When isTrue={underFinancialLimits === 'no'}>
                   <Alert headingLevel='h6' type='warning'>
                     <span>
                                     You must be economically disadvantaged to participate in the 8(a) Business Development Program/SBA Program.
@@ -158,7 +168,7 @@ const EligibilityForm = () => {
                 <Show.When isTrue={provideAnnualFinancialStatement === 'no'}>
                   <Alert headingLevel='h6' type='warning'>
                     <span>
-                                    SBA needs to review reliable financial statements to determine if your company is ready for the SBA Certification Program.
+                                    SBA needs to review reliable financial statements to determine if your business is ready for the SBA Certification Program.
                     </span>
                   </Alert>
                 </Show.When>
@@ -168,7 +178,7 @@ const EligibilityForm = () => {
 
           <Controller control={control} name='eligibility.suspended' render={({ field }) => (
             <FormGroup className="bg-white radius-sm padding-4">
-              <Label htmlFor="suspended">5. Do you affirm that neither this firm, nor any of its owners, have ever been debarred or suspended by any federal entity?</Label>
+              <Label htmlFor="suspended">5. Do you affirm that neither this business, nor any of its owners, have ever been debarred or suspended by any federal entity?</Label>
               <Radio
                 checked={field.value === 'yes'}
                 value='yes' onChange={field.onChange} name="suspended" id='suspended-yes' label='Yes'></Radio>
@@ -177,10 +187,10 @@ const EligibilityForm = () => {
                 value='no' onChange={field.onChange} name="suspended" id='suspended-no' label='No'></Radio>
 
               <Show>
-                <Show.When isTrue={suspended === 'yes'}>
+                <Show.When isTrue={suspended === 'no'}>
                   <Alert headingLevel='h6' type='warning'>
                     <span>
-                                   In order to participate in the SBA Certification Program, the owner(s) of the firm must not have been debarred or suspended by a federal entity.
+                                   In order to participate in the SBA Certification Program, the owner(s) of the business must not have been debarred or suspended by a federal entity.
                     </span>
                   </Alert>
                 </Show.When>

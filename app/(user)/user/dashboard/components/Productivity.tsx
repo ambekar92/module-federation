@@ -6,15 +6,14 @@ import { Card } from '@trussworks/react-uswds';
 import useSWR from 'swr';
 import styles from '../WorkloadDashboard.module.scss';
 import { IProductivity } from '../types';
-import { Role } from '@/app/shared/types/role';
-import { useCurrentPath } from '../hooks/useCurrentPath';
+import { useIsReviewersDashboard } from '../hooks/useIsReviewersDashboard';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const Productivity = () => {
   const {data: {user_id, permissions}} = useSessionUCMS();
   const {data, isLoading}  = useSWR(`${USER_PRODUCTIVITY_ROUTE}/${user_id}`, fetcherGET<IProductivity[]>) || [];
   const {completed_tasks_current_month, completed_tasks_current_quarter, completed_tasks_current_fiscal_year, average_processing_time_seconds} = (data && data.length) ? data[0] : [] as any;
-  const { isReviewersDashboard, isTasksDashboard } = useCurrentPath();
+  const isReviewersDashboard = useIsReviewersDashboard();
 
   // temporary function to replace isRole from @/middleware. will swich back to the one from @/middleware once determined which user role corresponds to analyst
   function isRole(permissions: any, role: any) {
@@ -27,7 +26,7 @@ const Productivity = () => {
       {isLoading && <Spinner center />}
       {!isLoading && <>
         <Show>
-          <Show.When isTrue={isTasksDashboard}>
+          <Show.When isTrue={!isReviewersDashboard}>
             <div className={styles.cardContainer}>
               <Card>
                 <div className={styles.card}>
@@ -59,37 +58,37 @@ const Productivity = () => {
             <div className={styles.cardContainer}>
               <Card >
                 <div className={styles.card}>
-                  <span className={styles.count}>13</span>
+                  <span className={styles.count}>0</span>
                   <strong className={styles.cardText}>Tasks at risk</strong>
                 </div>
               </Card>
               <Card >
                 <div className={styles.card}>
-                  <span className={styles.count}>42</span>
+                  <span className={styles.count}>0</span>
                   <strong className={styles.cardText}>Unassigned Tasks</strong>
                 </div>
               </Card>
               <Card >
                 <div className={styles.card}>
-                  <span className={styles.count}>42 </span>
+                  <span className={styles.count}>0 </span>
                   <strong className={styles.cardText}>Tasks completed this month</strong>
                 </div>
               </Card>
               <Card >
                 <div className={styles.card}>
-                  <span className={styles.count}>6 </span>
+                  <span className={styles.count}>0 </span>
                   <strong className={styles.cardText}>Tasks completed this quater</strong>
                 </div>
               </Card>
               <Card >
                 <div className={styles.card}>
-                  <span className={styles.count}>6 </span>
+                  <span className={styles.count}>0 </span>
                   <strong className={styles.cardText}>Tasks completed this fiscal year</strong>
                 </div>
               </Card>
               <Card >
                 <div className={styles.card}>
-                  <span className={styles.count}>6 days</span>
+                  <span className={styles.count}>0 days</span>
                   <strong className={styles.cardText}>Average processing times</strong>
                 </div>
               </Card>

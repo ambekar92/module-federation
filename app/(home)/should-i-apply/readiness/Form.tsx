@@ -41,7 +41,7 @@ const ReadinessForm = () => {
                     <span>
                                     SBA requires two years of revenue to show that you are ready for the SBA Certification Program. However,
                                     SBA may waive this requirement if you can provide other evidence that your company is ready  for the program.
-                                    Click <a href="#">here</a> to learn more
+                                    Click <a href="https://www.ecfr.gov/current/title-13/chapter-I/part-124/subpart-A/subject-group-ECFR4ef1291a4a984ab/section-124.107" target='_blank' rel="noreferrer">here</a> to learn more
                     </span>
                   </Alert>
                 </Show.When>
@@ -102,7 +102,7 @@ const ReadinessForm = () => {
                   <Alert headingLevel='h6' type='warning'>
                     <span>
                                     You&apos;ll need to have sufficient capital to cover contract start-up costs before you receive your first payment.
-                                    Check out SBA&apos;s <a href="#">Fund Your Business</a> for helpful resources.
+                                    Check out SBA&apos;s <a href="https://www.sba.gov/business-guide/plan-your-business/fund-your-business" target='_blank' rel="noreferrer">Fund Your Business</a> for helpful resources.
                     </span>
                   </Alert>
                 </Show.When>

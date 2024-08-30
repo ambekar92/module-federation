@@ -23,9 +23,9 @@ function MainContent() {
 
     ['clean'], // remove formatting button
   ]
-  const module = {
-    toolbar: toolbarOptions,
-  }
+  // const module = {
+  //   toolbar: toolbarOptions,
+  // }
 
   return (
     <>

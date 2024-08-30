@@ -20,7 +20,7 @@ function DocumentsContainer() {
   // Get Documents Data
   const { data: responseData, error: responseError, isLoading } = useSWR<DocumentsType>(
     userId
-      ? `${DOCUMENTS_ROUTE}/?user_id=${userId}`
+      ? `${DOCUMENTS_ROUTE}?user_id=${userId}`
       : null,
     fetcher,
   )

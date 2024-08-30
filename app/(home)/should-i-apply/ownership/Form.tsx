@@ -152,8 +152,8 @@ export default function OwnershipForm() {
           {usC === 'no' && (
             <Alert type="warning" heading="Sorry" headingLevel="h1">
               <p>
-                Based on your responses&apos; it doesn&apos;t look like you are
-                eligible for SBA Certification Programs.
+                Based on your responses, it doesn&apos;t look like you are
+                eligible for SBA&apos;s Certification Programs.
               </p>
             </Alert>
           )}

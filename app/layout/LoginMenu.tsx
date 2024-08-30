@@ -1,13 +1,19 @@
 import { Button } from '@trussworks/react-uswds'
 import { signIn } from 'next-auth/react';
+import { axiosInstance } from '../services/axiosInstance';
+import { useRouter } from 'next/navigation';
 
 const LoginMenu = () => {
+  const router = useRouter();
+
   function handleLogin() {
     localStorage.clear()
     signIn('okta', { callbackUrl: '/?signedIn=true' })
   }
   const handleSSOLogin =  async() => {
-    signIn('boxyhq-saml');
+    axiosInstance.get('/max-login').then(response => {
+      router.push(response.data)
+    })
   };
   return (
     <div style={{
@@ -28,11 +34,11 @@ const LoginMenu = () => {
       </div>
 
       <div>
-        <h3>Are you a federal employee?</h3>
-        <p>If you are a federal employee or [other secondary user], please use [secondary Single Sign On (SSO)]</p>
+        <h3>Are you an SBA user?</h3>
+        <p>Click the button below to login</p>
       </div>
 
-      <Button outline type='button' onClick={handleSSOLogin}>Launch Secondary SSO</Button>
+      <Button outline type='button' onClick={handleSSOLogin}>SBA User Login</Button>
     </div>
   )
 }

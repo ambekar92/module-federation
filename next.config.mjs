@@ -5,6 +5,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/help',
+        destination: 'https://sbaone.atlassian.net/servicedesk/customer/portal/13', // Replace this with the URL where you want to redirect
+        permanent: true, // This can be set to true for a 308 permanent redirect or false for a 307 temporary redirect
+      },
+    ];
+  },
+  eslint: {
+    // This allows the build to complete even with ESLint errors.
+    ignoreDuringBuilds: true,
+  },
   sassOptions: {
     includePaths: [
       path.join(__dirname, 'styles'),

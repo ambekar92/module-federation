@@ -1,5 +1,5 @@
 'use client'
-import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
+import { APPLICATION_ROUTE, ENTITIES_ROUTE, TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
 import {
   CLAIM_YOUR_BUSINESS
 } from '@/app/constants/url'
@@ -24,6 +24,8 @@ import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { LoginResponse } from '../types'
 import { SignInFormData, SignInFormSchema } from './Schema'
+import { Application } from '@/app/services/types/application-service/Application'
+import { Entity } from '@/app/shared/types/responses'
 
 export default {
   title: 'Page Templates/Sign In',
@@ -54,6 +56,7 @@ export const SignIn = (): React.ReactElement => {
     resolver: zodResolver(SignInFormSchema),
     mode: 'onBlur',
   });
+
   const handleSignIn = async () => {
     try {
       const postData = {
@@ -66,8 +69,28 @@ export const SignIn = (): React.ReactElement => {
       Cookies.set('accesstoken', response.user.access)
       const firstPermissionSlug = response.user.permissions?.at(0)?.slug as unknown as Role;
       const lastPermissionSlug = response.user.permissions?.at(-1)?.slug as unknown as Role;
+
       if (firstPermissionSlug && lastPermissionSlug) {
-        const redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
+        let applicationData: Application[] | null = null;
+        let entityData: Entity[] | null = null;
+
+        const applicationDataPromise = fetch(`${APPLICATION_ROUTE}?user_id=${response.user.user_id}`);
+        const entityQueryParam = lastPermissionSlug === Role.DELEGATE ? 'delegate_user_id' : 'owner_user_id';
+        const entityDataPromise = fetch(`${ENTITIES_ROUTE}?${entityQueryParam}=${response.user.user_id}`);
+
+        const applicationResponse = await applicationDataPromise;
+        if (applicationResponse.ok) {
+          applicationData = await applicationResponse.json();
+        }
+
+        if (!applicationData || applicationData.length === 0) {
+          const entityResponse = await entityDataPromise;
+          if (entityResponse.ok) {
+            entityData = await entityResponse.json();
+          }
+        }
+
+        const redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug, applicationData, entityData);
         router.push(redirectUrl);
       } else {
         router.push(CLAIM_YOUR_BUSINESS);

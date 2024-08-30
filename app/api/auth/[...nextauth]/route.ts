@@ -1,12 +1,10 @@
 import { OKTA_POST_LOGIN_ROUTE } from "@/app/constants/routes";
 import { IUserDetails } from "@/app/lib/next-auth";
-import type { NextApiRequest, NextApiResponse } from "next"
-import NextAuth from "next-auth"
-import OktaProvider from 'next-auth/providers/okta';
-import { generateCsrfToken } from "../utils/generateCsrfToken";
-import { cookies } from "next/headers";
 import { axiosInstance } from "@/app/services/axiosInstance";
-import BoxyHQSAMLProvider from "next-auth/providers/boxyhq-saml"
+import NextAuth from "next-auth";
+import OktaProvider from 'next-auth/providers/okta';
+import { cookies } from "next/headers";
+import { generateCsrfToken } from "../utils/generateCsrfToken";
 
 // @ts-ignore
 async function auth(req: NextRequest, res: NextResponse ) {
@@ -17,11 +15,6 @@ async function auth(req: NextRequest, res: NextResponse ) {
             clientSecret: process.env.OKTA_OAUTH2_CLIENT_SECRET!,
             issuer: process.env.OKTA_OAUTH2_ISSUER!,
           }),
-          BoxyHQSAMLProvider({
-            issuer: 'https://login.stage.max.gov/idp/shibboleth',
-            clientId: "dummy", // Placeholder since tenant and product are not needed
-            clientSecret: "dummy", // Placeholder since tenant and product are not needed
-          })
         ],
         callbacks: {
           jwt: async ({ token, account, profile }) => {
@@ -93,6 +86,6 @@ async function auth(req: NextRequest, res: NextResponse ) {
         },
         })
   }
-  export {auth as GET, auth as POST};
+  export { auth as GET, auth as POST };
 
 

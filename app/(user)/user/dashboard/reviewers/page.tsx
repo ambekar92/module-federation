@@ -18,7 +18,7 @@ const ReviewersUserDashboard = ({ searchParams }: { searchParams: { sortColumn: 
       <Welcome />
       <Metrics tasks={tasks} />
       {/* <Reporting /> */}
-      <TableProvider tasks={tasks} searchParams={searchParams} />
+      <TableProvider searchParams={searchParams} />
     </>
   )
 }

@@ -16,7 +16,7 @@ const TasksUserDashboard = ({ searchParams }: { searchParams: { sortColumn: keyo
     <>
       <Welcome />
       <Metrics tasks={tasks} />
-      <TableProvider tasks={tasks} searchParams={searchParams} />
+      <TableProvider searchParams={searchParams} />
     </>
   )
 }

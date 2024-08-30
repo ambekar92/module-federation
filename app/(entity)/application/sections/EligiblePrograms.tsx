@@ -24,6 +24,7 @@ function EligiblePrograms() {
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { applicationId, contributorId, applicationData } = useApplicationContext();
+
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
   const { data: ownersData, error, isLoading: isLoadingOwnership } = useSWR<QaQuestionsType>(url, fetcher);
   useUpdateApplicationProgress('Eligible Programs');

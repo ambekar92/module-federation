@@ -121,9 +121,9 @@ const ClaimInputs = ({
 
   const handleBusinessClaim: SubmitHandler<ClaimBusinessInputs> = async (formData) => {
     setQueryParams({
-      uei: formData.uei,
+      uei: formData.uei.toUpperCase(),
       tin: formData.tin,
-      cageCode: formData.cageCode,
+      cageCode: formData.cageCode.toUpperCase(),
       bankAccountNumber: formData.bankAccountNumber,
     });
     setShouldFetchEntity(true)

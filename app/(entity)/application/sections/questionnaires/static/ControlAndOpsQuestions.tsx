@@ -16,6 +16,7 @@ import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import { useSessionUCMS } from '@/app/lib/auth';
 
 function ControlAndOpsQuestions() {
   const dispatch = useApplicationDispatch();
@@ -25,11 +26,18 @@ function ControlAndOpsQuestions() {
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
   useUpdateApplicationProgress('Control and Operations');
 
+  const { data: session } = useSessionUCMS();
+  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
+
   useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+    if (
+      applicationData && applicationData.workflow_state !== 'draft'
+			&& applicationData.workflow_state !== 'returned_for_firm'
+			&& !hasDelegateRole
+    ) {
       window.location.href = `/application/view/${applicationId}`;
     }
-  }, [applicationData, applicationId]);
+  }, [applicationData, applicationId, session]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.controlAndOwnership.stepIndex));

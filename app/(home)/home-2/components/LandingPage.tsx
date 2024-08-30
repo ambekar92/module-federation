@@ -15,7 +15,7 @@ export const LandingPage = () => {
       >
         <div className="padding-left-5 padding-y-2">
           <h1 style={{ color: 'white', fontWeight: '700' }}>
-						MySBA Certification Portal
+						MySBA Certifications
           </h1>
           <div
             className="padding-bottom-2 padding-top-1"
@@ -27,7 +27,7 @@ export const LandingPage = () => {
               marginTop: '-18px',
             }}
           >
-            If you see someone without a smile, give them one of yours!
+            Your one-stop destination for SBA’s small business certifications.
           </div>
         </div>
       </div>

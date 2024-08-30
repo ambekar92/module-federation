@@ -3,7 +3,7 @@ export const TopPartInfo = [
     id: 1,
     iconName: '/navbaricons/question.svg',
     title: 'Should I Apply',
-    description: 'See if the time is right for your business',
+    description: 'See if your business is ready to be certified',
     buttonName: 'Find Out',
     link: '/should-i-apply/ownership',
   },
@@ -20,8 +20,8 @@ export const TopPartInfo = [
     iconName: '/navbaricons/calculation.svg',
     title: 'HUBZone Calculator',
     description: 'See if your business qualifies for HUBZone',
-    buttonName: 'Sign Up',
-    link: '/claim-your-business',
+    buttonName: 'Launch',
+    link: process.env.NEXT_PUBLIC_HUBZONE_URL,
   },
 ]
 

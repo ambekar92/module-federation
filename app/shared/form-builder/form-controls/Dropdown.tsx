@@ -28,7 +28,7 @@ const Dropdown = <T extends FieldValues>({
       control={control}
       name={name}
       render={({ field, fieldState: { error } }) => (
-        <FormGroup error={!!error} className="bg-white radius-sm">
+        <FormGroup error={!!error}>
           <>
             <Label
               error={!!error}

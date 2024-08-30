@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import styles from './Cards.module.scss'
+import styles from './cards.module.scss'
 import { MediumPartInfo } from '../utils/constants'
 
 export const Benefits = () => {

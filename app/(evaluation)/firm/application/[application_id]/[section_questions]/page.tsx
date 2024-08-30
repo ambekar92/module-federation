@@ -230,14 +230,14 @@ const SectionQuestions = () => {
     const applicationId = params.application_id;
 
     if (accessToken && firstContributorId && userId && applicationId) {
-      const url = `http://localhost:3001/?wt=${accessToken}&application_contributor_id=${firstContributorId}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
+      const url = `${process.env.NEXT_PUBLIC_HUBZONE_URL}?wt=${accessToken}&application_contributor_id=${firstContributorId}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
       window.open(url, '_blank'); // Makes sure it opens in a new tab
     } else {
       // Handled
     }
   };
 
-  const showHUBZoneCalculatorButton = params.section_questions?.includes('hubzone-calculator');
+  const showHUBZoneCalculatorButton = params.section_questions === 'hubzone-calculator';
 
   const renderQuestions = (questions: Question[] | undefined, isAnalyst: boolean) => {
     if (!questions) {return null;}
@@ -373,7 +373,7 @@ const SectionQuestions = () => {
                 Click the button below to open the HUBZone Calculator. You will be able to review the Calculator entries made by the business, and their calculated eligibility. You can make notes on any of the entries, mark them as reviewed, and even make changes if necessary. Save your changes in the Calculator, and return to this screen to continue the application review.
               </p>
               <Button onClick={handleHUBZoneCalculatorRedirect} className='margin-bottom-2' type='button'>
-                Open HUBZone Answers
+                Open HUBZone Calculator
               </Button>
             </>
           ) : (

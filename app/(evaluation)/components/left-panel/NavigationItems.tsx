@@ -102,7 +102,7 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
         className={childItem.title === activeTitle ? 'usa-current' : ''}
         style={{paddingLeft: '32px', display: 'flex', alignContent: 'center', justifyContent: 'space-between'}}
       >
-        {truncateText(childItem.title, 12)} {isAnalystQuestionnaire && isClickable && (
+        {childItem.title} {isAnalystQuestionnaire && isClickable && (
           <CheckCircleIcon className={`${
             index === analystQuestionnaires.length - 1
               ? completedQuestionnaires['hubzone-specific']

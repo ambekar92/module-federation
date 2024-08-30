@@ -17,16 +17,21 @@ import { useApplicationDispatch, useApplicationSelector } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import { convertOperatorAnswerToContributors, convertOwnerAnswerToContributors } from '../utils/convertToContributor';
 import { useUserApplicationInfo } from '../utils/useUserApplicationInfo';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
+import { useSessionUCMS } from '@/app/lib/auth';
+import { axiosInstance } from '@/app/services/axiosInstance';
+import { Role } from '@/app/shared/types/role';
 
 function ContributorInvitation() {
   useUpdateApplicationProgress('Contributor Invitation');
   const { applicationId, contributorId, applicationData } = useApplicationContext();
-
+  const ownerEmail = applicationData?.application_contributor[0].user.email
   const dispatch = useApplicationDispatch();
   const { updateUserApplicationInfo } = useUserApplicationInfo();
   const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
+  const session = useSessionUCMS();
+  const isQualifyingOwner = session.data?.permissions[session.data.permissions.length - 1]?.slug === 'qualifying_owner';
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -41,7 +46,12 @@ function ContributorInvitation() {
   const { data: operatorData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null, fetcher);
 
   useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+    if (applicationData && applicationData.workflow_state !== 'draft'
+			&& applicationData.workflow_state !== 'returned_for_firm'
+			&& !isQualifyingOwner
+			&& session.data?.permissions[session.data.permissions.length - 1]?.slug === Role.PRIMARY_QUALIFYING_OWNER
+			&& session.data?.permissions[session.data.permissions.length - 1]?.slug === Role.DELEGATE
+    ) {
       window.location.href = `/application/view/${applicationId}`;
     }
   }, [applicationData, applicationId]);
@@ -102,18 +112,21 @@ function ContributorInvitation() {
   useEffect(() => {
     if (invitationData && invitationData !== prevInvitationDataRef.current) {
       prevInvitationDataRef.current = invitationData;
-
       const apiContributors: Contributor[] = invitationData
-        .filter((item: InvitationType) => item.invitation_status !== 'removed')
+        .filter((item: InvitationType) =>
+          item.invitation_status !== 'removed' &&
+          item.application_role.name !== 'primary-qualifying-owner' &&
+          item.application_role.name !== 'delegate' &&
+          item.application_role.name !== 'qualifying-owner' &&
+          (isQualifyingOwner ? item.application_role.name === 'spouse-of-qualifying-owner' : true)
+        )
         .map((item: InvitationType) => ({
           firstName: item.first_name,
           lastName: item.last_name,
           emailAddress: item.email,
           contributorRole: item.application_role.name === 'spouse-of-qualifying-owner'
             ? 'role_spouse'
-            : item.application_role.name === 'delegate'
-              ? 'role_other'
-              : 'role_other' as 'role_owner' | 'role_other' | 'role_spouse',
+            : 'role_other'
         }));
 
       dispatch((dispatch, getState) => {
@@ -137,7 +150,7 @@ function ContributorInvitation() {
         dispatch(setContributors(mergedContributors));
       });
     }
-  }, [dispatch, invitationData]);
+  }, [dispatch, invitationData, isQualifyingOwner]);
 
   const handleAddNew = () => {
     dispatch(setIsAddingContributor(true));
@@ -161,6 +174,11 @@ function ContributorInvitation() {
         contributorRole: 'role_spouse',
       };
 
+      if (emailAddress.toLowerCase() === ownerEmail?.toLowerCase()) {
+        alert('You cannot add the owner as a contributor.');
+        return;
+      }
+
       let updatedContributors;
       if (editingIndex !== null) {
         updatedContributors = contributors.map((contributor, index) => {
@@ -171,9 +189,8 @@ function ContributorInvitation() {
         });
         setEditingIndex(null);
       } else {
-        // Check for duplicates
         const isDuplicate = contributors.some(
-          c => c.emailAddress === newContributor.emailAddress && c.contributorRole === newContributor.contributorRole
+          c => c.emailAddress.toLowerCase() === newContributor.emailAddress.toLowerCase() && c.contributorRole === newContributor.contributorRole
         );
         if (isDuplicate) {
           alert('A contributor with this email and role already exists.');
@@ -194,27 +211,42 @@ function ContributorInvitation() {
     }
   };
 
-  const handleDeleteContributor = (roleIndex: number, role: string) => {
-		interface Accumulator {
-			result: Contributor[];
-			roleIndex: number;
-		}
+  const handleDeleteContributor = async (roleIndex: number, role: string) => {
+    const contributorsOfRole = contributors.filter(c => {
+      if (role === 'role_owner') {
+        return c.contributorRole === 'role_owner' || c.contributorRole === 'role_owner_eligible';
+      }
+      return c.contributorRole === role;
+    });
 
-		const updatedContributors = contributors.reduce((acc: Accumulator, contributor: Contributor) => {
-		  if ((role === 'role_owner' && (contributor.contributorRole === 'role_owner' || contributor.contributorRole === 'role_owner_eligible')) ||
-					contributor.contributorRole === role) {
-		    if (acc.roleIndex !== roleIndex) {
-		      acc.result.push(contributor);
-		    }
-		    acc.roleIndex++;
-		  } else {
-		    acc.result.push(contributor);
-		  }
-		  return acc;
-		}, { result: [], roleIndex: 0 } as Accumulator).result;
+    if (roleIndex >= contributorsOfRole.length) {
+      throw new Error('Contributor not found');
+    }
 
-		dispatch(setContributors(updatedContributors));
-		updateUserApplicationInfo({ contributors: updatedContributors });
+    const contributorToDelete = contributorsOfRole[roleIndex];
+
+    const invitationToDelete = invitationData?.find(invitation =>
+      invitation.email.toLowerCase() === contributorToDelete.emailAddress.toLowerCase()
+    );
+
+    if (invitationToDelete) {
+      try {
+        await axiosInstance.delete(`${INVITATION_ROUTE}?invitation_id=${invitationToDelete.id}`);
+        const updatedInvitationData = invitationData?.filter(invitation => invitation.id !== invitationToDelete.id);
+        mutate(`${INVITATION_ROUTE}/${contributorId}`, updatedInvitationData, false);
+      } catch (error) {
+        // Error handled
+      }
+    }
+
+    const updatedContributors = contributors.filter(contributor =>
+      contributor.emailAddress.toLowerCase() !== contributorToDelete.emailAddress.toLowerCase() ||
+			contributor.contributorRole !== contributorToDelete.contributorRole
+    );
+
+    console.log(updatedContributors)
+    dispatch(setContributors(updatedContributors));
+    updateUserApplicationInfo({ contributors: updatedContributors });
   };
 
   const handleEditOwner = (index: number) => {
@@ -268,15 +300,6 @@ function ContributorInvitation() {
     { id: 'Email', headerName: 'Email' },
   ];
 
-  const ownerTableRows = contributors
-    .filter(contributor => contributor.contributorRole === 'role_owner' || contributor.contributorRole === 'role_owner_eligible')
-    .map((contributor, index) => ({
-      id: index,
-      Name: `${contributor.firstName} ${contributor.lastName}`,
-      Role: roleDisplayName(contributor.contributorRole),
-      Email: contributor.emailAddress,
-    }));
-
   const spouseTableRows = contributors
     .filter(contributor => contributor.contributorRole === 'role_spouse')
     .map((contributor, index) => ({
@@ -286,8 +309,23 @@ function ContributorInvitation() {
       Email: contributor.emailAddress,
     }));
 
+  const ownerTableRows = contributors
+    .filter(contributor =>
+      (contributor.contributorRole === 'role_owner' || contributor.contributorRole === 'role_owner_eligible') &&
+			contributor.emailAddress.toLowerCase() !== ownerEmail?.toLowerCase()
+    )
+    .map((contributor, index) => ({
+      id: index,
+      Name: `${contributor.firstName} ${contributor.lastName}`,
+      Role: roleDisplayName(contributor.contributorRole),
+      Email: contributor.emailAddress,
+    }));
+
   const operatorTableRows = contributors
-    .filter(contributor => contributor.contributorRole === 'role_other')
+    .filter(contributor =>
+      contributor.contributorRole === 'role_other' &&
+			contributor.emailAddress.toLowerCase() !== ownerEmail?.toLowerCase()
+    )
     .map((contributor, index) => ({
       id: index,
       Name: `${contributor.firstName} ${contributor.lastName}`,
@@ -306,166 +344,256 @@ function ContributorInvitation() {
   }
 
   if(invitationError) {
-    // eslint-disable-next-line no-console
-    console.log(invitationError);;
+    // Handle error
   }
 
   return (
     <>
       <h1>Contributor Invitations<TooltipIcon text='A contributor may add information to the application; however, the contributor can only see the information he/she is providing. Everyone contributing to your Firm must provide their contribution details before you can submit your Firm’s application.' /></h1>
-      <InviteContributorModal
-        contributors={contributors}
-        open={showModal}
-        handleCancel={closeModal}
-        contributorId={contributorId}
-        applicationId={applicationId}
-        entityId={applicationData?.entity.entity_id}
-      />
-      <h3 className="margin-y-0">Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</h3>
-      <hr className="margin-y-3 width-full border-base-lightest" />
 
-      {contributors.length === 0 && (
-        <div className="margin-left-auto">
-          <Button type="button" outline onClick={handleAddNew}>
-          	Invite Spouses
-          </Button>
-        </div>
-      )}
+      {isQualifyingOwner ? (
+        <>
+          <h3 className="margin-y-0">As a qualifying owner, you can invite your spouse as a contributor.</h3>
+          <hr className="margin-y-3 width-full border-base-lightest" />
 
-      {isAddingContributor && (
-        <GridContainer containerSize='widescreen' className='width-full padding-y-2 margin-top-2 bg-base-lightest'>
-          <Grid row gap='md'>
-            <Grid className="display-flex flex-column" mobile={{ col: 12 }} tablet={{ col: 6 }}>
-              <Label htmlFor="first_name">First Name</Label>
-              <TextInput
-                className="maxw-full"
-                type="text"
-                id="first_name"
-                placeholder="--"
-                name="first_name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+          {spouseTableRows.length === 0 && (
+            <div className="margin-left-auto">
+              <Button type="button" outline onClick={handleAddNew}>
+								Invite Spouse
+              </Button>
+            </div>
+          )}
+
+          {isAddingContributor && (
+            <GridContainer containerSize='widescreen' className='width-full padding-y-2 margin-top-2 bg-base-lightest'>
+              <Grid row gap='md'>
+                <Grid className="display-flex flex-column" mobile={{ col: 12 }} tablet={{ col: 6 }}>
+                  <Label htmlFor="first_name">First Name</Label>
+                  <TextInput
+                    className="maxw-full"
+                    type="text"
+                    id="first_name"
+                    placeholder="--"
+                    name="first_name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                </Grid>
+                <Grid className="display-flex flex-column" mobile={{ col: 12 }} tablet={{ col: 6 }}>
+                  <Label htmlFor="last_name">Last Name</Label>
+                  <TextInput
+                    className="maxw-full"
+                    type="text"
+                    id="last_name"
+                    placeholder="--"
+                    name="last_name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                </Grid>
+              </Grid>
+              <Grid className="display-flex flex-column" row>
+                <Label htmlFor="email_address">Email Address</Label>
+                <TextInput
+                  className="maxw-full"
+                  type="email"
+                  id="email_address"
+                  placeholder="--"
+                  name="email_address"
+                  value={emailAddress}
+                  onChange={(e) => setEmailAddress(e.target.value)}
+                />
+              </Grid>
+              <ButtonGroup className='margin-top-2'>
+                <Button type='button' onClick={handleAddOrUpdateContributor}>Add Spouse</Button>
+                <Button
+                  type='button'
+                  unstyled
+                  className='padding-x-2'
+                  onClick={() => {
+                    setFirstName('');
+                    setLastName('');
+                    setEmailAddress('');
+                    setEditingIndex(null);
+                    dispatch(setIsAddingContributor(false));
+                  }}
+                >
+									Cancel
+                </Button>
+              </ButtonGroup>
+            </GridContainer>
+          )}
+
+          {spouseTableRows.length > 0 && (
+            <>
+              <h2>Spouse</h2>
+              <p>If your spouse is a key employee, officer, or holds more than 20% interest in your company, they must register as a Nondisadvantaged applicant as well as your spouse.</p>
+              <CustomTable
+                header={tableHeaders}
+                rows={spouseTableRows}
+                editable={true}
+                remove={true}
+                onEdit={handleEditSpouse}
+                onDelete={(index) => handleDeleteContributor(index, 'role_spouse')}
               />
-            </Grid>
+            </>
+          )}
+        </>
+      ) : (
+        <>
+          <InviteContributorModal
+            contributors={contributors}
+            open={showModal}
+            handleCancel={closeModal}
+            contributorId={contributorId}
+            applicationId={applicationId}
+            entityId={applicationData?.entity.entity_id}
+          />
+          <h3 className="margin-y-0">Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</h3>
+          <hr className="margin-y-3 width-full border-base-lightest" />
 
-            <Grid className="display-flex flex-column" mobile={{ col: 12 }} tablet={{ col: 6 }}>
-              <Label htmlFor="last_name">Last Name</Label>
-              <TextInput
-                className="maxw-full"
-                type="text"
-                id="last_name"
-                placeholder="--"
-                name="last_name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+          {contributors.length === 0 && (
+            <div className="margin-left-auto">
+              <Button type="button" outline onClick={handleAddNew}>
+								Invite Spouses
+              </Button>
+            </div>
+          )}
+
+          {isAddingContributor && (
+            <GridContainer containerSize='widescreen' className='width-full padding-y-2 margin-top-2 bg-base-lightest'>
+              <Grid row gap='md'>
+                <Grid className="display-flex flex-column" mobile={{ col: 12 }} tablet={{ col: 6 }}>
+                  <Label htmlFor="first_name">First Name</Label>
+                  <TextInput
+                    className="maxw-full"
+                    type="text"
+                    id="first_name"
+                    placeholder="--"
+                    name="first_name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                </Grid>
+                <Grid className="display-flex flex-column" mobile={{ col: 12 }} tablet={{ col: 6 }}>
+                  <Label htmlFor="last_name">Last Name</Label>
+                  <TextInput
+                    className="maxw-full"
+                    type="text"
+                    id="last_name"
+                    placeholder="--"
+                    name="last_name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                </Grid>
+              </Grid>
+              <Grid className="display-flex flex-column" row>
+                <Label htmlFor="email_address">Email Address</Label>
+                <TextInput
+                  className="maxw-full"
+                  type="email"
+                  id="email_address"
+                  placeholder="--"
+                  name="email_address"
+                  value={emailAddress}
+                  onChange={(e) => setEmailAddress(e.target.value)}
+                />
+              </Grid>
+              <ButtonGroup className='margin-top-2'>
+                <Button type='button' onClick={handleAddOrUpdateContributor}>{editingIndex !== null ? 'Update' : 'Add'}</Button>
+                <Button
+                  type='button'
+                  unstyled
+                  className='padding-x-2'
+                  onClick={() => {
+                    setFirstName('');
+                    setLastName('');
+                    setEmailAddress('');
+                    setEditingIndex(null);
+                    dispatch(setIsAddingContributor(false));
+                  }}
+                >
+									Cancel
+                </Button>
+              </ButtonGroup>
+            </GridContainer>
+          )}
+
+          {ownerTableRows.length > 0 && (
+            <>
+              <h2>Owners<TooltipIcon text='An applicant or Participant must be at least 51 percent unconditionally and directly owned by one or more socially and economically disadvantaged individuals who are citizens of the United States, except for concerns owned by Indian tribes, Alaska Native Corporations, Native Hawaiian Organizations, or Community Development Corporations.' /></h2>
+              <p>Your firm must be at least 51% owned by one or more economically disadvantaged individuals to qualify for the SBA program. If you do not own 51% or more of the firm, send the other owner(s) who are claiming economic disadvantage an invitation to submit their information and questionnaire.</p>
+              <p>Note: An individual can only claim disadvantage for SBA certification once in their lifetime. If you own 51% or more of the firm, the other owner(s) do not need to submit their information and questionnaire</p>
+              <CustomTable
+                header={tableHeaders}
+                rows={ownerTableRows}
+                editable={true}
+                remove={true}
+                onEdit={handleEditOwner}
+                onDelete={(index) => handleDeleteContributor(index, 'role_owner')}
               />
-            </Grid>
-          </Grid>
+            </>
+          )}
 
-          <Grid className="display-flex flex-column" row>
-            <Label htmlFor="email_address">Email Address</Label>
-            <TextInput
-              className="maxw-full"
-              type="email"
-              id="email_address"
-              placeholder="--"
-              name="email_address"
-              value={emailAddress}
-              onChange={(e) => setEmailAddress(e.target.value)}
-            />
-          </Grid>
+          {spouseTableRows.length > 0 && (
+            <>
+              <h2>Spouses</h2>
+              <p>If your spouse is a key employee, officer, or holds more than 20% interest in your company, they must register as a Nondisadvantaged applicant as well as your spouse.</p>
+              <CustomTable
+                header={tableHeaders}
+                rows={spouseTableRows}
+                editable={true}
+                remove={true}
+                onEdit={handleEditSpouse}
+                onDelete={(index) => handleDeleteContributor(index, 'role_spouse')}
+              />
+            </>
+          )}
 
-          <ButtonGroup className='margin-top-2'>
-            <Button type='button' onClick={handleAddOrUpdateContributor}>{editingIndex !== null ? 'Update' : 'Add'}</Button>
-            <Button
-              type='button'
-              unstyled
-              className='padding-x-2'
-              onClick={() => {
-                setFirstName('');
-                setLastName('');
-                setEmailAddress('');
-                setEditingIndex(null);
-                dispatch(setIsAddingContributor(false));
-              }}
-            >
-              Cancel
-            </Button>
-          </ButtonGroup>
-        </GridContainer>
-      )}
+          {operatorTableRows.length > 0 && (
+            <>
+              <h2>Control and Operation</h2>
+              <p>Each of the following people involved with your firm must submit their information and questionnaire.</p>
+              <ul>
+                <li>Everyone who owns at least 20% of your firm</li>
+                <li>Officers</li>
+                <li>Directors</li>
+                <li>Board members</li>
+                <li>Managers</li>
+                <li>Partners</li>
+              </ul>
+              <CustomTable
+                header={tableHeaders}
+                rows={operatorTableRows}
+                editable={true}
+                remove={true}
+                onEdit={handleEditOther}
+                onDelete={(index) => handleDeleteContributor(index, 'role_other')}
+              />
+            </>
+          )}
 
-      {ownerTableRows.length > 0 && (
-        <>
-          <h2>Owners<TooltipIcon text='An applicant or Participant must be at least 51 percent unconditionally and directly owned by one or more socially and economically disadvantaged individuals who are citizens of the United States, except for concerns owned by Indian tribes, Alaska Native Corporations, Native Hawaiian Organizations, or Community Development Corporations.' /></h2>
-          <p>Your firm must be at least 51% owned by one or more economically disadvantaged individuals to qualify for the SBA program. If you do not own 51% or more of the firm, send the other owner(s) who are claiming economic disadvantage an invitation to submit their information and questionnaire.</p>
-          <p>Note: An individual can only claim disadvantage for SBA certification once in their lifetime. If you own 51% or more of the firm, the other owner(s) do not need to submit their information and questionnaire</p>
-          <CustomTable
-            header={tableHeaders}
-            rows={ownerTableRows}
-            editable={true}
-            remove={true}
-            onEdit={handleEditOwner}
-            onDelete={(index) => handleDeleteContributor(index, 'role_owner')}
-          />
+          {contributors.length > 0 && (
+            <div className="margin-left-auto">
+              <Button type="button" outline onClick={handleAddNew}>
+								Invite Spouses
+              </Button>
+            </div>
+          )}
         </>
       )}
 
-      {spouseTableRows.length > 0 && (
-        <>
-          <h2>Spouses</h2>
-          <p>If your spouse is a key employee, officer, or holds more than 20% interest in your company, they must register as a Nondisadvantaged applicant as well as your spouse.</p>
-          <CustomTable
-            header={tableHeaders}
-            rows={spouseTableRows}
-            editable={true}
-            remove={true}
-            onEdit={handleEditSpouse}
-            onDelete={(index) => handleDeleteContributor(index, 'role_spouse')}
-          />
-        </>
-      )}
-
-      {operatorTableRows.length > 0 && (
-        <>
-          <h2>Control and Operation</h2>
-          <p>Each of the following people involved with your firm must submit their information and questionnaire.</p>
-          <ul>
-            <li>Everyone who owns at least 20% of your firm</li>
-            <li>Officers</li>
-            <li>Directors</li>
-            <li>Board members</li>
-            <li>Managers</li>
-            <li>Partners</li>
-          </ul>
-
-          <CustomTable
-            header={tableHeaders}
-            rows={operatorTableRows}
-            editable={true}
-            remove={true}
-            onEdit={handleEditOther}
-            onDelete={(index) => handleDeleteContributor(index, 'role_other')}
-          />
-        </>
-      )}
-      {contributors.length > 0 && (
-        <div className="margin-left-auto">
-          <Button type="button" outline onClick={handleAddNew}>
-          Invite Spouses
-          </Button>
-        </div>
-      )}
       <div className='flex-fill'></div>
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-top-2 margin-right-2px'>
         <Link className='usa-button usa-button--outline' aria-disabled={!applicationId} href={
-					 buildRoute(APPLICATION_STEP_ROUTE, {
+          buildRoute(APPLICATION_STEP_ROUTE, {
             applicationId: applicationId,
             stepLink: applicationSteps.documentUpload.link
           })
         }>
-          Previous
+					Previous
         </Link>
         {contributors.length === 0
           ? (
@@ -475,9 +603,9 @@ function ContributorInvitation() {
                 stepLink: applicationSteps.sign.link
               })
             }>
-          		Next
-        		</Link>
-          ): (
+							Next
+            </Link>
+          ) : (
             <Button type='button' onClick={handleNextClick}>
 							Next
             </Button>

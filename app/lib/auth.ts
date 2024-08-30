@@ -107,9 +107,10 @@ export async function getSessionServer() {
 export function useSessionUCMS(): SessionType {
   const oktaSession = useSession() as unknown as SessionType;
   const emailPasswordAuthCookie = Cookies.get('email_password_auth_token');
+  const maxAuthCookie = Cookies.get('maxgov_auth_token');
   const email_password_auth_token = emailPasswordAuthCookie
-    ? JSON.parse(emailPasswordAuthCookie) as LoginResponseUser
-    : null;
+    ? JSON.parse(emailPasswordAuthCookie) : maxAuthCookie ? JSON.parse(maxAuthCookie)  as LoginResponseUser
+      : null;
 
   const fullName = email_password_auth_token?.first_name && email_password_auth_token?.last_name
     ? `${email_password_auth_token.first_name} ${email_password_auth_token.last_name}`

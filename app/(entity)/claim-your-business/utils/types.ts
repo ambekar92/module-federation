@@ -62,12 +62,12 @@ export type CmbResponseType = {
   sam_business_type: string;
   sam_entity_structure: string;
   primary_naics: string;
-  sam_entity: {
+  sam_entity: Array<{
     sam_entity_id: number;
     legal_business_name: string;
     uei: string;
     cage_code: string;
-    account_hash: string;
+    bank_account_hash: string;
     tax_identifier_number: string;
     dba_name: string;
     physical_addr_1: string;
@@ -80,7 +80,7 @@ export type CmbResponseType = {
     entity_structure: string;
     govt_bus_poc_first_name: string;
     govt_bus_poc_last_name: string;
-  };
+  }>;
 };
 
 export type UnclaimedEntityType = {

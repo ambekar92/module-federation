@@ -1,3 +1,4 @@
+import { getUserRole } from '@/app/shared/utility/getUserRole'
 import {
   Header,
   Icon,
@@ -10,33 +11,32 @@ import {
 import Cookies from 'js-cookie'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'
+import { useParams, usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { SBA_LOGO_SQUARE_BLUE_RED_URL, SBA_LOGO_SQUARE_WHITE_URL, } from '../constants/icons'
-import { NavbarNotification } from './navbar-notification/NavbarNotification'
-import {adminNavBar}  from './types/constant'
+import ReactGA from 'react-ga4'
+import { SBA_LOGO_SQUARE_WHITE_URL } from '../constants/icons'
+import { REACT_GA_REPORT } from '../constants/routes'
 import styles from './Layout.module.scss'
-import ReactGA from 'react-ga4';
-import {REACT_GA_REPORT} from '../constants/routes'
-import { useParams, usePathname } from 'next/navigation';
-import { getUserRole } from '@/app/shared/utility/getUserRole';
+import { NavbarNotification } from './navbar-notification/NavbarNotification'
+import { adminNavBar } from './types/constant'
 
 //note that admin is set to 'admin' in .env.local file NEXT_PUBLIC_ADMIN_FEATURE_ENABLED ='admin'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { ADMIN_BANNER_ROUTE } from '../constants/routes'
-import {UnauthenticatedNavigation }from './UnauthenticatedNavigation'
+import { UnauthenticatedNavigation } from './UnauthenticatedNavigation'
 const selectedBottomRedBorder = '3px solid #CC0000'
 
-import dynamic from 'next/dynamic'
 import {
   buildRoute,
-  FIRM_EVALUATION_PAGE,
-  TASKS_DASHBOARD_PAGE,
-  REVIEWERS_DASHBOARD_PAGE,
-  USER_PROFILE_PAGE,
-  MESSAGE_PAGE,
+  DASHBOARD,
   DOCUMENT_PAGE,
-  DASHBOARD
+  FIRM_EVALUATION_PAGE,
+  MESSAGE_PAGE,
+  REVIEWERS_DASHBOARD_PAGE,
+  TASKS_DASHBOARD_PAGE,
+  USER_PROFILE_PAGE
 } from '@/app/constants/url'
+import dynamic from 'next/dynamic'
 
 const Navbar = () => {
   const adminBanner = ADMIN_BANNER_ROUTE
@@ -177,16 +177,28 @@ const Navbar = () => {
     })
   }
 
-  const handleSignOut = () => {
-
+  const handleSignOut = async () => {
     const okta_oauth2_issuer = process.env.NEXT_PUBLIC_LOGOUT_URL;
-    const logout_url = `${okta_oauth2_issuer}/oauth2/default/v1/logout?id_token_hint=${Cookies.get('idtoken')}&post_logout_redirect_uri=${process.env.NEXT_PUBLIC_POST_REDIRECT_URL}`;
-    Cookies.remove('email_password_auth_token')
-    Cookies.remove('accesstoken')
-    Cookies.remove('idtoken')
+    const idToken = Cookies.get('idtoken');
+    const post_logout_redirect_uri = encodeURIComponent(process.env.NEXT_PUBLIC_POST_REDIRECT_URL || '');
+
+    Cookies.remove('email_password_auth_token');
+    Cookies.remove('accesstoken');
+    Cookies.remove('idtoken');
+    Cookies.remove('next-auth.csrf-token', { path: '/' });
+    Cookies.remove('next-auth.callback-url', { path: '/' });
+    Cookies.remove('maxgov_auth_token');
+
     localStorage.clear();
 
-    signOut({callbackUrl: '/home'})
+    await signOut({ redirect: false });
+
+    if (idToken) {
+      const logout_url = `${okta_oauth2_issuer}/oauth2/default/v1/logout?id_token_hint=${idToken}&post_logout_redirect_uri=${post_logout_redirect_uri}`;
+      window.location.href = logout_url;
+    } else {
+      window.location.href = '/home';
+    }
   }
 
   const profileDropdown = [

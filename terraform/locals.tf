@@ -47,6 +47,7 @@ locals {
       oai_id                = "E1PVFJGLUVYCEO" # This is only needed if we use cloudfront
       db_host               = "ucms-db.demo.sba-one.net"
       distribution_url      = "https://d3eivjwm5b8rit.cloudfront.net"
+      ucp_tracking_id       = ""
     }
     stg = {
       domain_name           = "stg.certify.sba.gov"
@@ -60,7 +61,7 @@ locals {
       max_container_count_ucms = 2
       ucms_env                 = "stage"
       db_host                  = "ucms-db.stg.certify.sba.gov" 
-
+      ucp_tracking_id          = ""
     }
     prod = {
       domain_name          = "certify.sba.gov"
@@ -69,6 +70,7 @@ locals {
       certs_bucket         = "298969701643-us-east-1-prod-certifications"
       db_host              = "ucms-db.certify.sba.gov" 
       distribution_url     = "https://dzjorhrnuv7ld.cloudfront.net"
+      ucp_tracking_id      = "G459N1YBHGW"
 
       desired_capacity_ucms    = 4
       min_container_count_ucms = 4

@@ -90,7 +90,7 @@ export default function Footer() {
                 >
                   <ul className="grid-row grid-gap display-flex flex-row flex-justify">
                     <div className="display-flex flex-row flex-justify-start grid-row grid-gap">
-                      <li className={lineItemStyle}>
+                      {/* <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor2} ${footerLinkStyle} ${styleSettings.hoverColor} text-underline`}
                           onClick={handleLinkClick}
@@ -125,8 +125,8 @@ export default function Footer() {
                         >
                           <span className="text-underline">About Us</span>
                         </a>
-                      </li>
-                    </div>
+                      </li>*/}
+                    </div> 
                     <div
                       className="display-flex flex-row flex-justify-end grid-row grid-gap"
                       style={{ backgroundColor: 'white' }}
@@ -134,17 +134,17 @@ export default function Footer() {
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor2} text-light ${footerLinkStyle} ${styleSettings.hoverColor}`}
-                          onClick={handleLinkClick}
+                          href="tel:12022056459"
                         >
                           <span className="text-underline">
-                                1-866-443-4110
+                                1-202-205-6459
                           </span>
                         </a>
                       </li>
                       <li className={lineItemStyle}>
                         <a
                           className={`${styleSettings.textColor2} text-light ${footerLinkStyle} ${styleSettings.hoverColor}`}
-                          onClick={handleLinkClick}
+                          href='mailto:certifications@sba.gov'
                         >
                           <span className="text-underline">
                                 certifications@sba.gov

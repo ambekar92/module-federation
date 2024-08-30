@@ -40,7 +40,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
     headingMsg = 'Thank you for your interest!'
   } else {
     headingMsg =
-      'Uh-oh! Looks like something broke on our side. If you need immediate assistance, please contact our support team at (555) 555-5555'
+      'Uh-oh! Looks like something broke on our side. If you need immediate assistance, please contact our support team at 1-202-205-6459'
   }
 
   return (

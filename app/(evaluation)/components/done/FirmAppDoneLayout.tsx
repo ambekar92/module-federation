@@ -1,4 +1,4 @@
-import { buildRoute, USER_DASHBOARD_PAGE } from '@/app/constants/url';
+import { buildRoute, TASKS_DASHBOARD_PAGE } from '@/app/constants/url';
 import { Alert } from '@trussworks/react-uswds';
 import Link from 'next/link';
 
@@ -14,8 +14,8 @@ interface FirmAppLayoutProps {
 function FirmAppDoneLayout({ header, bodyText, buttonText, buttonLink, alertText, applicationId }: FirmAppLayoutProps) {
   let finalButtonLink: string;
 
-  if (buttonLink === USER_DASHBOARD_PAGE) {
-    finalButtonLink = USER_DASHBOARD_PAGE;
+  if (buttonLink === TASKS_DASHBOARD_PAGE) {
+    finalButtonLink = TASKS_DASHBOARD_PAGE;
   } else {
     finalButtonLink = buildRoute(buttonLink, { application_id: applicationId });
   }

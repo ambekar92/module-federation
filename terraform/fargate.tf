@@ -10,14 +10,15 @@ locals {
     UCMS_HOST                            = "${local.service_fqdn}-wfe"
     UCMS_ADMIN_ENV                       = "${local.env.ucms_env}_admin"
     # OKTA_OAUTH2_ISSUER                   = "https://dev-91055511.okta.com/oauth2/default"
-    OKTA_OAUTH2_ISSUER                   = "https://login.test.mysba.ussba.io/oauth2/default"
-    NEXTAUTH_URL                         = "https://ucp.demo.sba-one.net"
+    OKTA_OAUTH2_ISSUER                   = "https://login.mysba.ussba.io/oauth2/default"
+    NEXTAUTH_URL                         = "https://certification.sba.gov"
     NEXT_PRIVATE_LOCAL_WEBPACK           = "true" 
-    NEXT_PUBLIC_API_URL                  = "https://ucms-internal-api.demo.sba-one.net/api/v1"
+    NEXT_PUBLIC_API_URL                  = "https://ucp-internal-api.demo.sba-one.net/api/v1"
     UCP_ATLASSIAN_USERNAME               = "management@certify.sba.gov"
-    NEXT_PUBLIC_LOGOUT_URL               = "https://login.test.mysba.ussba.io"
-    NEXT_PUBLIC_POST_REDIRECT_URL        = "https://ucp.demo.sba-one.net/"
+    NEXT_PUBLIC_LOGOUT_URL               = "https://login.mysba.ussba.io"
+    NEXT_PUBLIC_POST_REDIRECT_URL        = "https://certification.sba.gov"
     HUBZONE_URL                          = "https://calculator.${local.env.domain_name}"
+    UCP_TRACKING_ID                      = local.env.ucp_tracking_id
   }
   container_secrets_parameterstore = {
     OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_ID"

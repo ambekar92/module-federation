@@ -1,49 +1,67 @@
-import React from 'react';
-import Link from 'next/link';
-import { Button, Table } from '@trussworks/react-uswds';
 import { FIRM_EVALUATION_PAGE, buildRoute } from '@/app/constants/url';
+import { useDefaultUserTaskDashboard, useSelectedUserTaskDashboard } from '@/app/services/queries/evaluation-service/useUserTaskDashboard';
 import { Show } from '@/app/shared/components/Show';
 import TableHeader from '@/app/shared/components/table-header/TableHeader';
 import TablePagination from '@/app/shared/components/table-pagination/TablePagination';
 import { Role } from '@/app/shared/types/role';
-import { isRole } from '@/middleware';
-import styles from '../WorkloadDashboard.module.scss';
-import { fullName, sortData } from '../helpers';
-import { DashboardSearchParams, IColumn, PAGE_SIZE } from '../types';
-import FirmInfoCell from './FirmInfoCell';
-import { useCurrentPath } from '../hooks/useCurrentPath';
-import humanizeString from 'humanize-string';
-import { formatDate } from '@/app/shared/utility/formateDate';
 import { formatProgramText } from '@/app/shared/utility/formatProgramText';
+import { isRole } from '@/middleware';
+import { Button, Table } from '@trussworks/react-uswds';
+import humanizeString from 'humanize-string';
+import moment from 'moment';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
+import { fullName, sortData } from '../helpers';
+import { useIsReviewersDashboard } from '../hooks/useIsReviewersDashboard';
+import { DashboardSearchParams, IColumn, PAGE_SIZE, supervisorColumns, userColumns } from '../types';
+import styles from '../WorkloadDashboard.module.scss';
+import FirmInfoCell from './FirmInfoCell';
+import { useSessionUCMS } from '@/app/lib/auth';
 
 interface TableContentProps {
-  tasks: any[];
-  columns: IColumn[];
   searchParams: DashboardSearchParams;
-  sessionData: any;
   onReassign: (applicationId: number) => void;
 }
 
-const TableContent: React.FC<TableContentProps> = ({ tasks, columns, searchParams, sessionData, onReassign }) => {
-  const { isReviewersDashboard } = useCurrentPath();
+const TableContent: React.FC<TableContentProps> = ({  searchParams, onReassign }) => {
+  const isReviewersDashboard = useIsReviewersDashboard();
+  const sessionData = useSessionUCMS();
 
-  if(!tasks) {return}
+  const [columns, setColumns] = useState<IColumn[]>(isReviewersDashboard ? supervisorColumns : userColumns);
+
+  const {watch} = useFormContext();
+  const selectedUserId = watch('userId');
+
+  const {data: selectedTasks} = useSelectedUserTaskDashboard(selectedUserId ? Number(selectedUserId) : null);
+  const {data: defaultTasks} = useDefaultUserTaskDashboard(!selectedUserId ? sessionData?.data?.permissions[sessionData?.data?.permissions.length - 1]?.slug : null);
+
+  const tasks = selectedUserId ? selectedTasks : defaultTasks;
+
+  useEffect(() => {
+    if (!sessionData.data) {return;}
+    if (isRole(sessionData.data.permissions, Role.INTERNAL) && isReviewersDashboard) {
+      setColumns(supervisorColumns);
+    } else {
+      setColumns(userColumns);
+    }
+  }, [sessionData, sessionData?.data?.permissions?.length]);
+
   return (
     <>
       <Table scrollable bordered striped fullWidth>
         <TableHeader
           defaultSortColumn='legal_business_name'
           columns={columns}
-          isReviewersDashboard={isReviewersDashboard}
         />
         <tbody>
-          {tasks.length > 0 ? (
+          {tasks && tasks.length > 0 ? (
             tasks
               .sort((a, b) => sortData(a, b, searchParams))
               .slice((parseInt(searchParams.page) - 1) * PAGE_SIZE, (parseInt(searchParams.page) - 1) * PAGE_SIZE + PAGE_SIZE)
               .map((task) => (
-                <tr key={task.application_id}>
-                  <td>
+                <tr className='text-base-darker' key={task.application_id}>
+                  <td style={{backgroundColor: 'white', color: '#3d4551',}}>
                     <div className={styles.firmInfo}>
                       <span>
                         <Link href={buildRoute(FIRM_EVALUATION_PAGE, { application_id: task.application_id?.toString() })}>
@@ -53,43 +71,52 @@ const TableContent: React.FC<TableContentProps> = ({ tasks, columns, searchParam
                       <FirmInfoCell task={task} />
                     </div>
                   </td>
-                  <td>{formatProgramText(task.certifications?.join(', '))}</td>
-                  <td>
+                  <td style={{backgroundColor: 'white', color: '#3d4551',}}>{formatProgramText(task.certifications?.join(', '))}</td>
+                  <td style={{backgroundColor: 'white', color: '#3d4551',}}>
                     {(() => {
                       const text = humanizeString(task.application_type_name);
                       return formatProgramText(text)
                     })()}
                   </td>
-                  <td>{task?.days_in_queue}</td>
-                  <td>{formatDate(task.due_on)}</td>
-                  <Show>
-                    <Show.When isTrue={isRole(sessionData.permissions, Role.EXTERNAL)}>
-                      <td>N/A</td>
-                    </Show.When>
-                  </Show>
-                  <td>{humanizeString(task?.application_workflow_state)}</td>
-                  <Show.When isTrue={!isRole(sessionData.permissions, Role.EXTERNAL) && isReviewersDashboard}>
-                    <td>{fullName(task.assigned_to)}</td>
-                  </Show.When>
-                  <Show.When isTrue={!isRole(sessionData.permissions, Role.EXTERNAL) && isReviewersDashboard}>
-                    <td>
-                      <Button type='button' onClick={() => onReassign(task.application_id)}>
-                      	Re-Assign
-                      </Button>
-                    </td>
-                  </Show.When>
+
+                  {isRole(sessionData.data.permissions, Role.INTERNAL) && isReviewersDashboard ? (
+                    <>
+                      <td style={{backgroundColor: 'white', color: '#3d4551',}}>{task?.days_in_queue}</td>
+                      <td style={{backgroundColor: 'white', color: '#3d4551',}}>{task.due_on ? moment(task.due_on).format('MM/DD/YYYY') : 'N/A'}</td>
+                    </>
+                  ) : (
+                    <>
+                      <td style={{backgroundColor: 'white', color: '#3d4551',}}>{task.submitted_on ? moment(task.submitted_on).format('MM/DD/YYYY') :  'N/A' }</td>
+                      {/* <td style={{backgroundColor: 'white', color: '#3d4551',}}>N/A</td> */}
+                      <td style={{backgroundColor: 'white', color: '#3d4551',}}>{task.due_on ? moment(task.due_on).format('MM/DD/YYYY') : 'N/A'}</td>
+                      <td style={{backgroundColor: 'white', color: '#3d4551',}}>{task?.days_in_queue}</td>
+                    </>
+                  )}
+
+                  <td style={{backgroundColor: 'white', color: '#3d4551',}}>{humanizeString(task?.application_workflow_state)}</td>
+
+                  {isRole(sessionData.data.permissions, Role.INTERNAL) && isReviewersDashboard && (
+                    <>
+                      <td style={{backgroundColor: 'white', color: '#3d4551',}}>{fullName(task.assigned_to)}</td>
+                      <td style={{backgroundColor: 'white', color: '#3d4551',}}>
+                        <Button type='button' onClick={() => onReassign(task.application_id)}>
+                          Re-Assign
+                        </Button>
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))
           ) : (
-            <tr>
-              <td colSpan={columns.length} style={{ textAlign: 'center', padding: '50px 0' }}>
+            <tr className='bg-white text-base-darker'>
+              <td colSpan={columns.length} style={{ backgroundColor: 'white', color: '#3d4551', textAlign: 'center', padding: '50px 0' }}>
                 No data
               </td>
             </tr>
           )}
         </tbody>
       </Table>
-      {tasks.length > 0 && Math.ceil(tasks.length / PAGE_SIZE) > 1 && (
+      {tasks && tasks.length > 0 && Math.ceil(tasks.length / PAGE_SIZE) > 1 && (
         <TablePagination totalPages={Math.ceil(tasks.length / PAGE_SIZE)} />
       )}
     </>

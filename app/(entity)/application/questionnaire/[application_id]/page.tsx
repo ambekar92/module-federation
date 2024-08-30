@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { CardGroup, Card, CardHeader, ButtonGroup } from '@trussworks/react-uswds';
+import { CardGroup, Card, CardHeader, ButtonGroup, Button } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import useSWR from 'swr';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
@@ -16,21 +16,26 @@ import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/co
 import fetcher from '@/app/services/fetcher';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import { useSessionUCMS } from '@/app/lib/auth';
 
 const QuestionnaireListPage: React.FC = () => {
-  const { contributorId, applicationId, applicationData } = useApplicationContext();
+  const { contributorId, applicationId } = useApplicationContext();
+  const session = useSessionUCMS();
   const dispatch = useApplicationDispatch();
+  useUpdateApplicationProgress('Questionnaires');
 
+  const isPrimaryUser = session?.data.permissions?.some(permission => permission.slug.includes('primary_qualifying_owner'));
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(
     contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
     fetcher
   );
 
-  useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
-      window.location.href = `/application/view/${applicationId}`;
-    }
-  }, [applicationData, applicationId]);
+  // useEffect(() => {
+  //   if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+  //     window.location.href = `/application/view/${applicationId}`;
+  //   }
+  // }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
@@ -73,14 +78,22 @@ const QuestionnaireListPage: React.FC = () => {
         ))}
       </CardGroup>
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        <Link className='usa-button usa-button--outline' href={
-          buildRoute(APPLICATION_STEP_ROUTE, {
-            applicationId: applicationId,
-            stepLink: applicationSteps.eligiblePrograms.link
-          })
-        }>
-          Previous
-        </Link>
+        {isPrimaryUser
+          ? (
+            <Link className='usa-button usa-button--outline' href={
+              buildRoute(APPLICATION_STEP_ROUTE, {
+                applicationId: applicationId,
+                stepLink: applicationSteps.eligiblePrograms.link
+              })
+            }>
+          		Previous
+            </Link>
+          ): (
+            <Button type='button' disabled>
+							Previous
+            </Button>
+          )
+        }
         <Link className='usa-button' href={
           buildRoute(QUESTIONNAIRE_PAGE, {
             applicationId: applicationId,

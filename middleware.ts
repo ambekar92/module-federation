@@ -28,7 +28,7 @@ const middlewares: { [key: string]: any } = {
     if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/admin/dashboard`)
     } else if (!isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) && !isRole(permissions, Role.CONTRIBUTOR) && !isRole(permissions, Role.ADMIN)) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard`);
+      return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard/tasks`);
     } else {
       return NextResponse.next();
     }
@@ -38,7 +38,7 @@ const middlewares: { [key: string]: any } = {
     if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/dashboard`)
     } else if (!isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) && !isRole(permissions, Role.CONTRIBUTOR) && !isRole(permissions, Role.ADMIN)){
-      return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard`);
+      return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard/tasks`);
     } else {
       return NextResponse.next();
     }
@@ -117,7 +117,8 @@ export function isRole(permissions:  Permission[], role: Role) {
 async function getData(request: NextRequest) {
   const token = await getToken({req: request, secret: process.env.NEXTAUTH_SECRET})
   const cookies = request.cookies;
-  const email_password_auth_token = cookies.has('email_password_auth_token') ? JSON.parse(cookies.get('email_password_auth_token')?.value ?? '') : '' as unknown as LoginResponseUser
+  const email_password_auth_token = cookies.has('email_password_auth_token') ? JSON.parse(cookies.get('email_password_auth_token')?.value ?? '') :
+    cookies.has('maxgov_auth_token') ? JSON.parse(cookies.get('maxgov_auth_token')?.value ?? '') : '' as unknown as LoginResponseUser
   const permissions = token?.permissions as any[] || email_password_auth_token?.permissions;
   const originalUrl = encodeURIComponent(request.nextUrl.pathname);
   return {token, permissions, email_password_auth_token, originalUrl}

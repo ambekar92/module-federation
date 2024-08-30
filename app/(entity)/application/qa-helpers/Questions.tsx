@@ -1,4 +1,4 @@
-import { ANSWER_ROUTE, CLOSE_APPLICATION_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes';
+import { ANSWER_ROUTE, CLOSE_APPLICATION_ROUTE, FIRM_APPLICATIONS_ROUTE, PROGRAM_APPLICATION } from '@/app/constants/routes';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import fetcher from '@/app/services/fetcher';
@@ -14,6 +14,7 @@ import QuestionRenderer from './QuestionRenderer';
 import useSWR from 'swr';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import { useParams } from 'next/navigation';
 interface QuestionnaireProps {
   url: string;
   title: string;
@@ -29,6 +30,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
   const session = useSessionUCMS();
   const userId = session?.data?.user.id;
   const closeApplicationRef = useRef<ModalRef>(null);
+  const { application_id } = useParams();
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
@@ -129,8 +131,23 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
       const shouldSkip = principleOfficeAnswer?.answer === 'not applicable' || principleOfficeAnswer === null;
 
       if (shouldSkip) {
+        const handleSkip = async () => {
+          try {
+            const currentUTCTime = new Date().toISOString();
+            const putPayload = {
+              application_id: application_id,
+              program_id: 2, // Hubzone
+              deleted_at: currentUTCTime
+            }
+            await axiosInstance.put(PROGRAM_APPLICATION, putPayload)
+          } catch(error) {
+            console.log('Error removing hubzone: ', error);
+          }
+        }
+
+        handleSkip();
         localStorage.setItem('skipHubzoneSup', 'true');
-        window.location.href = `/application/${contributorId}/document-upload`;
+        window.location.href = `/application/${application_id}/document-upload`;
       } else {
         localStorage.setItem('skipHubzoneSup', 'false');
       }

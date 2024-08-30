@@ -18,6 +18,8 @@ import applicationStore from '../../../redux/applicationStore';
 import HubzoneResults from '../../../sections/HubzoneResults';
 import { applicationSteps, extractLastPart } from '../../../utils/constants';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import { useSessionUCMS } from '@/app/lib/auth';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,6 +29,7 @@ const QuestionnairePage: React.FC = () => {
   const closeApplicationRef = useRef<ModalRef>(null);
   const [canNavigate, setCanNavigate] = useState(true);
   const [title, setTitle] = useState<string>('');
+  useUpdateApplicationProgress('Questionnaires');
 
   const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(
     contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
@@ -54,11 +57,20 @@ const QuestionnairePage: React.FC = () => {
     return baseSections;
   }, [questionnairesData]);
 
+  const { data: session } = useSessionUCMS();
+  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
+
   useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+    if(hasDelegateRole && section === 'core-program-eligibility') {
       window.location.href = `/application/view/${applicationId}`;
     }
-  }, [applicationData, applicationId]);
+    if (
+      applicationData && applicationData.workflow_state !== 'draft'
+			&& applicationData.workflow_state !== 'returned_for_firm'
+    ) {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId, session]);
 
   useEffect(() => {
     if (allSections.length > 0) {

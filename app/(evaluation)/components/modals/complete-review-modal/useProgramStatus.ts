@@ -66,7 +66,7 @@ export const useProgramStatus = (reviewSummaryData: ReviewSummaryType | null): P
       }
       if ((reviewSummaryData.wosb === Decision.Disagree || reviewSummaryData.ed_wosb === Decision.Disagree)){
         newStatus.declinedPrograms.push('wosb');
-        newStatus.approvedLetters.push(DocumentTemplateType.wosbDecline);
+        newStatus.declinedLetters.push(DocumentTemplateType.wosbDecline);
       }
       if (reviewSummaryData.hubzone === Decision.Disagree ||
         (reviewSummaryData.hubzone === Decision.Concur && reviewSummaryData['reviewerAppeal-hubzone'] === 'yes')) {

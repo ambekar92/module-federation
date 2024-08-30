@@ -1,40 +1,35 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { ModalRef } from '@trussworks/react-uswds';
+import { useRouter } from 'next/navigation';
+import { Role } from '@/app/shared/types/role';
+
+import React, { useEffect, useRef, useState } from 'react';
 
 import ReassignUserModal from '@/app/(evaluation)/components/modals/reassign-user-modal/ReassignUserModal';
 import { ReassignType } from '@/app/(evaluation)/components/modals/reassign-user-modal/types';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { Role } from '@/app/shared/types/role';
-import { isRole } from '@/middleware';
-import { DashboardSearchParams, IColumn, supervisorColumns, userColumns } from '../types';
+import { FormProvider, useForm } from 'react-hook-form';
+import { DashboardSearchParams } from '../types';
 import Header from './Header';
-import { useCurrentPath } from '../hooks/useCurrentPath';
 import TableContent from './TableContent';
-import { UserTaskDashboard } from '@/app/services/types/evaluation-service/UserTaskDashboard';
+import { isRole } from '@/middleware';
 
-const TableProvider: React.FC<{searchParams: DashboardSearchParams, tasks?: UserTaskDashboard[]}> = ({ searchParams, tasks }) => {
+const TableProvider: React.FC<{searchParams: DashboardSearchParams}> = ({ searchParams }) => {
   const sessionData = useSessionUCMS();
-  const { isReviewersDashboard } = useCurrentPath();
-  const [columns, setColumns] = useState<IColumn[]>(isReviewersDashboard ? supervisorColumns : userColumns);
   const router = useRouter();
   const modalRef = useRef<ModalRef | null>(null);
   const [isClient, setIsClient] = useState(false);
 
+  const methods = useForm({
+    defaultValues: {
+      userId: sessionData.data?.user_id,
+    },
+  });
+
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  useEffect(() => {
-    if (!sessionData.data) {return;}
-    if (isRole(sessionData.data.permissions, Role.EXTERNAL)) {
-      setColumns(userColumns);
-    } else {
-      setColumns(supervisorColumns);
-    }
-  }, [sessionData, sessionData?.data?.permissions?.length]);
 
   function onReassign(applicationId: number) {
     const currentUrl = new URL(window.location.href);
@@ -52,23 +47,20 @@ const TableProvider: React.FC<{searchParams: DashboardSearchParams, tasks?: User
   }
 
   return (
-    <div>
+    <FormProvider {...methods}>
       <Header />
-      {tasks && (
-        <TableContent
-          tasks={tasks}
-          columns={columns}
-          searchParams={searchParams}
-          sessionData={sessionData.data}
-          onReassign={onReassign}
-        />
-      )}
+
+      <TableContent
+        searchParams={searchParams}
+        onReassign={onReassign}
+      />
+
       <ReassignUserModal
         modalRef={modalRef}
         reassignType={ReassignType.REASSIGN_ANALYST}
         applicationId={Number(searchParams.application_id)}
       />
-    </div>
+    </FormProvider>
   );
 };
 

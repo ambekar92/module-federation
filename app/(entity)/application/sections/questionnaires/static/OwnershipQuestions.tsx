@@ -18,16 +18,15 @@ import { selectApplication, setDisplayStepNavigation, setStep } from '../../../r
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import { useSessionUCMS } from '@/app/lib/auth';
 
 function OwnershipQuestions() {
   // Redux
   const dispatch = useApplicationDispatch();
   const { ownerApplicationInfo } = useOwnerApplicationInfo();
   const { owners } = useApplicationSelector(selectApplication);
-
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   useUpdateApplicationProgress('Ownership');
-
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
 
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
@@ -35,11 +34,18 @@ function OwnershipQuestions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [totalOwnershipPercentage, setTotalOwnershipPercentage] = useState(0);
 
+  const { data: session } = useSessionUCMS();
+  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
+
   useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+    if (
+      applicationData && applicationData.workflow_state !== 'draft'
+			&& applicationData.workflow_state !== 'returned_for_firm'
+			&& !hasDelegateRole
+    ) {
       window.location.href = `/application/view/${applicationId}`;
     }
-  }, [applicationData, applicationId]);
+  }, [applicationData, applicationId, session]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.ownership.stepIndex));

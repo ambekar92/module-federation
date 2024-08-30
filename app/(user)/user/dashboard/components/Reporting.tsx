@@ -16,7 +16,6 @@ const Reporting = () => {
       containerProps={{
         className: 'bg-base-lightest border-6'
       }}
-
     >
       <Collection color='base-lightest' style={{ paddingTop: 0 }} >
         {list.map((l, idx) => <CollectionItem key={l.id}

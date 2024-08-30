@@ -1,5 +1,6 @@
 'use client'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import HeightIcon from '@mui/icons-material/Height';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -8,11 +9,9 @@ import styles from './TableHeader.module.scss';
 const TableHeader = ({
   defaultSortColumn,
   columns,
-  isReviewersDashboard
 }: {
   defaultSortColumn: string,
   columns: { val: string, label: string, sortable?: boolean }[],
-  isReviewersDashboard?: boolean
 }) => {
   const searchParams = useSearchParams();
   const searchParamsState = new URLSearchParams(Array.from(searchParams.entries()));
@@ -31,10 +30,6 @@ const TableHeader = ({
     router.push(`${pathName}?${q}`)
   }, [pathName])
 
-  const filteredColumns = isReviewersDashboard
-    ? columns
-    : columns.filter(col => col.val !== 'takeAction' && col.val !== 'assigned_to');
-
   function setQueryParams(colName: string) {
     const sortOrder = colName === searchParamsState.get('sortColumn') ? searchParamsState.get('sortOrder') === 'asc' ? 'desc' : 'asc' : 'asc';
     searchParamsState.set('sortColumn', colName);
@@ -46,10 +41,15 @@ const TableHeader = ({
   return (
     <thead>
       <tr>
-        {filteredColumns.map(col => (
-          <th key={col.val} onClick={() =>{col.sortable &&  setQueryParams(col.val)}} style={{ width: (100 / columns.length).toString() + '%' }}>
-            <span className={styles.tableHeadCell}> {col.label} {searchParams.get('sortColumn') === col.val
-              && <FontAwesomeIcon icon={(searchParams.get('sortOrder') === 'asc') ? faChevronDown : faChevronUp} />}
+        {columns.map(col => (
+          <th key={col.val} onClick={() =>{col.sortable &&  setQueryParams(col.val)}} style={{ backgroundColor: '#F0F0F0', width: (100 / columns.length).toString() + '%' }}>
+            <span className={`text-base-darker ${styles.tableHeadCell}`}>
+              {col.label}
+              {col.sortable && (
+                searchParams.get('sortColumn') === col.val && searchParams.get('sortOrder') === 'asc'
+                  ? <FontAwesomeIcon icon={faChevronDown} />
+                  : <HeightIcon />
+              )}
             </span>
           </th>
         ))}

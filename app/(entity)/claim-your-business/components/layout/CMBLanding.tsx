@@ -1,10 +1,11 @@
+import { DASHBOARD } from '@/app/constants/url'
 import Tooltip from '@/app/shared/components/tooltip/Tooltip'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import CustomHeader from '../../../../shared/components/forms/CustomHeader'
 import InvitationCodeForm from '../forms/InvitationCodeForm'
-import { useRouter } from 'next/navigation'
 
 interface claimBusinessLandingProps {
   proceedToClaimBusiness: () => void
@@ -25,7 +26,7 @@ function ClaimBusinessLanding({
   }
 
   const submitForm = () => {
-    router.push('/dashboard')
+    router.push(DASHBOARD)
   }
 
   return (

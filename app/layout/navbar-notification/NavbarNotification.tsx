@@ -24,8 +24,18 @@ export const NavbarNotification: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'read' | 'unread'>('all')
   const session = useSessionUCMS()
   const { data: notificationData, error, isLoading, mutate } = useSWR<INotification[]>(
-    session ? `${GET_NOTIFICATION}?user_id=${session.data.user_id}` : null,
-    fetcher
+    session.data.user.id ? `${GET_NOTIFICATION}?user_id=${session.data.user.id}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      refreshInterval: 0,
+      errorRetryCount: 5,
+      onErrorRetry: (error, key, config, revalidate, { retryCount }) => {
+        if (retryCount >= 5) {return}
+        setTimeout(() => revalidate({ retryCount }), 5000)
+      }
+    }
   )
 
   const [filteredNotifications, setFilteredNotifications] = useState<INotification[]>([])

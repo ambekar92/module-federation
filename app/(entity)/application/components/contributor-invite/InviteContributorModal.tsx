@@ -1,7 +1,9 @@
 'use client'
 
-import { INVITATION_ROUTE, SEND_INVITATION_ROUTE } from '@/app/constants/routes'
+import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
+import { INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
+import { axiosInstance } from '@/app/services/axiosInstance'
 import {
   Button,
   ButtonGroup,
@@ -13,7 +15,6 @@ import {
 import React from 'react'
 import { applicationSteps } from '../../utils/constants'
 import { Contributor } from './types'
-import { axiosInstance } from '@/app/services/axiosInstance'
 
 interface InviteContributorModalProps {
   open: boolean;
@@ -59,7 +60,7 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
 
           const response = await axiosInstance.post(INVITATION_ROUTE, postData);
           if (response && response.data && response.data.id) {
-            await axiosInstance.post(SEND_INVITATION_ROUTE, {invitation_id: response.data.id});
+            await axiosInstance.post(SEND_INVITATION_DELEGATE, {invitation_id: response.data.id});
           }
         }
 
@@ -69,10 +70,6 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
         })
       }
     } catch(error) {
-      window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
-        applicationId: applicationId,
-        stepLink: applicationSteps.sign.link
-      })
       // alert('Error sending invitations. Please try again.')
     }
   }

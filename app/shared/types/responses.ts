@@ -18,7 +18,7 @@ export type Entity = {
       govt_bus_poc_first_name: string,
       govt_bus_poc_last_name: string
     } | null,
-    owner_user_id: 9,
+    owner_user_id: number,
     type: string,
     structure: string,
     deleted_at: null,

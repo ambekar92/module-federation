@@ -41,6 +41,7 @@ export const DELEGATES_ROUTE = API_ROUTE + '/delegates'
 export const APPLICATION_ROUTE = API_ROUTE + '/application'
 export const TESTER_LOGIN_ROUTE = API_ROUTE + '/login'
 export const USER_TASK_DASHBOARD_ROUTE = '/user-task-dashboard';
+export const USER_TASKS_ROUTE = '/user-tasks';
 export const APPLICATION_NOTES_ROUTE = API_ROUTE + '/application-notes';
 export const NOTES_ROUTE = '/notes';
 export const MESSAGES_ROUTE = API_ROUTE + '/messages';
