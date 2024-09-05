@@ -20,22 +20,29 @@ import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplic
 import { useSessionUCMS } from '@/app/lib/auth';
 
 const QuestionnaireListPage: React.FC = () => {
-  const { contributorId, applicationId } = useApplicationContext();
+  const { contributorId, applicationId, applicationData } = useApplicationContext();
   const session = useSessionUCMS();
   const dispatch = useApplicationDispatch();
+  const filteredSections = ['core-program-eligibility']
   useUpdateApplicationProgress('Questionnaires');
 
   const isPrimaryUser = session?.data.permissions?.some(permission => permission.slug.includes('primary_qualifying_owner'));
+  const hasDelegateRole = session?.data.permissions?.some(permission => permission.slug.includes('delegate'));
+
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(
     contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
     fetcher
   );
 
-  // useEffect(() => {
-  //   if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
-  //     window.location.href = `/application/view/${applicationId}`;
-  //   }
-  // }, [applicationData, applicationId]);
+  const filteredQuestionnaires = questionnairesData?.filter(questionnaire =>
+    !(hasDelegateRole && filteredSections.includes(extractLastPart(questionnaire.url)))
+  );
+    
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
@@ -45,7 +52,7 @@ const QuestionnaireListPage: React.FC = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  if (!questionnairesData) {
+  if (!questionnairesData || !filteredQuestionnaires) {
     return <Spinner center />
   }
 
@@ -56,7 +63,7 @@ const QuestionnaireListPage: React.FC = () => {
         <TooltipIcon text='Applicant must complete each questionnaire associated with the selected certification requests. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.' />
       </h3>
       <CardGroup>
-        {questionnairesData.map((questionnaire, questionIndex) => (
+        {filteredQuestionnaires.map((questionnaire, questionIndex) => (
           <Card key={questionIndex} className='tablet:grid-col-4'>
             <CardHeader>
               <div className="usa-card__body">

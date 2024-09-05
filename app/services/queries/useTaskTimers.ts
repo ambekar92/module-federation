@@ -4,7 +4,7 @@ import { TaskTimer } from '../types/TaskTimer';
 import fetcher from '../fetcher';
 
 export function useTaskTimers() {
-  return useSWR<TaskTimer[]>(TASK_TIMERS_ROUTE, fetcher)
+  return useSWR<TaskTimer[]>(TASK_TIMERS_ROUTE)
 }
 
 // TODO mock task timers  - remove when api is ready [mdev]

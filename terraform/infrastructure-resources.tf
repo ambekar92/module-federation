@@ -56,7 +56,7 @@ data "aws_ecs_cluster" "selected" {
 
 ## postgres
 data "aws_db_instance" "rds" {
-  db_instance_identifier = "${terraform.workspace}-${local.env.service_name_alt}-aurora"
+  db_instance_identifier = terraform.workspace == "demo" ? "${terraform.workspace}-ucms-aurora" : "${terraform.workspace}-ucp-aurora-writer" 
 }
 
 ## Elasticache Redis

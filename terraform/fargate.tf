@@ -5,31 +5,35 @@ variable image_tag {
 locals {
   container_environment = {
     CERTIFY_SBA_SAML_CALLBACK_URL        = "https://${local.env.domain_name}/auth/saml/callback"
-    UCMS_ENV                             = local.env.ucms_env
-    UCMS_LOG_TO_STDOUT                   = "true"
-    UCMS_HOST                            = "${local.service_fqdn}-wfe"
-    UCMS_ADMIN_ENV                       = "${local.env.ucms_env}_admin"
-    # OKTA_OAUTH2_ISSUER                   = "https://dev-91055511.okta.com/oauth2/default"
-    OKTA_OAUTH2_ISSUER                   = "https://login.mysba.ussba.io/oauth2/default"
-    NEXTAUTH_URL                         = "https://certification.sba.gov"
+    UCP_ENV                             = local.env.ucp_env
+    UCP_LOG_TO_STDOUT                   = "true"
+    UCP_HOST                            = "${local.service_fqdn}-wfe"
+    UCP_ADMIN_ENV                       = "${local.env.ucp_env}_admin"
+    OKTA_OAUTH2_ISSUER                   = local.env.okta_oauth2_issuer
+    NEXTAUTH_URL                         = local.env.next_base_url
     NEXT_PRIVATE_LOCAL_WEBPACK           = "true" 
-    NEXT_PUBLIC_API_URL                  = "https://ucp-internal-api.demo.sba-one.net/api/v1"
+    NEXT_PUBLIC_API_URL                  = "https://ucp-internal-api.${local.env.domain_name}/api/v1"
     UCP_ATLASSIAN_USERNAME               = "management@certify.sba.gov"
-    NEXT_PUBLIC_LOGOUT_URL               = "https://login.mysba.ussba.io"
-    NEXT_PUBLIC_POST_REDIRECT_URL        = "https://certification.sba.gov"
+    NEXT_PUBLIC_LOGOUT_URL               = local.env.next_public_logout_url
+    NEXT_PUBLIC_POST_REDIRECT_URL        = local.env.next_base_url
     HUBZONE_URL                          = "https://calculator.${local.env.domain_name}"
+    NEXT_PUBLIC_HUBZONE_URL              = "https://calculator.${local.env.domain_name}"
     UCP_TRACKING_ID                      = local.env.ucp_tracking_id
+    REDIS_HOST                           = local.env.redis_host
+    NEXT_PUBLIC_RANDOM                   = local.env.next_public_random
+    NEXT_PUBLIC_DEBUG                    = local.env.next_public_debug
   }
   container_secrets_parameterstore = {
-    OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_ID"
-    OKTA_OAUTH2_CLIENT_SECRET = "${terraform.workspace}/ucms/okta/OKTA_OAUTH2_CLIENT_SECRET"
-    NEXTAUTH_SECRET           = "${terraform.workspace}/ucms/NEXTAUTH_SECRET"
-    UCP_ATLASSIAN_API_KEY     = "${terraform.workspace}/ucms/UCP_ATLASSIAN_API_KEY"
+    OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucp/okta/OKTA_OAUTH2_CLIENT_ID"
+    OKTA_OAUTH2_CLIENT_SECRET = "${terraform.workspace}/ucp/okta/OKTA_OAUTH2_CLIENT_SECRET"
+    NEXTAUTH_SECRET           = "${terraform.workspace}/ucp/NEXTAUTH_SECRET"
+    UCP_ATLASSIAN_API_KEY     = "${terraform.workspace}/ucp/UCP_ATLASSIAN_API_KEY"
+    COLLOPORTUS               = "${terraform.workspace}/ucp/colloportus"
   }
 }
 
 
-module "ucms-wfe" {
+module "ucp-wfe" {
   source  = "USSBA/easy-fargate-service/aws"
   version = "~> 11.0"
 
@@ -49,9 +53,9 @@ module "ucms-wfe" {
     value = nonsensitive(data.aws_ssm_parameter.origin_token.value)
   }
 
-  family                 = "${terraform.workspace}-${local.env.service_name}-wfe"
-  task_cpu               = local.env.task_cpu_ucms
-  task_memory            = local.env.task_memory_ucms
+  family                 = "${terraform.workspace}-ucp-wfe"
+  task_cpu               = local.env.task_cpu_ucp
+  task_memory            = local.env.task_memory_ucp
   # task_policy_json       = data.aws_iam_policy_document.fargate.json
   enable_execute_command = true
   ipv6                   = true
@@ -64,9 +68,9 @@ module "ucms-wfe" {
   deployment_minimum_healthy_percent = 100
 
   # Scaling and health
-  desired_capacity           = local.env.desired_capacity_ucms
-  min_capacity               = local.env.desired_capacity_ucms
-  max_capacity               = local.env.desired_capacity_ucms
+  desired_capacity           = local.env.desired_capacity_ucp
+  min_capacity               = local.env.desired_capacity_ucp
+  max_capacity               = local.env.desired_capacity_ucp
   scaling_metric             = local.env.scaling_metric
   scaling_threshold          = local.env.scaling_threshold
   scheduled_actions          = try(local.env.scheduled_actions, [])
@@ -81,7 +85,7 @@ module "ucms-wfe" {
   health_check_unhealthy_threshold = 10
 
   # networking
-  service_fqdn       = "${local.env.service_name}-wfe.${local.env.domain_name}"
+  service_fqdn       = "ucp-wfe.${local.env.domain_name}"
   hosted_zone_id     = data.aws_route53_zone.selected.zone_id
   public_subnet_ids  = data.aws_subnets.public.ids
   private_subnet_ids = data.aws_subnets.private.ids
@@ -94,7 +98,7 @@ module "ucms-wfe" {
   container_definitions = [
     {
       name         = "wfeService"
-      image        = "222484291001.dkr.ecr.${local.region}.amazonaws.com/ucms-wfe:${var.image_tag}"
+      image        = "222484291001.dkr.ecr.${local.region}.amazonaws.com/ucp-wfe:${var.image_tag}"
       cpu          = 1024
       memory       = 3072
       environment  = [for k, v in local.container_environment : { name = k, value = v }]

@@ -5,5 +5,5 @@ import { QuestionAnswer } from '@/app/shared/form-builder/questionnaire-types/qu
 
 export function useGetResponses(sectionUrl: string) {
 
-  return useSWR<QuestionAnswer[]>( sectionUrl ? `${QUESTIONNAIRE_ROUTE}/${sectionUrl}`: null, fetcher)
+  return useSWR<QuestionAnswer[]>( sectionUrl ? `${QUESTIONNAIRE_ROUTE}/${sectionUrl}`: null)
 }

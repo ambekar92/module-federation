@@ -195,7 +195,7 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
       </Grid>
       <ButtonGroup className='margin-top-2'>
         <Button type='button' onClick={handleAddRow}>
-          {question.name === 'social_disadvantage_affecting_experiences_individual_contributor_eight_a_social_disadvantage' ? 'Add Example' : 'Add Row'}
+          {question.name === 'social_disadvantage_affecting_experiences_individual_contributor_eight_a_social_disadvantage' ? 'Add Example' : 'Save'}
         </Button>
         <Button type='button' unstyled className='padding-x-2' onClick={() => setCurrentRow({})}>
           Cancel

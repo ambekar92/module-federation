@@ -5,7 +5,7 @@ import Footer from './layout/Footer'
 import Navbar from './layout/Navbar'
 //import Footer from './shared/layout/Footer'
 import { useTheme } from '@mui/material/styles'
-import { GovBanner } from '@trussworks/react-uswds'
+import { Alert, GovBanner } from '@trussworks/react-uswds'
 import type { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
@@ -23,10 +23,16 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
   const pathname = usePathname()
 
   const isApplicationPage = pathname?.includes('/firm/application/');
+  const isResourcePage = pathname === '/resources';
   const isHomePage = pathname === '/'
 
   return (
     <html lang="en">
+      <head>
+        {pathname?.includes('/aeroad') || pathname?.includes('/aethos') &&
+          <meta name="robots" content="noindex, nofollow" />
+        }
+      </head>
       <body>
         <GovBanner />
         <SessionProvider session={session}>
@@ -34,7 +40,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
             <div className={`${theme.palette.mode} layout`}>
               <Navbar />
               <UserSessionModal />
-              <div className={`start grid-container-widescreen display-flex ${isHomePage && 'padding-x-0'} ${isApplicationPage ? 'padding-x-0 bg-gray-5' : ''}`}>
+              <div className={`start grid-container-widescreen display-flex ${isHomePage && 'padding-x-0'} ${(isApplicationPage || isResourcePage) ? 'padding-x-0 bg-gray-5' : ''}`}>
                 <main className="flex-fill display-flex flex-column">
                   {children}
                 </main>

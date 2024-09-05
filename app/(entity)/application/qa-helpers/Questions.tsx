@@ -25,7 +25,7 @@ interface QuestionnaireProps {
 
 const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, onRefetchQuestionnaires, setCanNavigate }) => {
   const dispatch = useApplicationDispatch();
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
+  const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const session = useSessionUCMS();
   const userId = session?.data?.user.id;

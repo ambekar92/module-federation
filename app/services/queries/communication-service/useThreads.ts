@@ -6,5 +6,5 @@ import { Thread } from '../../types/communication-service/Thread';
 
 export function useThreads() {
   const params = useParams<{messageId: string}>();
-  return useSWR<Thread[]>(`${THREADS_ROUTE}?uuid=${params.messageId}`, fetcher)
+  return useSWR<Thread[]>(`${THREADS_ROUTE}?uuid=${params.messageId}`)
 }

@@ -16,7 +16,6 @@ import { DocumentRequiredQuestions } from '@/app/services/types/application-serv
 
 const Documents = () => {
   const {contributorId, userId, applicationData} = useApplicationContext()
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedQuestionId, setSelectedQuestionId] = React.useState<number | null>(null);
   const [selectedDocumentId, setSelectedDocumentId] = React.useState<number | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -25,15 +24,32 @@ const Documents = () => {
   const {trigger: triggerDelete} = useDeleteDocument();
   const {mutate} = useDocuments({user_id: userId});
 
+  const fileInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+
   function onFileUpload(e: React.SyntheticEvent, questionId: number, questionType: number) {
     setSelectedQuestionId(questionId);
-    fileInputRef.current?.addEventListener('change', () => {
-      const file = fileInputRef?.current?.files?.[0];
+
+    const fileInput = fileInputRefs.current[questionId];
+    if (!fileInput) {return;}
+
+    // Remove existing listener
+    const oldListener = fileInput.onchange;
+    if (oldListener) {
+      fileInput.removeEventListener('change', oldListener as EventListener);
+    }
+
+    // Create new listener
+    const newListener = () => {
+      const file = fileInput.files?.[0];
       if (file) {
-        handleUploadFile(file, questionId, questionType)
+        handleUploadFile(file, questionId, questionType);
       }
-    })
-    fileInputRef.current?.click();
+      // Remove listener after trigger
+      fileInput.onchange = null;
+    };
+
+    fileInput.onchange = newListener;
+    fileInput.click();
   }
 
   async function handleDelete(e: any, documentId: number) {
@@ -56,11 +72,12 @@ const Documents = () => {
       const question = questions?.find(q => q.id === questionId);
 
       const url = `${DOCUMENTS_ROUTE}?application_contributor_id=${contributorId}&entity_id=${applicationData?.entity.entity_id}&upload_user_id=${userId}&question_id=${questionId}${question?.hubzone_key ? `&hubzone_key=${question.hubzone_key.toString()}` : ''}`;
+
       await createDocument(url, formData);
 
       await mutate();
     } catch (error) {
-      // Error handling logic here
+      // Handled error
     } finally {
       setIsLoading(false);
       setSelectedQuestionId(null);
@@ -100,7 +117,11 @@ const Documents = () => {
           <h2>{question.title}</h2>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '3rem'}}>
             <p>{question.description}</p>
-            <input accept='.doc, .docx, .pdf'  ref={fileInputRef} type='file' hidden={true}/>
+            <input accept='.doc, .docx, .pdf'
+              ref={(el) => {
+                fileInputRefs.current[question.id] = el;
+              }}
+              type='file' hidden={true}/>
             <Button disabled={isLoading && selectedQuestionId === question.id}
               onClick={(e) => onFileUpload(e, question.id, question.valid_documents[0].document_type_id)} outline type='button'>
               {isLoading && selectedQuestionId === question.id ? 'Uploading...' : 'Upload'}
@@ -169,7 +190,11 @@ const Documents = () => {
                 <h2>{question.title}</h2>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '3rem'}}>
                   <p>{question.description}</p>
-                  <input accept='.doc, .docx, .pdf' ref={fileInputRef} type='file' hidden={true}/>
+                  <input accept='.doc, .docx, .pdf'
+                    ref={(el) => {
+                      fileInputRefs.current[question.id] = el;
+                    }}
+                    type='file' hidden={true}/>
                   <Button
                     disabled={isLoading && selectedQuestionId === question.id}
                     onClick={(e) => onFileUpload(e, question.id, question.valid_documents[0].document_type_id)}

@@ -12,6 +12,11 @@ const nextConfig = {
         destination: 'https://sbaone.atlassian.net/servicedesk/customer/portal/13', // Replace this with the URL where you want to redirect
         permanent: true, // This can be set to true for a 308 permanent redirect or false for a 307 temporary redirect
       },
+      {
+        source: '/kb',
+        destination: 'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/overview?homepageId=3085172979e', // Replace this with the URL where you want to redirect
+        permanent: true, // This can be set to true for a 308 permanent redirect or false for a 307 temporary redirect
+      },
     ];
   },
   eslint: {

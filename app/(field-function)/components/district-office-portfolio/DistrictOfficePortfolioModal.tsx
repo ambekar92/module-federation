@@ -62,7 +62,7 @@ const DistrictOfficePortfolioModal: React.FC<DistrictOfficePortfolioModalProps> 
               className="float-left"
               onClick={handleActionSubmit}
             >
-            {data?.buttonText}
+              {data?.buttonText}
             </Button>
             <Button
               type="button"

@@ -1,10 +1,10 @@
+import Questions from '@/app/(entity)/application/qa-helpers/Questions';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import { Answer, Question } from '@/app/shared/types/questionnaireTypes';
 import React, { useEffect, useState } from 'react';
-import useFetchOnce from '../../hooks/useFetchOnce';
-import { isUrlAnswerChoice } from '../questionnaireHelpers';
-import Questions from '@/app/(entity)/application/qa-helpers/Questions';
+import useSWR from 'swr';
 import Spinner from '../../components/spinner/Spinner';
+import { isUrlAnswerChoice } from '../questionnaireHelpers';
 
 interface ApiGetUrlInputProps {
   question: Question;
@@ -29,7 +29,7 @@ const ApiGetUrlInput: React.FC<ApiGetUrlInputProps> = ({
     ? question.answer_choice.url
     : null;
 
-  const { data, error } = useFetchOnce(url, () => url && axiosInstance.get(url).then(res => res.data));
+  const { data, error } = useSWR(url, () => url && axiosInstance.get(url).then(res => res.data));
 
   useEffect(() => {
     if (data === '/questionnaire-list/<application_contributor_id>') {

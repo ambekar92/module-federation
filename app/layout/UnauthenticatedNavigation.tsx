@@ -89,7 +89,7 @@ export const UnauthenticatedNavigation = () => {
                   }}
                 >
                   <Link
-                    href="/resources/get-ready"
+                    href="/resources"
                     style={{ textDecoration: 'none', color: 'white' }}
                   >
                   Resources
@@ -134,24 +134,16 @@ export const UnauthenticatedNavigation = () => {
                   className="usa-button usa-button--outline usa-button--inverse"
                   type="button"
                 >
-                  <span className={styleSettings.textColor}>Login</span>
-                </Button>
-              </Grid>
-              <Grid>
-                <Button
-                  onClick={openSignupMenu}
-                  className="usa-button usa-button--outline usa-button--inverse"
-                  type="button"
-                >
-                  <span className={styleSettings.textColor}>Signup</span>
+                  <span className={styleSettings.textColor}>Sign Up / Login</span>
                 </Button>
               </Grid>
               <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={loginMenuOpen} anchorEl={loginAnchorEl} onClose={handleClose}>
                 <LoginMenu />
               </Menu>
-              <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={signupMenuOpen} anchorEl={signupAnchorEl} onClose={handleClose}>
+              {/* Commented out because SignupMenu is not defined yet */}
+              {/* <Menu style={{marginTop: '2rem', marginRight: '2rem'}} open={signupMenuOpen} anchorEl={signupAnchorEl} onClose={handleClose}>
                 <SignupMenu />
-              </Menu>
+              </Menu> */}
             </>
           </Grid>
         </Grid>

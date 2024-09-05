@@ -35,8 +35,8 @@ const WhatsNext = () => {
 
         </div>
         <div className='padding-bottom-2'>
-          <CardActionArea >
-            <Button style={{ float: 'right', paddingInline: '3rem' }} type='button' onClick={handleClickAppPrep} outline>Next</Button>
+          <CardActionArea style={{ marginLeft: 'auto', width: 'fit-content' }} >
+            <Button type='button' onClick={handleClickAppPrep} outline>Next</Button>
           </CardActionArea>
         </div>
       </Card>
@@ -50,8 +50,8 @@ const WhatsNext = () => {
 
         </div>
         <div className='padding-bottom-2'>
-          <CardActionArea >
-            <Button style={{ float: 'right', paddingInline: '3rem' }} type='button' onClick={handleClickHubZone} outline>Next</Button>
+          <CardActionArea style={{ marginLeft: 'auto', width: 'fit-content' }}>
+            <Button type='button' onClick={handleClickHubZone} outline>Next</Button>
           </CardActionArea>
         </div>
       </Card>

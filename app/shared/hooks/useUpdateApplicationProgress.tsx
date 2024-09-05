@@ -2,11 +2,21 @@ import { APPLICATION_ROUTE } from '@/app/constants/routes';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import { useEffect } from 'react';
 import { useApplicationContext } from './useApplicationContext';
+import Cookies from 'js-cookie';
+import { encrypt } from '@/app/shared/utility/encryption';
 
 export const useUpdateApplicationProgress = (progress: string) => {
-  const { applicationId } = useApplicationContext();
+  const { applicationId, applicationData } = useApplicationContext();
 
   useEffect(() => {
+    if (applicationData) {
+      const simpleApplicationData = {
+        id: applicationData.id,
+        progress: progress,
+        workflow_state: applicationData.workflow_state
+      };
+      Cookies.set('applicationData', encrypt(JSON.stringify([simpleApplicationData])));
+    }
     const updateProgress = async () => {
       try {
         if (applicationId) {
@@ -23,5 +33,5 @@ export const useUpdateApplicationProgress = (progress: string) => {
       }
     };
     updateProgress();
-  }, [applicationId, progress]);
+  }, [applicationId, progress, applicationData]);
 };

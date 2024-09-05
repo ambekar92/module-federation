@@ -1,4 +1,4 @@
-import DistrictOfficePortfolio from "@/app/(field-function)/components/district-office-portfolio/DistrictOfficePortfolio"
+import DistrictOfficePortfolio from '@/app/(field-function)/components/district-office-portfolio/DistrictOfficePortfolio'
 
 const DistrictOfficePortfolioPage = () => {
   return (

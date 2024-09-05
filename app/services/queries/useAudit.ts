@@ -6,5 +6,5 @@ import { AuditResponseType } from '../types/AuditType';
 
 export function useAudit(page: number = 1, pageSize: number = 10) {
   const params = useParams<{application_id: string}>();
-  return useSWR<AuditResponseType>(`${AUDIT_ROUTE}?application_id=${params.application_id}&page=${page}&pageSize=${pageSize}`, fetcher)
+  return useSWR<AuditResponseType>(`${AUDIT_ROUTE}?application_id=${params.application_id}&page=${page}&pageSize=${pageSize}`)
 }

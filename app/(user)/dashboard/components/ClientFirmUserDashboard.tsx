@@ -1,20 +1,21 @@
 'use client'
 import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
+import { DELEGATE_DASHBOARD_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import fetcher from '@/app/services/fetcher'
-import { getEntityByDelegateId } from '@/app/shared/utility/getEntityByUserId'
+import { Application } from '@/app/services/types/application-service/Application'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, Collection } from '@trussworks/react-uswds'
+import { useRouter } from 'next/navigation'
 import { ReactElement, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import styles from '../utils/FirmDashboard.module.scss'
 import ApplicationCards from './ApplicationCards'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
-import { Application } from '@/app/services/types/application-service/Application'
-import Spinner from '@/app/shared/components/spinner/Spinner'
 
 export default function ClientFirmUserDashboard() {
+  const router = useRouter()
   const { data: session, status } = useSessionUCMS()
   const [clickedId, setClickedId] = useState<number | null>(null)
   const [actionButton, setActionButton] = useState<ReactElement>()
@@ -24,7 +25,6 @@ export default function ClientFirmUserDashboard() {
     '',
   )
   const [userId, setUserId] = useState<number | null>(null)
-  const [entityId, setEntityId] = useState<number | null>(null)
   const hasDelegate = session?.permissions?.some(permission => permission.slug.includes('delegate'))
 
   useEffect(() => {
@@ -34,24 +34,14 @@ export default function ClientFirmUserDashboard() {
   }, [session, status])
 
   useEffect(() => {
-    async function fetchEntityData() {
-      if (userId && hasDelegate) {
-        const entityData = await getEntityByDelegateId(userId)
-        if (entityData && entityData.length > 0) {
-          setEntityId(entityData[entityData.length - 1].id)
-        }
-      }
+    if (hasDelegate) {
+      router.push(DELEGATE_DASHBOARD_PAGE)
     }
-    fetchEntityData()
-  }, [userId, hasDelegate])
+  }, [hasDelegate])
 
-  const url = hasDelegate && entityId
-    ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}`
-    : userId
-      ? `${FIRM_APPLICATIONS_ROUTE}?user_id=${userId}`
-      : null
+  const url = userId ? `${FIRM_APPLICATIONS_ROUTE}?user_id=${userId}` : null
 
-  const { data, error } = useSWR(url, fetcher<Application[]>)
+  const { data, error } = useSWR<Application[]>(url);
 
   const applicationDeleteOrWithdraw = async (event: any, id: number) => {
     // Prevent default action and event bubbling if needed
@@ -148,7 +138,7 @@ export default function ClientFirmUserDashboard() {
       {(!data || data.length === 0) && <div>No applications found.</div>}
       {openConfirmationModal && (
         <DeleteWithdrawConfirmationModal
-          entityId={entityId}
+          entityId={data[0].entity.entity_id}
           openConfirmationModal={openConfirmationModal}
           confirmationType={confirmationType}
           clickedId={clickedId}

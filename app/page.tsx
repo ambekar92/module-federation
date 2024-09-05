@@ -1,51 +1,60 @@
 'use client'
-import { redirect, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import LandingPage from './(home)/home-2/components/LandingPage'
 import { CLAIM_YOUR_BUSINESS } from './constants/url'
 import './globals.scss'
-import { useSessionUCMS } from './lib/auth'
 import { Role } from './shared/types/role'
 import { postLoginRedirectUrl } from './shared/utility/postLoginRedirectUrl'
-
-// async function fetchData(url: string) {
-//   const res = await fetch(url, { next: { revalidate: 60 } }); // Cache for 60 seconds
-//   if (!res.ok) {
-//     throw new Error('Failed to fetch data');
-//   }
-//   return res.json();
-// }
+import Cookies from 'js-cookie'
+import { useEffect } from 'react'
+import { decrypt } from '@/app/shared/utility/encryption';
 
 export default function Home() {
   const searchParams = useSearchParams();
-  const session = useSessionUCMS();
 
-  if(session && searchParams.get('signedIn') === 'true') {
-    const firstPermissionSlug = session.data.permissions?.at(0)?.slug as unknown as Role;
-    const lastPermissionSlug = session.data.permissions?.at(-1)?.slug as unknown as Role;
+  useEffect(() => {
+    const state = searchParams.get('state');
+    if (state) {
+      let redirectUrl = CLAIM_YOUR_BUSINESS;
+      const firstPermission = Cookies.get('firstPermission');
+      const firstPermissionSlug = firstPermission ? decrypt(firstPermission) as Role : undefined;
+      const lastPermission = Cookies.get('lastPermission');
+      const lastPermissionSlug = lastPermission ? decrypt(lastPermission) as Role : undefined;
 
-    if (firstPermissionSlug && lastPermissionSlug) {
-      // let applicationData: Application[] | null = null;
-      // let entityData: Entity[] | null = null;
+      if (firstPermissionSlug && lastPermissionSlug) {
+        if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.log('REDIRECT PAGE LOGIN');
+          console.log('firstPermissionSlug', firstPermissionSlug);
+          console.log('lastPermissionSlug', lastPermissionSlug);
+        }
+        redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
+        if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.log('REDIRECT TO', redirectUrl);
+        }
+      }
 
-      // const applicationDataPromise = fetchData(`${APPLICATION_ROUTE}?user_id=${session.data.user_id}`);
-      // const entityQueryParam = lastPermissionSlug === Role.DELEGATE ? 'delegate_user_id' : 'owner_user_id';
-      // const entityDataPromise = fetchData(`${ENTITIES_ROUTE}?${entityQueryParam}=${session.data.user_id}`);
+      const checkCookieAndRedirect = () => {
+        const cookie = Cookies.get('email_password_auth_token');
+        if (cookie) {
+          if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+            console.log('COOKIE FOUND', cookie);
+            console.log('REDIRECT TO NOW', redirectUrl);
+          }
+          window.location.href = redirectUrl;
+        } else {
+          setTimeout(checkCookieAndRedirect, 500);
+        }
+      };
 
-      // applicationData = await applicationDataPromise;
-
-      // Only fetch entity data if no application found
-      // if (applicationData?.length === 0) {
-      // entityData = await entityDataPromise;
-      // }
-
-      const redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
-      redirect(redirectUrl);
+      checkCookieAndRedirect();
     } else {
-      redirect(CLAIM_YOUR_BUSINESS);
+      if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.log('NO STATE');
+      }
     }
-  }
+  }, [searchParams]);
 
   return (
     <>

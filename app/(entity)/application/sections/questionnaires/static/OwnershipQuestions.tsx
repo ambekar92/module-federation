@@ -1,9 +1,8 @@
 'use client'
 import { ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
-import { APPLICATION_STEP_ROUTE, ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url';
+import { APPLICATION_STEP_ROUTE, ASSIGN_DELEGATE_PAGE, buildRoute, DASHBOARD } from '@/app/constants/url';
 import { axiosInstance } from '@/app/services/axiosInstance';
-import fetcher from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
@@ -19,17 +18,19 @@ import { useApplicationDispatch, useApplicationSelector } from '../../../redux/h
 import { applicationSteps } from '../../../utils/constants';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useSessionUCMS } from '@/app/lib/auth';
+import { redirect } from 'next/navigation';
+import { useWorkflowRedirect } from '../../../hooks/useWorkflowRedirect';
 
 function OwnershipQuestions() {
   // Redux
   const dispatch = useApplicationDispatch();
   const { ownerApplicationInfo } = useOwnerApplicationInfo();
   const { owners } = useApplicationSelector(selectApplication);
-  const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   useUpdateApplicationProgress('Ownership');
+  const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
 
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
+  const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [totalOwnershipPercentage, setTotalOwnershipPercentage] = useState(0);
@@ -37,15 +38,8 @@ function OwnershipQuestions() {
   const { data: session } = useSessionUCMS();
   const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
 
-  useEffect(() => {
-    if (
-      applicationData && applicationData.workflow_state !== 'draft'
-			&& applicationData.workflow_state !== 'returned_for_firm'
-			&& !hasDelegateRole
-    ) {
-      window.location.href = `/application/view/${applicationId}`;
-    }
-  }, [applicationData, applicationId, session]);
+  // Redirects user based on application state and permissions
+  useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.ownership.stepIndex));
@@ -67,7 +61,7 @@ function OwnershipQuestions() {
   }, [owners]);
 
   const handleSubmit = async () => {
-    if (Math.abs(totalOwnershipPercentage - 100) < 0.01) {
+    if (totalOwnershipPercentage >= 99.99 && totalOwnershipPercentage <= 100) {
       setIsSubmitting(true);
       try {
         const postData = {

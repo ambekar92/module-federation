@@ -1,22 +1,24 @@
-import { useParams } from 'next/navigation';
-import { useSessionUCMS } from '@/app/lib/auth';
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
+import { ENTITIES_ROUTE } from '@/app/constants/routes';
+import { useSessionUCMS } from '@/app/lib/auth';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
-import { useEffect, useState, useMemo } from 'react';
+import { encrypt } from '@/app/shared/utility/encryption';
+import Cookies from 'js-cookie';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { EntitiesType } from '../types/responses';
-import { ENTITIES_ROUTE } from '@/app/constants/routes';
-import fetcher from '@/app/services/fetcher';
 
 export function useApplicationContext() {
   const params = useParams();
+  const router = useRouter();
   const { data: session } = useSessionUCMS();
   const applicationId = parseInt(params.application_id as string, 10);
   const userId = session?.user_id;
   const [contributorId, setContributorId] = useState<number | null>(null);
   const { applicationData } = useApplicationData(ApplicationFilterType.id, applicationId);
   const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
-  const { data: entityData } = useSWR<EntitiesType>(hasDelegateRole ? `${ENTITIES_ROUTE}?delegate_user_id=${session.user_id}` : null, fetcher);
+  const { data: entityData } = useSWR<EntitiesType>(hasDelegateRole ? `${ENTITIES_ROUTE}?delegate_user_id=${session.user_id}` : null);
 
   const isApplicationDelegate = useMemo(() => {
     if (!hasDelegateRole) {return false;}
@@ -35,7 +37,8 @@ export function useApplicationContext() {
         if (firstContributorId) {
           setContributorId(firstContributorId);
         } else {
-          window.location.href = '/404';
+          router.push('/404');
+          return;
         }
       } else {
         const id = applicationData.application_contributor.find(
@@ -44,11 +47,23 @@ export function useApplicationContext() {
         if (id) {
           setContributorId(id);
         } else {
-          window.location.href = '/404';
+          router.push('/404');
+          return;
         }
       }
+
+      // Save cookies
+      if (session.permissions && session.permissions.length > 0) {
+        Cookies.set('firstPermission', encrypt(session.permissions[0].slug));
+        Cookies.set('lastPermission', encrypt(session.permissions[session.permissions.length - 1].slug));
+      }
+
+      if (entityData && entityData.length > 0) {
+        const simpleEntityData = entityData.map(entity => ({ id: entity.id }));
+        Cookies.set('entityData', encrypt(JSON.stringify(simpleEntityData)));
+      }
     }
-  }, [applicationData, userId, session.user_id, isApplicationDelegate, hasDelegateRole]);
+  }, [applicationData, userId, session, isApplicationDelegate, hasDelegateRole, entityData, router]);
 
   return {
     applicationId,

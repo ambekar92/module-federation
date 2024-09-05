@@ -1,3 +1,7 @@
+import { applicationSteps } from '@/app/(entity)/application/utils/constants';
+import { ADMIN_DASHBOARD, APPLICATION_STEP_ROUTE, DASHBOARD, ASSIGN_DELEGATE_PAGE, CLAIM_YOUR_BUSINESS, QUESTIONNAIRE_LIST_PAGE, REVIEWERS_DASHBOARD_PAGE, SELECT_INTENDED_PROGRAMS_PAGE, TASKS_DASHBOARD_PAGE, buildRoute } from '@/app/constants/url';
+import { Role } from '../types/role';
+
 export const capitalizeAndSplit = (text: string) => {
   if (text === 'service_disabled_veteran') {
     return 'Service-Disabled Veteran'
@@ -46,19 +50,67 @@ export const filterText = (
   return text.replace(/[^a-zA-Z0-9]/g, '')
 }
 
-import { APPLICATION_STEP_ROUTE, APPLICATION_VIEW_PAGE, buildRoute, CLAIM_YOUR_BUSINESS, QUESTIONNAIRE_LIST_PAGE, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
-import { Question } from '../types/questionnaireTypes';
-import { Application } from '@/app/services/types/application-service/Application'
-import { applicationSteps } from '@/app/(entity)/application/utils/constants'
-import { Entity } from '../types/responses'
+export type CookieApplication = {
+  id: number;
+  progress: string;
+  workflow_state: string;
+};
 
-export function areAllQuestionsAnswered(questions: Question[]): boolean {
-  return questions.every(question => question.answer.value !== null);
+export type CookieEntity = {
+  id: number;
+};
+
+export function handleInternalRoles(lastPermissionSlug: Role): string {
+  switch (lastPermissionSlug) {
+    case Role.ADMIN:
+      return ADMIN_DASHBOARD;
+    case Role.ANALYST:
+    case Role.ANALYST_HIGH_TIER:
+    case Role.ANALYST_LOW_TIER:
+    case Role.ANALYST_HIGH:
+    case Role.ANALYST_LOW:
+    case Role.ANALYST_CONTRIBUTOR_OGC:
+    case Role.ANALYST_CONTRIBUTOR_OSS:
+    case Role.REVIEWER:
+    case Role.REVIEWER_HIGH_TIER:
+    case Role.REVIEWER_LOW_TIER:
+    case Role.REVIEWER_HIGH:
+    case Role.REVIEWER_LOW:
+      return REVIEWERS_DASHBOARD_PAGE;
+    default:
+      return TASKS_DASHBOARD_PAGE;
+  }
 }
 
-export function getApplicationRedirect(application: Application): string {
+export function handlePrimaryQualifyingOwner(applicationData: CookieApplication[] | null, entityData: CookieEntity[] | null): string {
+  if (applicationData?.length) {
+    const lastApplication = applicationData[applicationData.length - 1];
+    return lastApplication.progress
+      ? getApplicationRedirect(lastApplication)
+      : getEntityRedirect(entityData);
+  }
+  return getEntityRedirect(entityData);
+}
+
+export function handleNonPrimaryRoles(applicationData: CookieApplication[] | null): string {
+  if (applicationData?.length) {
+    const lastApplication = applicationData[applicationData.length - 1];
+    return getApplicationRedirect(lastApplication);
+  }
+  return CLAIM_YOUR_BUSINESS;
+}
+
+function getEntityRedirect(entityData: CookieEntity[] | null): string {
+  if (entityData?.length) {
+    const lastEntity = entityData[entityData.length - 1];
+    return buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, { entity_id: lastEntity.id });
+  }
+  return CLAIM_YOUR_BUSINESS;
+}
+
+export function getApplicationRedirect(application: CookieApplication): string {
   if (application.workflow_state === 'submitted' || application.workflow_state === 'under_review') {
-    return buildRoute(APPLICATION_VIEW_PAGE, { applicationId: application.id });
+    return DASHBOARD;
   }
 
   const progressToStepMap: Record<string, string> = {
@@ -68,6 +120,7 @@ export function getApplicationRedirect(application: Application): string {
     'Eligible Programs': applicationSteps.eligiblePrograms.link,
     'Ownership': applicationSteps.ownership.link,
     'Sign Application': applicationSteps.sign.link,
+    'Delegates': 'assign-a-delegate',
     'Questionnaires': 'questionnaire-list'
   };
 
@@ -77,36 +130,12 @@ export function getApplicationRedirect(application: Application): string {
     return buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: application.id });
   }
 
+  if (application.progress === 'Delegates') {
+    return buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: application.id });
+  }
+
   return buildRoute(APPLICATION_STEP_ROUTE, {
     applicationId: application.id,
     stepLink: stepLink
   });
-}
-
-export function handlePrimaryQualifyingOwner(applicationData: Application[] | null, entityData: Entity[] | null): string {
-  if (applicationData?.length) {
-    const lastApplication = applicationData[applicationData.length - 1];
-    return lastApplication.progress
-      ? getApplicationRedirect(lastApplication)
-      : getEntityRedirect(entityData);
-  }
-
-  return getEntityRedirect(entityData);
-}
-
-export function handleNonPrimaryRoles(applicationData: Application[] | null): string {
-  if (applicationData?.length) {
-    const lastApplication = applicationData[applicationData.length - 1];
-    return getApplicationRedirect(lastApplication);
-  }
-  return CLAIM_YOUR_BUSINESS;
-}
-
-function getEntityRedirect(entityData: Entity[] | null): string {
-  if (entityData?.length) {
-    const lastEntity = entityData[entityData.length - 1];
-    return buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, { entity_id: lastEntity.id });
-  }
-
-  return CLAIM_YOUR_BUSINESS;
 }

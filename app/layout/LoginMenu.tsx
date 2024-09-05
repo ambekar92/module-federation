@@ -2,13 +2,14 @@ import { Button } from '@trussworks/react-uswds'
 import { signIn } from 'next-auth/react';
 import { axiosInstance } from '../services/axiosInstance';
 import { useRouter } from 'next/navigation';
+import { encrypt } from '@/app/shared/utility/encryption';
 
 const LoginMenu = () => {
   const router = useRouter();
 
   function handleLogin() {
     localStorage.clear()
-    signIn('okta', { callbackUrl: '/?signedIn=true' })
+    signIn('okta', { callbackUrl: `/?state=${encrypt('true')}` })
   }
   const handleSSOLogin =  async() => {
     axiosInstance.get('/max-login').then(response => {
@@ -24,11 +25,11 @@ const LoginMenu = () => {
       flexDirection: 'column',
     }}>
       <div>
-        <h2>Log In</h2>
+        <h2>Sign Up / Log In</h2>
         <p>You can access your account by signing in with one of the options below</p>
       </div>
 
-      <Button type='button' onClick={handleLogin}>Log In</Button>
+      <Button type='button' onClick={handleLogin}>Sign Up / Log In</Button>
       <div style={{marginTop: '2rem'}}>
         <hr />
       </div>

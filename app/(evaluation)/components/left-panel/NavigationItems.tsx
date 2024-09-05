@@ -9,13 +9,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
 
-const truncateText = (text: string, maxLength: number) => {
-  if (text.length > maxLength) {
-    return `${text.substring(0, maxLength)}...`;
-  }
-  return text;
-};
-
 interface NavigationItemsProps {
   navItems: NavItem[];
   isNavItemsLoading: boolean;

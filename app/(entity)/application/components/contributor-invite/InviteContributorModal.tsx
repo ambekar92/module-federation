@@ -15,6 +15,7 @@ import {
 import React from 'react'
 import { applicationSteps } from '../../utils/constants'
 import { Contributor } from './types'
+import { InvitationType } from '@/app/services/types/application-service/Application'
 
 interface InviteContributorModalProps {
   open: boolean;
@@ -23,13 +24,14 @@ interface InviteContributorModalProps {
 	contributors: Contributor[];
 	entityId: number | undefined;
 	applicationId: number | null;
+	invitationData: InvitationType[] | undefined;
 }
 
 const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
   open,
   handleCancel,
   contributorId, contributors,
-  entityId, applicationId
+  entityId, applicationId, invitationData
 }) => {
   const setApplicationRole = (role: string) => {
     switch(role) {
@@ -47,20 +49,29 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
   }
   const sendInvitations = async () => {
     try {
-      if(entityId && applicationId) {
-        for(let index = 0; index < contributors.length; index++) {
-          const postData = {
-            application_id: applicationId,
-            email: contributors[index].emailAddress,
-            entity_id: entityId,
-            application_role_id: setApplicationRole(contributors[index].contributorRole),
-            first_name: contributors[index].firstName,
-            last_name: contributors[index].lastName
-          }
+      if (entityId && applicationId) {
+        for (let index = 0; index < contributors.length; index++) {
+          const contributor = contributors[index];
 
-          const response = await axiosInstance.post(INVITATION_ROUTE, postData);
-          if (response && response.data && response.data.id) {
-            await axiosInstance.post(SEND_INVITATION_DELEGATE, {invitation_id: response.data.id});
+          // checks if an invitation already exists
+          const existingInvitation = invitationData?.find(
+            invite => invite.email.toLowerCase() === contributor.emailAddress.toLowerCase()
+          );
+
+          if (!existingInvitation) {
+            const postData = {
+              application_id: applicationId,
+              email: contributor.emailAddress,
+              entity_id: entityId,
+              application_role_id: setApplicationRole(contributor.contributorRole),
+              first_name: contributor.firstName,
+              last_name: contributor.lastName
+            }
+
+            const response = await axiosInstance.post(INVITATION_ROUTE, postData);
+            if (response && response.data && response.data.id) {
+              await axiosInstance.post(SEND_INVITATION_DELEGATE, {invitation_id: response.data.id});
+            }
           }
         }
 
@@ -70,7 +81,7 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
         })
       }
     } catch(error) {
-      // alert('Error sending invitations. Please try again.')
+      // Handle error
     }
   }
   return (

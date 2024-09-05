@@ -1,23 +1,20 @@
 'use client'
 
+import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
 import { NavItem } from '@/app/(evaluation)/types/types'
 import { RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
-import fetcher from '@/app/services/fetcher'
 import { REASON_CODE_ROUTE, ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
-import { RootState } from '@/app/(evaluation)/firm/store/store'
 import Close from '@mui/icons-material/Close'
 import { Alert, Button, ButtonGroup, Label, ModalRef } from '@trussworks/react-uswds'
 import { useParams, useSelectedLayoutSegment } from 'next/navigation'
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import useSWR from 'swr'
 import styles from '../../Evaluation.module.scss'
 import DeleteConfirmationModal from '../../modals/request-info/DeleteConfirmationModal'
 import RequestInfoModal from '../../modals/request-info/RequestInfoModal'
-import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
 
 export interface ReasonState {
   id: number | null;
@@ -34,7 +31,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
   const selectedSegment = useSelectedLayoutSegment()
   const sessionData = useSessionUCMS()
   const userRole = getUserRole(sessionData?.data?.permissions || []);
-  const { data: reasonCodes, error } = useFetchOnce<ReasonCode[]>(REASON_CODE_ROUTE, fetcher)
+  const { data: reasonCodes, error } = useSWR<ReasonCode[]>(REASON_CODE_ROUTE)
   const [postSuccess, setPostSuccess] = useState<boolean>(false);
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [reason, setReason] = useState<ReasonState>({ id: null, title: '' });

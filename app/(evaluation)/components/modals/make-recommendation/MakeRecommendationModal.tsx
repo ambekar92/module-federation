@@ -5,10 +5,8 @@ import { DOCUMENTS_ROUTE, PROGRAM_APPLICATION, UPDATE_APPLICATION_STATE } from '
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
-import fetcher from '@/app/services/fetcher'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
 import { ProgramApplicationType } from '@/app/services/types/application-service/Application'
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
 import {
   Button,
   ButtonGroup,
@@ -21,6 +19,7 @@ import {
 } from '@trussworks/react-uswds'
 import { useParams } from 'next/navigation'
 import React, { RefObject, useEffect, useState } from 'react'
+import useSWR from 'swr'
 import DocumentUploadInput from '../../../../shared/components/forms/DocumentUploadInput'
 
 interface MakeRecommendationModalProps {
@@ -34,7 +33,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
 }) => {
   const sessionData = useSessionUCMS()
   const params = useParams<{ application_id: string }>()
-  const { data: programData } = useFetchOnce(`${PROGRAM_APPLICATION}/${params.application_id}`, fetcher)
+  const { data: programData } = useSWR(`${PROGRAM_APPLICATION}/${params.application_id}`)
   const [userId, setUserId] = useState<number | null>(null)
   const [fileData, setFileData] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)

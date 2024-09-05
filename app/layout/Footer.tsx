@@ -4,6 +4,7 @@ import { useSessionUCMS } from '@/app/lib/auth'
 import { GridContainer, Grid, Link } from '@trussworks/react-uswds'
 import { SBA_LOGO_CIRCLE_URL } from '../constants/icons'
 import styles from './Layout.module.scss'
+import { decrypt } from '@/app/shared/utility/encryption';
 
 export default function Footer() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -17,7 +18,7 @@ export default function Footer() {
     e.preventDefault() // Prevent default link behavior
   }
   useEffect(() => {
-    const emailPasswordAuthToken = Cookies.get('email_password_auth_token')
+    const emailPasswordAuthToken = Cookies.get('email_password_auth_token');
     if (status === 'authenticated' || !!emailPasswordAuthToken) {
       setIsAuthenticated(true)
     }
@@ -126,7 +127,7 @@ export default function Footer() {
                           <span className="text-underline">About Us</span>
                         </a>
                       </li>*/}
-                    </div> 
+                    </div>
                     <div
                       className="display-flex flex-row flex-justify-end grid-row grid-gap"
                       style={{ backgroundColor: 'white' }}

@@ -1,4 +1,4 @@
-import DistrictOfficeAssignment from "@/app/(field-function)/components/district-office-assignment/DistrictOfficeAssignment"
+import DistrictOfficeAssignment from '@/app/(field-function)/components/district-office-assignment/DistrictOfficeAssignment'
 
 const DistrictOfficeAssignmentPage = () => {
   return (

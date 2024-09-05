@@ -1,13 +1,13 @@
 'use client'
 import { APPLICATION_ROUTE } from '@/app/constants/routes'
 import fetcher from '@/app/services/fetcher'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 import { Alert, Table } from '@trussworks/react-uswds'
 import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 import TableHeader from '../components/TableHeader'
 import styles from './Entities.module.scss'
 import TablePagination from './TablePagination'
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
-import Spinner from '@/app/shared/components/spinner/Spinner'
 const PAGE_SIZE = 8
 
 interface IApplication {
@@ -97,7 +97,7 @@ const ApplicationTable = async ({
   const [data, setData] = useState([] as any | IApplication[])
   const [shouldFetch, setShouldFetch] = useState(true)
 
-  const { data: responseData, error: responseError, isLoading } = useFetchOnce(`${APPLICATION_ROUTE}`, fetcher);
+  const { data: responseData, error: responseError, isLoading } = useSWR(`${APPLICATION_ROUTE}`);
 
   const convertToTableData = (dataToConvert: any | IApplication[]) => {
     const convertedData = [] as IApplication[]

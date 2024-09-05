@@ -29,6 +29,8 @@ const QuestionnairePage: React.FC = () => {
   const closeApplicationRef = useRef<ModalRef>(null);
   const [canNavigate, setCanNavigate] = useState(true);
   const [title, setTitle] = useState<string>('');
+  const { data: session } = useSessionUCMS();
+  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
   useUpdateApplicationProgress('Questionnaires');
 
   const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(
@@ -44,25 +46,26 @@ const QuestionnairePage: React.FC = () => {
     if (!questionnairesData) {return [];}
 
     const baseSections = questionnairesData.map((item) => extractLastPart(item.url));
-    const hasHubzoneCalculator = baseSections.some(url => url.includes('hubzone-calculator'));
+    const filteredSections = hasDelegateRole
+      ? baseSections.filter(section => section !== 'core-program-eligibility')
+      : baseSections;
+
+    const hasHubzoneCalculator = filteredSections.some(url => url.includes('hubzone-calculator'));
 
     if (hasHubzoneCalculator) {
       return [
-        ...baseSections,
+        ...filteredSections,
         'individual-contributor-hubzone-business-relationships',
         'hubzone-calculator-supplemental'
       ];
     }
 
-    return baseSections;
-  }, [questionnairesData]);
-
-  const { data: session } = useSessionUCMS();
-  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
+    return filteredSections;
+  }, [questionnairesData, hasDelegateRole]);
 
   useEffect(() => {
     if(hasDelegateRole && section === 'core-program-eligibility') {
-      window.location.href = `/application/view/${applicationId}`;
+      window.location.href = `/application/questionnaire/${applicationId}`;
     }
     if (
       applicationData && applicationData.workflow_state !== 'draft'
@@ -76,7 +79,6 @@ const QuestionnairePage: React.FC = () => {
     if (allSections.length > 0) {
       const index = allSections.findIndex((item) => item.includes(section));
       setCurrentIndex(index !== -1 ? index : 0);
-      console.log(index)
     }
   }, [allSections, section]);
 
@@ -155,7 +157,7 @@ const QuestionnairePage: React.FC = () => {
             <Link
               className="usa-button usa-button--outline"
               href={buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId })}
-              onClick={(e) => handleNavigation(buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }))}
+              onClick={() => handleNavigation(buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }))}
             >
       				Previous
             </Link>

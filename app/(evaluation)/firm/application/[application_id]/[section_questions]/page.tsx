@@ -1,11 +1,11 @@
 'use client'
-import { getAnalystQuestionnaires } from '@/app/(evaluation)/components/left-panel/constants'
+import { controlAndOperationQuestionnaire, getAnalystQuestionnaires, ownershipQuestionnaire } from '@/app/(evaluation)/components/left-panel/constants'
+import { useQuestionnaireState } from '@/app/(evaluation)/components/left-panel/useQuestionnaireState'
 import { Params, QuestionnaireItem } from '@/app/(evaluation)/types/types'
 import { ANSWER_ROUTE, QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
-import fetcher from '@/app/services/fetcher'
-import { QuestionType } from '@/app/shared/form-builder/questionnaire-types/question-types'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 import { Answer, Question } from '@/app/shared/types/questionnaireTypes'
 import { Role } from '@/app/shared/types/role'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
@@ -16,8 +16,6 @@ import useSWR from 'swr'
 import { useCurrentApplication } from '../../../useApplicationData'
 import AnswerValue from './AnswerValue'
 import FirmQuestionRenderer from './FirmQuestionRenderer'
-import Spinner from '@/app/shared/components/spinner/Spinner'
-import { useQuestionnaireState } from '@/app/(evaluation)/components/left-panel/useQuestionnaireState'
 
 const SectionQuestions = () => {
   const params = useParams<Params>();
@@ -115,42 +113,57 @@ const SectionQuestions = () => {
     userRole === 'reviewer' && reviewerContributorId && isAnalystQuestionnaire
       ? `${QUESTIONNAIRE_ROUTE}/${reviewerContributorId}/${params.section_questions}`
       : null,
-    fetcher
   );
 
   const { data: analystData, isLoading: analystLoading } = useSWR<Question[]>(
     (userRole === 'analyst' || userRole === 'reviewer') && analystContributorId && isAnalystQuestionnaire
       ? `${QUESTIONNAIRE_ROUTE}/${analystContributorId}/${params.section_questions}`
-      : null,
-    fetcher
+      : null
   );
 
   const { data: regularData, isLoading: regularLoading } = useSWR<Question[]>(
     !isAnalystQuestionnaire && firstContributorId
       ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}/${params.section_questions}`
-      : null,
-    fetcher
+      : null
   );
 
   const { data: navItems } = useSWR<QuestionnaireItem[]>(
-    firstContributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${firstContributorId}` : null,
-    fetcher
+    firstContributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${firstContributorId}` : null
   );
 
   const combinedNavItems = useMemo(() => {
     if (!navItems) {return [];}
-    if (userRole !== 'analyst') {return navItems;}
 
-    const analystItems = analystQuestionnaires.map(url => ({
-      title: url.replace(/-/g, ' ')
-        .replace(/(\b\w)/g, l => l.toUpperCase())
-        .replace(/^\//, '')
-        .replace(/Eight A/g, '8(a)'),
-      url: `/firm/application/${params.application_id}${url}`,
-      section: 'Analyst Questionnaires'
-    }));
+    const baseItems = [
+      {
+        id: (navItems.length || 0) + 1,
+        title: 'Owner and Management',
+        url: `/firm/application/${params.application_id}${ownershipQuestionnaire}`,
+        section: 'Application',
+      },
+      {
+        id: (navItems.length || 0) + 2,
+        title: 'Control and Operation',
+        url: `/firm/application/${params.application_id}${controlAndOperationQuestionnaire}`,
+        section: 'Application',
+      },
+      ...navItems
+    ];
 
-    return [...navItems, ...analystItems];
+    if (userRole === 'analyst') {
+      const analystItems = analystQuestionnaires.map(url => ({
+        title: url.replace(/-/g, ' ')
+          .replace(/(\b\w)/g, l => l.toUpperCase())
+          .replace(/^\//, '')
+          .replace(/Eight A/g, '8(a)'),
+        url: `/firm/application/${params.application_id}${url}`,
+        section: 'Analyst Questionnaires'
+      }));
+
+      return [...baseItems, ...analystItems];
+    }
+
+    return baseItems;
   }, [navItems, params.application_id, userRole, analystQuestionnaires]);
 
   const { updateQuestionnaireCompletion } = useQuestionnaireState(applicationData, analystQuestionnaires);
@@ -259,13 +272,7 @@ const SectionQuestions = () => {
             isReviewer={userRole === 'reviewer'}
           />
         ) : (
-          <>
-            {question.question_type === QuestionType.GRID &&
-              <div key={question.id}>
-                {question?.grid_questions?.map(q => <AnswerValue question={q} key={q.id} />)}
-              </div>}
-            {!showHUBZoneCalculatorButton && <AnswerValue key={index} question={question} />}
-          </>
+          !showHUBZoneCalculatorButton && <AnswerValue key={index} question={question} />
         )}
       </React.Fragment>
     ));
@@ -351,12 +358,17 @@ const SectionQuestions = () => {
   }, [isAnalystQuestionnaire, userRole, analystData, reviewerData, params.section_questions, updateQuestionnaireCompletion]);
 
   return (
-    <div>
+    <div className="width-full maxw-full">
+      <h1>{title}</h1>
+
       {(reviewerLoading || analystLoading || regularLoading) && <Spinner center />}
-      {!reviewerLoading && !analystLoading && !regularLoading && !reviewerData && !analystData && !regularData && <div>No data found</div>}
+
+      {!reviewerLoading && !analystLoading && !regularLoading && !reviewerData && !analystData && !regularData && (
+        <div>No data found</div>
+      )}
+
       {(reviewerData || analystData || regularData) && !reviewerLoading && !analystLoading && !regularLoading && (
         <>
-          <h1>{title}</h1>
           <form>
             {isAnalystQuestionnaire ? (
               <>
@@ -370,18 +382,18 @@ const SectionQuestions = () => {
           {showHUBZoneCalculatorButton ? (
             <>
               <p>
-                Click the button below to open the HUBZone Calculator. You will be able to review the Calculator entries made by the business, and their calculated eligibility. You can make notes on any of the entries, mark them as reviewed, and even make changes if necessary. Save your changes in the Calculator, and return to this screen to continue the application review.
+								Click the button below to open the HUBZone Calculator. You will be able to review the Calculator entries made by the business, and their calculated eligibility. You can make notes on any of the entries, mark them as reviewed, and even make changes if necessary. Save your changes in the Calculator, and return to this screen to continue the application review.
               </p>
               <Button onClick={handleHUBZoneCalculatorRedirect} className='margin-bottom-2' type='button'>
-                Open HUBZone Calculator
+								Open HUBZone Calculator
               </Button>
             </>
           ) : (
             (((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
-              (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
-              (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
-              (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
-              showNextButton
+							(userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
+							(userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
+							(userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
+							showNextButton
             ) && <Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>
           )}
           {isAnalystQuestionnaire && (

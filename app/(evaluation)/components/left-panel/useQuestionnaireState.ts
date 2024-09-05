@@ -59,7 +59,6 @@ export function useQuestionnaireState(applicationData: Application | null, analy
     contributorId && currentQuestionnaire
       ? `${QUESTIONNAIRE_ROUTE}/${contributorId}${currentQuestionnaire}`
       : null,
-    fetcher
   );
 
   useEffect(() => {

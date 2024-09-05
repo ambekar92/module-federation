@@ -12,6 +12,15 @@ export type User = {
     last_login: null | string;
     date_joined: string;
     prbac_role: PrbacRole[];
+		profile: [
+			{
+				id: number,
+				okta_id: string,
+				sba_job_title: string | null,
+				sba_office: string | null,
+				out_of_office: boolean | null
+			}
+		]
 };
 
 type PrbacRole = {

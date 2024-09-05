@@ -4,7 +4,7 @@ terraform {
     region               = "us-east-1"
     dynamodb_table       = "terraform-state-locktable"
     acl                  = "bucket-owner-full-control"
-    key                  = "ucms-wfe.tfstate"
-    workspace_key_prefix = "ucms-wfe"
+    key                  = "ucp-wfe.tfstate"
+    workspace_key_prefix = "ucp-wfe"
   }
 }

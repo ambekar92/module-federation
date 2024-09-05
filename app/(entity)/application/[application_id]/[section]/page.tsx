@@ -26,6 +26,9 @@ interface ApplicationPageProps {
 }
 
 const ApplicationPage: React.FC<ApplicationPageProps> = () => {
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+    console.log('ApplicationPage');
+  }
   let content
   const params = useParams()
   const section = params.section as string | undefined
@@ -40,15 +43,9 @@ const ApplicationPage: React.FC<ApplicationPageProps> = () => {
     case 'control-and-operations':
       content = <ControlAndOpsQuestions />
       break
-    // case 'ownership-test':
-    //   content = <Ownership applicationId={applicationId} />
-    //   break
     case 'eligible-programs':
       content = <EligiblePrograms />
       break
-    // case 'control-and-ops-test':
-    //   content = <ControlAndOperations applicationId={applicationId} />
-    //   break
     case 'contributor-invite':
       content = <ContributorInvitation />
       break

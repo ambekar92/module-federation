@@ -1,7 +1,6 @@
 'use client'
 import { INVITATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
-import fetcher from '@/app/services/fetcher';
 import { InvitationType } from '@/app/services/types/application-service/Application';
 import { CustomTable } from '@/app/shared/components/CustomTable';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
@@ -22,6 +21,7 @@ import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import { Role } from '@/app/shared/types/role';
+import { Permission } from '@/app/login/types';
 
 function ContributorInvitation() {
   useUpdateApplicationProgress('Contributor Invitation');
@@ -31,33 +31,44 @@ function ContributorInvitation() {
   const { updateUserApplicationInfo } = useUserApplicationInfo();
   const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
   const session = useSessionUCMS();
-  const isQualifyingOwner = session.data?.permissions[session.data.permissions.length - 1]?.slug === 'qualifying_owner';
+  const getLastPermissionSlug = (permissions: Permission[]) => permissions?.at(-1)?.slug;
+
+  const isQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === 'qualifying_owner';
+  const isPrimaryQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === Role.PRIMARY_QUALIFYING_OWNER;
+  const isDelegate = getLastPermissionSlug(session.data?.permissions) === Role.DELEGATE;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const initialContributorsRef = useRef<Contributor[]>([]);
 
   const prevInvitationDataRef = useRef<InvitationType[] | null>(null);
 
-  const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null, fetcher);
-  const { data: ownerData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : null, fetcher);
-  const { data: operatorData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null, fetcher);
+  const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
+  const { data: ownerData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : null);
+  const { data: operatorData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null);
 
   useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft'
-			&& applicationData.workflow_state !== 'returned_for_firm'
-			&& !isQualifyingOwner
-			&& session.data?.permissions[session.data.permissions.length - 1]?.slug === Role.PRIMARY_QUALIFYING_OWNER
-			&& session.data?.permissions[session.data.permissions.length - 1]?.slug === Role.DELEGATE
+    if (contributors.length > 0 && initialContributorsRef.current.length === 0) {
+      initialContributorsRef.current = JSON.parse(JSON.stringify(contributors));
+    }
+  }, [contributors]);
+
+  useEffect(() => {
+    if (applicationData &&
+      applicationData.workflow_state !== 'draft' &&
+      applicationData.workflow_state !== 'returned_for_firm' &&
+      !isQualifyingOwner &&
+      (isPrimaryQualifyingOwner || isDelegate)
     ) {
       window.location.href = `/application/view/${applicationId}`;
     }
-  }, [applicationData, applicationId]);
+  }, [applicationData, applicationId, isQualifyingOwner, isPrimaryQualifyingOwner, isDelegate, session.data?.permissions]);
 
   useEffect(() => {
-    if (ownerData && ownerData[0].answer) {
+    if (ownerData && ownerData[0]?.answer && ownerData[0]?.answer.value.answer && Array.isArray(ownerData[0]?.answer.value.answer) && ownerData[0]?.answer.value.answer.length > 0) {
       const ownerContributors = convertOwnerAnswerToContributors(ownerData[0].answer);
       dispatch((dispatch, getState) => {
         const currentState = selectApplication(getState());
@@ -81,7 +92,7 @@ function ContributorInvitation() {
   }, [ownerData, dispatch]);
 
   useEffect(() => {
-    if (operatorData && operatorData[0].answer && Array.isArray(operatorData[0].answer.value.answer) && operatorData[0].answer.value.answer.length > 0) {
+    if (operatorData && operatorData[0].answer && operatorData[0].answer.value?.answer && Array.isArray(operatorData[0].answer.value.answer) && operatorData[0].answer.value.answer.length > 0) {
       const operatorContributors = convertOperatorAnswerToContributors(operatorData[0].answer);
       dispatch((dispatch, getState) => {
         const currentState = selectApplication(getState());
@@ -201,7 +212,6 @@ function ContributorInvitation() {
 
       dispatch(setContributors(updatedContributors));
       updateUserApplicationInfo({ contributors: updatedContributors });
-
       setFirstName('');
       setLastName('');
       setEmailAddress('');
@@ -334,12 +344,18 @@ function ContributorInvitation() {
     }));
 
   const closeModal = () => {
-    setShowModal(false)
+    setShowModal(false);
+    initialContributorsRef.current = JSON.parse(JSON.stringify(contributors));
   }
 
   const handleNextClick = () => {
-    if(contributors.length > 0) {
+    if (contributors.length > 0) {
       setShowModal(true);
+    } else {
+      window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+        applicationId: applicationId,
+        stepLink: applicationSteps.sign.link
+      });
     }
   }
 
@@ -448,6 +464,7 @@ function ContributorInvitation() {
             contributorId={contributorId}
             applicationId={applicationId}
             entityId={applicationData?.entity.entity_id}
+            invitationData={invitationData}
           />
           <h3 className="margin-y-0">Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</h3>
           <hr className="margin-y-3 width-full border-base-lightest" />

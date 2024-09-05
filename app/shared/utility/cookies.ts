@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { encrypt } from '@/app/shared/utility/encryption';
 
 export function getArrayCookie<T>(key: string): T[] {
   const cookieValue = Cookies.get(key);
@@ -6,7 +7,7 @@ export function getArrayCookie<T>(key: string): T[] {
 }
 
 export function setArrayCookie<T>(key: string, value: T[]): void {
-  Cookies.set(key, JSON.stringify(value), { expires: 7 }); // Expires in 7 days
+  Cookies.set(key, encrypt(JSON.stringify(value), { expires: 7 })); // Expires in 7 days
 }
 
 export function addToArrayCookie<T>(key: string, newItem: T): void {

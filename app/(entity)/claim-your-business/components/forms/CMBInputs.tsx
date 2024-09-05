@@ -106,6 +106,7 @@ const ClaimInputs = ({
       }
       if(responseData.message === 'This business has not been claimed yet') {
         claimFormComplete(responseData);
+        handleOpen();
         return;
       } else {
         setError('serverError', { type: 'submit', message: 'server error' });
@@ -126,6 +127,7 @@ const ClaimInputs = ({
       cageCode: formData.cageCode.toUpperCase(),
       bankAccountNumber: formData.bankAccountNumber,
     });
+
     setShouldFetchEntity(true)
   };
 

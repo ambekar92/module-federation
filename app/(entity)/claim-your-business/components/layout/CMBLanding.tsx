@@ -1,4 +1,4 @@
-import { DASHBOARD } from '@/app/constants/url'
+import { DELEGATE_DASHBOARD_PAGE } from '@/app/constants/url'
 import Tooltip from '@/app/shared/components/tooltip/Tooltip'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import Link from 'next/link'
@@ -26,7 +26,7 @@ function ClaimBusinessLanding({
   }
 
   const submitForm = () => {
-    router.push(DASHBOARD)
+    router.push(DELEGATE_DASHBOARD_PAGE)
   }
 
   return (

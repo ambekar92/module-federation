@@ -1,43 +1,36 @@
 'use client'
 import { ANSWER_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
+import { useSessionUCMS } from '@/app/lib/auth';
 import { axiosInstance } from '@/app/services/axiosInstance';
-import fetcher from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import { ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
+import { useWorkflowRedirect } from '../../../hooks/useWorkflowRedirect';
 import QuestionRenderer from '../../../qa-helpers/QuestionRenderer';
 import { setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
-import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
-import Spinner from '@/app/shared/components/spinner/Spinner';
-import { useSessionUCMS } from '@/app/lib/auth';
 
 function ControlAndOpsQuestions() {
   const dispatch = useApplicationDispatch();
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : '';
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url, fetcher);
+  const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
   useUpdateApplicationProgress('Control and Operations');
 
   const { data: session } = useSessionUCMS();
   const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
 
-  useEffect(() => {
-    if (
-      applicationData && applicationData.workflow_state !== 'draft'
-			&& applicationData.workflow_state !== 'returned_for_firm'
-			&& !hasDelegateRole
-    ) {
-      window.location.href = `/application/view/${applicationId}`;
-    }
-  }, [applicationData, applicationId, session]);
+  // Redirects user based on application state and permissions
+  useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.controlAndOwnership.stepIndex));

@@ -1,9 +1,10 @@
 import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
+import { useSessionUCMS } from '@/app/lib/auth'
 import { axiosInstance } from '@/app/services/axiosInstance'
-import fetcher from '@/app/services/fetcher'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext'
-import useFetchOnce from '@/app/shared/hooks/useFetchOnce'
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Alert,
@@ -17,13 +18,15 @@ import {
 } from '@trussworks/react-uswds'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import useSWR from 'swr'
 import { applicationSteps } from '../../utils/constants'
 import { selectForm, setDelegates } from '../store/formSlice'
 import { useFormDispatch, useFormSelector } from '../store/hooks'
 import { DelegateFormSchema } from '../utils/schemas'
 import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
+import ConfirmRemovalModal from './ConfirmRemoval'
 import DelegateFormInputs from './DelegateFormInputs'
-import Spinner from '@/app/shared/components/spinner/Spinner'
+import { useWorkflowRedirect } from '../../hooks/useWorkflowRedirect'
 
 function AddDelegateForm() {
   const [option, setOption] = useState('')
@@ -31,13 +34,19 @@ function AddDelegateForm() {
   const [currentStep, setCurrentStep] = useState(0)
   const steps = ['Add Delegate', 'Invite Modal']
   const { delegates } = useFormSelector(selectForm)
+  useUpdateApplicationProgress('Delegates');
+  const { data: session } = useSessionUCMS();
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext()
+  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
+
+  // Redirects user based on application state and permissions
+  useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
+
   const dispatch = useFormDispatch()
 
-  const { data: delegatesData, isLoading } = useFetchOnce<DelegatesResponse[]>(
+  const { data: delegatesData, isLoading, mutate: refetchDelegatesData } = useSWR<DelegatesResponse[]>(
     contributorId ? `${DELEGATES_ROUTE}/${contributorId}` : null,
-    fetcher,
-    { revalidateOnFocus: false },
+    { revalidateOnFocus: false }
   )
 
   const isDelegate =
@@ -90,36 +99,58 @@ function AddDelegateForm() {
     },
   })
 
-  const onChange = async (selectedOption: string) => {
-    if (selectedOption === 'no') {
-      dispatch(setDelegates([]))
-      reset({
-        firstName: '',
-        lastName: '',
-        email: '',
-      })
-      if (delegatesData || delegates) {
-        try {
-          await axiosInstance.delete(
-            `${INVITATION_ROUTE}?invitation_id=${delegatesData ? delegatesData[delegatesData?.length - 1].id : delegates[0].id}`,
-          )
-        } catch (error) {
-          // Error handled lol -KJ
-        }
+  const [showRemovalModal, setShowRemovalModal] = useState(false)
+
+  const handleConfirmRemoval = async () => {
+    try {
+      const delegateId = delegatesData && delegatesData.length > 0
+        ? delegatesData[delegatesData.length - 1].id
+        : delegates.length > 0
+          ? delegates[0].id
+          : null;
+
+      if (delegateId) {
+        await axiosInstance.delete(`${INVITATION_ROUTE}?invitation_id=${delegateId}`);
+        dispatch(setDelegates([]));
+        reset({
+          firstName: '',
+          lastName: '',
+          email: '',
+        });
+        setOption('no');
+
+        await refetchDelegatesData();
       }
-    } else if (selectedOption === 'yes') {
-      dispatch(setDelegates([]))
+    } catch (error) {
+      // Handled error
+    } finally {
+      setShowRemovalModal(false);
     }
-    setOption(selectedOption)
   }
 
-  if (isLoading) {
-    return <Spinner center />
+  const onChange = async (selectedOption: string) => {
+    if (selectedOption === 'no') {
+      const hasExistingDelegate = (delegatesData && delegatesData.length > 0 && delegatesData[delegatesData.length - 1].invitation_status !== 'removed') || delegates.length > 0;
+
+      if (hasExistingDelegate) {
+        setShowRemovalModal(true)
+      } else {
+        setOption(selectedOption)
+      }
+    } else if (selectedOption === 'yes') {
+      await refetchDelegatesData();
+      setOption(selectedOption)
+    }
+  }
+
+  const handleCancelRemoval = () => {
+    setShowRemovalModal(false)
+    setOption('yes')
   }
 
   return (
     <GridContainer
-      className="height-full display-flex flex-column"
+      className="height-full display-flex flex-column padding-x-0"
       containerSize="widescreen"
     >
       <Grid row col={12}>
@@ -127,7 +158,7 @@ function AddDelegateForm() {
           <h2 className="text-light">
             A delegate is a person enabled by the business owner to input
             responses and documents on their behalf. However, the business owner
-            is directly responsible and must complete the application’s
+            is directly responsible and must complete the application&apos;s
             attestation questions and electronically sign the application prior
             to submission. Attestation and signature cannot be fulfilled by a
             delegate.
@@ -145,72 +176,85 @@ function AddDelegateForm() {
           </Alert>
         </Grid>
       </Grid>
-      <Grid className="flex-fill" col={12}>
-        <Label className="text-bold" htmlFor="input-radio-question">
-          Are You Assigning A Delegate For This Application?
-        </Label>
-        <Radio
-          id="input-radio-yes"
-          data-testid="testid-yes-radio-button"
-          name="input-radio-question"
-          onChange={() => onChange('yes')}
-          label="Yes"
-          defaultChecked={isDelegate ? true : false}
-        />
-        <Radio
-          id="input-radio-no"
-          data-testid="testid-no-radio-button"
-          name="input-radio-question"
-          onChange={() => onChange('no')}
-          label="No"
-        />
-      </Grid>
 
-      {option === 'yes' && (
-        <Grid row col={12}>
-          <DelegateFormInputs
-            showModal={showModal}
-            handleNext={handleNext}
-            handlePrevious={handlePrevious}
-            closeModal={closeModal}
-            control={control}
-            errors={errors}
-            handleSubmit={handleSubmit}
-            isValid={isValid}
-            touchedFields={touchedFields}
-            setValue={setValue}
-            getValues={getValues}
-            trigger={trigger}
-            reset={reset}
-            userDetails={{ userId, applicationId }}
-            delegatesData={isDelegate ? delegatesData : null}
-            applicationData={applicationData}
+      {isLoading ? (
+        <Spinner center />
+      ) : delegatesData !== undefined ? (
+        <>
+          <Grid className="flex-fill" col={12}>
+            <Label className="text-bold" htmlFor="input-radio-question">
+              Are You Assigning A Delegate For This Application?
+            </Label>
+            <Radio
+              id="input-radio-yes"
+              data-testid="testid-yes-radio-button"
+              name="input-radio-question"
+              onChange={() => onChange('yes')}
+              label="Yes"
+              checked={option === 'yes'}
+            />
+            <Radio
+              id="input-radio-no"
+              data-testid="testid-no-radio-button"
+              name="input-radio-question"
+              onChange={() => onChange('no')}
+              label="No"
+              checked={option === 'no'}
+            />
+          </Grid>
+          {option === 'yes' && (
+            <Grid row col={12}>
+              <DelegateFormInputs
+                showModal={showModal}
+                handleNext={handleNext}
+                handlePrevious={handlePrevious}
+                closeModal={closeModal}
+                control={control}
+                errors={errors}
+                handleSubmit={handleSubmit}
+                isValid={isValid}
+                touchedFields={touchedFields}
+                setValue={setValue}
+                getValues={getValues}
+                trigger={trigger}
+                reset={reset}
+                userDetails={{ userId, applicationId }}
+                delegatesData={isDelegate ? delegatesData : null}
+                applicationData={applicationData}
+              />
+            </Grid>
+          )}
+
+          {option === 'no' && (
+            <Grid row className="margin-top-2 flex-justify-end" col={12}>
+              <hr className="width-full" />
+              <ButtonGroup className="display-flex">
+                {applicationId ? (
+                  <Link
+                    href={buildRoute(APPLICATION_STEP_ROUTE, {
+                      applicationId: applicationId,
+                      stepLink: applicationSteps.ownership.link,
+                    })}
+                    className="float-right usa-button"
+                  >
+                    Next
+                  </Link>
+                ) : (
+                  <Button type="button" disabled>
+                    Next
+                  </Button>
+                )}
+              </ButtonGroup>
+            </Grid>
+          )}
+
+          <ConfirmRemovalModal
+            open={showRemovalModal}
+            handleConfirm={handleConfirmRemoval}
+            handleCancel={handleCancelRemoval}
           />
-        </Grid>
-      )}
-
-      {option === 'no' && (
-        <Grid row className="margin-top-2 flex-justify-end" col={12}>
-          <hr className="width-full" />
-          <ButtonGroup className="display-flex">
-            {applicationId ? (
-              <Link
-                href={buildRoute(APPLICATION_STEP_ROUTE, {
-                  applicationId: applicationId,
-                  stepLink: applicationSteps.ownership.link,
-                })}
-                className="float-right usa-button"
-              >
-                Next
-              </Link>
-            ) : (
-              <Button type="button" disabled>
-                Next
-              </Button>
-            )}
-          </ButtonGroup>
-        </Grid>
-      )}
+        </>
+      ) : null}
     </GridContainer>
   )
 }

@@ -4,17 +4,33 @@
 import { getToken } from 'next-auth/jwt';
 import createMiddleware from 'next-easy-middlewares';
 import { NextRequest, NextResponse } from 'next/server';
-import { LoginResponseUser } from './app/(admin)/login-tester/types';
+import { LoginResponseUser } from './app/(admin)/aeroad/types';
 import { Role } from './app/shared/types/role';
 import { Permission } from './app/login/types';
+import { decrypt } from '@/app/shared/utility/encryption';
 
 async function handleProtectedRoute(request: NextRequest) {
-  const {email_password_auth_token, token, originalUrl} = await getData(request);
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+    console.log('door opened');
+  }
+  const {token} = await getData(request);
   const path = request.nextUrl.pathname;
   if (path === '/login' || path === '/login-tester' || path === '/tester-login') {
     return NextResponse.next();
   }
-  if (!token && !email_password_auth_token) {
+
+  // somehow if logging in via okta, user_id is not available at this point,
+  // however this check is not for okta authenticated users so we are ignoring this checking okta authenticated used.
+  if (token && !token.user_id && !token.okta_id) {
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+      console.log('not available at this point');
+    }
+    return NextResponse.redirect(`${request.nextUrl.origin}?shouldLogout=true`);
+  }
+  if (!token) {
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+      console.log('something went wrong', request.nextUrl.origin);
+    }
     return NextResponse.redirect(`${request.nextUrl.origin}`);
   } else {
     return NextResponse.next();
@@ -25,6 +41,9 @@ const middlewares: { [key: string]: any } = {
   '/(.*)': [handleProtectedRoute],
   '/dashboard/:path*': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+      console.log('handleProtectedRoute', permissions);
+    }
     if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/admin/dashboard`)
     } else if (!isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) && !isRole(permissions, Role.CONTRIBUTOR) && !isRole(permissions, Role.ADMIN)) {
@@ -104,22 +123,36 @@ export const config = {
     '/login-tester',
     '/tester-login',
     '/entity-owned/(.*)',
+    '/field-function/(.*)',
   ],
 }
 
 export const middleware = createMiddleware(middlewares);
 
 export function isRole(permissions:  Permission[], role: Role) {
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+    console.log('yolo');
+  }
+
   if (!permissions) {return false;}
   return permissions.some(permission => permission.slug === role);
 }
 
 async function getData(request: NextRequest) {
-  const token = await getToken({req: request, secret: process.env.NEXTAUTH_SECRET})
   const cookies = request.cookies;
-  const email_password_auth_token = cookies.has('email_password_auth_token') ? JSON.parse(cookies.get('email_password_auth_token')?.value ?? '') :
-    cookies.has('maxgov_auth_token') ? JSON.parse(cookies.get('maxgov_auth_token')?.value ?? '') : '' as unknown as LoginResponseUser
-  const permissions = token?.permissions as any[] || email_password_auth_token?.permissions;
+
+  const email_password_auth_token = cookies.has('email_password_auth_token') ? JSON.parse(decrypt(cookies.get('email_password_auth_token')?.value) ?? '') : null as unknown as LoginResponseUser;
+  const maxgov_auth_token = cookies.has('maxgov_auth_token') ? JSON.parse(decrypt(cookies.get('maxgov_auth_token')?.value) ?? '') : null as unknown as LoginResponseUser;
+
+  const token = email_password_auth_token || maxgov_auth_token || null;
+  const permissions = token?.permissions || [];
+
   const originalUrl = encodeURIComponent(request.nextUrl.pathname);
-  return {token, permissions, email_password_auth_token, originalUrl}
+
+  if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+    console.log('URL', originalUrl);
+    console.log('token', token)
+  }
+
+  return {token, permissions, originalUrl}
 }

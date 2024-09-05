@@ -8,6 +8,7 @@ import { useCurrentApplication } from '../../firm/useApplicationData'
 import NaicsCodes from './NaicsCodes'
 import SamInfo from './SamInfo'
 import VaCert from './VaCert'
+import ControllingEntity from './ControllingEntity'
 
 const accordionItems: AccordionItemProps[] = [
   {
@@ -62,7 +63,19 @@ const accordionItems: AccordionItemProps[] = [
     ),
     expanded: false,
     headingLevel: 'h2',
+  },
+  {
+    id: 'controlling_entity',
+    title: 'Controlling Entity',
+    content: (
+      <div>
+        <ControllingEntity />
+      </div>
+    ),
+    expanded: false,
+    headingLevel: 'h2',
   }
+
 ]
 
 function FirmSummary() {
@@ -72,7 +85,7 @@ function FirmSummary() {
     <>
       <div className='grid-row'>
         <div className="grid-col-12">
-          <h1>Business Summary</h1>
+          <h1>Firm Summary</h1>
           <p>{application?.description ?? 'N/A'} </p>
         </div>
 

@@ -5,6 +5,7 @@ import { axiosInstance } from '@/app/services/axiosInstance';
 import { OKTA_POST_LOGIN_ROUTE } from '@/app/constants/routes';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { encrypt } from '@/app/shared/utility/encryption';
 
 export async function POST(req: any, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -17,19 +18,22 @@ export async function POST(req: any, res: NextApiResponse) {
   // check header origin and referrer to make sure it is coming from max gov
   if (samlResponse) {
     const email = extractEmailFromSAMLResponse(samlResponse);
+    // Split the email by '@'
+    const [name, domain] = (email ?? '').split('@');
     const postData = {
       user: {
-        name: email,
+        name: name.replace('.', ' '),
         email: email,
         okta_id: email
       },
       expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
-      csrfToken: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+      csrfToken: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+      colloportus: process.env.COLLOPORTUS
     };
     const userDetails = await axiosInstance.post(OKTA_POST_LOGIN_ROUTE, postData);
-    cookies().set('maxgov_auth_token', JSON.stringify(userDetails.data));
+    cookies().set('maxgov_auth_token', encrypt(JSON.stringify(userDetails.data)));
 
-    return NextResponse.redirect(new URL('?signedIn=true', process.env.NEXT_PUBLIC_POST_REDIRECT_URL), 301);
+    return NextResponse.redirect(new URL(`/?state=${encrypt('true')}`, process.env.NEXT_PUBLIC_POST_REDIRECT_URL), 301);
 
   } else {
     return Response.error();

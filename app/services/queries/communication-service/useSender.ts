@@ -11,5 +11,5 @@ export function useSender() {
   const {data} = useThreads();
 
   const thread = data && data?.find((thread: Thread) => thread.uuid === params.messageId);
-  return useSWR<User>(thread ? `${USER_ROUTE}/${thread.messages[0].sender}` : null, fetcher)
+  return useSWR<User>(thread ? `${USER_ROUTE}/${thread.messages[0].sender}` : null)
 }

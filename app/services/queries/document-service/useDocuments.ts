@@ -1,6 +1,5 @@
 import { DOCUMENTS_ROUTE } from '@/app/constants/routes';
 import useSWR from 'swr';
-import fetcher from '../../fetcher';
 import { DocumentUpload } from '../../types/document-service/DocumentUpload';
 
 export enum DocumentParams {
@@ -13,5 +12,5 @@ export enum DocumentParams {
 
 export function useDocuments(params?: {[key in DocumentParams]?: string | number}) {
   const qParams = params ? '?'+Object.entries(params).map(el => el.join('=')).join('&') : null;
-  return useSWR<DocumentUpload[]>(`${DOCUMENTS_ROUTE}${qParams}`, fetcher);
+  return useSWR<DocumentUpload[]>(`${DOCUMENTS_ROUTE}${qParams}`);
 }

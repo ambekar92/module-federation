@@ -29,6 +29,10 @@ export const getAnalystQuestionnaires = (programApplications: any[]) => {
   return [...baseQuestionnaires, ...programSpecificQuestionnaires];
 };
 
+export const ownershipQuestionnaire = '/owner-and-management'
+
+export const controlAndOperationQuestionnaire = '/control-and-operation'
+
 export const getStaticNavItems = (application_id: string): NavItem[] => [
   {
     section: 'Business Summary',
@@ -37,6 +41,10 @@ export const getStaticNavItems = (application_id: string): NavItem[] => [
   {
     section: 'Documents',
     child: [{id: 2, section: 'Documents', url: `${application_id}/documents`, title: 'Documents' }]
+  },
+  {
+    section: 'Controlling Entity',
+    child: [{ section: 'Controlling Entity', url: `${application_id}/controlling-entity`, title: 'Controlling Entity' }]
   },
   {
     section: 'Notes',

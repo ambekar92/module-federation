@@ -38,6 +38,8 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
     headingMsg = 'The information you entered does not match SAM.gov.'
   } else if(error === 'early access') {
     headingMsg = 'Thank you for your interest!'
+  } else if(error === 'cannot create entity') {
+    headingMsg = 'Please Logout and Login again.'
   } else {
     headingMsg =
       'Uh-oh! Looks like something broke on our side. If you need immediate assistance, please contact our support team at 1-202-205-6459'

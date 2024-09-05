@@ -19,8 +19,8 @@ interface QuestionnaireItem {
 const BusinessPlanPage = () => {
   const params = useParams<Params>();
   const [title, setTitle] = useState<string>('');
-  const { data, isLoading } = useSWR<QaQuestionsType>(`${API_ROUTE}/questionnaire/${params.application_id}/${params.section_questions}`, fetcher);
-  const { data: navItems } = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`, fetcher);
+  const { data, isLoading } = useSWR<QaQuestionsType>(`${API_ROUTE}/questionnaire/${params.application_id}/${params.section_questions}`);
+  const { data: navItems } = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`);
   const [showNextButton, setShowNextButton] = useState<boolean>(true);
   const [showPreviousButton, setShowPreviousButton] = useState<boolean>(true);
   const router = useRouter();

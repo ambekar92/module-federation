@@ -37,6 +37,7 @@ import {
   USER_PROFILE_PAGE
 } from '@/app/constants/url'
 import dynamic from 'next/dynamic'
+import { logout } from '../lib/logout'
 
 const Navbar = () => {
   const adminBanner = ADMIN_BANNER_ROUTE
@@ -178,27 +179,7 @@ const Navbar = () => {
   }
 
   const handleSignOut = async () => {
-    const okta_oauth2_issuer = process.env.NEXT_PUBLIC_LOGOUT_URL;
-    const idToken = Cookies.get('idtoken');
-    const post_logout_redirect_uri = encodeURIComponent(process.env.NEXT_PUBLIC_POST_REDIRECT_URL || '');
-
-    Cookies.remove('email_password_auth_token');
-    Cookies.remove('accesstoken');
-    Cookies.remove('idtoken');
-    Cookies.remove('next-auth.csrf-token', { path: '/' });
-    Cookies.remove('next-auth.callback-url', { path: '/' });
-    Cookies.remove('maxgov_auth_token');
-
-    localStorage.clear();
-
-    await signOut({ redirect: false });
-
-    if (idToken) {
-      const logout_url = `${okta_oauth2_issuer}/oauth2/default/v1/logout?id_token_hint=${idToken}&post_logout_redirect_uri=${post_logout_redirect_uri}`;
-      window.location.href = logout_url;
-    } else {
-      window.location.href = '/home';
-    }
+    await logout();
   }
 
   const profileDropdown = [
@@ -241,8 +222,8 @@ const Navbar = () => {
       />
     </React.Fragment>,
 
-    <a key="primaryNav_2" className="usa-nav__link" href="#">
-      <span className={styleSettings.textColor}>Account</span>
+    <a key="primaryNav_2" className="usa-nav__link" href="/help">
+      <span className={styleSettings.textColor}>Get Help</span>
     </a>,
 
     <React.Fragment key="primaryNav_3">

@@ -246,7 +246,7 @@ export const OperatorsQaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion
       </Grid>
       <ButtonGroup className='margin-top-2'>
         <Button type='button' onClick={handleAddOrUpdateRow}>
-          {editingRowIndex !== null ? 'Update Row' : 'Add Row'}
+          {editingRowIndex !== null ? 'Save' : 'Save'}
         </Button>
         <Button
           type='button'

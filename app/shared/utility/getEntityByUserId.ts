@@ -16,12 +16,11 @@ const getEntityByUserId = async(userId: number) => {
 }
 export default getEntityByUserId
 
-export const getEntityByDelegateId = async(userId: number) => {
-  const response = await fetcher<EntitiesType>(`${ENTITIES_ROUTE}?delegate_user_id=${userId}`)
-
-  if(response) {
-    return (response)
+export const getEntityByDelegateId = async (userId: number): Promise<EntitiesType> => {
+  const response = await fetcher<EntitiesType>(`${ENTITIES_ROUTE}?delegate_user_id=${userId}`);
+  if (response && Array.isArray(response)) {
+    return response;
   } else {
-    return;
+    return [];
   }
 }

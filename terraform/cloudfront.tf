@@ -1,6 +1,20 @@
 # Alias Records
 resource "aws_route53_record" "ipv4" {
-  name            = "ucp.${local.env.domain_name}"
+  # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
+  name            = terraform.workspace == "prod" ? local.env.domain_name : "ucp.${local.env.domain_name}"
+  type            = "A"
+  zone_id         = data.aws_route53_zone.selected.id
+  allow_overwrite = true
+
+  alias {
+    evaluate_target_health = false
+    name                   = aws_cloudfront_distribution.distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+  }
+}
+resource "aws_route53_record" "ipv4_www" {
+  # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
+  name            = terraform.workspace == "prod" ? "www.${local.env.domain_name}" : "www.ucp.${local.env.domain_name}"
   type            = "A"
   zone_id         = data.aws_route53_zone.selected.id
   allow_overwrite = true
@@ -12,7 +26,22 @@ resource "aws_route53_record" "ipv4" {
   }
 }
 resource "aws_route53_record" "ipv6" {
-  name            = "ucp.${local.env.domain_name}"
+  # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
+  name            = terraform.workspace == "prod" ? local.env.domain_name : "ucp.${local.env.domain_name}"
+  type            = "AAAA"
+  zone_id         = data.aws_route53_zone.selected.id
+  allow_overwrite = true
+
+  alias {
+    evaluate_target_health = false
+    name                   = aws_cloudfront_distribution.distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+  }
+}
+
+resource "aws_route53_record" "ipv6_www" {
+  # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
+  name            = terraform.workspace == "prod" ? "www.${local.env.domain_name}" : "www.ucp.${local.env.domain_name}"
   type            = "AAAA"
   zone_id         = data.aws_route53_zone.selected.id
   allow_overwrite = true
@@ -26,8 +55,8 @@ resource "aws_route53_record" "ipv6" {
 
 # Distribution
 resource "aws_cloudfront_distribution" "distribution" {
-  aliases             = ["ucp.${local.env.domain_name}"]
-  comment             = "ucms-wfe-${terraform.workspace}"
+  aliases             = terraform.workspace == "prod" ? ["certification.sba.gov"] : ["ucp.${local.env.domain_name}"]
+  comment             = "ucp-wfe-${terraform.workspace}"
   enabled             = true
   http_version        = "http2"
   is_ipv6_enabled     = true
@@ -83,7 +112,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   origin {
     connection_attempts = 3
     connection_timeout  = 10
-    domain_name         = "ucms-wfe.${local.env.domain_name}"
+    domain_name         = "ucp-wfe.${local.env.domain_name}"
     origin_id           = "wfe"
 
     custom_header {

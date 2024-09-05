@@ -24,6 +24,7 @@ export const FIRM_APPLICATION_DONE_PAGE =
   '/firm/application/:application_id/done'
 export const REVIEWERS_DASHBOARD_PAGE = '/user/dashboard/reviewers'
 export const TASKS_DASHBOARD_PAGE = '/user/dashboard/tasks'
+export const DELEGATE_DASHBOARD_PAGE = '/user/dashboard/delegate'
 export const ASSIGN_DELEGATE_PAGE = '/application/assign-a-delegate/:applicationId'
 export const QUESTIONNAIRE_PAGE = '/application/questionnaire/:applicationId/:section'
 export const QUESTIONNAIRE_LIST_PAGE = '/application/questionnaire/:applicationId'

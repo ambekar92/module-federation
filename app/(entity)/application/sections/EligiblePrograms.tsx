@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from 'react';
 import { CREATING_APPLICATION_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_LIST_PAGE } from '@/app/constants/url';
+import { useSessionUCMS } from '@/app/lib/auth';
 import { axiosInstance } from '@/app/services/axiosInstance';
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
+import Spinner from '@/app/shared/components/spinner/Spinner';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { calculateEligibleSbaPrograms, OwnerType } from '../hooks/useOwnershipApplicationInfo';
+import { useWorkflowRedirect } from '../hooks/useWorkflowRedirect';
+import { GridRow } from '../qa-helpers/OwnershipQaGrid';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
-import { calculateEligibleSbaPrograms, OwnerType } from '../hooks/useOwnershipApplicationInfo';
-import useSWR from 'swr';
-import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
-import fetcher from '@/app/services/fetcher';
-import { GridRow } from '../qa-helpers/OwnershipQaGrid';
-import Spinner from '@/app/shared/components/spinner/Spinner';
 
 function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
@@ -26,14 +27,14 @@ function EligiblePrograms() {
   const { applicationId, contributorId, applicationData } = useApplicationContext();
 
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
-  const { data: ownersData, error, isLoading: isLoadingOwnership } = useSWR<QaQuestionsType>(url, fetcher);
+  const { data: ownersData, error, isLoading: isLoadingOwnership } = useSWR<QaQuestionsType>(url);
   useUpdateApplicationProgress('Eligible Programs');
 
-  useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
-      window.location.href = `/application/view/${applicationId}`;
-    }
-  }, [applicationData, applicationId]);
+  const { data: session } = useSessionUCMS();
+  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
+
+  // Redirects user based on application state and permissions
+  useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
 
   const dispatch = useApplicationDispatch();
 
@@ -169,7 +170,7 @@ function EligiblePrograms() {
           : 'To which programs would you like to apply today?'
         }<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the "visit here" link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/>
       </h1>
-      {eligiblePrograms.length > 0 ? <h3>You appear to be eligible for the program(s) below select which you&apos;d like to apply to.</h3> : null}
+      {eligiblePrograms.length > 0 ? <h3>Based on your responses, you appear to be eligible for the following programs. Select programs to which you would like to apply.</h3> : null}
       <Grid row gap>
         {eligiblePrograms.map((program, index) => (
           <Grid key={index} className='margin-bottom-2' desktop={{ col: 6 }} tablet={{ col: 12 }} mobile={{ col: 12 }}>

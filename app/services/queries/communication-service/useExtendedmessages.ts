@@ -6,5 +6,5 @@ import { ExtendedMessage } from '../../types/communication-service/ExtendedMessa
 
 export function useExtendedmessages() {
   const params = useParams<{application_id: string}>();
-  return useSWR<ExtendedMessage[]>(params.application_id ? `${EXTENDED_MESSAGES_ROUTE}?application_id=${params.application_id}` : null, fetcher)
+  return useSWR<ExtendedMessage[]>(params.application_id ? `${EXTENDED_MESSAGES_ROUTE}?application_id=${params.application_id}` : null)
 }

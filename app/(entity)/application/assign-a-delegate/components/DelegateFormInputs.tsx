@@ -125,6 +125,7 @@ const DelegateFormInputs = ({
             },
           ]),
         )
+        setRequestSuccessful(true)
       }
     } else {
       setShowForm(true)

@@ -57,7 +57,6 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFor
       {
         invitation_code: getValues('invitationCode'),
         user_id: session.data?.user?.id,
-
       });
     if (response.status === 200 && response.data.detail !== 'No invitation record found.' && response.data.invitation_code !== 'This field may not be blank.') {
       reset({
@@ -105,7 +104,7 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFor
                 htmlFor="invitationCode"
                 requiredMarker={true}
               >
-              Invitation Code
+              	Invitation Code
               </Label>
               <Tooltip text={tooltipCmbInvite}/>
             </Grid>

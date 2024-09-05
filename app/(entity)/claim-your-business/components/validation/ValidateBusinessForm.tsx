@@ -22,6 +22,7 @@ import ValidationTable from './ValidationTable';
 import { toolTipCmbValidation } from '@/app/constants/tooltips';
 import Tooltip from '@/app/shared/components/tooltip/Tooltip';
 import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url';
+import { useSessionUCMS } from '@/app/lib/auth';
 interface ValidateBusinessFormProps {
   samData: CmbResponseType
 }
@@ -31,6 +32,7 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
   const [ errorMsg, setErrorMsg ] = useState('');
   const [ isPostSuccessful, setPostSuccessful ] = useState(false);
   const [ entityId, setEntityId ] = useState<number | undefined>();
+  const session = useSessionUCMS();
 
   const handleClose = () => {
     setOpen(false);
@@ -38,7 +40,12 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
       setErrorMsg('')
     }
   }
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {
+    if(session && session.data.user_id === 0) {
+      setErrorMsg('cannot create entity');
+    }
+    setOpen(true);
+  }
 
   const validateBusinessAccordionProps = (): IAccordionItem[] => {
     return samData.sam_entity.map((entity, index) => ({
@@ -89,6 +96,15 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
           </Show.When>
         </Show>
 
+        <Show>
+          <Show.When isTrue={open && errorMsg !== ''}>
+            <ErrorModal
+              open={open}
+              handleClose={handleClose}
+              error={errorMsg}
+            />
+          </Show.When>
+        </Show>
         <Grid row>
           <Grid col={12}>
             <h1 className="underline-heading">Claim Your Business</h1>

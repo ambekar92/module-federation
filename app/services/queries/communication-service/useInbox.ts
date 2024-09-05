@@ -7,5 +7,5 @@ import fetcher from '../../fetcher';
 export function useInbox() {
   const session = useSessionUCMS();
   // return useSWR<InboxResponse>(`${INBOX_ROUTE}/20`, fetcherGET)
-  return useSWR<InboxResponse>(`${INBOX_ROUTE}/${session.data.user_id}`, fetcher)
+  return useSWR<InboxResponse>(`${INBOX_ROUTE}/${session.data.user_id}`)
 }

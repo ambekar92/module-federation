@@ -1,6 +1,5 @@
 
 import { APPLICATION_QUESTIONNAIRE_LIST_PAGE, APPLICATION_VIEW_PAGE, buildRoute } from '@/app/constants/url';
-import { useSessionUCMS } from '@/app/lib/auth';
 import { Application } from '@/app/services/types/application-service/Application';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,7 +15,6 @@ interface ApplicationCardProps {
 }
 
 function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWithdraw }: ApplicationCardProps) {
-  const session = useSessionUCMS();
   return (
     <GridContainer containerSize="widescreen" className='padding-x-0'>
       {data.map((application: Application) => (

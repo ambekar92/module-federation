@@ -15,7 +15,7 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => {
     };
     let businessType = businessTypeMap[entityStructure as keyof typeof businessTypeMap] || entityStructure;
     if (entityStructure === '2L') {
-      if (samBusinessType.includes('LJ')) {
+      if (samBusinessType?.includes('LJ')) {
         businessType = 'LLC';
       }
     }
