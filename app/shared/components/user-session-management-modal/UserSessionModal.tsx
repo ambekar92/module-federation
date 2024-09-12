@@ -31,10 +31,15 @@ const UserSessionModal: React.FC = () => {
     Cookies.remove('idtoken');
     Cookies.remove('next-auth.csrf-token', { path: '/' });
     Cookies.remove('next-auth.callback-url', { path: '/' });
+    Cookies.remove('applicationData');
+    Cookies.remove('entityData');
+    Cookies.remove('maxgov_auth_token');
 
     localStorage.clear();
+
+    await signOut({ redirect: false });
+
     try {
-      await signOut({ redirect: false });
       if (idToken) {
         const logout_url = `${okta_oauth2_issuer}/oauth2/default/v1/logout?id_token_hint=${idToken}&post_logout_redirect_uri=${post_logout_redirect_uri}`;
         window.location.href = logout_url;

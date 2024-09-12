@@ -157,7 +157,7 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
           <div className="usa-form-group">
             <TextareaInput
               question={gridQuestion}
-              value={value as string}
+              value={typeof currentRow[gridQuestion.name] === 'string' ? currentRow[gridQuestion.name] as string : ''}
               onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
             />
             {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}

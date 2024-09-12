@@ -15,6 +15,8 @@ export async function logout() {
   Cookies.remove('next-auth.callback-url', { path: '/' });
   Cookies.remove('maxgov_auth_token');
   Cookies.remove('next-auth.session-token')
+  Cookies.remove('applicationData');
+  Cookies.remove('entityData');
 
   localStorage.clear();
 

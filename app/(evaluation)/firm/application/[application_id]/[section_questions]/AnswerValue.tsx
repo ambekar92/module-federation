@@ -31,32 +31,40 @@ const AnswerValue = ({ question }: { question: Question }) => {
     }));
 
     return (
-      <TableContainer component={Paper} style={{ maxWidth: '100%', overflowX: 'auto' }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.id} style={{ fontWeight: 'bold' }}>
-                  {column.title}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {gridRows.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
+      <>
+        {/* do not display the title of the grid question */}
+        {q.rules.length > 0 && (
+          <Label style={{marginBottom: '18px', maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={q.name}>
+            {q?.title}
+          </Label>)}
+
+        <TableContainer component={Paper} style={{ maxWidth: '100%', overflowX: 'auto' }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
                 {columns.map((column) => (
-                  <TableCell key={column.id}>
-                    {Array.isArray(row[column.id])
-                      ? (row[column.id] as string[]).join(', ')
-                      : row[column.id] as string}
+                  <TableCell key={column.id} style={{ fontWeight: 'bold' }}>
+                    {column.title}
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {gridRows.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>
+                      {Array.isArray(row[column.id])
+                        ? (row[column.id] as string[]).join(', ')
+                        : row[column.id] as string}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </>
     );
   };
 
@@ -77,9 +85,15 @@ const AnswerValue = ({ question }: { question: Question }) => {
       return renderGridAnswer(q);
     }
 
-    const answerValue = q.answer.value.answer;
+    let answerValue = q.answer.value.answer;
     if (Array.isArray(answerValue)) {
       return answerValue.join(', ');
+    }
+    // Convert TRUE/FALSE to Yes/No
+    if (answerValue === 'TRUE') {
+      answerValue = 'Yes';
+    } else if (answerValue === 'FALSE') {
+      answerValue = 'No';
     }
 
     return String(answerValue);
@@ -94,7 +108,9 @@ const AnswerValue = ({ question }: { question: Question }) => {
     return (
       <div style={{ marginLeft: '20px' }}>
         {subQuestions.map((subQ, index) => {
-          if (subQ.question_type === 'api.get.questionnaire' || subQ.question_type === 'grid') {
+          // Skip sub-questions that are not answered
+          // Skip sub-questions that are of type 'api.get.questionnaire'
+          if (subQ.question_type === 'api.get.questionnaire' || subQ.answer?.value === null) {
             return null;
           }
           return (
@@ -102,10 +118,10 @@ const AnswerValue = ({ question }: { question: Question }) => {
               <Label style={{maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={subQ.name}>
                 {subQ.title}
               </Label>
-              <span className='text-base'>
+              {/* <span className='text-base'>
                 {subQ.description?.toLowerCase() !== subQ.title?.toLowerCase() ? subQ.description : ''}
-              </span>
-              <p>{renderAnswerValue(subQ)}</p>
+              </span> */}
+              <p>{subQ?.question_type !== 'grid' && (<b>Answer:</b>)} {renderAnswerValue(subQ)}</p>
               {renderSubQuestions(subQ)}
             </div>
           );
@@ -123,12 +139,14 @@ const AnswerValue = ({ question }: { question: Question }) => {
   }
 
   return (
-    <div>
+    <div className="margin-bottom-205 border-bottom">
       <Label style={{maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={question.name}>
         {question.title}
       </Label>
-      <p>{question.description}</p>
-      {renderAnswerValue(question)}
+      {/* <p>{question.description}</p> */}
+      <div className="margin-top-2 margin-bottom-2">
+        <b>Answer:</b> {renderAnswerValue(question)}
+      </div>
       {renderSubQuestions(question)}
     </div>
   );

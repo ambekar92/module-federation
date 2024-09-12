@@ -12,7 +12,7 @@ import { Program } from './types';
 const ResultsPage = () => {
   const {getValues} = useFormContext();
   const [eligiblePrograms, setEligiblePrograms] = useState<Program[]>([]);
-  
+
   useEffect(() => {
     const values = getValues();
     if (values && Object.keys(values).length > 0) {
@@ -31,8 +31,6 @@ const ResultsPage = () => {
       setEligiblePrograms(progms);
     }
   }, [getValues])
-
-
 
   return (
     <>

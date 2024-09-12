@@ -37,7 +37,7 @@ const QuestionnaireListPage: React.FC = () => {
   const filteredQuestionnaires = questionnairesData?.filter(questionnaire =>
     !(hasDelegateRole && filteredSections.includes(extractLastPart(questionnaire.url)))
   );
-    
+
   useEffect(() => {
     if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
       window.location.href = `/application/view/${applicationId}`;

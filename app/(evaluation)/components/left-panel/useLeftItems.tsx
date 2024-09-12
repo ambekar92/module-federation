@@ -6,6 +6,8 @@ import { useCurrentApplication } from '../../firm/useApplicationData';
 import { Params, QuestionnaireItem } from '../../types/types';
 import { controlAndOperationQuestionnaire, getAnalystQuestionnaires, getStaticNavItems, ownershipQuestionnaire } from './constants';
 import { useQuestionnaireState } from './useQuestionnaireState';
+import { getUserRole } from '@/app/shared/utility/getUserRole'
+import { useSessionUCMS } from '@/app/lib/auth'
 
 /**
  * Returns the navigation items for the left side bar of the application details page.
@@ -31,9 +33,11 @@ export function useLeftItems() {
   }, [params.application_id]);
   const analystQuestionnaires = useMemo(() => getAnalystQuestionnaires(programApplications), [programApplications]);
   const { completedQuestionnaires } = useQuestionnaireState(applicationData, analystQuestionnaires);
+  const sessionData = useSessionUCMS();
+  const userRole = getUserRole(sessionData?.data?.permissions || []);
 
   const analystQuestionnaireItems = useMemo(() => {
-    if (firstContributorId) {
+    if (firstContributorId && userRole !== 'screener') {
       return {
         section: 'Analyst Review',
         child: analystQuestionnaires.map((url, index) => ({

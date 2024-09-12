@@ -47,5 +47,3 @@ const Programs = ({programs}: {programs: Program[]}) => {
 }
 
 export default Programs
-
-
