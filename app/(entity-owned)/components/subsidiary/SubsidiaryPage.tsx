@@ -9,6 +9,8 @@ import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close'
 
 import { Button, ButtonGroup, FormGroup, Grid, Icon, InputGroup, InputSuffix, TextInput } from '@trussworks/react-uswds'
+import { SUBSIDIARY_PARENT_ENTITY } from '@/app/constants/routes';
+import { createSubsidiary } from '@/app/services/api/subsidiary-service/createSubsidiary';
 
 const SubsidiaryPage = () => {
   const acceptRequestRef = useRef<ModalRef>(null)
@@ -170,7 +172,31 @@ const SubsidiaryPage = () => {
   const addNew = () => {
     setShowForm(true)
   }
-  const handleSaveFrom = (data: any) => {
+  const handleSaveFrom = async (data: any) => {
+    try {
+      const url = `${SUBSIDIARY_PARENT_ENTITY}`;
+      const formDataObj = {
+        "controlling_entity_type": data?.parent_company,
+        "legal_business_name": data?.subsidiary_name,
+        "address1": data?.address,
+        "address2": "string",
+        "city": "string",
+        "state": "string",
+        "zip": "string",
+        "parent_entity": 0,
+        "owner_user": 0,
+        "notes": data?.notes,
+      }     
+
+      let res = await createSubsidiary(url, formDataObj);
+      console.log(">> res ", res);
+
+
+      // await mutate();
+    } catch (error) {
+      // Handled error
+    }
+
     setTableData([...tableData, data])
     setShowForm(false)
   }
@@ -224,25 +250,25 @@ const SubsidiaryPage = () => {
               outline
               disabled={(selectedRowData.length > 1 || selectedRowData.length === 0) ? true : false}
             >
-                            Edit
+              Edit
             </Button>
             <Button
               type="button"
               onClick={addNew}
               disabled={(selectedRowData.length > 0) ? true : false}
             >
-                            Add New
+              Add New
             </Button>
           </ButtonGroup>
         </Grid>
 
         {
           showAlert &&
-                    <Grid col={12} className="margin-bottom-105">
-                      <Alert type="success" headingLevel="h4" noIcon>
-                            sdfsdfsdf
-                      </Alert>
-                    </Grid>
+          <Grid col={12} className="margin-bottom-105">
+            <Alert type="success" headingLevel="h4" noIcon>
+              sdfsdfsdf
+            </Alert>
+          </Grid>
         }
 
         <Grid row className='margin-bottom-105'>
@@ -275,12 +301,12 @@ const SubsidiaryPage = () => {
 
       {
         showForm &&
-                <SubsidiariesForm
-                  data={selectedRowData as any}
-                  handleCancelFrom={() => setShowForm(false)}
-                  handleSaveFrom={handleSaveFrom}
-                  handleDeleteData={handleDeleteData}
-                />
+        <SubsidiariesForm
+          data={selectedRowData as any}
+          handleCancelFrom={() => setShowForm(false)}
+          handleSaveFrom={handleSaveFrom}
+          handleDeleteData={handleDeleteData}
+        />
       }
 
     </>

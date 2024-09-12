@@ -122,7 +122,7 @@ export const config = {
     '/dashboard/(.*)',
     '/login-tester',
     '/tester-login',
-    '/entity-owned/(.*)',
+    // '/entity-owned/(.*)',
     '/field-function/(.*)',
   ],
 }
