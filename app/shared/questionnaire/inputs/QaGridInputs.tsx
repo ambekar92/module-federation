@@ -24,6 +24,11 @@ export const TextInput: React.FC<{ question: Question; value: string; onChange: 
 };
 
 export const EmailInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
+  const validateEmail = (email: string) => {
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   return (
     <div className='usa-form-group'>
       <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
@@ -35,7 +40,14 @@ export const EmailInput: React.FC<{ question: Question; value: string; onChange:
         name={question.name}
         value={value}
         className={`${question.name.includes('owner_and_management') && 'maxw-full'}`}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const newValue = e.target.value;
+          onChange(newValue);
+          e.target.setCustomValidity(validateEmail(newValue) ? '' : 'Please enter a valid email address.');
+        }}
+        onInvalid={(e: React.InvalidEvent<HTMLInputElement>) => {
+          e.target.setCustomValidity('Please enter a valid email address.');
+        }}
       />
     </div>
   );

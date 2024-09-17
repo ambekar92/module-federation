@@ -1,4 +1,4 @@
-import { axiosInstance } from '../../axiosInstance';
+import axios from 'axios';
 
 export type DeleteDocumentPayload = {
     document_id: number | string;
@@ -6,5 +6,5 @@ export type DeleteDocumentPayload = {
 
 export async function deleteDocument(url: string, {arg}: {arg: DeleteDocumentPayload}) {
 
-  await axiosInstance.delete(url, {data: arg});
+  await axios.delete(url, {data: arg});
 }

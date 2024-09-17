@@ -1,5 +1,4 @@
 'use client'
-import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { Application } from '@/app/services/types/application-service/Application'
 import Spinner from '@/app/shared/components/spinner/Spinner'
@@ -8,6 +7,7 @@ import { Collection } from '@trussworks/react-uswds'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import ApplicationCards from '../components/ApplicationCards'
+import { GET_APPLICATIONS_ROUTE } from '@/app/constants/local-routes'
 
 export default function DelegateDashboardPage() {
   const { data: session } = useSessionUCMS()
@@ -25,7 +25,7 @@ export default function DelegateDashboardPage() {
     fetchEntityData()
   }, [session?.user_id])
 
-  const url = entityId ? `${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}` : null
+  const url = entityId ? `${GET_APPLICATIONS_ROUTE}?entity_id=${entityId}` : null
 
   const { data, error } = useSWR<Application[]>(url)
 

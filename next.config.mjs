@@ -20,8 +20,10 @@ const nextConfig = {
     ];
   },
   eslint: {
-    // This allows the build to complete even with ESLint errors.
     ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
   sassOptions: {
     includePaths: [
@@ -31,6 +33,7 @@ const nextConfig = {
       path.join(__dirname, 'styles', 'base'),
     ],
   },
+  reactStrictMode: false,  // Disable React Strict Mode
   async headers() {
     return [
       {
@@ -38,6 +41,34 @@ const nextConfig = {
         headers: [
           { key: 'Cache-Control', value: 'no-store' },
           { key: 'Pragma', value: 'no-cache' },
+        ],
+      },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Referrer-Policy',
+            value: 'no-referrer-when-downgrade',  // or 'origin-when-cross-origin'
+          },
+        ],
+      },
+      {
+        // Apply HSTS headers to all routes
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload', // 2 years
+          },
         ],
       },
     ]

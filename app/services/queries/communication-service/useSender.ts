@@ -1,10 +1,9 @@
-import { USER_ROUTE } from '@/app/constants/routes';
 import useSWR from 'swr';
 import { User } from '../../types/user-service/User';
 import { useThreads } from './useThreads';
 import { Thread } from '../../types/communication-service/Thread';
 import { useParams } from 'next/navigation';
-import fetcher from '../../fetcher';
+import { USER_ROUTE } from '@/app/constants/local-routes';
 
 export function useSender() {
   const params = useParams<{messageId: string}>()

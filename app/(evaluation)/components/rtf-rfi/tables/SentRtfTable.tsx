@@ -42,7 +42,7 @@ const SentRtfTable: React.FC<SentRtfTableProps> = ({ requestData, reasonCodes })
   }
 
   const reasonCodeMap = useMemo(() => {
-    if (reasonCodes) {
+    if (reasonCodes && reasonCodes.length > 0) {
       return reasonCodes.reduce((acc, code) => {
         acc[code.id] = code.title;
         return acc;
@@ -66,7 +66,7 @@ const SentRtfTable: React.FC<SentRtfTableProps> = ({ requestData, reasonCodes })
             </tr>
           </thead>
           <tbody>
-            {requestData.map((item) => (
+            {requestData && requestData.length > 0 && requestData.map((item) => (
               <tr key={item.id}>
                 <td>{`${applicationData.sam_entity.legal_business_name} - ${getNameText} - ${formatDate(item.opened)}`}</td>
                 <td>Contains {item.items.length} {isScreener ? 'RTBs' : 'RFIs'}</td>

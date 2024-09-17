@@ -1,7 +1,6 @@
-import { DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/routes'
+import { GET_DELEGATES_ROUTE, INVITATION_ROUTE } from '@/app/constants/local-routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import Spinner from '@/app/shared/components/spinner/Spinner'
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext'
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress'
@@ -16,9 +15,11 @@ import {
   Link,
   Radio,
 } from '@trussworks/react-uswds'
+import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import useSWR from 'swr'
+import { useWorkflowRedirect } from '../../hooks/useWorkflowRedirect'
 import { applicationSteps } from '../../utils/constants'
 import { selectForm, setDelegates } from '../store/formSlice'
 import { useFormDispatch, useFormSelector } from '../store/hooks'
@@ -26,7 +27,6 @@ import { DelegateFormSchema } from '../utils/schemas'
 import { DelegateFormInputType, DelegatesResponse } from '../utils/types'
 import ConfirmRemovalModal from './ConfirmRemoval'
 import DelegateFormInputs from './DelegateFormInputs'
-import { useWorkflowRedirect } from '../../hooks/useWorkflowRedirect'
 
 function AddDelegateForm() {
   const [option, setOption] = useState('')
@@ -43,9 +43,8 @@ function AddDelegateForm() {
   useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
 
   const dispatch = useFormDispatch()
-
   const { data: delegatesData, isLoading, mutate: refetchDelegatesData } = useSWR<DelegatesResponse[]>(
-    contributorId ? `${DELEGATES_ROUTE}/${contributorId}` : null,
+    contributorId ? `${GET_DELEGATES_ROUTE}?contributor_id=${contributorId}` : null,
     { revalidateOnFocus: false }
   )
 
@@ -110,7 +109,7 @@ function AddDelegateForm() {
           : null;
 
       if (delegateId) {
-        await axiosInstance.delete(`${INVITATION_ROUTE}?invitation_id=${delegateId}`);
+        await axios.delete(`${INVITATION_ROUTE}?invitation_id=${delegateId}`);
         dispatch(setDelegates([]));
         reset({
           firstName: '',
@@ -179,7 +178,7 @@ function AddDelegateForm() {
 
       {isLoading ? (
         <Spinner center />
-      ) : delegatesData !== undefined ? (
+      ) : (
         <>
           <Grid className="flex-fill" col={12}>
             <Label className="text-bold" htmlFor="input-radio-question">
@@ -254,7 +253,7 @@ function AddDelegateForm() {
             handleCancel={handleCancelRemoval}
           />
         </>
-      ) : null}
+      )}
     </GridContainer>
   )
 }

@@ -3,7 +3,7 @@ import { useSessionUCMS } from '@/app/lib/auth';
 import { IRTFRequestItem } from '@/app/services/types/evaluation-service/RTFItems';
 import { calculateTimeDifference, convertSeconds } from '@/app/shared/utility/convertSeconds';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
-import { Accordion, Table } from '@trussworks/react-uswds';
+import { Accordion, Alert, Table } from '@trussworks/react-uswds';
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -22,7 +22,7 @@ const TaskTimers = () => {
   }, [requestData]);
 
   if(hasRfiError) {
-    return <p>{hasRfiError}</p>
+    return <Alert headingLevel='h4' type="error" heading="">Error loading Task Timers</Alert>;
   }
 
   const taskDropdownItems: AccordionItemProps[] = tasks?.map((task, index) => ({

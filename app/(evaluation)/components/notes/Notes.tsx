@@ -13,8 +13,7 @@ import NoteDescription from './NoteDescription'
 import Spinner from '@/app/shared/components/spinner/Spinner'
 
 function Notes() {
-
-  const { data, error, isLoading, mutate } = useNotes();
+  const { data, isLoading, mutate } = useNotes();
   const {data: {user_id}} = useSessionUCMS();
   const [noteViewed, setNoteViewed] = useState<number | null>(null);
   const [noteEdited, setNoteEdited] = useState<NoteListItem | null>(null);

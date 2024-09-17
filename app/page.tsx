@@ -1,5 +1,5 @@
 'use client'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import LandingPage from './(home)/home-2/components/LandingPage'
@@ -8,56 +8,55 @@ import './globals.scss'
 import { Role } from './shared/types/role'
 import { postLoginRedirectUrl } from './shared/utility/postLoginRedirectUrl'
 import Cookies from 'js-cookie'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { decrypt } from '@/app/shared/utility/encryption';
+import { useSessionUCMS } from './lib/auth'
+import { Alert } from '@trussworks/react-uswds'
 
 export default function Home() {
   const searchParams = useSearchParams();
+  const session = useSessionUCMS();
+  const router = useRouter();
+  const [showLoginError, setShowLoginError] = useState(false);
 
   useEffect(() => {
     const state = searchParams.get('state');
-    if (state) {
-      let redirectUrl = CLAIM_YOUR_BUSINESS;
-      const firstPermission = Cookies.get('firstPermission');
-      const firstPermissionSlug = firstPermission ? decrypt(firstPermission) as Role : undefined;
-      const lastPermission = Cookies.get('lastPermission');
-      const lastPermissionSlug = lastPermission ? decrypt(lastPermission) as Role : undefined;
 
-      if (firstPermissionSlug && lastPermissionSlug) {
-        if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-          console.log('REDIRECT PAGE LOGIN');
-          console.log('firstPermissionSlug', firstPermissionSlug);
-          console.log('lastPermissionSlug', lastPermissionSlug);
-        }
-        redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
-        if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-          console.log('REDIRECT TO', redirectUrl);
-        }
-      }
+    if (state && session) {
+      if (session.status === 'authenticated') {
+        let redirectUrl = CLAIM_YOUR_BUSINESS;
+        const firstPermission = Cookies.get('firstPermission');
+        const firstPermissionSlug = firstPermission ? decrypt(firstPermission) as Role : undefined;
+        const lastPermission = Cookies.get('lastPermission');
+        const lastPermissionSlug = lastPermission ? decrypt(lastPermission) as Role : undefined;
 
-      const checkCookieAndRedirect = () => {
-        const cookie = Cookies.get('email_password_auth_token');
-        if (cookie) {
+        if (firstPermissionSlug && lastPermissionSlug) {
           if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-            console.log('COOKIE FOUND', cookie);
-            console.log('REDIRECT TO NOW', redirectUrl);
+            console.log('REDIRECT PAGE LOGIN');
+            console.log('firstPermissionSlug', firstPermissionSlug);
+            console.log('lastPermissionSlug', lastPermissionSlug);
           }
-          window.location.href = redirectUrl;
-        } else {
-          setTimeout(checkCookieAndRedirect, 500);
+          redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
+          if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+            console.log('REDIRECT TO', redirectUrl);
+          }
         }
-      };
-
-      checkCookieAndRedirect();
+        router.push(redirectUrl);
+      }
+      {/* todo: need to fix this issue. it keep showing up on redirect and on public page */}
+      // } else if (session.status === 'unauthenticated') {
+      //   setShowLoginError(true);
+      // }
     } else {
       if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
         console.log('NO STATE');
       }
     }
-  }, [searchParams]);
+  }, [searchParams, session]);
 
   return (
     <>
+      {showLoginError && <Alert headingLevel='h2' type={'error'}>We couldn&apos;t log you in. Please try again. If the problem persists, please contact support for further assistance.</Alert>}
       <LandingPage />
       <ToastContainer />
     </>

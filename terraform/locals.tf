@@ -84,7 +84,7 @@ locals {
       certs_bucket              = "298969701643-us-east-1-prod-certifications"
       db_host                   = "ucp-db.certification.sba.gov" 
       distribution_url          = "https://dzjorhrnuv7ld.cloudfront.net"
-      ucp_tracking_id           = "G459N1YBHGW"
+      ucp_tracking_id           = "G-459N1YBHGW"
       next_base_url             = "https://certification.sba.gov"
       next_public_logout_url    = "https://login.sba.gov"
       okta_oauth2_issuer        = "https://login.sba.gov/oauth2/default"

@@ -1,8 +1,5 @@
 'use client'
-
-import { RETURN_APPLICATION_TO_FIRM } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import { IRTFItems } from '@/app/services/types/evaluation-service/RTFItems'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
 import {
@@ -19,6 +16,8 @@ import { useParams } from 'next/navigation'
 import React, { RefObject, useState, useMemo } from 'react'
 import ReactDOMServer from 'react-dom/server'
 import styles from '../RtfRfi.module.scss'
+import axios from 'axios'
+import { RETURN_APPLICATION_TO_FIRM } from '@/app/constants/local-routes'
 
 interface EditFormModalProps {
   tableData: IRTFItems[];
@@ -47,7 +46,7 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
   const userRole = getUserRole(sessionData?.data?.permissions || []);
 
   const contentComponents = useMemo(() => {
-    const issuesList = tableData.map((item: IRTFItems, index: number) => (
+    const issuesList = (tableData && tableData.length > 0) && tableData.map((item: IRTFItems, index: number) => (
       <div className='margin-bottom-3' key={index}>
         <p className='margin-bottom-1'>{item?.reason.title}</p>
         {item.explanation && <p className='margin-y-0'>{item.explanation}</p>}
@@ -60,7 +59,7 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
         Upon resubmission, your application will be assigned to a screener, who will review the contents of your application package to ensure it is complete.
         If you have not resubmitted your application within 30 days, your application may be removed for inactivity.
         If you have questions, please contact {sessionData.data?.user.name} at 636-555-3226 or our main help desk at 317-555-0113.
-        We also encourage you to visit our resource library at <a href="#">www.xxx.sba.gov</a> or meet with a local SBA Resource Partner or District Office for assistance.
+        We also encourage you to visit our resource library at <a href="https://certification.sba.gov/resources" target="_blank" rel="noreferrer">https://certification.sba.gov/resources</a> or meet with a local SBA Resource Partner or District Office for assistance.
         Visit <a href="https://www.sba.gov/tools/local-assistance" target="_blank" rel="noopener noreferrer">https://www.sba.gov/tools/local-assistance</a> to locate the one nearest you.
       </p>
     );
@@ -84,7 +83,7 @@ const FinalizeReturnToFirm: React.FC<EditFormModalProps> = ({
   const handleReturnApp = async () => {
     setIsSubmitting(true);
     try {
-      await axiosInstance.post(RETURN_APPLICATION_TO_FIRM, {
+      await axios.post(RETURN_APPLICATION_TO_FIRM, {
         application_id: parseInt(params.application_id),
         message: generateHTMLContent()
       })

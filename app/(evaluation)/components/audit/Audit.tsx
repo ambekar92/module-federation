@@ -29,7 +29,7 @@ const Audit = ({page, pageSize}: {page: number, pageSize: number}) => {
             <tr key={index}>
               <td>{moment(auditItem.timestamp).format('MM/DD/yyyy')}</td>
               <td>{auditItem.verb}</td>
-              <td>{auditItem.actor.first_name} {auditItem.actor.last_name}</td>
+              <td>{auditItem?.actor?.first_name} {auditItem?.actor?.last_name}</td>
               <td>{auditItem.userRole}</td>
               <td>{auditItem.details}</td>
             </tr>

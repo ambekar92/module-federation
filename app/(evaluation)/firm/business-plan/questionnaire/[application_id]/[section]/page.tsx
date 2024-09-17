@@ -1,5 +1,4 @@
 'use client';
-import { QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import fetcher from '@/app/services/fetcher';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { ButtonGroup } from '@trussworks/react-uswds';
@@ -12,15 +11,15 @@ import HubzoneResults from '@/app/(entity)/application/sections/HubzoneResults';
 import HubMock from '@/app/(entity)/application/components/questionnaire/HubMock';
 import Questions from '@/app/(entity)/application/qa-helpers/Questions';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import { QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const params = useParams()
   const section = params.section.toString();
   const contributorId = parseInt(params.contributor_id as string, 10);
-  const { data: questionnairesData, error } = useSWR(
-    params.contributor_id ? `${QUESTIONNAIRE_LIST_ROUTE}/${params.contributor_id}` : null,
-    fetcher<QuestionnaireListType>
+  const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(
+    params.contributor_id ? `${QUESTIONNAIRE_ROUTE}/${params.contributor_id}` : null,
   );
 
   useEffect(() => {

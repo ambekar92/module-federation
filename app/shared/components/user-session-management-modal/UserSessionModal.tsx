@@ -34,6 +34,8 @@ const UserSessionModal: React.FC = () => {
     Cookies.remove('applicationData');
     Cookies.remove('entityData');
     Cookies.remove('maxgov_auth_token');
+    Cookies.remove('firstPermission');
+    Cookies.remove('lastPermission');
 
     localStorage.clear();
 

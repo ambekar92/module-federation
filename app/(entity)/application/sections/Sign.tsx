@@ -1,8 +1,6 @@
 'use client'
-import { FIRM_APPLICATIONS_ROUTE, FIRM_EVALUATIONS_ROUTE, INVITATION_ROUTE, QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
 import { APPLICATION_STEP_ROUTE, DASHBOARD, buildRoute } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
 import { InvitationType } from '@/app/services/types/application-service/Application';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
@@ -17,6 +15,8 @@ import { QuestionnaireListType } from '../components/questionnaire/utils/types';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
+import { APPLICATION_CONTRIBUTORS_ROUTE, EVALUATIONS_ROUTE, INVITATION_ROUTE, QUESTIONNAIRE_ROUTE, UPDATE_APPLICATION_ROUTE } from '@/app/constants/local-routes';
+import axios from 'axios';
 
 /**
  * SignPage is the final page of the application process, where the user signs and submits the application.
@@ -37,7 +37,7 @@ function SignPage() {
   const [allInvitationsAccepted, setAllInvitationsAccepted] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
-  const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,);
+  const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
   const { data: invitationData } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
 
   useEffect(() => {
@@ -65,38 +65,54 @@ function SignPage() {
 
   useEffect(() => {
     if (applicationData && applicationData.application_contributor) {
-      const allSubmitted = applicationData.application_contributor.every(
-        (contributor) => contributor.workflow_state === 'submitted'
+      // filter out the primary owner from the contributor list
+      const nonOwnerContributors = applicationData.application_contributor.filter(
+        contributor => contributor.application_role.name !== 'primary-qualifying-owner'
       );
-      setAllContributorsSubmitted(allSubmitted);
 
-      if (!allSubmitted) {
-        setAlertMessage('Before this application can be signed, all contributors must accept their invitation and submit their application.');
-      } else {
+      if (nonOwnerContributors.length === 0) {
+        // if there are no other contributors only check the primary owner's questionnaire
+        setAllContributorsSubmitted(true);
+        setAllInvitationsAccepted(true);
         setAlertMessage('');
+      } else {
+        const allSubmitted = nonOwnerContributors.every(
+          (contributor) => contributor.workflow_state === 'submitted'
+        );
+        setAllContributorsSubmitted(allSubmitted);
+
+        if (!allSubmitted) {
+          setAlertMessage('Before this application can be signed, all contributors must accept their invitation and submit their application.');
+        } else {
+          setAlertMessage('');
+        }
       }
     }
-  }, [applicationData]);
+  }, [applicationData, session.data]);
 
   useEffect(() => {
-    if (invitationData) {
+    if (invitationData && invitationData.length > 0) {
       const allAccepted = invitationData.every(
-        (invitation) => invitation.invitation_status === 'accepted'
+        (invitation) => invitation.invitation_status === 'accepted' && invitation.invitation_status  !== 'removed'
       );
       setAllInvitationsAccepted(allAccepted);
 
       if (!allAccepted) {
-        setAlertMessage('Before this application can be signed, all contributors must accept their invitation and submit their application.');
+        setAlertMessage('One or more contributors have not accepted their invitation or submitted their application.');
       }
     }
   }, [invitationData]);
 
   useEffect(() => {
-    if (questionnairesData) {
+    if (questionnairesData && questionnairesData.length > 0) {
       const allCompleted = questionnairesData.every(
         (questionnaire) => questionnaire.status === 'Completed'
       );
-      setIsCheckboxDisabled(!allCompleted || !allContributorsSubmitted || !allInvitationsAccepted);
+      if (userRole === 'primary-qualifying-owner') {
+        setIsCheckboxDisabled(!allCompleted || !allContributorsSubmitted || !allInvitationsAccepted);
+      } else {
+        setIsCheckboxDisabled(!allCompleted);
+      }
     }
   }, [questionnairesData, allContributorsSubmitted, allInvitationsAccepted]);
 
@@ -112,10 +128,14 @@ function SignPage() {
       if (formSubmitted) {
         setFormSubmitted(false);
       }
-      if (allContributorsSubmitted && allInvitationsAccepted) {
-        modalRef.current?.toggleModal();
+      if (userRole === 'primary-qualifying-owner') {
+        if (allContributorsSubmitted && allInvitationsAccepted) {
+          modalRef.current?.toggleModal();
+        } else {
+          alert(alertMessage);
+        }
       } else {
-        alert(alertMessage);
+        handlePostRequest();
       }
     }
   }
@@ -123,19 +143,23 @@ function SignPage() {
   const handlePostRequest = async () => {
     try {
       if(applicationId) {
-        const putData = {
-          application_id: applicationId,
-          signed_by_id: userId,
-          agree_to_statement: true
-        };
+        if (userRole !== 'primary-qualifying-owner') {
+          await axios.put(`${APPLICATION_CONTRIBUTORS_ROUTE}/${contributorId}`, { workflow_state: 'submitted' });
+          window.location.href = buildRoute(DASHBOARD, {});
+        } else {
+          const putData = {
+            application_id: applicationId,
+            signed_by_id: userId,
+            agree_to_statement: true
+          };
 
-        const postData = {
-          application_id: applicationId,
-        };
-
-        await axiosInstance.put(`${FIRM_APPLICATIONS_ROUTE}`, putData);
-        await axiosInstance.post(FIRM_EVALUATIONS_ROUTE, postData);
-        window.location.href = buildRoute(DASHBOARD, {});
+          const postData = {
+            application_id: applicationId,
+          };
+          await axios.put(`${UPDATE_APPLICATION_ROUTE}`, putData);
+          await axios.post(EVALUATIONS_ROUTE, postData);
+          window.location.href = buildRoute(DASHBOARD, {});
+        }
       } else {
         // Error handled
       }
@@ -143,6 +167,16 @@ function SignPage() {
       setAlertMessage('There was an error submitting your application, please try again.')
     }
   };
+
+  const getUserRole = () => {
+    if (!applicationData || !userId) {return null;}
+    const currentUser = applicationData.application_contributor.find(
+      contributor => contributor.user.id === userId
+    );
+    return currentUser?.application_role.name;
+  };
+
+  const userRole = getUserRole();
 
   const testItems: AccordionItemProps[] = [
     {
@@ -155,6 +189,9 @@ function SignPage() {
   ]
   const sidebarContent = <Accordion className='margin-top-2' items={testItems} multiselectable={true} />;
 
+  if (!applicationData || !userId || !userRole) {
+    return null;
+  }
   return (
     <>
       <QAWrapper
@@ -162,7 +199,7 @@ function SignPage() {
         sidebar={sidebarContent}
         mainContent={
           <div>
-            {session?.data.permissions[session?.data.permissions.length - 1].slug === Role.QUALIFYING_OWNER ? (
+            {userRole === 'primary-qualifying-owner' ? (
               <>
                 <h1>Attestation</h1>
                 <p className='margin-bottom-5'>By clicking the Submit button, you are certifying that you are an owner of the company listed below and that you authorized to represent it and electronically sign on its behalf.</p>
@@ -180,7 +217,7 @@ function SignPage() {
               </>
             ): (
               <>
-                <h1>4SEP2024 - Policy Approved - Contributor Attestation Text</h1>
+                <h1>Contributor Attestation</h1>
                 <p className='margin-bottom-5'>
 									Pursuant to 18 U.S.C. § 1001 and 15 U.S.C. § 645, any person who makes any false statement in order to influence the certification or continuing eligibility process in any
 									way or to obtain a contract awarded under the preference programs established pursuant to section 8(a), 8(d), 9, or 15 of the Small Business Act, or any other provision
@@ -207,7 +244,7 @@ function SignPage() {
           </div>
         }
       />
-      {alertMessage && (
+      {(alertMessage && userRole === 'primary-qualifying-owner') && (
         <div className="usa-alert usa-alert--warning" role="alert">
           <div className="usa-alert__body">
             <p className="usa-alert__text">{alertMessage}</p>
@@ -227,7 +264,10 @@ function SignPage() {
         <Button
           type='button'
           onClick={handleModalToggle}
-          disabled={!isChecked || isCheckboxDisabled || error || !allContributorsSubmitted || !allInvitationsAccepted}
+          disabled={
+            !isChecked || isCheckboxDisabled || error ||
+            (userRole === 'primary-qualifying-owner' && (!allContributorsSubmitted || !allInvitationsAccepted))
+          }
         >
           Submit
         </Button>

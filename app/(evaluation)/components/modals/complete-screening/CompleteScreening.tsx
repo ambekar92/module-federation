@@ -1,9 +1,7 @@
 'use client'
-
-import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes';
+import { UPDATE_APPLICATION_STATE_ROUTE } from '@/app/constants/local-routes';
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask';
 import {
   Button,
@@ -14,6 +12,7 @@ import {
   ModalHeading,
   ModalRef,
 } from '@trussworks/react-uswds'
+import axios from 'axios';
 import React, { RefObject } from 'react'
 
 interface CompleteScreeningProps {
@@ -47,7 +46,7 @@ const CompleteScreening: React.FC<CompleteScreeningProps> = ({ modalRef, process
         description: 'Updated for review'
       }
       // TODO: Find a better solution to deal with the delay
-      await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
+      await axios.put(UPDATE_APPLICATION_STATE_ROUTE, updateAppStateData);
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=completed-screening'
     } catch (error: any) {
       handleAction();

@@ -1,8 +1,6 @@
 // Todo need to find a better way not to include useApplicationData everywhere to check view permission
 'use client'
-import { RFI_CANCEL_ROUTE, RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import { IRTFItems } from '@/app/services/types/evaluation-service/RTFItems'
 import { ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
@@ -17,6 +15,8 @@ import FinalizeReturnToFirm from '../modals/FinalizeReturnToFirm'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import Spinner from '@/app/shared/components/spinner/Spinner'
+import axios from 'axios'
+import { RFI_CANCEL_ROUTE, RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/local-routes'
 
 export interface ReasonState {
   id: number | null;
@@ -53,7 +53,7 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
   }, [draftData])
 
   const reasonCodeMap = useMemo(() => {
-    if (reasonCodes) {
+    if (reasonCodes && reasonCodes.length > 0) {
       return reasonCodes.reduce((acc, code) => {
         acc[code.id] = code.title;
         return acc;
@@ -73,7 +73,7 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
         reason: reason.title
       };
 
-      await axiosInstance.put(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_CANCEL_ROUTE, requestData);
+      await axios.put(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_CANCEL_ROUTE, requestData);
 
       mutateDraft();
       requestInfoModalRef.current?.toggleModal();
@@ -101,7 +101,7 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
 
   const handleDeleteConfirm = async () => {
     try {
-      await axiosInstance.delete(`${userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE}?id=${rowId}&author_id=${sessionData.data?.user_id}`);
+      await axios.delete(`${userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE}?id=${rowId}&author_id=${sessionData.data?.user_id}`);
       mutateDraft(); // Refresh draft data
       deleteConfirmationModalRef.current?.toggleModal();
     } catch (error: any) {
@@ -144,7 +144,7 @@ const RtfRfiDataTable: React.FC<RtfRfiDataTableProps> = ({ draftData, reasonCode
               </tr>
             </thead>
             <tbody>
-              {tableData && tableData.length !== 0 && tableData.map((item) => (
+              {(tableData && tableData.length > 0) && tableData.map((item) => (
                 <tr key={item.id}>
                   <td>{item?.reason?.title}</td>
                   <td>{item?.application_section?.title}</td>

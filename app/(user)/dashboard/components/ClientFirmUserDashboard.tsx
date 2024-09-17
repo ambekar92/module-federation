@@ -1,5 +1,5 @@
 'use client'
-import { FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
+import { GET_APPLICATIONS_ROUTE } from '@/app/constants/local-routes'
 import { DELEGATE_DASHBOARD_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { Application } from '@/app/services/types/application-service/Application'
@@ -39,7 +39,7 @@ export default function ClientFirmUserDashboard() {
     }
   }, [hasDelegate])
 
-  const url = userId ? `${FIRM_APPLICATIONS_ROUTE}?user_id=${userId}` : null
+  const url = userId ? `${GET_APPLICATIONS_ROUTE}?user_id=${userId}` : null
 
   const { data, error } = useSWR<Application[]>(url);
 

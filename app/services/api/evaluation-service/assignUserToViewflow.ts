@@ -1,6 +1,6 @@
-import { ASSIGN_USER_TO_VIEWFLOW_ROUTE } from '@/app/constants/routes';
-import { axiosInstance } from '../../axiosInstance';
+import { ASSIGN_USER_VIEWFLOW_ROUTE } from '@/app/constants/local-routes';
+import axios from 'axios';
 
 export async function assignUserToViewflow(payload: AssignUserToViewflowPayload) {
-  await axiosInstance.put(ASSIGN_USER_TO_VIEWFLOW_ROUTE, payload)
+  await axios.put(ASSIGN_USER_VIEWFLOW_ROUTE, payload)
 }

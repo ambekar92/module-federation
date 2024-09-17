@@ -32,6 +32,11 @@ export async function POST(req: any, res: NextApiResponse) {
     };
     const userDetails = await axiosInstance.post(OKTA_POST_LOGIN_ROUTE, postData);
     cookies().set('maxgov_auth_token', encrypt(JSON.stringify(userDetails.data)));
+    cookies().set('accesstoken', encrypt(userDetails.data.access));
+    cookies().set('firstPermission', encrypt(userDetails.data.permissions[0].slug));
+    if (userDetails.data.permissions.length > 1) {
+      cookies().set('lastPermission', encrypt(userDetails.data.permissions[userDetails.data.permissions.length - 1].slug));
+    }
 
     return NextResponse.redirect(new URL(`/?state=${encrypt('true')}`, process.env.NEXT_PUBLIC_POST_REDIRECT_URL), 301);
 

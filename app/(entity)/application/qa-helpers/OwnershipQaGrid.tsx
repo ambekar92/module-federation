@@ -1,23 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, ButtonGroup, Grid, Icon, Label, Select, Table } from '@trussworks/react-uswds';
-import { ANSWER_ROUTE } from '@/app/constants/routes';
-import { axiosInstance } from '@/app/services/axiosInstance';
+import { UCPTable } from '@/app/shared/components/table/UCPTable';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import {
   BooleanInput,
   DateInput,
+  EmailInput,
   MultiSelectInput,
   NumberInput,
+  PhoneInput,
   SelectInput,
   TextareaInput,
-  TextInput,
-  EmailInput,
-  PhoneInput
+  TextInput
 } from '@/app/shared/questionnaire/inputs/QaGridInputs';
-import { Question, QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
+import { QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
+import { Button, ButtonGroup, Grid, Label, Select } from '@trussworks/react-uswds';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { calculateEligibleSbaPrograms, OwnerType, useOwnerApplicationInfo } from '../hooks/useOwnershipApplicationInfo';
 import { setOwners } from '../redux/applicationSlice';
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
+import axios from 'axios';
+import { ANSWER_ROUTE } from '@/app/constants/local-routes';
 
 export type GridRow = {
   [key: string]: string | string[];
@@ -291,7 +292,7 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
           answer_by: userId,
           reminder_flag: false,
         };
-        axiosInstance.post(ANSWER_ROUTE, [individualAnswer]).catch((error) => {
+        axios.post(ANSWER_ROUTE, [individualAnswer]).catch((error) => {
           console.error('Error saving individual answer:', error);
         });
       }
@@ -305,7 +306,7 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
           answer_by: userId,
           reminder_flag: false,
         };
-        axiosInstance.post(ANSWER_ROUTE, [organizationAnswer]).catch((error) => {
+        axios.post(ANSWER_ROUTE, [organizationAnswer]).catch((error) => {
           console.error('Error saving organization answer:', error);
         });
       }
@@ -397,61 +398,36 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
   const renderTable = (rows: GridRow[], isOrganization: boolean) => {
     if (rows.length === 0) {return null;}
 
-    const relevantFields = isOrganization
-      ? ['organization_name', 'organization_email', 'organization_ownership_percentage']
-      : ['first_name', 'last_name', 'email', 'ownership_percentage'];
+    const gridQuestions = isOrganization
+      ? [
+        { id: '1', name: 'organization_name', title: 'Organization Name', question_type: 'text' },
+        { id: '2', name: 'organization_email', title: 'Organization Email', question_type: 'text' },
+        { id: '3', name: 'organization_ownership_percentage', title: 'Ownership Percentage', question_type: 'number' },
+      ]
+      : [
+        { id: '1', name: 'first_name', title: 'First Name', question_type: 'text' },
+        { id: '2', name: 'last_name', title: 'Last Name', question_type: 'text' },
+        { id: '3', name: 'email', title: 'Email', question_type: 'text' },
+        { id: '4', name: 'ownership_percentage', title: 'Ownership Percentage', question_type: 'number' },
+      ];
 
-    const headers = isOrganization
-      ? ['Organization Name', 'Organization Email', 'Ownership Percentage']
-      : ['First Name', 'Last Name', 'Email', 'Ownership Percentage'];
+    const formattedRows = rows.map(row => {
+      const formattedRow: Record<string, any> = {};
+      gridQuestions.forEach(question => {
+        formattedRow[question.name] = getFieldValue(row, question.name);
+      });
+      return formattedRow;
+    });
 
     return (
       <>
         <h3>{isOrganization ? 'Organization Owners' : 'Individual Owners'}</h3>
-        <Table bordered scrollable className='maxw-full'>
-          <thead>
-            <tr>
-              {headers.map((header) => (
-                <th key={header}>{header}</th>
-              ))}
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, rowIndex) => (
-              <tr id={`${row.owner_type === 'Individual'
-                ? `${String(getFieldValue(row, 'first_name'))}_${String(getFieldValue(row, 'last_name'))}`
-                : String(getFieldValue(row, 'organization_name'))}_${Date.now()}`} key={rowIndex}>
-                {relevantFields.map((field) => {
-                  const value = getFieldValue(row, field);
-                  return <td key={field}>{Array.isArray(value) ? value.join(', ') : value}</td>;
-                })}
-                <td>
-                  <Button
-                    style={{textDecoration: 'none'}}
-                    className='display-flex flex-align-center margin-right-1'
-                    type='button'
-                    unstyled
-                    onClick={() => handleEditRow(gridRows.indexOf(row))}
-                  >
-                    <Icon.Edit className='margin-right-1' />
-                    <span className='mobile:display-none'>Edit</span>
-                  </Button>
-                  <Button
-                    style={{textDecoration: 'none'}}
-                    className='display-flex flex-align-center margin-top-1'
-                    type='button'
-                    unstyled
-                    onClick={() => handleDeleteRow(gridRows.indexOf(row))}
-                  >
-                    <Icon.Delete className='margin-right-1' />
-                    <span className='mobile:display-none'>Delete</span>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <UCPTable
+          gridQuestions={gridQuestions}
+          gridRows={formattedRows}
+          handleEditRow={(index) => handleEditRow(gridRows.indexOf(rows[index]))}
+          handleDeleteRow={(index) => handleDeleteRow(gridRows.indexOf(rows[index]))}
+        />
       </>
     );
   };

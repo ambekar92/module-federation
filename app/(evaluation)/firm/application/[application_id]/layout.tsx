@@ -11,7 +11,7 @@ import firmStore from '../../store/store';
 import { useCurrentApplication } from '../../useApplicationData';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 
-const routesWithoutRightNav = ['business-summary', 'documents', 'analysis', 'messages', 'audit', 'task-timers', 'done', 'evaluation', 'review', 'notes', 'analyst-questionnaire', 'controlling-entity'];
+const routesWithoutRightNav = ['business-summary', 'documents', 'analysis', 'messages', 'audit', 'task-timers', 'done', 'evaluation', 'review', 'notes', 'analyst-questionnaire'];
 const routesWithoutLeftNav = ['done'];
 
 const Layout = ({ children }: PropsWithChildren) => {

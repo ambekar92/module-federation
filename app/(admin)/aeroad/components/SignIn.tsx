@@ -28,6 +28,7 @@ import { SignInFormData, SignInFormSchema } from './Schema'
 import { encrypt } from '@/app/shared/utility/encryption';
 import { postLoginRedirectUrl } from '@/app/shared/utility/postLoginRedirectUrl'
 import Head from 'next/head'
+import { axiosInstance } from '@/app/services/axiosInstance'
 
 export default {
   title: 'Page Templates/Sign In',
@@ -80,14 +81,14 @@ export const SignIn = (): React.ReactElement => {
         let applicationData: Application[] | null = null;
         let entityData: Entity[] | null = null;
 
-        const applicationDataPromise = fetch(`${APPLICATION_ROUTE}?user_id=${response.user.user_id}`);
+        const applicationDataPromise = axiosInstance.get(`${APPLICATION_ROUTE}?user_id=${response.user.user_id}`);
         const entityQueryParam = lastPermissionSlug === Role.DELEGATE ? 'delegate_user_id' : 'owner_user_id';
-        const entityDataPromise = fetch(`${ENTITIES_ROUTE}?${entityQueryParam}=${response.user.user_id}`);
+        const entityDataPromise = axiosInstance.get(`${ENTITIES_ROUTE}?${entityQueryParam}=${response.user.user_id}`);
 
         const applicationResponse = await applicationDataPromise;
 
-        if (applicationResponse.ok) {
-          applicationData = await applicationResponse.json();
+        if (applicationResponse) {
+          applicationData = await applicationResponse.data;
           if (applicationData && applicationData.length > 0) {
             const simpleApplicationData = applicationData.map(app => ({
               id: app.id,
@@ -102,8 +103,8 @@ export const SignIn = (): React.ReactElement => {
 
         if (!applicationData || applicationData.length === 0) {
           const entityResponse = await entityDataPromise;
-          if (entityResponse.ok) {
-            entityData = await entityResponse.json();
+          if (entityResponse) {
+            entityData = await entityResponse.data;
             if (entityData && entityData.length > 0) {
               const simpleEntityData = entityData.map(entity => ({ id: entity.id }));
               Cookies.set('entityData', encrypt(JSON.stringify(simpleEntityData)));

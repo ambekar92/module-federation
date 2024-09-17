@@ -86,8 +86,15 @@ export const useOwnerApplicationInfo = () => {
   };
 };
 
+/**
+ * Given an array of owners, returns an array of SBA programs that they are eligible for.
+ * A program is considered eligible if any of the owners have a social disadvantage that
+ * matches one of the program's disadvantages.
+ * @param owners The array of owners to check eligibility for.
+ * @returns An array of program options that the owners are eligible for.
+ */
 export const calculateEligibleSbaPrograms = (owners: OwnerType[]): ProgramOption[] => {
-  return sbaProgramOptions.filter((program) => {
+  const eligiblePrograms = sbaProgramOptions.filter((program) => {
     return owners.some(owner => {
       if (owner.ownerType !== 'Individual') {
         return false;
@@ -96,6 +103,11 @@ export const calculateEligibleSbaPrograms = (owners: OwnerType[]): ProgramOption
       let updatedDisadvantages = owner.socialDisadvantages.length > 0
         ? owner.socialDisadvantages
         : ['Not Claiming Social Disadvantage'];
+
+      // Remove 8(a) if 'Not Claiming Social Disadvantage' is selected
+      if (updatedDisadvantages.includes('Not Claiming Social Disadvantage') && program.name === '8(a) Business Development') {
+        return false;
+      }
 
       if (updatedDisadvantages.length > 1) {
         updatedDisadvantages = updatedDisadvantages.filter(d => d !== 'Not Claiming Social Disadvantage');
@@ -140,4 +152,12 @@ export const calculateEligibleSbaPrograms = (owners: OwnerType[]): ProgramOption
       return program.disadvantages.some(disadvantage => flatMappedDisadvantages.includes(disadvantage));
     });
   });
+
+  // Add HUBZone if not already included
+  const hubZoneProgram = sbaProgramOptions.find(program => program.name === 'HUBZone');
+  if (hubZoneProgram && !eligiblePrograms.some(program => program.name === 'HUBZone')) {
+    eligiblePrograms.push(hubZoneProgram);
+  }
+
+  return eligiblePrograms;
 };

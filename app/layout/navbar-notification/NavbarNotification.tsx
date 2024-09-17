@@ -1,22 +1,21 @@
 'use client'
-import { Grid } from '@trussworks/react-uswds'
-import React, { useEffect, useState } from 'react'
-import styles from './NavbarNotification.module.scss'
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
-import { GET_NOTIFICATION, NOTIFYING_READ_MESSAGE } from '@/app/constants/routes'
+import { GET_NOTIFICATIONS_ROUTE, NOTIFYING_READ_MESSAGE_ROUTE } from '@/app/constants/local-routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import fetcher from '@/app/services/fetcher'
+import { INotification } from '@/app/services/types/communication-service/Notification'
+import Spinner from '@/app/shared/components/spinner/Spinner'
 import CloseIcon from '@mui/icons-material/Close'
 import DraftsIcon from '@mui/icons-material/Drafts'
 import EmailIcon from '@mui/icons-material/Email'
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import { Avatar, IconButton } from '@mui/material'
+import { Grid } from '@trussworks/react-uswds'
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { INotification } from '@/app/services/types/communication-service/Notification'
-import Spinner from '@/app/shared/components/spinner/Spinner'
-import { axiosInstance } from '@/app/services/axiosInstance'
+import styles from './NavbarNotification.module.scss'
 
 export const NavbarNotification: React.FC = () => {
   const [showFilterReadUnread, setShowFilterReadUnread] = useState(false)
@@ -24,8 +23,7 @@ export const NavbarNotification: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'read' | 'unread'>('all')
   const session = useSessionUCMS()
   const { data: notificationData, error, isLoading, mutate } = useSWR<INotification[]>(
-    session.data.user.id ? `${GET_NOTIFICATION}?user_id=${session.data.user.id}` : null,
-    fetcher,
+    session.data.user.id ? `${GET_NOTIFICATIONS_ROUTE}?user_id=${session.data.user.id}` : null,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
@@ -77,7 +75,7 @@ export const NavbarNotification: React.FC = () => {
         user_id: session.data.user_id,
         id
       }
-      await axiosInstance.put(NOTIFYING_READ_MESSAGE, payload)
+      await axios.put(NOTIFYING_READ_MESSAGE_ROUTE, payload)
       mutate()
     } catch (error) {
       // Error handled
@@ -105,7 +103,7 @@ export const NavbarNotification: React.FC = () => {
         user_id: session.data.user_id,
         mark_all_as_unread: true
       }
-      await axiosInstance.put(NOTIFYING_READ_MESSAGE, payload)
+      await axios.put(NOTIFYING_READ_MESSAGE_ROUTE, payload)
       mutate()
     } catch (error) {
       // Error handled

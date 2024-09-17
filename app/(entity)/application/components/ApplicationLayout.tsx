@@ -13,7 +13,7 @@ function ApplicationLayout({children}: ApplicationLayoutProps) {
 
   return (
     <>
-      <GridContainer className='height-full display-flex flex-column' containerSize='widescreen'>
+      <GridContainer className='height-full max-width-full padding-x-0 display-flex flex-column' containerSize='widescreen'>
         <div className='step-indicator__application'>
           <ApplicationStepIndicator stepNumber={currentStep} />
         </div>

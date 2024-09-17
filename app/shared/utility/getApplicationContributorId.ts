@@ -1,9 +1,8 @@
-import { APPLICATION_CONTRIBUTORS_ROUTE } from '@/app/constants/routes'
-import fetcher from '@/app/services/fetcher'
-import { ApplicationContributorType } from '../types/responses'
+import { APPLICATION_CONTRIBUTORS_ROUTE } from '@/app/constants/local-routes'
+import { superFetcher } from '@/app/services/superFetcher'
 
 const getApplicationContributorId = async(applicationId: number) => {
-  const response = await fetcher<ApplicationContributorType>(`${APPLICATION_CONTRIBUTORS_ROUTE}?application_id=${applicationId}`)
+  const response = await superFetcher(`${APPLICATION_CONTRIBUTORS_ROUTE}?application_id=${applicationId}`)
 
   if(response) {
     return (response)

@@ -1,7 +1,4 @@
-import { ANSWER_ROUTE, CLOSE_APPLICATION_ROUTE, FIRM_APPLICATIONS_ROUTE, PROGRAM_APPLICATION } from '@/app/constants/routes';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
-import fetcher from '@/app/services/fetcher';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import { Application } from '@/app/services/types/application-service/Application'
 import { ModalRef } from '@trussworks/react-uswds';
@@ -15,6 +12,8 @@ import useSWR from 'swr';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useParams } from 'next/navigation';
+import axios from 'axios';
+import { ANSWER_ROUTE, CLOSE_APPLICATION_ROUTE, GET_APPLICATIONS_ROUTE, PROGRAM_APPLICATION } from '@/app/constants/local-routes';
 interface QuestionnaireProps {
   url: string;
   title: string;
@@ -68,7 +67,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
       };
 
       try {
-        await axiosInstance.post(ANSWER_ROUTE, [answer]);
+        await axios.post(ANSWER_ROUTE, [answer]);
       } catch (error) {
         // Error caught haha -KJ
       }
@@ -91,7 +90,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
 
   const handleCloseApplication = async () => {
     try {
-      const applicationData: Application[] = await axiosInstance.get(`${FIRM_APPLICATIONS_ROUTE}/?user_id=${userId}`);
+      const applicationData: Application[] = await axios.get(`${GET_APPLICATIONS_ROUTE}?user_id=${userId}`);
 
       // Finds the first application where the contributorId is in the application_contributor_id array -KJ
       const matchingApplication = applicationData.find(app =>
@@ -100,7 +99,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
 
       if (matchingApplication) {
         const applicationId = matchingApplication.id;
-        await axiosInstance.post(CLOSE_APPLICATION_ROUTE, {
+        await axios.post(CLOSE_APPLICATION_ROUTE, {
           application_id: applicationId,
           explanation: 'Response to third_party_disqualification_core_program_eligibility disqualified business from continuing',
           user_id: userId
@@ -139,7 +138,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
               program_id: 2, // Hubzone
               deleted_at: currentUTCTime
             }
-            await axiosInstance.put(PROGRAM_APPLICATION, putPayload)
+            await axios.put(PROGRAM_APPLICATION, putPayload)
           } catch(error) {
             console.log('Error removing hubzone: ', error);
           }

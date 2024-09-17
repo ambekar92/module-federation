@@ -1,214 +1,80 @@
-'use client'
-import { API_ROUTE, ENTITIES_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes';
-import { ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url';
-import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
-import fetcher from '@/app/services/fetcher';
-import { Application, ApplicationEligibilityType } from '@/app/services/types/application-service/Application';
-import Spinner from '@/app/shared/components/spinner/Spinner';
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
-import { EntitiesType } from '@/app/shared/types/responses';
-import { Button, Grid } from '@trussworks/react-uswds';
-import Cookies from 'js-cookie';
-import Link from 'next/link';
-import { redirect, useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import useSWR from 'swr';
-import {
-  ProgramOption,
-  sbaProgramOptions,
-} from '../../../../constants/sba-programs';
-import ProgramCard from '../../../../shared/components/ownership/ProgramCard';
-import { encrypt } from '@/app/shared/utility/encryption';
+import { API_ROUTE, ENTITIES_ROUTE, FIRM_APPLICATIONS_ROUTE } from '@/app/constants/routes'
+import { sbaProgramOptions } from '@/app/constants/sba-programs'
+import { ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url'
+import { axiosInstance } from '@/app/services/axiosInstance'
+import { Application, ApplicationEligibilityType } from '@/app/services/types/application-service/Application'
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip'
+import { EntitiesType } from '@/app/shared/types/responses'
+import { decrypt, encrypt } from '@/app/shared/utility/encryption'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
+import ClientSidePrograms from './ClientSidePrograms'
 
-const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`;
+const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`
 
-function Programs() {
-  const params = useParams();
-  const { data: session, status } = useSessionUCMS();
-  const entityId = params.entity_id;
+async function getServerSideData(entityId: string) {
+  const cookieStore = cookies()
+  const access_token = cookieStore.get('accesstoken')?.value
 
-  const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([])
-  const [userId, setUserId] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-  const { data: entityData, isLoading: isLoadingEntity } = useSWR<EntitiesType>(`${ENTITIES_ROUTE}?id=${entityId}`);
-  const { data: applicationData } = useSWR<Application[]>(`${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}&application_type_id=1`);
-  const { data: eligibilityData, isLoading } = useSWR<ApplicationEligibilityType[] | []>(
-    applicationData && applicationData.length > 0 ? `${APPLICATION_ELIGIBILITY_ROUTE}?application_id=${applicationData[applicationData.length - 1].id}` : null,
-  );
-
-  useEffect(() => {
-    if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0) {
-      const cookieEntityData = [{ id: parseInt(entityId as string, 10) }];
-      Cookies.set('entityData', encrypt(JSON.stringify(cookieEntityData)));
-
-      const lastApplication = applicationData[applicationData.length - 1];
-      const cookieApplicationData = {
-        id: lastApplication.id,
-        progress: lastApplication.progress || 'Contributor Invitation',
-        workflow_state: lastApplication.workflow_state || 'draft'
-      };
-      Cookies.set('applicationData', encrypt(JSON.stringify([cookieApplicationData])));
-      redirect(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: applicationData[applicationData.length - 1].id}))
-    }
-  }, [entityData, applicationData, entityId]);
-
-  useEffect(() => {
-    if (status === 'authenticated' && session?.user_id) {
-      setUserId(session.user_id);
-    }
-  }, [session, status]);
-
-  useEffect(() => {
-    if (eligibilityData) {
-      const selectedProgramsFromData = sbaProgramOptions.filter(program =>
-        eligibilityData.some(item =>
-          item.program === program.id && item.intending_to_apply
-        )
-      );
-      setSelectedPrograms(selectedProgramsFromData);
-    } else {
-      setSelectedPrograms([]);
-    }
-  }, [eligibilityData]);
-
-  useEffect(() => {
-    if (!isLoadingEntity && !isLoading && entityData !== undefined && session.user_id) {
-      setIsDataLoaded(true);
-    }
-  }, [isLoadingEntity, isLoading, entityData, session]);
-
-  // useEffect(() => {
-  //   if (isDataLoaded) {
-  //     if (!entityData || entityData.length === 0 || (entityData[0].owner_user_id !== session.user_id)) {
-  //       redirect(CLAIM_YOUR_BUSINESS);
-  //     }
-  //   }
-  // }, [isDataLoaded, entityData, session]);
-
-  const handlePostRequest = async () => {
-    setIsSubmitting(true);
-    try {
-      if(userId) {
-        const postData = {
-          entity_id: entityId,
-          application_type_id: 1,
-          programs: selectedPrograms.map(program => program.id),
-          workflow_state: 'draft',
-          application_role_id: 1,
-          user_id: userId
-        };
-
-        const response = await axiosInstance.post(`${FIRM_APPLICATIONS_ROUTE}`, postData);
-        window.location.href = buildRoute(ASSIGN_DELEGATE_PAGE, {applicationId: response.data.id})
-      }
-    } catch (error) {
-      // Error handled lol -KJ
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCheckboxChange = async (program: ProgramOption) => {
-    setSelectedPrograms((prev) => {
-      let newSelection = [...prev];
-      const isAlreadySelected = newSelection.find((p) => p.id === program.id);
-
-      if (isAlreadySelected) {
-        newSelection = newSelection.filter((p) => p.id !== program.id);
-      } else {
-        newSelection.push(program);
-
-        // Handle mutually exclusive selections
-        if (program.id === 6) { // EDWOSB
-          newSelection = newSelection.filter((p) => p.id !== 3); // Removes WOSB if EDWOSB is selected
-        } else if (program.id === 3) { // WOSB
-          newSelection = newSelection.filter((p) => p.id !== 6); // Removes EDWOSB if WOSB is selected
-        } else if (program.id === 5) { // SDVOSB
-          newSelection = newSelection.filter((p) => p.id !== 4); // Removes VOSB if SDVOSB is selected
-        } else if (program.id === 4) { // VOSB
-          newSelection = newSelection.filter((p) => p.id !== 5); // Removes SDVOSB if VOSB is selected
-        }
-      }
-
-      return newSelection;
-    });
-  };
-
-  const handleCardClick = (program: ProgramOption) => {
-    handleCheckboxChange(program)
+  const headers = {
+    Authorization: `Bearer ${access_token ? decrypt(access_token) : undefined}`
   }
 
-  if(isLoading || isLoadingEntity) {
-    return <Spinner center />
+  const [entityData, applicationData] = await Promise.all([
+    axiosInstance.get<EntitiesType>(`${ENTITIES_ROUTE}?id=${entityId}`, { headers }),
+    axiosInstance.get<Application[]>(`${FIRM_APPLICATIONS_ROUTE}?entity_id=${entityId}&application_type_id=1`, { headers })
+  ])
+
+  let eligibilityData: ApplicationEligibilityType[] | [] = []
+  if (applicationData.data.length > 0) {
+    const lastApplicationId = applicationData.data[applicationData.data.length - 1].id
+    eligibilityData = await axiosInstance.get<ApplicationEligibilityType[]>(
+      `${APPLICATION_ELIGIBILITY_ROUTE}?application_id=${lastApplicationId}`,
+      { headers }
+    ).then(res => res.data)
   }
+
+  return { entityData: entityData.data, applicationData: applicationData.data, eligibilityData }
+}
+
+export default async function Programs({ params }: { params: { entity_id: string } }) {
+  const { entityData, applicationData, eligibilityData } = await getServerSideData(params.entity_id)
+
+  if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0) {
+    const cookieEntityData = [{ id: parseInt(params.entity_id, 10) }]
+    cookies().set('entityData', encrypt(JSON.stringify(cookieEntityData)))
+
+    const lastApplication = applicationData[applicationData.length - 1]
+    const cookieApplicationData = {
+      id: lastApplication.id,
+      progress: lastApplication.progress || 'Contributor Invitation',
+      workflow_state: lastApplication.workflow_state || 'draft'
+    }
+    cookies().set('applicationData', encrypt(JSON.stringify([cookieApplicationData])))
+    redirect(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: lastApplication.id }))
+  }
+
+  const initialSelectedPrograms = sbaProgramOptions.filter(program =>
+    eligibilityData.some(item =>
+      item.program === program.id && item.intending_to_apply
+    )
+  )
 
   return (
     <>
-      <h1>Select Intended Program(s) for Application<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the “visit here” link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/></h1>
+      <h1>Select Intended Program(s) for Application<TooltipIcon text='Select the Radio Button for each certification you wish to apply for. When you select the "visit here" link, a new window opens with detailed information about the selected program. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.'/></h1>
       <h3>
         Please select the appropriate program(s) you wish to apply for from the
         options below.
       </h3>
-      <Grid row gap>
-        {sbaProgramOptions.map((program, index) => (
-          <Grid
-            key={index}
-            className="margin-bottom-2"
-            desktop={{ col: 6 }}
-            tablet={{ col: 12 }}
-            mobile={{ col: 12 }}
-          >
-            <ProgramCard
-              className={`height-full ${selectedPrograms.find((p) => p.name === program.name) ? 'blue-bg' : ''}`}
-              program={program.name}
-              description={program.description}
-              details={program.details}
-              input={
-                isLoading
-                  ?<></>
-                  :(<input
-                    className="custom-checkbox"
-                    type="checkbox"
-                    checked={selectedPrograms.some(
-                      (p) => p.name === program.name,
-                    )}
-                    onChange={(e) => {
-                      e.stopPropagation()
-                      handleCheckboxChange(program)
-                    }}
-                  />)
-              }
-              onClick={isLoading ? () => {} : () => handleCardClick(program)}
-            />
-          </Grid>
-        ))}
-      </Grid>
-      <div className="display-flex flex-justify margin-bottom-4">
-        <Link
-          href="/claim-your-business"
-          className="usa-button usa-button--outline"
-        >
-          Back
-        </Link>
-        {selectedPrograms.length === 0 ? (
-          <Button disabled type="button">
-   			 		Next
-          </Button>
-        ) : (
-          <Button
-            type='button'
-            className="usa-button"
-            onClick={handlePostRequest}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Submitting...' : 'Next'}
-          </Button>
-        )}
-      </div>
+      <Suspense fallback={<div>Loading programs...</div>}>
+        <ClientSidePrograms
+          entityId={params.entity_id}
+          initialSelectedPrograms={initialSelectedPrograms}
+          sbaProgramOptions={sbaProgramOptions}
+        />
+      </Suspense>
     </>
   )
 }
-export default Programs

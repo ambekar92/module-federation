@@ -1,17 +1,16 @@
-import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
+import { QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
-import fetcher from '@/app/services/fetcher';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Button, ButtonGroup } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
+import Documents from '../components/document-uploads/Documents';
 import { QuestionnaireListType } from '../components/questionnaire/utils/types';
 import { setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps, extractLastPart } from '../utils/constants';
-import Documents from '../components/document-uploads/Documents';
 
 function DocumentUpload() {
   const dispatch = useApplicationDispatch();
@@ -22,8 +21,7 @@ function DocumentUpload() {
   const [previousLink, setPreviousLink] = useState('');
 
   const { data: questionnairesData } = useSWR<QuestionnaireListType>(
-    contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
-    fetcher
+    contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null,
   );
 
   useEffect(() => {

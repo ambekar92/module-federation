@@ -1,8 +1,5 @@
 'use client'
-
-import { SUBMIT_RFI_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import { IRTFItems } from '@/app/services/types/evaluation-service/RTFItems'
 import {
   Button,
@@ -23,6 +20,8 @@ import { useParams } from 'next/navigation'
 import React, { RefObject, useState, useMemo } from 'react'
 import ReactDOMServer from 'react-dom/server'
 import styles from '../RtfRfi.module.scss'
+import axios from 'axios'
+import { SUBMIT_RFI_ROUTE } from '@/app/constants/local-routes'
 
 interface EditFormModalProps {
   tableData: IRTFItems[];
@@ -63,7 +62,7 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
   };
 
   const contentComponents = useMemo(() => {
-    const issuesList = tableData.map((item: IRTFItems, index: number) => (
+    const issuesList = (tableData && tableData.length > 0) && tableData.map((item: IRTFItems, index: number) => (
       <div className='margin-bottom-3' key={index}>
         <p className='margin-bottom-1'>{reasonCodeMap[item.reason.id] || 'Unknown Reason'}</p>
         {item.explanation && <p className='margin-y-0'>{item.explanation}</p>}
@@ -101,7 +100,7 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
         message: generateHTMLContent()
       }
 
-      await axiosInstance.post(SUBMIT_RFI_ROUTE, requestData);
+      await axios.post(SUBMIT_RFI_ROUTE, requestData);
       mutateDraft();
       mutateRequest();
     } catch(error) {

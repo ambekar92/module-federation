@@ -1,8 +1,6 @@
-import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
-import { INVITATION_ROUTE } from '@/app/constants/routes'
+import { INVITATION_ROUTE, SEND_INVITATION_DELEGATE } from '@/app/constants/local-routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import { Application } from '@/app/services/types/application-service/Application'
 import {
   Button,
@@ -12,6 +10,7 @@ import {
   Label,
   TextInput,
 } from '@trussworks/react-uswds'
+import axios from 'axios'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import {
@@ -91,7 +90,7 @@ const DelegateFormInputs = ({
   const { userId, applicationId } = userDetails
   const dispatch = useFormDispatch()
   const { delegates, editingDelegate } = useFormSelector(selectForm)
-  const [requestSuccessful, setRequestSuccessful] = useState(false)
+  const [requestSuccessful, setRequestSuccessful] = useState<boolean>(false);
   const [showForm, setShowForm] = useState(true)
   const [inviteSent, setInviteSent] = useState(false)
   const { data: session } = useSessionUCMS()
@@ -125,6 +124,7 @@ const DelegateFormInputs = ({
             },
           ]),
         )
+        console.log('delegatesData', delegatesData)
         setRequestSuccessful(true)
       }
     } else {
@@ -162,10 +162,7 @@ const DelegateFormInputs = ({
   const handleError = (error: any) => {
     setRequestSuccessful(false)
     setShowForm(true)
-    console.error('Error adding/updating delegate:', error)
-    alert(
-      'An error occurred while adding/updating the delegate. Please try again.',
-    )
+    alert('An error occurred while adding/updating the delegate. Please try again in few minutes.')
   }
 
   const onSubmit: SubmitHandler<DelegateFormInputType> = async () => {
@@ -200,14 +197,14 @@ const DelegateFormInputs = ({
         }
 
         if (editingDelegate === null) {
-          const response = await axiosInstance.post(INVITATION_ROUTE, postData)
+          const response = await axios.post(INVITATION_ROUTE, postData)
           if (response && response.data && response.data.id) {
             handleSuccessfulResponse(response.data)
           } else {
             throw new Error('Failed to add delegate: No ID in response')
           }
         } else {
-          const response = await axiosInstance.put(INVITATION_ROUTE, {
+          const response = await axios.put(INVITATION_ROUTE, {
             ...postData,
             id: inviteId ?? delegates[0].id,
           })
@@ -233,7 +230,7 @@ const DelegateFormInputs = ({
         invitation_id: inviteId,
       }
 
-      await axiosInstance.post(SEND_INVITATION_DELEGATE, postData)
+      await axios.post(SEND_INVITATION_DELEGATE, postData)
       setInviteSent(true)
       closeModal()
       window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
@@ -470,9 +467,9 @@ const DelegateFormInputs = ({
               type="button"
               onClick={() => handleNext()}
               className="display-flex"
-              disabled={!requestSuccessful || delegates.length === 0}
+              disabled={!(delegates.length > 0 || (isValid && requestSuccessful))}
             >
-              Continue
+  						Continue
             </Button>
           )}
         </ButtonGroup>

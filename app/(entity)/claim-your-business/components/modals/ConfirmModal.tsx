@@ -1,12 +1,12 @@
-import { ENTITY_ROUTE } from '@/app/constants/routes'
+import { CLAIM_ENTITY_ROUTE } from '@/app/constants/local-routes'
+import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import { Box } from '@mui/material'
 import Modal from '@mui/material/Modal'
 import { Button, ButtonGroup, Icon } from '@trussworks/react-uswds'
+import axios from 'axios'
 import React, { useState } from 'react'
 import { CmbResponseType } from '../../utils/types'
-import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
 
 interface IPostResponse {
   id: number;
@@ -56,16 +56,14 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         owner_user_id: user_id,
         sam_entity_id: currentEntity.sam_entity_id
       }];
+      const response = await axios.post(CLAIM_ENTITY_ROUTE, postData);
 
-      const response = await axiosInstance.post(`${ENTITY_ROUTE}`, postData);
-
-      if (response.status === 200 && Array.isArray(response.data) && response.data.length > 0) {
+      if (response.status === 200 && response.data) {
         const res: IPostResponse[] = response.data;
         if (currentEntityIndex === 0) {
           setFirstEntityId(res[0].id);
         }
         setEntityId(res[0].id);
-
         if (currentEntityIndex < business.sam_entity.length - 1) {
           setCurrentEntityIndex(currentEntityIndex + 1);
         } else {
@@ -76,7 +74,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           }
         }
       } else {
-        throw 'POST Request Failed'
+        throw new Error('POST Request Failed');
       }
     } catch (error: any) {
       setErrorMsg('network error');

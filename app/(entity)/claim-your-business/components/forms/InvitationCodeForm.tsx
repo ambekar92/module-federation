@@ -1,7 +1,7 @@
-import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/routes'
+
 import { tooltipCmbInvite } from '@/app/constants/tooltips'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
+
 import Tooltip from '@/app/shared/components/tooltip/Tooltip'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -18,6 +18,8 @@ import { Controller, useForm } from 'react-hook-form'
 import CustomHeader from '../../../../shared/components/forms/CustomHeader'
 import { InvitationCodeFormSchema } from '../../utils/schemas'
 import { InvitationCodeInputType } from '../../utils/types'
+import axios from 'axios'
+import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/local-routes'
 
 interface invitationCodeFormProps {
   submitForm: () => void
@@ -53,7 +55,7 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFor
   }
 
   const onSubmit = async () => {
-    const response = await axiosInstance.post(ACCEPT_INVITATION_ROUTE,
+    const response = await axios.post(ACCEPT_INVITATION_ROUTE,
       {
         invitation_code: getValues('invitationCode'),
         user_id: session.data?.user?.id,

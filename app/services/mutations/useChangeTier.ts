@@ -1,9 +1,9 @@
-import { CHANGE_APPLICATION_TIER_ROUTE } from '@/app/constants/routes';
+import { CHANGE_TIER_ROUTE } from '@/app/constants/local-routes';
 import useSWRMutation from 'swr/mutation';
 import { updateApplicationTask } from '../api/evaluation-service/updateApplicationTask';
 
 export function useChangeTier() {
-  return useSWRMutation(CHANGE_APPLICATION_TIER_ROUTE, updateApplicationTask, {
+  return useSWRMutation(CHANGE_TIER_ROUTE, updateApplicationTask, {
     onSuccess: (data, key, config) => {
       console.log('POST successful:', data)
     },

@@ -1,10 +1,9 @@
 'use client'
 import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData';
-import { USER_ROUTE } from '@/app/constants/routes';
+import { USER_ROUTE } from '@/app/constants/local-routes';
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { assignUserToViewflow } from '@/app/services/api/evaluation-service/assignUserToViewflow';
-import fetcher from '@/app/services/fetcher';
 import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote';
 import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note';
 import { User } from '@/app/services/types/user-service/User';
@@ -16,7 +15,7 @@ import useSWR from 'swr';
 import Combobox from '../../../../shared/form-builder/form-controls/Combobox';
 import RichText from '../../../../shared/form-builder/form-controls/rich-text/RichText';
 import { stripHtmlTags } from '../../../../shared/utility/stripHtmlTags';
-import { subjectSuffixMap, titleMap, userRolesOptionsMap } from './maps';
+import { subjectSuffixMap, userRolesOptionsMap } from './maps';
 import { ReassignType, ReassignUserType, schema } from './types';
 
 type Props = {
@@ -36,12 +35,17 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
     return modalRef.current?.modalIsOpen || false;
   };
 
-  const { data, isLoading } = useSWR<User[]>(
-    isModalOpen() && reassignType ?
-      `${USER_ROUTE}?role_slug=${userRolesOptionsMap(reassignType, currentUser)}` :
-      null,
-    fetcher
+  const { data, isLoading, mutate } = useSWR<User[]>(
+    `${USER_ROUTE}?role_slug=${userRolesOptionsMap(reassignType, currentUser)}`,
+    null,
+    { revalidateOnMount: false }
   );
+
+  useEffect(() => {
+    if (isModalOpen() && reassignType) {
+      mutate();
+    }
+  }, [isModalOpen(), reassignType]);
 
   const methods = useForm<ReassignUserType>({
     defaultValues: {

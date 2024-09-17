@@ -1,9 +1,9 @@
-import { axiosInstance } from '../../axiosInstance';
+import axios from 'axios';
 
 export type UpdateDocumentPayload = {
     document_type_id: number;
 }
 
 export async function updateDocument(url: string, payload: UpdateDocumentPayload) {
-  await axiosInstance.put(url, payload);
+  await axios.put(url, payload);
 }

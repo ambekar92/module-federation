@@ -1,8 +1,7 @@
-import { CREATING_APPLICATION_ROUTE, ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
+import {  CREATE_PROGRAM_APPLICATION_ROUTE, ELIGIBLE_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_LIST_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
@@ -10,6 +9,7 @@ import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext'
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
+import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -45,8 +45,8 @@ function EligiblePrograms() {
         programs: selectedPrograms.map(program => program.id)
       };
 
-      await axiosInstance.put(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
-      await axiosInstance.post(`${CREATING_APPLICATION_ROUTE}`, postData);
+      await axios.put(`${ELIGIBLE_PROGRAMS_ROUTE}`, postData);
+      await axios.post(`${CREATE_PROGRAM_APPLICATION_ROUTE}`, postData);
     } catch (error: any) {
       // Error handled
     }

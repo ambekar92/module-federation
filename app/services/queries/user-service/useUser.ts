@@ -1,7 +1,6 @@
-import { USER_ROUTE } from '@/app/constants/routes';
 import useSWR from 'swr';
-import fetcher from '../../fetcher';
 import { User } from '../../types/user-service/User';
+import { USER_ROUTE } from '@/app/constants/local-routes';
 
 export function useUser(userId: string | null | undefined) {
   return useSWR<User>(userId ? `${USER_ROUTE}/${userId}` : null)

@@ -1,23 +1,20 @@
 'use client'
-import React from 'react'
-import { Table } from '@trussworks/react-uswds'
-import { NaicsCodeType } from '@/app/(home)/should-i-apply-legacy/components/utils/types'
-import { useCurrentApplication } from '../../firm/useApplicationData';
+import { NaicsCodeType } from '@/app/(home)/should-i-apply-legacy/components/utils/types';
+import { NAICS_CODES_ROUTE } from '@/app/constants/local-routes';
+import { Table } from '@trussworks/react-uswds';
 import useSWR from 'swr';
-import fetcher from '@/app/services/fetcher';
-import { API_ROUTE } from '@/app/constants/routes';
+import { useCurrentApplication } from '../../firm/useApplicationData';
 
 function NaicsCodes() {
   const { applicationData } = useCurrentApplication();
   const { data: responseData, error: responseError } = useSWR<NaicsCodeType[]>(
     applicationData && applicationData.sam_entity.naics_code_string
-      ? `${API_ROUTE}/amount-awarded?naics_code=${applicationData.sam_entity.naics_code_string}`
+      ? `${NAICS_CODES_ROUTE}?naics_code=${applicationData.sam_entity.naics_code_string}`
       : null,
-    fetcher
   );
 
   if (!responseData || responseError) {
-    return null;
+    return <Alert headingLevel='h4' type="error" heading="">Error loading NAICS codes</Alert>;
   }
 
   return (

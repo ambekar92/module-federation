@@ -1,13 +1,16 @@
-import { ANSWER_ROUTE } from '@/app/constants/routes';
-import { axiosInstance } from '@/app/services/axiosInstance';
+import { ANSWER_ROUTE } from '@/app/constants/local-routes';
 import { Question } from '@/app/shared/types/questionnaireTypes';
-import { Button, ButtonGroup, Grid, Icon, Label, Table } from '@trussworks/react-uswds';
+import { Button, ButtonGroup, Grid, Label } from '@trussworks/react-uswds';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { UCPTable } from '../../components/table/UCPTable';
 import {
   BooleanInput,
   DateInput,
+  EmailInput,
   MultiSelectInput,
   NumberInput,
+  PhoneInput,
   SelectInput,
   TextareaInput,
   TextInput
@@ -44,6 +47,12 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
     if (gridQuestion?.question_type !== 'document_upload' && gridQuestion?.answer_required_flag && (!value || (Array.isArray(value) && value.length === 0))) {
       return `${gridQuestion.title} is required.`;
     }
+    if (name.includes('email') && typeof value === 'string') {
+      const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+      if (!re.test(String(value).toLowerCase())) {
+        return 'Please enter a valid email address.';
+      }
+    }
     return '';
   };
 
@@ -69,7 +78,7 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
         answer_by: userId,
         reminder_flag: false,
       };
-      await axiosInstance.post(ANSWER_ROUTE, [answer]).catch((error) => {
+      await axios.post(ANSWER_ROUTE, [answer]).catch((error) => {
         // Error caught haha -KJ
       });
     }
@@ -82,6 +91,15 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
       setCurrentRow({});
       setErrors({});
       saveAnswer(newRows);
+
+      question.grid_questions?.forEach((gridQuestion) => {
+        if (gridQuestion.question_type === 'textarea' || gridQuestion.question_type === 'text_area') {
+          const textareaElement = document.getElementById(gridQuestion.name) as HTMLTextAreaElement;
+          if (textareaElement) {
+            textareaElement.value = '';
+          }
+        }
+      });
     }
   };
 
@@ -95,49 +113,59 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
     const value = currentRow[gridQuestion.name] || '';
     const errorMessage = errors[gridQuestion.name];
 
+    const commonProps = {
+      question: gridQuestion,
+      value: value as string,
+      onChange: (newValue: string) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))
+    };
+
+    const renderErrorMessage = () => (
+      errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>
+    );
+
+    if (gridQuestion.name.includes('email')) {
+      return (
+        <div className="usa-form-group">
+          <EmailInput {...commonProps} />
+          {renderErrorMessage()}
+        </div>
+      );
+    } else if (gridQuestion.name.includes('phone_number')) {
+      return (
+        <div className="usa-form-group">
+          <PhoneInput {...commonProps} />
+          {renderErrorMessage()}
+        </div>
+      );
+    }
+
     switch (gridQuestion.question_type) {
       case 'text':
         return (
           <div className="usa-form-group">
-            <TextInput
-              question={gridQuestion}
-              value={value as string}
-              onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
-            />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
+            <TextInput {...commonProps} />
+            {renderErrorMessage()}
           </div>
         );
       case 'number':
         return (
           <div className="usa-form-group">
-            <NumberInput
-              question={gridQuestion}
-              value={value as string}
-              onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
-            />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
+            <NumberInput {...commonProps} />
+            {renderErrorMessage()}
           </div>
         );
       case 'boolean':
         return (
           <div className="usa-form-group">
-            <BooleanInput
-              question={gridQuestion}
-              value={value as string}
-              onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
-            />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
+            <BooleanInput {...commonProps} />
+            {renderErrorMessage()}
           </div>
         );
       case 'select':
         return (
           <div className="usa-form-group">
-            <SelectInput
-              question={gridQuestion}
-              value={value as string}
-              onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
-            />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
+            <SelectInput {...commonProps} />
+            {renderErrorMessage()}
           </div>
         );
       case 'multi_select':
@@ -148,7 +176,7 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
               value={value as string[]}
               onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
             />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
+            {renderErrorMessage()}
           </div>
         );
       case 'textarea':
@@ -160,18 +188,14 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
               value={typeof currentRow[gridQuestion.name] === 'string' ? currentRow[gridQuestion.name] as string : ''}
               onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
             />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
+            {renderErrorMessage()}
           </div>
         );
       case 'date':
         return (
           <div className="usa-form-group">
-            <DateInput
-              question={gridQuestion}
-              value={value as string}
-              onChange={(newValue) => setCurrentRow(prev => ({ ...prev, [gridQuestion.name]: newValue }))}
-            />
-            {errorMessage && <div className='margin-top-1'><span className="text-secondary-dark">{errorMessage}</span></div>}
+            <DateInput {...commonProps} />
+            {renderErrorMessage()}
           </div>
         );
       case 'document_upload':
@@ -180,6 +204,8 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
         return <div>Unsupported input type</div>;
     }
   };
+
+  const gridQuestions = question.grid_questions?.filter(q => q.question_type !== 'document_upload') || [];
 
   return (
     <div className={isSubQuestion ? 'padding-left-3' : ''}>
@@ -203,41 +229,11 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
       </ButtonGroup>
 
       {gridRows.length > 0 && (
-        <Table bordered scrollable className='maxw-full'>
-          <thead>
-            <tr>
-              {question.grid_questions?.map((gridQuestion) => (
-                gridQuestion?.question_type !== 'document_upload' && <th key={gridQuestion.id}>{gridQuestion.title}</th>
-              ))}
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {gridRows.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {question.grid_questions?.map((gridQuestion) => (
-                  gridQuestion?.question_type !== 'document_upload' &&
-                  <td key={gridQuestion.id}>
-                    {Array.isArray(row[gridQuestion.name])
-                      ? (row[gridQuestion.name] as string[]).join(', ')
-                      : row[gridQuestion.name] as string}
-                  </td>
-                ))}
-                <td>
-                  <Button
-                    className='display-flex flex-align-center margin-top-1'
-                    type='button'
-                    unstyled
-                    onClick={() => handleDeleteRow(rowIndex)}
-                  >
-                    <Icon.Delete className='margin-right-1' />
-                    <span className='mobile:display-none'>Delete</span>
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <UCPTable
+          gridQuestions={gridQuestions}
+          gridRows={gridRows}
+          handleDeleteRow={handleDeleteRow}
+        />
       )}
     </div>
   );

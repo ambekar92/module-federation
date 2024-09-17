@@ -1,4 +1,6 @@
-import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes';
+import { QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
+import { useSessionUCMS } from '@/app/lib/auth';
+import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import useSWR from 'swr';
@@ -6,8 +8,6 @@ import { useCurrentApplication } from '../../firm/useApplicationData';
 import { Params, QuestionnaireItem } from '../../types/types';
 import { controlAndOperationQuestionnaire, getAnalystQuestionnaires, getStaticNavItems, ownershipQuestionnaire } from './constants';
 import { useQuestionnaireState } from './useQuestionnaireState';
-import { getUserRole } from '@/app/shared/utility/getUserRole'
-import { useSessionUCMS } from '@/app/lib/auth'
 
 /**
  * Returns the navigation items for the left side bar of the application details page.
@@ -25,7 +25,7 @@ export function useLeftItems() {
   const firstContributorId = useMemo(() => applicationData?.application_contributor?.[0]?.id, [applicationData]);
   const programApplications = useMemo(() => applicationData?.program_application || [], [applicationData]);
   const { data: navItems, isLoading, error } = useSWR<QuestionnaireItem[]>(
-    firstContributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${firstContributorId}` : null,
+    firstContributorId ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}` : null,
   );
   const staticNavItems = useMemo(() => {
     if (!params.application_id) {return [];}

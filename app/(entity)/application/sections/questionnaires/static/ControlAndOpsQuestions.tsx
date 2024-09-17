@@ -1,14 +1,14 @@
 'use client'
-import { ANSWER_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
+import { ANSWER_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import { ButtonGroup, Grid } from '@trussworks/react-uswds';
+import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -68,9 +68,11 @@ function ControlAndOpsQuestions() {
         reminder_flag: false
       };
 
-      axiosInstance.post(ANSWER_ROUTE, [answer])
+      axios.post(ANSWER_ROUTE, [answer])
         .catch(error => {
-          console.error('Error saving answer:', error);
+          if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+            console.error('Error saving answer:', error);
+          }
         });
     }
   };

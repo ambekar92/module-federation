@@ -1,10 +1,8 @@
 'use client'
 
 import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
-import { DOCUMENTS_ROUTE, PROGRAM_APPLICATION, UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
 import { ProgramApplicationType } from '@/app/services/types/application-service/Application'
 import {
@@ -21,6 +19,8 @@ import { useParams } from 'next/navigation'
 import React, { RefObject, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import DocumentUploadInput from '../../../../shared/components/forms/DocumentUploadInput'
+import axios from 'axios'
+import { APPLICATION_DOCUMENTS_ROUTE, PROGRAM_APPLICATION, UPDATE_APPLICATION_STATE_ROUTE } from '@/app/constants/local-routes'
 
 interface MakeRecommendationModalProps {
   modalRef: RefObject<ModalRef>
@@ -74,7 +74,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
         program_id: id,
         analyst_recommendation: recommendation,
       }
-      await axiosInstance.put(PROGRAM_APPLICATION, putData)
+      await axios.put(PROGRAM_APPLICATION, putData)
     } catch (error) {
       console.error('Failed to update recommendation:', error)
     }
@@ -100,7 +100,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
         subject: 'Updated for final review',
         description: 'Updated for final review'
       }
-      await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
+      await axios.put(UPDATE_APPLICATION_STATE_ROUTE, updateAppStateData);
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, {
         application_id: Number(params.application_id),
       }) + '?name=made-recommendation'
@@ -119,7 +119,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
         formData.append('internal_document', 'true')
         formData.append('hubzone_key', '1');
 
-        const response = await axiosInstance.post(`${DOCUMENTS_ROUTE}?application_contributor_id=${applicationData.application_contributor[0].id}&entity_id=${applicationData.entity.entity_id}&upload_user_id=${userId}`, formData, {
+        const response = await axios.post(`${APPLICATION_DOCUMENTS_ROUTE}?application_contributor_id=${applicationData.application_contributor[0].id}&entity_id=${applicationData.entity.entity_id}&upload_user_id=${userId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         })
         setDocumentId(response.data.document.id);

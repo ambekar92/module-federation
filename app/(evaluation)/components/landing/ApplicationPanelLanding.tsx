@@ -1,14 +1,14 @@
 // Todo need to find a better way not to include useApplicationData everywhere to check view permission
 'use client'
 import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
-import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes';
+import { UPDATE_APPLICATION_STATE_ROUTE } from '@/app/constants/local-routes';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
 import { Button } from '@trussworks/react-uswds';
+import axios from 'axios';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 
@@ -43,7 +43,7 @@ const ApplicationPanelLanding = () => {
         description: 'Updated for evaluation review'
       }
       // TODO: Find a better solution to deal with the delay
-      await axiosInstance.put(UPDATE_APPLICATION_STATE, updateAppStateData);
+      await axios.put(UPDATE_APPLICATION_STATE_ROUTE, updateAppStateData);
       await mutate();
       setShowButton(false);
     } catch (error: any) {

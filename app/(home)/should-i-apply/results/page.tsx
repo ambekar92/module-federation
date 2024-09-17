@@ -16,7 +16,7 @@ const ResultsPage = () => {
   useEffect(() => {
     const values = getValues();
     if (values && Object.keys(values).length > 0) {
-      const progms = programs.filter(program => {
+      let progms = programs.filter(program => {
         const rules = program.rules;
         let isEligible = true;
         for (const key in rules) {
@@ -27,10 +27,17 @@ const ResultsPage = () => {
           }
         }
         return isEligible;
-      })
+      });
+
+      // Add HUBZone if it doesn't exist
+      const hubZoneProgram = programs.find(program => program.title === 'HUBZone');
+      if (hubZoneProgram && !progms.some(program => program.title === 'HUBZone')) {
+        progms = [...progms, hubZoneProgram];
+      }
+
       setEligiblePrograms(progms);
     }
-  }, [getValues])
+  }, [getValues]);
 
   return (
     <>

@@ -1,11 +1,7 @@
 'use client'
 
-import {
-  ASSIGN_USER_TO_VIEWFLOW_ROUTE,
-  USER_ROUTE,
-} from '@/app/constants/routes'
+import { ASSIGN_USER_VIEWFLOW_ROUTE, USER_ROUTE } from '@/app/constants/local-routes'
 import fetcher from '@/app/services/fetcher'
-import { fetcherPUT } from '@/app/services/fetcher-legacy'
 import {
   Button,
   ButtonGroup,
@@ -18,6 +14,7 @@ import {
   Table,
   Textarea,
 } from '@trussworks/react-uswds'
+import axios from 'axios'
 import { useParams } from 'next/navigation'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import useSWR from 'swr'
@@ -126,7 +123,7 @@ const ActionMenuModal: React.FC<ActionMenuModalProps> = ({
         [userIdType]: parseInt(assignedUser),
       }
 
-      await fetcherPUT(`${ASSIGN_USER_TO_VIEWFLOW_ROUTE}`, postData)
+      await axios.put(`${ASSIGN_USER_VIEWFLOW_ROUTE}`, postData)
     } catch (error: any) {
       console.error('Network Error: ', error)
       return

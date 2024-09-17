@@ -22,6 +22,7 @@ locals {
     REDIS_HOST                           = local.env.redis_host
     NEXT_PUBLIC_RANDOM                   = local.env.next_public_random
     NEXT_PUBLIC_DEBUG                    = local.env.next_public_debug
+    NEXT_PUBLIC_WS_LIVE_NOTIFICATIONS    = "ws://ucp-communication.${local.env.domain_name}/communication/v1/live-notifications/1"
   }
   container_secrets_parameterstore = {
     OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucp/okta/OKTA_OAUTH2_CLIENT_ID"

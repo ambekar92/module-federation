@@ -1,7 +1,5 @@
-import { COMPLETE_EVALUATION_TASK_ROUTE, HTML_TO_PDF_ROUTE } from '@/app/constants/routes'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import { Application } from '@/app/services/types/application-service/Application'
 import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate'
 import { HtmlToPdfDocument } from '@/app/services/types/document-service/HtmlToPdfDocument'
@@ -14,6 +12,8 @@ import BodyContentRenderer from '../../../BodyContentRenderer'
 import { approvalLetterSchema } from '../schema'
 import { ApprovalLetterType, Decision, MakeApprovalFormType, ReviewSummaryType, Steps } from '../types'
 import { useProgramStatus } from '../useProgramStatus'
+import axios from 'axios'
+import { COMPLETE_EVAL_TASK_ROUTE, HTML_TO_PDF_ROUTE } from '@/app/constants/local-routes'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
 
@@ -71,7 +71,7 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
         const legalBusinessName = applicationData?.sam_entity.legal_business_name.replace(/\s+/g, '-');
         const currentProgram = approvedPrograms[i];
 
-        const response = await axiosInstance.post<HtmlToPdfDocument>(
+        const response = await axios.post<HtmlToPdfDocument>(
           `${HTML_TO_PDF_ROUTE}?file_name=${legalBusinessName}-${currentProgram}_approved.pdf&upload_user_id=${session.user_id}&entity_id=${applicationData?.entity.entity_id}&document_type_id=1&document_type=approval_letters`,
           payload
         );
@@ -126,8 +126,8 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
             }
           }
 
-          await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, postData)
-          await axiosInstance.post(COMPLETE_EVALUATION_TASK_ROUTE, { process_id: processId, data: {approved: true} });
+          await axios.post(COMPLETE_EVAL_TASK_ROUTE, postData);
+          await axios.post(COMPLETE_EVAL_TASK_ROUTE, { process_id: processId, data: {approved: true} });
 
           setCurrentStep(Steps.ReviewSummary);
           reset();

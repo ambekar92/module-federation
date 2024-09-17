@@ -1,23 +1,22 @@
 'use client'
+import { QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
+import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
+import { useSessionUCMS } from '@/app/lib/auth';
+import Spinner from '@/app/shared/components/spinner/Spinner';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
+import { Button, ButtonGroup, Card, CardGroup, CardHeader } from '@trussworks/react-uswds';
+import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { CardGroup, Card, CardHeader, ButtonGroup, Button } from '@trussworks/react-uswds';
-import Link from 'next/link';
 import useSWR from 'swr';
-import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
-import { useApplicationDispatch } from '../../redux/hooks';
-import { setStep } from '../../redux/applicationSlice';
 import ApplicationLayout from '../../components/ApplicationLayout';
-import applicationStore from '../../redux/applicationStore';
 import { QuestionnaireListType } from '../../components/questionnaire/utils/types';
+import { setStep } from '../../redux/applicationSlice';
+import applicationStore from '../../redux/applicationStore';
+import { useApplicationDispatch } from '../../redux/hooks';
 import { applicationSteps, extractLastPart } from '../../utils/constants';
-import { QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/questionnaires';
-import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
-import fetcher from '@/app/services/fetcher';
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
-import Spinner from '@/app/shared/components/spinner/Spinner';
-import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
-import { useSessionUCMS } from '@/app/lib/auth';
 
 const QuestionnaireListPage: React.FC = () => {
   const { contributorId, applicationId, applicationData } = useApplicationContext();
@@ -29,20 +28,17 @@ const QuestionnaireListPage: React.FC = () => {
   const isPrimaryUser = session?.data.permissions?.some(permission => permission.slug.includes('primary_qualifying_owner'));
   const hasDelegateRole = session?.data.permissions?.some(permission => permission.slug.includes('delegate'));
 
-  const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(
-    contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
-    fetcher
-  );
+  const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
 
   const filteredQuestionnaires = questionnairesData?.filter(questionnaire =>
     !(hasDelegateRole && filteredSections.includes(extractLastPart(questionnaire.url)))
   );
 
-  useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
-      window.location.href = `/application/view/${applicationId}`;
-    }
-  }, [applicationData, applicationId]);
+  // useEffect(() => {
+  //   if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+  //     window.location.href = `/application/view/${applicationId}`;
+  //   }
+  // }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));

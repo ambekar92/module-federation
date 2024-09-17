@@ -1,6 +1,6 @@
 'use client'
 import { useGetQuestionnaireList } from '@/app/services/queries/application-service/useGetQuestionnaireList';
-import { useGetResponses } from '@/app/services/queries/application-service/useGetResponses';
+import { useGetQuestionResponses } from '@/app/services/queries/application-service/useGetQuestionResponses';
 import { QuestionAnswer } from '@/app/shared/form-builder/questionnaire-types/question';
 import { useSearchParams } from 'next/navigation';
 import React, { ReactElement, useEffect } from 'react';
@@ -10,7 +10,7 @@ const Responses = () => {
   const search = useSearchParams();
   const sectionUrl = search.get('sectionUrl');
   const contributorId = sectionUrl?.split('/')[0];
-  const { data: responses, isLoading: isLoadingResponses } = useGetResponses(sectionUrl as string);
+  const { data: responses, isLoading: isLoadingResponses } = useGetQuestionResponses(sectionUrl as string);
   const { data: sections } = useGetQuestionnaireList(Number(contributorId));
 
   useEffect(() => {

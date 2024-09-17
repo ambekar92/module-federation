@@ -78,15 +78,16 @@ resource "aws_cloudfront_distribution" "distribution" {
       "GET",
       "HEAD",
     ]
-    compress               = false
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    min_ttl                = 0
-    smooth_streaming       = false
-    target_origin_id       = "wfe"
-    trusted_key_groups     = []
-    trusted_signers        = []
-    viewer_protocol_policy = "redirect-to-https"
+    compress                    = false
+    default_ttl                 = 86400
+    max_ttl                     = 31536000
+    min_ttl                     = 0
+    smooth_streaming            = false
+    target_origin_id            = "wfe"
+    trusted_key_groups          = []
+    trusted_signers             = []
+    viewer_protocol_policy      = "redirect-to-https"
+    response_headers_policy_id  = aws_cloudfront_response_headers_policy.HSTS.id
 
     forwarded_values {
       headers = [
@@ -127,8 +128,6 @@ resource "aws_cloudfront_distribution" "distribution" {
       origin_protocol_policy   = "https-only"
       origin_read_timeout      = 30
       origin_ssl_protocols = [
-        "TLSv1",
-        "TLSv1.1",
         "TLSv1.2",
       ]
     }
@@ -191,5 +190,33 @@ resource "aws_cloudfront_origin_request_policy" "empty" {
 
   query_strings_config {
     query_string_behavior = "all"
+  }
+}
+
+# Response Header Policy (Custom)
+resource "aws_cloudfront_response_headers_policy" "HSTS" {
+  name    = "${terraform.workspace}-${local.env.service_name}-response-policy"
+  comment = "use HSTS response header"
+
+  security_headers_config {
+    strict_transport_security {
+      access_control_max_age_sec = 30000
+      preload                    = true
+      include_subdomains         = true
+      override                   = true
+    }
+  }
+
+  custom_headers_config {
+    items {
+      header   = "Cache-Control"
+      override = false
+      value    = "no-store"
+    }
+    items {
+      header   = "Pragma"
+      override = false
+      value    = "no-cache"
+    }
   }
 }

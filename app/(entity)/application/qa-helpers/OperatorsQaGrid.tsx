@@ -1,5 +1,5 @@
-import { ANSWER_ROUTE } from '@/app/constants/routes';
-import { fetcherPOST } from '@/app/services/fetcher-legacy';
+import { UCPTable } from '@/app/shared/components/table/UCPTable';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import {
   BooleanInput,
   DateInput,
@@ -10,10 +10,11 @@ import {
   TextInput
 } from '@/app/shared/questionnaire/inputs/QaGridInputs';
 import { Question } from '@/app/shared/types/questionnaireTypes';
-import { Button, ButtonGroup, Grid, Icon, Label, Table } from '@trussworks/react-uswds';
+import { Button, ButtonGroup, Grid, Label } from '@trussworks/react-uswds';
 import { useEffect, useState } from 'react';
 import { useOperatorApplicationInfo } from '../hooks/useOperatorApplicationInfo';
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
+import axios from 'axios';
+import { ANSWER_ROUTE } from '@/app/constants/local-routes';
 
 type GridRow = {
   [key: string]: string | string[];
@@ -66,11 +67,15 @@ export const OperatorsQaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion
         answer_by: userId,
         reminder_flag: false,
       };
-      fetcherPOST(ANSWER_ROUTE, [answer]).catch((error) => {
-        console.error('Error saving answer:', error);
+      axios.post(ANSWER_ROUTE, [answer]).catch((error) => {
+        if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.error('Error saving answer:', error);
+        }
       });
     }
   };
+
+  const gridQuestions = question.grid_questions?.filter(q => q.question_type !== 'document_upload') || [];
 
   const getFieldValue = (row: GridRow, fieldName: string): string | string[] => {
     const fullFieldName = Object.keys(row).find(key => key.includes(fieldName));
@@ -263,53 +268,12 @@ export const OperatorsQaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion
       </ButtonGroup>
 
       {gridRows.length > 0 && (
-        <Grid>
-          <Table bordered scrollable className='maxw-full'>
-            <thead>
-              <tr>
-                {question.grid_questions?.map((gridQuestion) => (
-                  gridQuestion?.question_type !== 'document_upload' &&
-                  <th key={gridQuestion.id}>{gridQuestion.title}</th>
-                ))}
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {gridRows.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {question.grid_questions?.map((gridQuestion) => (
-                    gridQuestion?.question_type !== 'document_upload' &&
-                    <td key={gridQuestion.id}>
-                      {Array.isArray(row[gridQuestion.name])
-                        ? (row[gridQuestion.name] as string[]).join(', ')
-                        : row[gridQuestion.name] as string}
-                    </td>
-                  ))}
-                  <td>
-                    <Button
-                      className='display-flex flex-align-center margin-right-1'
-                      type='button'
-                      unstyled
-                      onClick={() => handleEditRow(rowIndex)}
-                    >
-                      <Icon.Edit className='margin-right-1' />
-                      <span className='mobile:display-none'>Edit</span>
-                    </Button>
-                    <Button
-                      className='display-flex flex-align-center margin-top-1'
-                      type='button'
-                      unstyled
-                      onClick={() => handleDeleteRow(rowIndex)}
-                    >
-                      <Icon.Delete className='margin-right-1' />
-                      <span className='mobile:display-none'>Delete</span>
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Grid>
+        <UCPTable
+          gridQuestions={gridQuestions}
+          gridRows={gridRows}
+          handleEditRow={handleEditRow}
+          handleDeleteRow={handleDeleteRow}
+        />
       )}
     </div>
   );

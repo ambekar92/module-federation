@@ -1,6 +1,6 @@
-import { axiosInstance } from '../../axiosInstance';
+import axios from 'axios';
 
 export async function createDocument(url: string, payload: any) {
 
-  await axiosInstance.post(url, payload, {headers: {'Content-Type': 'multipart/form-data'}})
+  await axios.post(url, payload, {headers: {'Content-Type': 'multipart/form-data'}})
 }

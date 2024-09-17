@@ -2,14 +2,14 @@
 import { controlAndOperationQuestionnaire, getAnalystQuestionnaires, ownershipQuestionnaire } from '@/app/(evaluation)/components/left-panel/constants'
 import { useQuestionnaireState } from '@/app/(evaluation)/components/left-panel/useQuestionnaireState'
 import { Params, QuestionnaireItem } from '@/app/(evaluation)/types/types'
-import { ANSWER_ROUTE, QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes'
+import { ANSWER_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import Spinner from '@/app/shared/components/spinner/Spinner'
 import { Answer, Question } from '@/app/shared/types/questionnaireTypes'
 import { Role } from '@/app/shared/types/role'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
 import { Button } from '@trussworks/react-uswds'
+import axios from 'axios'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
@@ -128,7 +128,7 @@ const SectionQuestions = () => {
   );
 
   const { data: navItems } = useSWR<QuestionnaireItem[]>(
-    firstContributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${firstContributorId}` : null
+    firstContributorId ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}` : null
   );
 
   const combinedNavItems = useMemo(() => {
@@ -214,7 +214,7 @@ const SectionQuestions = () => {
       };
 
       try {
-        await axiosInstance.post(ANSWER_ROUTE, [answerForAPI]);
+        await axios.post(ANSWER_ROUTE, [answerForAPI]);
       } catch (error) {
         // Handled
       }

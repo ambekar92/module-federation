@@ -1,25 +1,26 @@
-import { DOCUMENTS_ROUTE } from '@/app/constants/routes';
+import { APPLICATION_DOCUMENTS_ROUTE, REQUIRED_DOCUMENTS_ROUTE } from '@/app/constants/local-routes';
 import { createDocument } from '@/app/services/api/document-service/createDocument';
 import { updateDocument } from '@/app/services/api/document-service/updateDocument';
 import { useDeleteDocument } from '@/app/services/mutations/document-service/useDeleteDocument';
 import { useDocumentRequiredQuestions } from '@/app/services/queries/application-service/useDocumentRequiredQuestions';
 import { useDocuments } from '@/app/services/queries/document-service/useDocuments';
-import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { DocumentRequiredQuestions } from '@/app/services/types/application-service/DocumentRequiredQuestions';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { Alert, Button, Icon, Table } from '@trussworks/react-uswds';
 import moment from 'moment';
 import React, { useRef } from 'react';
 import styles from './Documents.module.scss';
-import { DocumentRequiredQuestions } from '@/app/services/types/application-service/DocumentRequiredQuestions';
+import useSWR from 'swr';
 
 const Documents = () => {
   const {contributorId, userId, applicationData} = useApplicationContext()
   const [selectedQuestionId, setSelectedQuestionId] = React.useState<number | null>(null);
   const [selectedDocumentId, setSelectedDocumentId] = React.useState<number | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const {data: questions, error: questionsError, isLoading: isLoadingQuestions} = useDocumentRequiredQuestions(contributorId);
+  const {data: questions, error: questionsError, isLoading: isLoadingQuestions} = useSWR<DocumentRequiredQuestions[]>( contributorId ? `${REQUIRED_DOCUMENTS_ROUTE}/${contributorId}` : null)
   const {data: documents, error: documentsError, isLoading: isLoadingDocuments} = useDocuments({user_id: userId});
   const {trigger: triggerDelete} = useDeleteDocument();
   const {mutate} = useDocuments({user_id: userId});
@@ -71,7 +72,7 @@ const Documents = () => {
 
       const question = questions?.find(q => q.id === questionId);
 
-      const url = `${DOCUMENTS_ROUTE}?application_contributor_id=${contributorId}&entity_id=${applicationData?.entity.entity_id}&upload_user_id=${userId}&question_id=${questionId}${question?.hubzone_key ? `&hubzone_key=${question.hubzone_key.toString()}` : ''}`;
+      const url = `${APPLICATION_DOCUMENTS_ROUTE}?application_contributor_id=${contributorId}&entity_id=${applicationData?.entity.entity_id}&upload_user_id=${userId}&question_id=${questionId}${question?.hubzone_key ? `&hubzone_key=${question.hubzone_key.toString()}` : ''}`;
 
       await createDocument(url, formData);
 
@@ -87,14 +88,14 @@ const Documents = () => {
   async function handleUpdateDocumentType(e: React.ChangeEvent<HTMLSelectElement>, documentId: number) {
     setIsLoading(true)
     setSelectedDocumentId(documentId);
-    await updateDocument(`${DOCUMENTS_ROUTE}/${documentId}`, {document_type_id: Number(e.target.value)});
+    await updateDocument(`${APPLICATION_DOCUMENTS_ROUTE}/${documentId}`, {document_type_id: Number(e.target.value)});
     await mutate();
     setIsLoading(false);
     setSelectedDocumentId(null);
   }
 
   const groupQuestionsByHubzoneKey = (questions: DocumentRequiredQuestions[]): DocumentRequiredQuestions[] => {
-    return questions.filter(q => q.hubzone_key);
+    return (questions && questions.length > 0) ? questions.filter(q => q.hubzone_key) : [];
   };
 
   if (isLoadingQuestions || isLoadingDocuments || !questions) {
@@ -108,7 +109,7 @@ const Documents = () => {
   }
 
   const hubzoneQuestions = groupQuestionsByHubzoneKey(questions);
-  const nonHubzoneQuestions = questions.filter(q => !q.hubzone_key);
+  const nonHubzoneQuestions = (questions && questions.length > 0) ?questions.filter(q => !q.hubzone_key): [];
 
   return (
     <div>

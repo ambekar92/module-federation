@@ -1,5 +1,4 @@
 'use client'
-import React, { RefObject, useState, ChangeEvent } from 'react'
 import {
   Button,
   ButtonGroup,
@@ -7,9 +6,10 @@ import {
   Modal,
   ModalFooter,
   ModalHeading,
-  Table,
   ModalRef,
+  Table,
 } from '@trussworks/react-uswds'
+import React, { RefObject, useState } from 'react'
 
 interface MakeApprovalProps {
   modalRef: RefObject<ModalRef>

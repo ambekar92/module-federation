@@ -1,10 +1,10 @@
-import { DOCUMENTS_ROUTE } from '@/app/constants/routes'
 import useSWRMutation from 'swr/mutation'
 import { updateMakeRecommendation, uploadMakeRecommendationFile} from '../api/evaluation-service/updateMakeRecommendation'
+import { APPLICATION_DOCUMENTS_ROUTE } from '@/app/constants/local-routes'
 
 export function useUpdateMakeRecommendationTask() {
 
-  return useSWRMutation(DOCUMENTS_ROUTE, updateMakeRecommendation, {
+  return useSWRMutation(APPLICATION_DOCUMENTS_ROUTE, updateMakeRecommendation, {
     onSuccess: (data, key, config) => {
       console.log('POST successful:', data)
     },
@@ -16,7 +16,7 @@ export function useUpdateMakeRecommendationTask() {
 
 export function useUploadMakeRecommendationFileTask() {
 
-  return useSWRMutation(DOCUMENTS_ROUTE, uploadMakeRecommendationFile, {
+  return useSWRMutation(APPLICATION_DOCUMENTS_ROUTE, uploadMakeRecommendationFile, {
     onSuccess: (data, key, config) => {
       console.log('POST successful:', data)
     },

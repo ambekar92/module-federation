@@ -64,7 +64,7 @@ const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
             onChange={handleReasonChange}
           >
             <option value="">Select Reason</option>
-            {reasonCodes && reasonCodes.map(code => (
+            {reasonCodes && reasonCodes.length > 0 && reasonCodes.map(code => (
               <option value={code.id} key={code.id}>{code.title}</option>
             ))}
           </select>

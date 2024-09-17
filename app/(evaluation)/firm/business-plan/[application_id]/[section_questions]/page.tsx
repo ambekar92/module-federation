@@ -1,12 +1,12 @@
 'use client'
 import QuestionRenderer from '@/app/(entity)/application/qa-helpers/QuestionRenderer'
 import { Params } from '@/app/(evaluation)/types/types'
-import { ANSWER_ROUTE, API_ROUTE, QUESTIONNAIRE_LIST_ROUTE } from '@/app/constants/routes'
-import { axiosInstance } from '@/app/services/axiosInstance'
-import fetcher from '@/app/services/fetcher'
+import { ANSWER_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes'
+import { API_ROUTE } from '@/app/constants/routes'
 import Spinner from '@/app/shared/components/spinner/Spinner'
 import { Answer, QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
+import axios from 'axios'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import useSWR from 'swr'
@@ -20,7 +20,7 @@ const BusinessPlanPage = () => {
   const params = useParams<Params>();
   const [title, setTitle] = useState<string>('');
   const { data, isLoading } = useSWR<QaQuestionsType>(`${API_ROUTE}/questionnaire/${params.application_id}/${params.section_questions}`);
-  const { data: navItems } = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_LIST_ROUTE}/${params.application_id}`);
+  const { data: navItems } = useSWR<QuestionnaireItem[]>(`${QUESTIONNAIRE_ROUTE}/${params.application_id}`);
   const [showNextButton, setShowNextButton] = useState<boolean>(true);
   const [showPreviousButton, setShowPreviousButton] = useState<boolean>(true);
   const router = useRouter();
@@ -59,7 +59,7 @@ const BusinessPlanPage = () => {
       };
 
       try {
-        await axiosInstance.post(ANSWER_ROUTE, [answer]);
+        await axios.post(ANSWER_ROUTE, [answer]);
       } catch (error) {
         // Error caught haha -KJ
       }

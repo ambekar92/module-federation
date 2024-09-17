@@ -1,6 +1,6 @@
 'use client'
-import { UPDATE_APPLICATION_STATE } from '@/app/constants/routes'
-import { axiosInstance } from '@/app/services/axiosInstance'
+import { UPDATE_APPLICATION_STATE_ROUTE } from '@/app/constants/local-routes'
+import { Application } from '@/app/services/types/application-service/Application'
 import {
   Button,
   ButtonGroup,
@@ -8,9 +8,9 @@ import {
   ModalFooter,
   ModalHeading,
 } from '@trussworks/react-uswds'
+import axios from 'axios'
 import React, { useState } from 'react'
 import styles from './DeleteWithdrawConfirmationModal.module.scss'
-import { Application } from '@/app/services/types/application-service/Application'
 
 interface ModalProps {
   confirmationType: string | undefined,
@@ -49,7 +49,7 @@ const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
       const adverb = confirmationType === 'delete' ? 'deleted' : 'withdrawn';
 
       console.log(adverb)
-      await axiosInstance.put(`${UPDATE_APPLICATION_STATE}`, putData);
+      await axios.put(`${UPDATE_APPLICATION_STATE_ROUTE}`, putData);
       alert(`Success! Your application has been ${adverb}.`)
       resetClickedId && resetClickedId()
     } catch (error: any) {

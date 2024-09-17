@@ -2,11 +2,10 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
 import useSWR from 'swr';
-import { QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
-import fetcher from '@/app/services/fetcher';
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Application } from '@/app/services/types/application-service/Application';
 import { Role } from '@/app/shared/types/role';
+import { QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 
 export function useQuestionnaireState(applicationData: Application | null, analystQuestionnaires: string[]) {
   const sessionData = useSessionUCMS();

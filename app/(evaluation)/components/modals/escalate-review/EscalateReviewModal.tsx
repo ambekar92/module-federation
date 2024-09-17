@@ -1,9 +1,7 @@
 'use client'
-
-import { USER_ROUTE } from '@/app/constants/routes'
+import { USER_ROUTE } from '@/app/constants/local-routes'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import fetcher from '@/app/services/fetcher'
 import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote'
 import { useCompleteEvalTask } from '@/app/services/mutations/useCompleteEvalTask'
 import { Application } from '@/app/services/types/application-service/Application'
@@ -48,7 +46,7 @@ const EscalateReviewModal: React.FC<EscalateReviewProps> = ({
   const [selectedOffice, setSelectedOffice] = useState<string>()
   const [selectedContributor, setSelectedContributor] = useState('')
   const [notes, setNotes] = useState('')
-  const { data: userData, error } = useSWR<User[]>(selectedOffice ? `${USER_ROUTE}?role_slug=${selectedOffice}`: null, fetcher)
+  const { data: userData, error } = useSWR<User[]>(selectedOffice ? `${USER_ROUTE}?role_slug=${selectedOffice}`: null)
   const { trigger, isMutating } = useCompleteEvalTask();
   const { trigger: triggerNote, isMutating: isMutatingNote } = useCreateNote();
   const sessionData = useSessionUCMS()

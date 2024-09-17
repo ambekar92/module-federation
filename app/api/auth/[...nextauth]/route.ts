@@ -6,6 +6,7 @@ import OktaProvider from 'next-auth/providers/okta';
 import { cookies } from "next/headers";
 import { generateCsrfToken } from "../utils/generateCsrfToken";
 import { encrypt } from "@/app/shared/utility/encryption";
+import { logout } from "@/app/lib/logout";
 
 // @ts-ignore
 async function auth(req: NextRequest, res: NextResponse ) {
@@ -89,6 +90,7 @@ async function auth(req: NextRequest, res: NextResponse ) {
               }
             } catch (error) {
               console.error('Error making POST request:', error);
+              await logout();
             }
             const userSession = {...session, ...(userDetails.data || {})};
             return userSession;

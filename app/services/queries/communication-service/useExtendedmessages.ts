@@ -1,8 +1,7 @@
-import { EXTENDED_MESSAGES_ROUTE } from '@/app/constants/routes';
 import { useParams } from 'next/navigation';
 import useSWR from 'swr';
-import fetcher from '../../fetcher';
 import { ExtendedMessage } from '../../types/communication-service/ExtendedMessage';
+import { EXTENDED_MESSAGES_ROUTE } from '@/app/constants/local-routes';
 
 export function useExtendedmessages() {
   const params = useParams<{application_id: string}>();

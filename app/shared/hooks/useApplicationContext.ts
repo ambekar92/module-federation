@@ -1,13 +1,13 @@
-import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
-import { ENTITIES_ROUTE } from '@/app/constants/routes';
+import useSWR from 'swr';
+import { useParams, useRouter } from 'next/navigation';
 import { useSessionUCMS } from '@/app/lib/auth';
+import { GET_APPLICATIONS_ROUTE, GET_ENTITIES_ROUTE } from '@/app/constants/local-routes';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import { encrypt } from '@/app/shared/utility/encryption';
 import Cookies from 'js-cookie';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-import useSWR from 'swr';
+import { useMemo, useEffect, useState } from 'react';
 import { EntitiesType } from '../types/responses';
+import { Application } from '@/app/services/types/application-service/Application';
 
 export function useApplicationContext() {
   const params = useParams();
@@ -16,24 +16,33 @@ export function useApplicationContext() {
   const applicationId = parseInt(params.application_id as string, 10);
   const userId = session?.user_id;
   const [contributorId, setContributorId] = useState<number | null>(null);
-  const { applicationData } = useApplicationData(ApplicationFilterType.id, applicationId);
-  const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
-  const { data: entityData } = useSWR<EntitiesType>(hasDelegateRole ? `${ENTITIES_ROUTE}?delegate_user_id=${session.user_id}` : null);
+
+  const { data: applicationData, error: applicationError } = useSWR<Application[]>(
+    applicationId ? `${GET_APPLICATIONS_ROUTE}?${ApplicationFilterType.id}=${applicationId}` : null
+  );
+
+  const hasDelegateRole = useMemo(() =>
+    session?.permissions?.some(permission => permission.slug.includes('delegate')),
+  [session?.permissions]
+  );
+
+  const { data: entityData, error: entityError } = useSWR<EntitiesType>(
+    hasDelegateRole && session?.user_id ? `${GET_ENTITIES_ROUTE}?delegate_user_id=${session.user_id}` : null
+  );
 
   const isApplicationDelegate = useMemo(() => {
     if (!hasDelegateRole) {return false;}
-    if (!entityData || !applicationData) {return null;}
-    return entityData.some(entity => entity.sam_entity?.uei === applicationData?.sam_entity.uei);
+    if (!entityData || !applicationData?.[0]) {return null;}
+    return entityData.some(entity => entity.sam_entity?.uei === applicationData[0]?.sam_entity.uei);
   }, [hasDelegateRole, entityData, applicationData]);
 
   useEffect(() => {
-    if (applicationData && userId) {
+    if (applicationData?.[0] && userId) {
       if (hasDelegateRole && isApplicationDelegate === null) {
         return;
       }
-
       if (isApplicationDelegate) {
-        const firstContributorId = applicationData.application_contributor[0]?.id;
+        const firstContributorId = applicationData[0].application_contributor[0]?.id;
         if (firstContributorId) {
           setContributorId(firstContributorId);
         } else {
@@ -41,7 +50,7 @@ export function useApplicationContext() {
           return;
         }
       } else {
-        const id = applicationData.application_contributor.find(
+        const id = applicationData[0].application_contributor.find(
           (contributor) => contributor.user_id === session.user_id
         )?.id;
         if (id) {
@@ -51,13 +60,11 @@ export function useApplicationContext() {
           return;
         }
       }
-
       // Save cookies
       if (session.permissions && session.permissions.length > 0) {
         Cookies.set('firstPermission', encrypt(session.permissions[0].slug));
         Cookies.set('lastPermission', encrypt(session.permissions[session.permissions.length - 1].slug));
       }
-
       if (entityData && entityData.length > 0) {
         const simpleEntityData = entityData.map(entity => ({ id: entity.id }));
         Cookies.set('entityData', encrypt(JSON.stringify(simpleEntityData)));
@@ -69,7 +76,9 @@ export function useApplicationContext() {
     applicationId,
     userId,
     contributorId,
-    applicationData,
-    isApplicationDelegate
+    applicationData: applicationData?.[0] ?? null,
+    isApplicationDelegate,
+    isLoading: (!applicationData && !applicationError) || (hasDelegateRole && !entityData && !entityError),
+    isError: !!applicationError || !!entityError
   };
 }

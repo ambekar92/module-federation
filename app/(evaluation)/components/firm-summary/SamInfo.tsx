@@ -1,12 +1,16 @@
 'use client'
 import { SamEntity } from '@/app/services/types/application-service/Application'
-import { Table } from '@trussworks/react-uswds'
+import { Alert, Table } from '@trussworks/react-uswds'
 import moment from 'moment'
 import { useCurrentApplication } from '../../firm/useApplicationData'
 
 function SamInfo() {
-  const { applicationData } = useCurrentApplication();
+  const { applicationData, error } = useCurrentApplication();
   const samEntity = applicationData?.sam_entity ?? null;
+
+  if (error) {
+    return <Alert headingLevel='h4' type="error" heading="">Error loading Sam Information</Alert>;
+  }
 
   return (
     <>

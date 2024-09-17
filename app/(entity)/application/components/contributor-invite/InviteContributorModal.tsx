@@ -1,9 +1,5 @@
 'use client'
-
-import { SEND_INVITATION_DELEGATE } from '@/app/constants/questionnaires'
-import { INVITATION_ROUTE } from '@/app/constants/routes'
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
-import { axiosInstance } from '@/app/services/axiosInstance'
 import {
   Button,
   ButtonGroup,
@@ -16,6 +12,8 @@ import React from 'react'
 import { applicationSteps } from '../../utils/constants'
 import { Contributor } from './types'
 import { InvitationType } from '@/app/services/types/application-service/Application'
+import axios from 'axios'
+import { INVITATION_ROUTE, SEND_INVITATION_DELEGATE } from '@/app/constants/local-routes'
 
 interface InviteContributorModalProps {
   open: boolean;
@@ -58,7 +56,7 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
             invite => invite.email.toLowerCase() === contributor.emailAddress.toLowerCase()
           );
 
-          if (!existingInvitation) {
+          if (!existingInvitation || existingInvitation.invitation_status === 'removed') {
             const postData = {
               application_id: applicationId,
               email: contributor.emailAddress,
@@ -68,9 +66,9 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
               last_name: contributor.lastName
             }
 
-            const response = await axiosInstance.post(INVITATION_ROUTE, postData);
+            const response = await axios.post(INVITATION_ROUTE, postData);
             if (response && response.data && response.data.id) {
-              await axiosInstance.post(SEND_INVITATION_DELEGATE, {invitation_id: response.data.id});
+              await axios.post(SEND_INVITATION_DELEGATE, {invitation_id: response.data.id});
             }
           }
         }

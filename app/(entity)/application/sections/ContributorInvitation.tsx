@@ -1,14 +1,20 @@
 'use client'
-import { INVITATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
+import { INVITATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
+import { useSessionUCMS } from '@/app/lib/auth';
+import { Permission } from '@/app/login/types';
 import { InvitationType } from '@/app/services/types/application-service/Application';
 import { CustomTable } from '@/app/shared/components/CustomTable';
+import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Question } from '@/app/shared/types/questionnaireTypes';
+import { Role } from '@/app/shared/types/role';
 import { Button, ButtonGroup, Grid, GridContainer, Label, TextInput } from '@trussworks/react-uswds';
+import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import useSWR, { mutate } from 'swr';
 import InviteContributorModal from '../components/contributor-invite/InviteContributorModal';
 import { Contributor } from '../components/contributor-invite/types';
 import { selectApplication, setContributors, setIsAddingContributor, setStep } from '../redux/applicationSlice';
@@ -16,12 +22,6 @@ import { useApplicationDispatch, useApplicationSelector } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import { convertOperatorAnswerToContributors, convertOwnerAnswerToContributors } from '../utils/convertToContributor';
 import { useUserApplicationInfo } from '../utils/useUserApplicationInfo';
-import useSWR, { mutate } from 'swr';
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
-import { useSessionUCMS } from '@/app/lib/auth';
-import { axiosInstance } from '@/app/services/axiosInstance';
-import { Role } from '@/app/shared/types/role';
-import { Permission } from '@/app/login/types';
 
 function ContributorInvitation() {
   useUpdateApplicationProgress('Contributor Invitation');
@@ -33,8 +33,8 @@ function ContributorInvitation() {
   const session = useSessionUCMS();
   const getLastPermissionSlug = (permissions: Permission[]) => permissions?.at(-1)?.slug;
 
-  const isQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === 'qualifying_owner';
-  const isPrimaryQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === Role.PRIMARY_QUALIFYING_OWNER;
+  const isQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === Role.QUALIFYING_OWNER;
+  const isPrimaryQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === (Role.PRIMARY_QUALIFYING_OWNER || 'primary-qualifying-owner');
   const isDelegate = getLastPermissionSlug(session.data?.permissions) === Role.DELEGATE;
 
   const [firstName, setFirstName] = useState('');
@@ -57,11 +57,16 @@ function ContributorInvitation() {
   }, [contributors]);
 
   useEffect(() => {
-    if (applicationData &&
-      applicationData.workflow_state !== 'draft' &&
-      applicationData.workflow_state !== 'returned_for_firm' &&
-      !isQualifyingOwner &&
-      (isPrimaryQualifyingOwner || isDelegate)
+    if((!isPrimaryQualifyingOwner && !isDelegate) && applicationId) {
+      window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+        applicationId,
+        stepLink: applicationSteps.sign.link
+      });
+    }
+    if (
+      applicationData &&
+  		(applicationData.workflow_state !== 'draft' &&
+      	applicationData.workflow_state !== 'returned_for_firm')
     ) {
       window.location.href = `/application/view/${applicationId}`;
     }
@@ -121,7 +126,7 @@ function ContributorInvitation() {
 
   // Converts Invitation data users into contributors
   useEffect(() => {
-    if (invitationData && invitationData !== prevInvitationDataRef.current) {
+    if (invitationData && invitationData !== prevInvitationDataRef.current && invitationData.length > 0) {
       prevInvitationDataRef.current = invitationData;
       const apiContributors: Contributor[] = invitationData
         .filter((item: InvitationType) =>
@@ -221,6 +226,14 @@ function ContributorInvitation() {
     }
   };
 
+  /**
+   * Deletes a contributor from the application, given its roleIndex and role.
+   * If the contributor has an invitation, it is deleted as well.
+   * @param {number} roleIndex - The index of the contributor in the contributors array
+   * filtered by role.
+   * @param {string} role - The role of the contributor to delete.
+   * @throws {Error} If the contributor is not found.
+   */
   const handleDeleteContributor = async (roleIndex: number, role: string) => {
     const contributorsOfRole = contributors.filter(c => {
       if (role === 'role_owner') {
@@ -241,7 +254,7 @@ function ContributorInvitation() {
 
     if (invitationToDelete) {
       try {
-        await axiosInstance.delete(`${INVITATION_ROUTE}?invitation_id=${invitationToDelete.id}`);
+        await axios.delete(`${INVITATION_ROUTE}?invitation_id=${invitationToDelete.id}`);
         const updatedInvitationData = invitationData?.filter(invitation => invitation.id !== invitationToDelete.id);
         mutate(`${INVITATION_ROUTE}/${contributorId}`, updatedInvitationData, false);
       } catch (error) {
@@ -250,11 +263,12 @@ function ContributorInvitation() {
     }
 
     const updatedContributors = contributors.filter(contributor =>
-      contributor.emailAddress.toLowerCase() !== contributorToDelete.emailAddress.toLowerCase() ||
-			contributor.contributorRole !== contributorToDelete.contributorRole
+      !(contributor.emailAddress.toLowerCase() === contributorToDelete.emailAddress.toLowerCase() &&
+				(contributor.contributorRole === contributorToDelete.contributorRole ||
+				 (role === 'role_owner' && (contributor.contributorRole === 'role_owner' || contributor.contributorRole === 'role_owner_eligible')))
+      )
     );
 
-    console.log(updatedContributors)
     dispatch(setContributors(updatedContributors));
     updateUserApplicationInfo({ contributors: updatedContributors });
   };

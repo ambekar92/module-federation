@@ -1,9 +1,9 @@
-import { axiosInstance } from '../../axiosInstance';
+import axios from 'axios';
 
 export async function updateMakeRecommendation(url: string, {arg}: {arg: any}) {
-  await axiosInstance.put(url, arg)
+  await axios.put(url, arg)
 }
 
 export async function uploadMakeRecommendationFile(url: string, {arg}: {arg: any}) {
-  await axiosInstance.post(url, arg)
+  await axios.post(url, arg)
 }

@@ -17,6 +17,8 @@ export async function logout() {
   Cookies.remove('next-auth.session-token')
   Cookies.remove('applicationData');
   Cookies.remove('entityData');
+  Cookies.remove('firstPermission');
+  Cookies.remove('lastPermission');
 
   localStorage.clear();
 

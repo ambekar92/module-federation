@@ -1,6 +1,6 @@
-import { CLOSE_APPLICATION_ROUTE } from '@/app/constants/routes';
 import useSWRMutation from 'swr/mutation';
 import { closeApplicationTask } from '../api/evaluation-service/closeApplicationTask';
+import { CLOSE_APPLICATION_ROUTE } from '@/app/constants/local-routes';
 
 export function useCloseApplicationTask() {
   return useSWRMutation(CLOSE_APPLICATION_ROUTE, closeApplicationTask, {

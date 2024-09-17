@@ -8,17 +8,13 @@ import styles from '../WorkloadDashboard.module.scss';
 import { IProductivity } from '../types';
 import { useIsReviewersDashboard } from '../hooks/useIsReviewersDashboard';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import fetcher from '@/app/services/fetcher';
 
 const Productivity = () => {
-  const {data: {user_id, permissions}} = useSessionUCMS();
-  const {data, isLoading}  = useSWR(`${USER_PRODUCTIVITY_ROUTE}/${user_id}`, fetcherGET<IProductivity[]>) || [];
+  const {data: {user_id}} = useSessionUCMS();
+  const {data, isLoading}  = useSWR<IProductivity[]>(`${USER_PRODUCTIVITY_ROUTE}/${user_id}`, fetcher) || [];
   const {completed_tasks_current_month, completed_tasks_current_quarter, completed_tasks_current_fiscal_year, average_processing_time_seconds} = (data && data.length) ? data[0] : [] as any;
   const isReviewersDashboard = useIsReviewersDashboard();
-
-  // temporary function to replace isRole from @/middleware. will swich back to the one from @/middleware once determined which user role corresponds to analyst
-  function isRole(permissions: any, role: any) {
-    return false;
-  }
 
   return (
     <div>

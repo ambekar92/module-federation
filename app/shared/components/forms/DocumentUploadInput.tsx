@@ -1,9 +1,9 @@
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { ErrorMessage, FormGroup, Label } from '@trussworks/react-uswds';
 import React, { useState, useRef } from 'react';
-import styles from './DocumentUploadInput.module.scss';
-import { axiosInstance } from '@/app/services/axiosInstance';
-import { DOCUMENT_ROUTE } from '@/app/constants/routes';
+import styles from './DocumentUploadInput.module.scss';;
+import axios from 'axios';
+import { APPLICATION_DOCUMENTS_ROUTE } from '@/app/constants/local-routes';
 
 type InputProps = {
   name: string;
@@ -48,7 +48,7 @@ const DocumentUploadInput: React.FC<InputProps> = ({
     e.stopPropagation();
     try {
       if (documentId) {
-        await axiosInstance.delete(DOCUMENT_ROUTE, {
+        await axios.delete(APPLICATION_DOCUMENTS_ROUTE, {
           data: { document_id: documentId }
         });
       }

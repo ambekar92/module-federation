@@ -1,9 +1,10 @@
 'use client';
-import { QUESTIONNAIRE_LIST_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_LIST_PAGE, QUESTIONNAIRE_PAGE } from '@/app/constants/url';
-import fetcher from '@/app/services/fetcher';
+import { useSessionUCMS } from '@/app/lib/auth';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
+import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { ButtonGroup, ModalRef } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -17,9 +18,7 @@ import Questions from '../../../qa-helpers/Questions';
 import applicationStore from '../../../redux/applicationStore';
 import HubzoneResults from '../../../sections/HubzoneResults';
 import { applicationSteps, extractLastPart } from '../../../utils/constants';
-import Spinner from '@/app/shared/components/spinner/Spinner';
-import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
-import { useSessionUCMS } from '@/app/lib/auth';
+import { QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -33,10 +32,7 @@ const QuestionnairePage: React.FC = () => {
   const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
   useUpdateApplicationProgress('Questionnaires');
 
-  const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(
-    contributorId ? `${QUESTIONNAIRE_LIST_ROUTE}/${contributorId}` : null,
-    fetcher
-  );
+  const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
 
   const refetchQuestionnaires = () => {
     mutate();
@@ -69,7 +65,7 @@ const QuestionnairePage: React.FC = () => {
     }
     if (
       applicationData && applicationData.workflow_state !== 'draft'
-			&& applicationData.workflow_state !== 'returned_for_firm'
+  		&& applicationData.workflow_state !== 'returned_for_firm'
     ) {
       window.location.href = `/application/view/${applicationId}`;
     }

@@ -22,21 +22,12 @@ export const sbaProgramOptions: ProgramOption[] = [
 		economically-disadvantaged entrepreneurs. Participants receive the following benefits:
 		Business development assistance, mentorship, and access to government contracts.`,
     disadvantages: [
-      'ethnic_origin',
-      'asian_pacific_american',
-      'native_american',
-      'hispanic_american',
-      'black_american',
-      'sexual-orientation',
-      'Sexual Orientation',
-      'minority',
-      'race',
-      'Race',
-      'Native American',
-      'Hispanic American',
-      'Black American',
-      'Asian Pacific American',
-      'Ethnic Origin'
+      'long_term_isolated_residence', 'unmarried-not-veteran', 'gender', 'woman', 'female',
+      'ethnic_origin', 'asian_pacific_american', 'native_american', 'hispanic_american',
+  		'black_american', 'minority', 'race', 'disabledVeteran', 'veteran',
+      'Race', 'Native American', 'Hispanic American', 'Black American', 'Asian Pacific American',
+      'Long term residence in an environment isolated from mainstream of American society.', 'Other',
+      'Religion', 'Ethnic Origin', 'Identifiable Disability', 'Gender', 'Sexual Orientation'
     ],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/8a-business-development-program',
@@ -92,7 +83,7 @@ export const sbaProgramOptions: ProgramOption[] = [
   		'black_american', 'minority', 'race', 'disabledVeteran', 'veteran',
       'Race', 'Native American', 'Hispanic American', 'Black American', 'Asian Pacific American',
       'Long term residence in an environment isolated from mainstream of American society.', 'Other',
-      'Religion', 'Ethnic Origin', 'Identifiable Disibility'
+      'Religion', 'Ethnic Origin', 'Identifiable Disability', 'Gender', 'Sexual Orientation'
     ],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/hubzone-program',

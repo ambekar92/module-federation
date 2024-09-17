@@ -1,12 +1,11 @@
 'use client'
-import { fetcherGET } from '@/app/services/fetcher-legacy'
 import { Documents as Document, DocumentsType } from '@/app/services/types/document'
 import HeightIcon from '@mui/icons-material/Height'
-import { Table } from '@trussworks/react-uswds'
+import { Alert, Table } from '@trussworks/react-uswds'
 import { useParams } from 'next/navigation'
 import useSWR from 'swr'
-import { DOCUMENTS_ROUTE } from '../../../constants/routes'
 import styles from './Documents.module.scss'
+import { APPLICATION_DOCUMENTS_ROUTE } from '@/app/constants/local-routes'
 
 function Documents() {
   const { application_id } = useParams();
@@ -14,10 +13,15 @@ function Documents() {
   const { data: responseData, error: responseError } =
     useSWR<DocumentsType>(
       application_id
-        ? `${DOCUMENTS_ROUTE}/?application_id=${application_id}`
-        : null,
-      fetcherGET,
+        ? `${APPLICATION_DOCUMENTS_ROUTE}/?application_id=${application_id}`
+        : null
     )
+
+  if (responseError){
+
+    return <Alert headingLevel='h4' type="error" heading="">Error loading Documents</Alert>;
+
+  }
 
   return (
     <>
@@ -64,9 +68,6 @@ function Documents() {
               </tr>
             </thead>
             <tbody>
-              {responseError && (
-                <div>Could not load documents. Please try again later.</div>
-              )}
 
               {responseData && Array.isArray(responseData) &&
                 responseData.map((item: Document) => {

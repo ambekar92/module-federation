@@ -13,7 +13,7 @@ const colStyle: React.CSSProperties = {display: 'flex', flexDirection: 'column',
 
 const UserPage =  () => {
   const userSession = useSessionUCMS();
-  const {data: user, error, isLoading} = useUser(userSession?.data.user_id.toString());
+  const {data: user, error, isLoading} = useUser(userSession?.data?.user_id?.toString());
 
   if (error) {
     return <Alert type='error' headingLevel='h4'>Failed to load user details</Alert>;

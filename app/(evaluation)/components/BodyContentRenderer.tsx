@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { LETTER_FOR_APP_ROUTE } from '@/app/constants/local-routes';
+import Spinner from '@/app/shared/components/spinner/Spinner';
+import { Button } from '@trussworks/react-uswds';
+import { marked } from 'marked';
+import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import TurndownService from 'turndown';
-import { marked } from 'marked';
-import { LETTER_FOR_APPLICATION_ROUTE } from '@/app/constants/routes';
-import fetcher from '@/app/services/fetcher';
-import { Button } from '@trussworks/react-uswds';
-import Spinner from '@/app/shared/components/spinner/Spinner';
 
 interface BodyContentRendererProps {
   name: string;
@@ -28,8 +27,7 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
   const [isSaving, setIsSaving] = useState(false);
 
   const { data: apiHtmlContent, error } = useSWR<string>(
-    applicationId && name ? `${LETTER_FOR_APPLICATION_ROUTE}?template_name=${name}&application_id=${applicationId}` : null,
-    fetcher
+    applicationId && name ? `${LETTER_FOR_APP_ROUTE}?template_name=${name}&application_id=${applicationId}` : null
   );
 
   const extractBodyContent = (html: string) => {

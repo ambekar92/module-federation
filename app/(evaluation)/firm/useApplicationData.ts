@@ -7,18 +7,19 @@ export function useApplicationData(filterParam: ApplicationFilterType, filterVal
   if (filterValue === undefined || !filterParam === undefined || filterParam === null || filterValue === null) {
     return { applicationData: null, isLoading: false, mutate: () => Promise.resolve() };
   }
-  const { data, isLoading, mutate } = useApplication(filterParam, filterValue);
+  const { data, isLoading, mutate, error } = useApplication(filterParam, filterValue);
   const applicationData = data?.[0] ?? null;
-  return { applicationData, isLoading, mutate };
+  return { applicationData, isLoading, mutate , error};
 }
 
 export function useCurrentApplication() {
   const params = useParams<{application_id: string}>();
-  const { applicationData, isLoading } = useApplicationData(ApplicationFilterType.id, params.application_id);
+  const { applicationData, isLoading, error } = useApplicationData(ApplicationFilterType.id, params.application_id);
 
   return {
     applicationData,
     isLoading,
-    applicationId: params.application_id
+    applicationId: params.application_id,
+    error
   };
 }

@@ -2,10 +2,8 @@
 
 import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData'
 import { NavItem } from '@/app/(evaluation)/types/types'
-import { RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/routes'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { axiosInstance } from '@/app/services/axiosInstance'
-import { REASON_CODE_ROUTE, ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
+import { ReasonCode } from '@/app/services/types/evaluation-service/ReasonCodes'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
 import Close from '@mui/icons-material/Close'
 import { Alert, Button, ButtonGroup, Label, ModalRef } from '@trussworks/react-uswds'
@@ -15,6 +13,8 @@ import useSWR from 'swr'
 import styles from '../../Evaluation.module.scss'
 import DeleteConfirmationModal from '../../modals/request-info/DeleteConfirmationModal'
 import RequestInfoModal from '../../modals/request-info/RequestInfoModal'
+import axios from 'axios'
+import { REASON_CODES_ROUTE, RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/local-routes'
 
 export interface ReasonState {
   id: number | null;
@@ -31,7 +31,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
   const selectedSegment = useSelectedLayoutSegment()
   const sessionData = useSessionUCMS()
   const userRole = getUserRole(sessionData?.data?.permissions || []);
-  const { data: reasonCodes, error } = useSWR<ReasonCode[]>(REASON_CODE_ROUTE)
+  const { data: reasonCodes, error } = useSWR<ReasonCode[]>(REASON_CODES_ROUTE)
   const [postSuccess, setPostSuccess] = useState<boolean>(false);
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [reason, setReason] = useState<ReasonState>({ id: null, title: '' });
@@ -57,7 +57,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
         reason: reason.title
       };
 
-      const response = await axiosInstance.post(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE, requestData);
+      const response = await axios.post(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE, requestData);
 
       if (response.data) {
         setLastPostedItem({
@@ -88,7 +88,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
         reason: modalReason.title
       };
 
-      const response = await axiosInstance.put(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE, requestData);
+      const response = await axios.put(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE, requestData);
 
       if (response.data) {
         setLastPostedItem({
@@ -108,7 +108,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
 
   const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`${userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE}?id=${lastPostedItem?.id ?? 1}&author_id=${sessionData.data?.user_id}`);
+      await axios.delete(`${userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE}?id=${lastPostedItem?.id ?? 1}&author_id=${sessionData.data?.user_id}`);
       deleteConfirmationModalRef.current?.toggleModal();
       setLastPostedItem(null);
       setPostSuccess(false);
@@ -163,7 +163,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
               })}
             >
               <option value="">{error ? 'Error loading...': 'Select Reason'}</option>
-              {reasonCodes && reasonCodes.map(code => (
+              {reasonCodes && reasonCodes.length > 0 && reasonCodes.map(code => (
                 <option value={code.id} key={code.id}>{code.title}</option>
               ))}
             </select>

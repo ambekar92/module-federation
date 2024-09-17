@@ -67,7 +67,7 @@ const ActionsDropdown = () => {
   const handleCloseAppAction = async (description: any) => {
     try {
       const postData = {
-        application_id: application_id,
+        application_id: parseInt(application_id),
         explanation: description,
         user_id: userId,
       }

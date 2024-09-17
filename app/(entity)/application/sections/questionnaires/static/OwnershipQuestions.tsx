@@ -1,25 +1,24 @@
 'use client'
-import { ELIGIBLE_APPLY_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/routes';
+import { ELIGIBLE_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
-import { APPLICATION_STEP_ROUTE, ASSIGN_DELEGATE_PAGE, buildRoute, DASHBOARD } from '@/app/constants/url';
-import { axiosInstance } from '@/app/services/axiosInstance';
+import { APPLICATION_STEP_ROUTE, ASSIGN_DELEGATE_PAGE, buildRoute } from '@/app/constants/url';
+import { useSessionUCMS } from '@/app/lib/auth';
 import QAWrapper from '@/app/shared/components/forms/QAWrapper';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
+import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { calculateEligibleSbaPrograms, useOwnerApplicationInfo } from '../../../hooks/useOwnershipApplicationInfo';
+import { useWorkflowRedirect } from '../../../hooks/useWorkflowRedirect';
 import { OwnershipQaGrid } from '../../../qa-helpers/OwnershipQaGrid';
 import { selectApplication, setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
-import Spinner from '@/app/shared/components/spinner/Spinner';
-import { useSessionUCMS } from '@/app/lib/auth';
-import { redirect } from 'next/navigation';
-import { useWorkflowRedirect } from '../../../hooks/useWorkflowRedirect';
 
 function OwnershipQuestions() {
   // Redux
@@ -28,7 +27,7 @@ function OwnershipQuestions() {
   const { owners } = useApplicationSelector(selectApplication);
   useUpdateApplicationProgress('Ownership');
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
-  const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
+  const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : null;
 
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
@@ -69,7 +68,7 @@ function OwnershipQuestions() {
           programs: eligiblePrograms.map(program => program.id)
         };
 
-        await axiosInstance.put(`${ELIGIBLE_APPLY_PROGRAMS_ROUTE}`, postData);
+        await axios.put(`${ELIGIBLE_PROGRAMS_ROUTE}`, postData);
         window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
           applicationId: applicationId,
           stepLink: applicationSteps.controlAndOwnership.link
