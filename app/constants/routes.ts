@@ -24,6 +24,7 @@ export const OKTA_POST_LOGIN_ROUTE = API_ROUTE + '/okta-post-login'
 export const ADMIN_BANNER_ROUTE = process.env.NEXT_PUBLIC_ADMIN_FEATURE_ENABLED
 export const CREATING_APPLICATION_ROUTE = API_ROUTE + '/creating-program-application'
 export const ELIGIBLE_APPLY_PROGRAMS_ROUTE = API_ROUTE + '/application-eligible-to-apply-programs'
+export const APPLICATION_ELIGIBILITY_ROUTE = `${API_ROUTE}/application-eligibility`
 export const USER_ROUTE = API_ROUTE + '/users'
 export const INVITATION_ROUTE = API_ROUTE + '/invitation'
 export const SEND_INVITATION_ROUTE = API_ROUTE + '/send-invitation'

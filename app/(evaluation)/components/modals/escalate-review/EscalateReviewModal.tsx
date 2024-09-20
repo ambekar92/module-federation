@@ -96,7 +96,7 @@ const EscalateReviewModal: React.FC<EscalateReviewProps> = ({
         application_id: applicationData.id,
         subject: 'Request for Expert',
         description: notes,
-        user_id: sessionData.data.user_id || 0
+        user_id: sessionData.data.user_id
       }
 
       try {

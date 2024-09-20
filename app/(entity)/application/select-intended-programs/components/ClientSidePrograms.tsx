@@ -19,8 +19,8 @@ interface ClientSideProgramsProps {
   entityId: string
   initialSelectedPrograms: ProgramOption[]
   sbaProgramOptions: ProgramOption[]
-	applicationData: Application[] | null,
-	entityData: EntitiesType | null
+	applicationData: Application[] | undefined,
+	entityData: EntitiesType | undefined
 }
 
 export default function ClientSidePrograms({

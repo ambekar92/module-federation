@@ -6,6 +6,7 @@ import { useFormState, useFormStatus } from 'react-dom'
 import { Controller, useFormContext } from 'react-hook-form'
 import { ShouldIApplyFormType } from '../schema'
 import { matchSchema } from './schema'
+import { API_ROUTE } from '@/app/constants/routes'
 
 const initialState = [{
   naics_code: '',
@@ -61,7 +62,7 @@ const MatchForm = () => {
       {savedState &&
                 <>
                   <Show>
-                    <Show.When isTrue={Array.isArray(savedState)} >
+                    <Show.When isTrue={Array.isArray(savedState) && savedState.length > 0} >
                       <Alert heading='Success' headingLevel='h2' type='success' role='status' aria-live='polite'>
                         <p>Based on the NAICS code you provided, it appears the Federal Government buys what you sell.
                                     Continue to see if your should apply to the SBA Certification Program.
@@ -109,7 +110,7 @@ async function getNaicsCodeDetails(prevState: any, formData: FormData): Promise<
   });
   try {
     const searchTerm = data.naics_code.replace(/[^0-9]/g, '') ? `naics_code=${data.naics_code.replace(/[^0-9]/g, '')}` : `keyword=${data.naics_code.replace(/[0-9]/g, '').trim()}`;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/amount-awarded?&${searchTerm}`);
+    const response = await fetch(`${API_ROUTE}/amount-awarded?${searchTerm}`);
     const results = await response.json();
     const saved = JSON.parse(localStorage.getItem('should-i-apply') || '{}');
     saved.match = {results: results, searchTerm: data.naics_code};

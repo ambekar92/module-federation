@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { decrypt, encrypt } from '@/app/shared/utility/encryption'
 import { API_ROUTE } from '../constants/routes'
+import redisClient from '@/app/lib/redis';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -11,14 +12,29 @@ export async function handleApiRequest(
   method: HttpMethod = 'GET'
 ) {
   const cookieStore = cookies()
-  const accessToken = cookieStore.get('accesstoken')
-  if (!accessToken) {
+  let token
+  if (process.env.TOKEN_LOOKUP === 'development') {
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+      console.log('******************************* accessToken lookup in development mode')
+    }
+    const accessToken = cookieStore.get('access');
+    token = accessToken ? decrypt(accessToken.value) : null;
+  } else {
+    if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+      console.log('************************** emailPasswordAuthToken lookup production mode')
+    }
+    const emailPasswordAuthToken = cookieStore.get('email_password_auth_token');
+    const userData = emailPasswordAuthToken ? JSON.parse(decrypt(emailPasswordAuthToken.value)) : undefined;
+    const redisData = await redisClient.get(userData.email);
+    token = redisData ? JSON.parse(redisData).access : null;
+  }
+
+  if (!token) {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
       console.error('No access token found')
     }
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
-  const token = decrypt(accessToken.value)
   try {
     let url = (API_ROUTE && endpoint.startsWith(API_ROUTE)) ? endpoint : new URL(endpoint, API_ROUTE).toString()
     let body: string | FormData | undefined
@@ -59,6 +75,9 @@ export async function handleApiRequest(
     if (response.ok) {
       const data = await response.json()
       // encrypt GET responses
+      if ( process.env.NEXT_PUBLIC_DEBUG_MODE ) {
+        console.log(`Response Data ${request.url}:`, data)
+      }
       if (method === 'GET') {
         const encryptedData = encrypt(JSON.stringify(data))
         return NextResponse.json({ encryptedData })

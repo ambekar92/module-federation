@@ -70,7 +70,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
   const updateMakeRecommendation = async (id: number, recommendation: string) => {
     try {
       const putData = {
-        application_id: Number(params.application_id) || 0,
+        application_id: Number(params.application_id) || null,
         program_id: id,
         analyst_recommendation: recommendation,
       }

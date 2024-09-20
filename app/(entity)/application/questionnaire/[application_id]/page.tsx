@@ -34,11 +34,11 @@ const QuestionnaireListPage: React.FC = () => {
     !(hasDelegateRole && filteredSections.includes(extractLastPart(questionnaire.url)))
   );
 
-  // useEffect(() => {
-  //   if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
-  //     window.location.href = `/application/view/${applicationId}`;
-  //   }
-  // }, [applicationData, applicationId]);
+  useEffect(() => {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      window.location.href = `/application/view/${applicationId}`;
+    }
+  }, [applicationData, applicationId]);
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));

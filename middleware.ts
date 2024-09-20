@@ -6,7 +6,7 @@ import createMiddleware from 'next-easy-middlewares';
 import { NextRequest, NextResponse } from 'next/server';
 import { LoginResponseUser } from './app/(admin)/aeroad/types';
 import { Role } from './app/shared/types/role';
-import { Permission } from './app/login/types';
+import { Permission } from './app/tarmac/types';
 import { decrypt } from '@/app/shared/utility/encryption';
 
 async function handleProtectedRoute(request: NextRequest) {

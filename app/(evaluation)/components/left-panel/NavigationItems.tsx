@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button, Link } from '@trussworks/react-uswds';
 import { useParams, usePathname, useRouter, useSelectedLayoutSegment } from 'next/navigation';
 import { NavItem, QuestionnaireItem } from '../../types/types';
@@ -8,6 +8,8 @@ import { getAnalystQuestionnaires } from './constants';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
+import { Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface NavigationItemsProps {
   navItems: NavItem[];
@@ -23,11 +25,16 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
   const params = useParams<{application_id: string, section_questions: string}>();
   const [activeSection, setActiveSection] = useState<string>('');
   const [activeTitle, setActiveTitle] = useState('');
+  const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const router = useRouter();
   const pathname = usePathname();
   const selectedSegment = useSelectedLayoutSegment();
   const sessionData = useSessionUCMS();
   const userRole = getUserRole(sessionData?.data?.permissions || []);
+
+  const isNavItem = (item: QuestionnaireItem | NavItem): item is NavItem => {
+    return 'child' in item && Array.isArray((item as NavItem).child);
+  };
 
   const analystQuestionnaires = React.useMemo(() => {
     if (!applicationData?.program_application) {return [];}
@@ -36,15 +43,26 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
 
   const { completedQuestionnaires } = useQuestionnaireState(applicationData, analystQuestionnaires);
 
+  const filteredNavItems = useMemo(() => {
+    return navItems.filter(item =>
+      item.section !== 'Contributor Two Application' &&
+      item.section !== 'Contributor Three Application' ||
+      (item.child && item.child.length > 0)
+    );
+  }, [navItems]);
+
   useEffect(() => {
     const segment = params.section_questions ?? selectedSegment;
-    if (!navItems || !Array.isArray(navItems)) {return;}
-    const currentSection = navItems.map(nav => nav.child).flat().find(item => item.url.includes(segment));
+    if (!filteredNavItems || !Array.isArray(filteredNavItems)) {return;}
+    const currentSection = filteredNavItems.map(nav => nav.child).flat().find(item => item.url.includes(segment));
     if (currentSection) {
       setActiveSection(currentSection.section);
       setActiveTitle(currentSection.title);
+      setExpandedSections(prev =>
+        prev.includes(currentSection.section) ? prev : [...prev, currentSection.section]
+      );
     }
-  }, [pathname, navItems, params.section_questions, selectedSegment]);
+  }, [pathname, filteredNavItems, params.section_questions, selectedSegment]);
 
   const onNavLinkClick = useCallback((e: React.MouseEvent, item: QuestionnaireItem) => {
     e.preventDefault();
@@ -108,41 +126,109 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
         )}
       </Link>
     );
-  }, [activeTitle, onNavLinkClick, isItemClickable, params.application_id]);
+  }, [activeTitle, onNavLinkClick, isItemClickable, params.application_id, userRole, analystQuestionnaires.length, completedQuestionnaires]);
+
+  const renderContributorAccordion = useCallback((contributorItem: NavItem) => {
+    return (
+      <Accordion
+        expanded={expandedSections.includes(contributorItem.section)}
+        onChange={() => handleAccordionChange(contributorItem.section)}
+        sx={{
+          boxShadow: 'none',
+          '&:before': {
+            display: 'none',
+          },
+        }}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{
+            padding: '0 16px 0 32px',
+            minHeight: '48px',
+            '& .MuiAccordionSummary-content': {
+              margin: '0',
+            },
+          }}
+        >
+          <Typography>{contributorItem.section}</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ padding: 0 }}>
+          <ul className="usa-sidenav__sublist">
+            {contributorItem.child.map((childItem, childIndex) => (
+              <li key={childIndex} className="usa-sidenav__item">
+                {renderNavItem(childItem, childIndex)}
+              </li>
+            ))}
+          </ul>
+        </AccordionDetails>
+      </Accordion>
+    );
+  }, [expandedSections, renderNavItem]);
+
+  const handleAccordionChange = useCallback((section: string) => {
+    setExpandedSections(prev =>
+      prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]
+    );
+  }, []);
+
+  const renderNavSection = useCallback((item: NavItem, index: number) => {
+    if (item.child.length === 1) {
+      return (
+        <Link
+          onClick={(e) => onNavLinkClick(e, item.child[0])}
+          href={`/${item.child[0].url}`}
+          className={item.section === activeSection ? 'usa-current' : ''}
+          style={{paddingLeft: '16px'}}
+        >
+          {item.section}
+        </Link>
+      );
+    }
+
+    return (
+      <Accordion
+        expanded={expandedSections.includes(item.section)}
+        onChange={() => handleAccordionChange(item.section)}
+        sx={{
+          boxShadow: 'none',
+          '&:before': {
+            display: 'none',
+          },
+        }}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          sx={{
+            padding: '0 16px',
+            minHeight: '48px',
+            '& .MuiAccordionSummary-content': {
+              margin: '0',
+            },
+          }}
+        >
+          <Typography>{item.section}</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ padding: 0 }}>
+          <ul className="usa-sidenav__sublist">
+            {item.child.map((childItem, childIndex) => (
+              <li key={childIndex} className="usa-sidenav__item">
+                {isNavItem(childItem) ? renderContributorAccordion(childItem) : renderNavItem(childItem, childIndex)}
+              </li>
+            ))}
+          </ul>
+        </AccordionDetails>
+      </Accordion>
+    );
+  }, [expandedSections, handleAccordionChange, renderContributorAccordion]);
 
   return (
     <nav aria-label="Side navigation">
       <ul className="usa-sidenav">
-        {navItems.map((item, index) => {
-          if (item.child.length > 0) {
-            return (
-              <ul className='padding-left-0' key={index}>
-                <li style={{listStyle: 'none'}} className="usa-sidenav__item">
-                  <Link onClick={(e) => onNavLinkClick(e, item.child[0])} href={`/${item.child[0].url}`} className={item.section === activeSection ? 'usa-current' : ''} style={{paddingLeft: '16px'}}>
-                    {item.section}
-                  </Link>
-                  {item.child.length > 1 && (
-                    <ul className="usa-sidenav__sublist">
-                      {item.child.map((childItem, childIndex) => (
-                        <li key={childIndex} className="usa-sidenav__item">
-                          {renderNavItem(childItem, childIndex)}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              </ul>
-            )
-          } else {
-            return (
-              <ul key={index}>
-                <li style={{listStyle: 'none'}} className="usa-sidenav__item">
-                  <Link onClick={(e) => onNavLinkClick(e, item as unknown as QuestionnaireItem)} href='#' className={item.section === activeSection ? 'usa-current' : ''}>{item.section}</Link>
-                </li>
-              </ul>
-            )
-          }
-        })}
+        {filteredNavItems.map((item, index) => (
+          <li key={index} style={{listStyle: 'none'}} className="usa-sidenav__item">
+            {renderNavSection(item, index)}
+          </li>
+        ))}
       </ul>
     </nav>
   );

@@ -31,7 +31,7 @@ function SignPage() {
   const session = useSessionUCMS();
   const dispatch = useApplicationDispatch();
   useUpdateApplicationProgress('Sign Application');
-  const [isCheckboxDisabled, setIsCheckboxDisabled] = useState(true);
+  const [isCheckboxDisabled, setIsCheckboxDisabled] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [allContributorsSubmitted, setAllContributorsSubmitted] = useState(false);
   const [allInvitationsAccepted, setAllInvitationsAccepted] = useState(false);
@@ -54,11 +54,11 @@ function SignPage() {
       Role.OTHER_INDIVIDUALS
     ];
 
-    const isInvalidWorkflowState = applicationData && !invalidWorkflowStates.includes(applicationData.workflow_state);
     const userRole = session.data?.permissions[session.data.permissions.length - 1].slug;
-    const isInvalidRole = !validRoles.includes(userRole);
+    const isValidRole = userRole && validRoles.includes(userRole);
+    const isValidWorkflowState = applicationData && invalidWorkflowStates.includes(applicationData.workflow_state);
 
-    if (isInvalidWorkflowState && isInvalidRole) {
+    if (!isValidRole || !isValidWorkflowState) {
       window.location.href = `/application/view/${applicationId}`;
     }
   }, [applicationData, applicationId, session.data]);
@@ -73,10 +73,8 @@ function SignPage() {
       if (nonOwnerContributors.length === 0) {
         // if there are no other contributors only check the primary owner's questionnaire
         setAllContributorsSubmitted(true);
-        setAllInvitationsAccepted(true);
-        setAlertMessage('');
       } else {
-        const allSubmitted = nonOwnerContributors.every(
+        const allSubmitted = nonOwnerContributors && nonOwnerContributors.length > 0 && nonOwnerContributors.every(
           (contributor) => contributor.workflow_state === 'submitted'
         );
         setAllContributorsSubmitted(allSubmitted);
@@ -84,7 +82,7 @@ function SignPage() {
         if (!allSubmitted) {
           setAlertMessage('Before this application can be signed, all contributors must accept their invitation and submit their application.');
         } else {
-          setAlertMessage('');
+          setAlertMessage('All contributors have submitted their application.');
         }
       }
     }
@@ -92,27 +90,52 @@ function SignPage() {
 
   useEffect(() => {
     if (invitationData && invitationData.length > 0) {
-      const allAccepted = invitationData.every(
-        (invitation) => invitation.invitation_status === 'accepted' && invitation.invitation_status  !== 'removed'
+      const allAccepted = invitationData.filter(
+        (invitation) => invitation.invitation_status !== 'accepted' && invitation.invitation_status  !== 'removed'
       );
-      setAllInvitationsAccepted(allAccepted);
-
-      if (!allAccepted) {
+      if (allAccepted.length > 0) {
+        setAllInvitationsAccepted(false);
         setAlertMessage('One or more contributors have not accepted their invitation or submitted their application.');
+      } else {
+        setAllInvitationsAccepted(true);
       }
+    } else {
+      setAllInvitationsAccepted(true);
     }
   }, [invitationData]);
 
   useEffect(() => {
     if (questionnairesData && questionnairesData.length > 0) {
-      const allCompleted = questionnairesData.every(
+      const allCompleted = questionnairesData && questionnairesData.length > 0 && questionnairesData.every(
         (questionnaire) => questionnaire.status === 'Completed'
       );
+
       if (userRole === 'primary-qualifying-owner') {
-        setIsCheckboxDisabled(!allCompleted || !allContributorsSubmitted || !allInvitationsAccepted);
+        const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted;
+        setIsCheckboxDisabled(isDisabled);
+
+        if (isDisabled) {
+          if (!allCompleted) {
+            setAlertMessage('All questionnaires must be completed before you can sign the application.');
+          } else if (!allContributorsSubmitted) {
+            setAlertMessage('All contributors must submit their applications before you can sign.');
+          } else if (!allInvitationsAccepted) {
+            setAlertMessage('All invitations must be accepted before you can sign the application.');
+          }
+        } else {
+          setAlertMessage('');
+        }
       } else {
         setIsCheckboxDisabled(!allCompleted);
+        if (!allCompleted) {
+          setAlertMessage('You must complete all questionnaires before you can sign the application.');
+        } else {
+          setAlertMessage('');
+        }
       }
+    } else {
+      setIsCheckboxDisabled(true);
+      setAlertMessage('Something went wrong. Please try refreshing the page.');
     }
   }, [questionnairesData, allContributorsSubmitted, allInvitationsAccepted]);
 
@@ -201,7 +224,7 @@ function SignPage() {
           <div>
             {userRole === 'primary-qualifying-owner' ? (
               <>
-                <h1>Attestation</h1>
+                <h1>Attestation {userRole}</h1>
                 <p className='margin-bottom-5'>By clicking the Submit button, you are certifying that you are an owner of the company listed below and that you authorized to represent it and electronically sign on its behalf.</p>
                 <p className='margin-bottom-5'>I certify on my own behalf, and on behalf of the applicant, that the information provided in this application and any document or supplemental information submitted, is true and correct as evidenced by the electronic signature confirmation. If assistance was obtained in completing this application and/or submitting supporting documentation, I further certify that I have personally reviewed the information and it is true and accurate.</p>
                 <p className='margin-bottom-5'>I certify that I will immediately inform SBA within 30 days of any changed circumstances that could adversely affect the applicant’s eligibility for the program(s) for which it has applied.</p>
@@ -244,6 +267,7 @@ function SignPage() {
           </div>
         }
       />
+
       {(alertMessage && userRole === 'primary-qualifying-owner') && (
         <div className="usa-alert usa-alert--warning" role="alert">
           <div className="usa-alert__body">

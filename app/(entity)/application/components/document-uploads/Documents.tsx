@@ -3,7 +3,7 @@ import { createDocument } from '@/app/services/api/document-service/createDocume
 import { updateDocument } from '@/app/services/api/document-service/updateDocument';
 import { useDeleteDocument } from '@/app/services/mutations/document-service/useDeleteDocument';
 import { useDocumentRequiredQuestions } from '@/app/services/queries/application-service/useDocumentRequiredQuestions';
-import { useDocuments } from '@/app/services/queries/document-service/useDocuments';
+import { DocumentParams, useDocuments } from '@/app/services/queries/document-service/useDocuments';
 import { DocumentRequiredQuestions } from '@/app/services/types/application-service/DocumentRequiredQuestions';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
@@ -21,9 +21,15 @@ const Documents = () => {
   const [selectedDocumentId, setSelectedDocumentId] = React.useState<number | null>(null);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const {data: questions, error: questionsError, isLoading: isLoadingQuestions} = useSWR<DocumentRequiredQuestions[]>( contributorId ? `${REQUIRED_DOCUMENTS_ROUTE}/${contributorId}` : null)
-  const {data: documents, error: documentsError, isLoading: isLoadingDocuments} = useDocuments({user_id: userId});
+  const { data: documents, error: documentsError, isLoading: isLoadingDocuments } = useDocuments({
+    [DocumentParams.user_id]: userId,
+    [DocumentParams.application_contributor_id]: contributorId,
+  });
   const {trigger: triggerDelete} = useDeleteDocument();
-  const {mutate} = useDocuments({user_id: userId});
+  const {mutate} = useDocuments({
+    [DocumentParams.user_id]: userId,
+    [DocumentParams.application_contributor_id]: contributorId,
+  });
 
   const fileInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
 

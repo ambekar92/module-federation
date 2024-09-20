@@ -44,17 +44,18 @@ const ChangeTierModal: React.FC<ChangeTierModalProps> = ({
   }, [sessionData, sessionData.status])
 
   const handleChangeTierPostRequest = async () => {
+    if(!params.application_id || !userId) {return}
     try {
       const putData = {
-        application_id: Number(params.application_id) || 0,
+        application_id: Number(params.application_id) || null,
         application_tier: applicationData?.application_tier || '0',
       }
 
       const notePayload: CreateNotePayload = {
-        application_id: Number(params.application_id) || 0,
+        application_id: Number(params.application_id),
         description: description,
         subject: 'Change Tier',
-        user_id: userId || 0,
+        user_id: userId,
       }
       handleAction()
       await triggerCreateNote(notePayload)

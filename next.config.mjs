@@ -71,6 +71,15 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/(.*)", // Apply globally
+        headers: [
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin", // Change the policy as needed
+          },
+        ],
+      },
     ]
   },
 }

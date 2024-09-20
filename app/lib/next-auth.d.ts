@@ -49,9 +49,10 @@ export interface IUserPermission {
 export interface IUserDetails  {
 	okta_id: boolean;
   user_id: number,
-    permissions: IUserPermission[],
-    entities: any[],
-    access: string
+  permissions: IUserPermission[],
+  entities: any[],
+  access: string,
+  refresh: string,
 }
 
 declare module '@auth/core/jwt' {

@@ -31,7 +31,7 @@ function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWi
               <strong>{application.sam_entity.legal_business_name}</strong>
             </p>
             <span className="text-size-sm">
-              <i>{humanizeText(userContributor?.workflow_state || '')}</i>
+              <i>{humanizeText(userContributor?.workflow_state === 'returned_to_firm' ? 'Application Correction' : userContributor?.workflow_state ? userContributor?.workflow_state : '')}</i>
             </span>
             <div  key={application.id} className='radius-md bg-primary-lighter margin-top-1 margin-bottom-4'>
               <Grid row>
@@ -87,7 +87,7 @@ function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWi
                         <p className='margin-y-0'><strong>Application ID</strong> <span>{application.id}</span></p>
                       </div>
                       <div>
-                        {application.workflow_state === 'draft' && application.id
+                        {(userContributor?.workflow_state === 'draft' || userContributor?.workflow_state === 'returned_to_firm') && application.id
                           ?
                           <Link
                             href={buildRoute(APPLICATION_QUESTIONNAIRE_LIST_PAGE, {

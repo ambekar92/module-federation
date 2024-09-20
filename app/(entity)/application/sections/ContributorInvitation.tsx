@@ -2,7 +2,7 @@
 import { INVITATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { Permission } from '@/app/login/types';
+import { Permission } from '@/app/tarmac/types';
 import { InvitationType } from '@/app/services/types/application-service/Application';
 import { CustomTable } from '@/app/shared/components/CustomTable';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
@@ -31,11 +31,14 @@ function ContributorInvitation() {
   const { updateUserApplicationInfo } = useUserApplicationInfo();
   const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
   const session = useSessionUCMS();
-  const getLastPermissionSlug = (permissions: Permission[]) => permissions?.at(-1)?.slug;
+  const hasPermission = (permissions: Permission[], targetPermission: string) => {
+    return permissions?.some(permission => permission.slug === targetPermission);
+  };
 
-  const isQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === Role.QUALIFYING_OWNER;
-  const isPrimaryQualifyingOwner = getLastPermissionSlug(session.data?.permissions) === (Role.PRIMARY_QUALIFYING_OWNER || 'primary-qualifying-owner');
-  const isDelegate = getLastPermissionSlug(session.data?.permissions) === Role.DELEGATE;
+  const isQualifyingOwner = hasPermission(session.data?.permissions, Role.QUALIFYING_OWNER);
+  const isPrimaryQualifyingOwner = hasPermission(session.data?.permissions, Role.PRIMARY_QUALIFYING_OWNER) ||
+                                 hasPermission(session.data?.permissions, 'primary-qualifying-owner');
+  const isDelegate = hasPermission(session.data?.permissions, Role.DELEGATE);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -57,18 +60,15 @@ function ContributorInvitation() {
   }, [contributors]);
 
   useEffect(() => {
-    if((!isPrimaryQualifyingOwner && !isDelegate) && applicationId) {
-      window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
-        applicationId,
-        stepLink: applicationSteps.sign.link
-      });
-    }
-    if (
-      applicationData &&
-  		(applicationData.workflow_state !== 'draft' &&
-      	applicationData.workflow_state !== 'returned_for_firm')
-    ) {
-      window.location.href = `/application/view/${applicationId}`;
+    if (applicationId && applicationData && session.data?.permissions) {
+      if (!isPrimaryQualifyingOwner && !isDelegate && !isQualifyingOwner) {
+        window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+          applicationId,
+          stepLink: applicationSteps.sign.link
+        });
+      } else if (applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+        window.location.href = `/application/view/${applicationId}`;
+      }
     }
   }, [applicationData, applicationId, isQualifyingOwner, isPrimaryQualifyingOwner, isDelegate, session.data?.permissions]);
 

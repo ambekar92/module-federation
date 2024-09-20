@@ -3,10 +3,13 @@ import { IUserDetails } from "@/app/lib/next-auth";
 import { axiosInstance } from "@/app/services/axiosInstance";
 import NextAuth from "next-auth";
 import OktaProvider from 'next-auth/providers/okta';
+import CredentialsProvider from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
 import { generateCsrfToken } from "../utils/generateCsrfToken";
 import { encrypt } from "@/app/shared/utility/encryption";
 import { logout } from "@/app/lib/logout";
+import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
+import axios from "axios";
 
 // @ts-ignore
 async function auth(req: NextRequest, res: NextResponse ) {
@@ -17,11 +20,67 @@ async function auth(req: NextRequest, res: NextResponse ) {
             clientSecret: process.env.OKTA_OAUTH2_CLIENT_SECRET!,
             issuer: process.env.OKTA_OAUTH2_ISSUER!,
           }),
+          CredentialsProvider({
+            id: 'credentials',
+            name: "Credentials",
+            credentials: {
+              username: { label: "Username", type: "text", placeholder: "Your username" },
+              password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials) {
+              try {
+                const response = await axios.post(TESTER_LOGIN_ROUTE, {
+                  username: credentials?.email,
+                  password: credentials?.password,
+                });
+
+                const user = response.data.user;
+
+                if (user) {
+                  return user;
+                } else {
+                  return null;
+                }
+              } catch (error) {
+                console.error('Error during authentication:', error);
+                return null;
+              }
+            },
+          }),
+          CredentialsProvider({
+            id: "max",
+            name: "Max.gov",
+            credentials: {
+              email: { label: "Username", type: "text", placeholder: "Your username" },
+            },
+            async authorize(credentials) {
+              const [name, domain] = (credentials?.email ?? '').split('@');
+
+              const user = {
+                  email: credentials?.email,
+                  name: name.replace('.', ' '),
+              }
+              return user;
+            },
+          }),
         ],
+        pages: {
+          error: '/error',
+        },
+        secret: process.env.SESSION_SECRET,
+        session: {
+          strategy: "jwt",
+          maxAge: 1800,
+          rolling: true, // Extend session on user activity
+        },
+        jwt: {
+          maxAge: 1800,
+        },
         callbacks: {
-          jwt: async ({ token, account, profile }) => {
-            if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-              console.log("OKTA TOKEN", token);
+          jwt: async ({ token, account, profile, user }) => {
+            if (account && account.provider === 'max') {
+              token.email = user.email;
+              token.name = user.name;
             }
             if (account && account.access_token) {
               token.accessToken = account.access_token;
@@ -32,6 +91,11 @@ async function auth(req: NextRequest, res: NextResponse ) {
             }
             if (profile && profile.sub) {
               token.okta_id = profile.sub;
+            }
+            if (user) {
+              token.user_id = user.id;
+              token.email = user.email;
+              token.name = `${user.first_name} ${user.last_name}`;
             }
             return token
           },
@@ -48,11 +112,15 @@ async function auth(req: NextRequest, res: NextResponse ) {
             }
 
             let userDetails: { data: IUserDetails } = { data: {} as IUserDetails };
+            if (session.user.name === "undefined undefined") {
+              const [name, domain] = (session.user.email ?? '').split('@');
+              session.user.name = name.replace('.', ' ');
+            }
             const postData = {
               user: {
                 name: session.user.name,
                 email: session.user.email,
-                okta_id: token.okta_id
+                okta_id: token?.okta_id
               },
               expires: session.expires,
               csrfToken: session.csrfToken,
@@ -60,17 +128,25 @@ async function auth(req: NextRequest, res: NextResponse ) {
             };
             try {
               userDetails = await axiosInstance.post(OKTA_POST_LOGIN_ROUTE, postData);
-              if (userDetails.data.access) {
+              if (userDetails.data) {
                 session.access = userDetails.data.access;
                 // Todo: cookies for email_password_auth_token
                 // Todo: need to consider how to handle the email_password_auth_token differently
-                cookies().set('email_password_auth_token', encrypt(JSON.stringify(userDetails.data)));
-                cookies().set('accesstoken', encrypt(userDetails.data.access));
+                const { refresh, access, entities, ...filterData } = userDetails.data
+
+                cookies().set('email_password_auth_token', encrypt(JSON.stringify(filterData)));
                 cookies().set('idtoken', encrypt(session.user.idToken));
-                cookies().set('firstPermission', encrypt(userDetails.data.permissions[0].slug));
-                if (userDetails.data.permissions.length > 1) {
-                  cookies().set('lastPermission', encrypt(userDetails.data.permissions[userDetails.data.permissions.length - 1].slug));
+
+                if (process.env.TOKEN_LOOKUP === 'development') {
+                  cookies().set('access', encrypt(userDetails.data.access));
                 }
+                if (session.user.name === "undefined undefined") {
+                  session.permissions = userDetails.data.permissions;
+                }
+                // cookies().set('firstPermission', encrypt(userDetails.data.permissions[0].slug));
+                // if (userDetails.data.permissions.length > 1) {
+                //   cookies().set('lastPermission', encrypt(userDetails.data.permissions[userDetails.data.permissions.length - 1].slug));
+                // }
               }
               if (typeof token.accessToken === 'string') {
                 session.user.accessToken = userDetails.data.access;

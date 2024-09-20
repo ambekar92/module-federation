@@ -6,7 +6,7 @@ import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { useSession } from 'next-auth/react';
 import { LoginResponseUser } from '../(admin)/aeroad/types';
 import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken';
-import { SessionType } from '../login/types';
+import { SessionType } from '../tarmac/types';
 import { IUserDetails } from './next-auth';
 import { axiosInstance } from '../services/axiosInstance';
 import { decrypt } from '@/app/shared/utility/encryption';
@@ -107,6 +107,7 @@ export async function getSessionServer() {
  */
 export function useSessionUCMS(): SessionType {
   const oktaSession = useSession() as unknown as SessionType;
+
   const emailPasswordAuthCookie = Cookies.get('email_password_auth_token');
   const maxAuthCookie = Cookies.get('maxgov_auth_token');
   const email_password_auth_token = emailPasswordAuthCookie
@@ -131,8 +132,6 @@ export function useSessionUCMS(): SessionType {
       user_id: email_password_auth_token?.user_id,
       permissions: email_password_auth_token?.permissions,
       entities: email_password_auth_token?.entities,
-      refresh: email_password_auth_token?.refresh,
-      access: email_password_auth_token?.access
     },
     status: email_password_auth_token ? 'authenticated' : 'unauthenticated'
   };

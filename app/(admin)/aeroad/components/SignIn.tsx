@@ -1,12 +1,4 @@
 'use client'
-import { APPLICATION_ROUTE, ENTITIES_ROUTE, TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
-import {
-  CLAIM_YOUR_BUSINESS
-} from '@/app/constants/url'
-import { fetcherPOST } from '@/app/services/fetcher-legacy'
-import { Application } from '@/app/services/types/application-service/Application'
-import { Entity } from '@/app/shared/types/responses'
-import { Role } from '@/app/shared/types/role'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Button,
@@ -19,16 +11,12 @@ import {
   TextInput,
   Title,
 } from '@trussworks/react-uswds'
-import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { LoginResponse } from '../types'
 import { SignInFormData, SignInFormSchema } from './Schema'
 import { encrypt } from '@/app/shared/utility/encryption';
-import { postLoginRedirectUrl } from '@/app/shared/utility/postLoginRedirectUrl'
-import Head from 'next/head'
-import { axiosInstance } from '@/app/services/axiosInstance'
+import { signIn } from 'next-auth/react';
 
 export default {
   title: 'Page Templates/Sign In',
@@ -67,61 +55,11 @@ export const SignIn = (): React.ReactElement => {
         username: getValues('email'),
         password: getValues('password'),
       }
-
-      const response = await fetcherPOST<LoginResponse>(TESTER_LOGIN_ROUTE, postData);
-      Cookies.set('email_password_auth_token', encrypt(JSON.stringify(response.user)))
-      Cookies.set('accesstoken', encrypt(response.user.access))
-      const firstPermissionSlug = response.user.permissions?.at(0)?.slug as unknown as Role;
-      const lastPermissionSlug = response.user.permissions?.at(-1)?.slug as unknown as Role;
-
-      if (firstPermissionSlug && lastPermissionSlug) {
-        Cookies.set('firstPermission', encrypt(firstPermissionSlug));
-        Cookies.set('lastPermission', encrypt(lastPermissionSlug));
-
-        let applicationData: Application[] | null = null;
-        let entityData: Entity[] | null = null;
-
-        const applicationDataPromise = axiosInstance.get(`${APPLICATION_ROUTE}?user_id=${response.user.user_id}`);
-        const entityQueryParam = lastPermissionSlug === Role.DELEGATE ? 'delegate_user_id' : 'owner_user_id';
-        const entityDataPromise = axiosInstance.get(`${ENTITIES_ROUTE}?${entityQueryParam}=${response.user.user_id}`);
-
-        const applicationResponse = await applicationDataPromise;
-
-        if (applicationResponse) {
-          applicationData = await applicationResponse.data;
-          if (applicationData && applicationData.length > 0) {
-            const simpleApplicationData = applicationData.map(app => ({
-              id: app.id,
-              progress: app.progress,
-              workflow_state: app.workflow_state
-            }));
-            Cookies.set('applicationData', encrypt(JSON.stringify(simpleApplicationData)));
-          } else {
-            Cookies.remove('applicationData');
-          }
-        }
-
-        if (!applicationData || applicationData.length === 0) {
-          const entityResponse = await entityDataPromise;
-          if (entityResponse) {
-            entityData = await entityResponse.data;
-            if (entityData && entityData.length > 0) {
-              const simpleEntityData = entityData.map(entity => ({ id: entity.id }));
-              Cookies.set('entityData', encrypt(JSON.stringify(simpleEntityData)));
-            } else {
-              Cookies.remove('entityData');
-            }
-          }
-        }
-        const redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
-        if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-          console.log('REDIRECT TO', redirectUrl);
-        }
-        router.push(redirectUrl);
-
-      } else {
-        router.push(CLAIM_YOUR_BUSINESS);
-      }
+      const result = await signIn('credentials', {
+        callbackUrl: `/protect/?state=${encrypt('true')}`,
+        email: getValues('email'),
+        password: getValues('password'),
+      });
     } catch (error: any) {
       console.error('Network Error: ', error)
       return

@@ -212,7 +212,8 @@ export const NavbarNotification: React.FC = () => {
 
         {isLoading && <div className={styles['notification-lineItem']}><Spinner center /></div>}
         {error && <div className={styles['notification-lineItem']}><p>An error has occurred.</p></div>}
-        {filteredNotifications.map((item, index) => (
+        {!isLoading && !error && filteredNotifications.length === 0 && <div className={styles['notification-lineItem']}><p>No notifications found.</p></div>}
+        {filteredNotifications.length > 0 && !isLoading && filteredNotifications.map((item, index) => (
           <div
             key={index}
             className={styles['notification-lineItem']}

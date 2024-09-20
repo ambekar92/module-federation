@@ -3,7 +3,6 @@ import { Question } from '@/app/shared/types/questionnaireTypes';
 import { CharacterCount, DatePicker, Label, Select as UsSelect, TextInput as UsTextInput } from '@trussworks/react-uswds';
 import Select from 'react-select';
 import TooltipIcon from '../../components/tooltip/Tooltip';
-import { useEffect } from 'react';
 
 export const TextInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
   return (
@@ -200,7 +199,13 @@ export const TextareaInput: React.FC<{ question: Question; value: string; onChan
     </div>
   );
 };
-export const DateInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
+interface DateInputProps {
+  question: Question;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export const DateInput: React.FC<DateInputProps> = ({ question, value, onChange }) => {
   const today = new Date().toISOString().split('T')[0];
 
   return (

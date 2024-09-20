@@ -1,10 +1,11 @@
 'use client'
-import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData';
+import { useApplicationData } from '@/app/(evaluation)/firm/useApplicationData';
 import { USER_ROUTE } from '@/app/constants/local-routes';
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { assignUserToViewflow } from '@/app/services/api/evaluation-service/assignUserToViewflow';
 import { useCreateNote } from '@/app/services/mutations/evaluation-service/useCreateNote';
+import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import { CreateNotePayload } from '@/app/services/types/evaluation-service/Note';
 import { User } from '@/app/services/types/user-service/User';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,7 +29,7 @@ type Props = {
 const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}: Props ) => {
   const currentUser = useSessionUCMS();
   const {trigger, isMutating} = useCreateNote(false);
-  const { applicationData } = useCurrentApplication();
+  const { applicationData } = useApplicationData(ApplicationFilterType.user_id, currentUser?.data.user_id);
   const [userOptions, setUserOptions] = useState<ComboBoxOption[] | null>(null);
 
 	 const isModalOpen = () => {
@@ -92,8 +93,9 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
   }
 
   async function reassign(formData: ReassignUserType) {
+    if(!applicationData?.process?.id) {return;}
     const assignUserToViewflowPayload: AssignUserToViewflowPayload = {
-      process_id: applicationData?.process?.id || 0,
+      process_id: applicationData?.process?.id,
       user_id: formData.user,
       pre_screener_id: 0,
       analyst_id: 0,

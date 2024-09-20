@@ -26,6 +26,7 @@ export enum DocumentParams {
   application_section_id = 'application_section_id',
   sort_by = 'sort_by',
   sort_order = 'sort_order',
+	application_contributor_id = 'application_contributor_id',
 }
 
 export async function GET(request: NextRequest) {

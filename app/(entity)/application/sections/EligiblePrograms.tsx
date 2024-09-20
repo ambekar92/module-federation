@@ -96,8 +96,15 @@ function EligiblePrograms() {
 
       const programs = calculateEligibleSbaPrograms(newOwners);
       setEligiblePrograms(programs);
+
+      if (applicationData?.program_application && applicationData.program_application.length > 0) {
+        const initialSelectedPrograms = programs.filter(program =>
+          applicationData.program_application.some(app => app.program_id === program.id)
+        );
+        setSelectedPrograms(initialSelectedPrograms);
+      }
     }
-  }, [ownersData, isLoadingOwnership]);
+  }, [ownersData, isLoadingOwnership, applicationData]);
 
   const createOwnerObject = (row: GridRow): OwnerType | null => {
     if (row.owner_type === 'Individual') {

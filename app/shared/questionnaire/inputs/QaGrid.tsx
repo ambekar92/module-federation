@@ -35,6 +35,7 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
   const [gridRows, setGridRows] = useState<GridRow[]>([]);
   const [currentRow, setCurrentRow] = useState<GridRow>({});
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const [dateKey, setDateKey] = useState(0);
 
   useEffect(() => {
     if (question.answer?.value?.answer) {
@@ -91,6 +92,7 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
       setCurrentRow({});
       setErrors({});
       saveAnswer(newRows);
+      setDateKey(prevKey => prevKey + 1);
 
       question.grid_questions?.forEach((gridQuestion) => {
         if (gridQuestion.question_type === 'textarea' || gridQuestion.question_type === 'text_area') {
@@ -194,7 +196,10 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
       case 'date':
         return (
           <div className="usa-form-group">
-            <DateInput {...commonProps} />
+            <DateInput
+              {...commonProps}
+              key={`${gridQuestion.name}-${dateKey}`}
+            />
             {renderErrorMessage()}
           </div>
         );

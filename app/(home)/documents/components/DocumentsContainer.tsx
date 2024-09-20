@@ -1,5 +1,5 @@
 'use client'
-import { DOCUMENTS_ROUTE } from '@/app/constants/routes';
+import { APPLICATION_DOCUMENTS_ROUTE } from '@/app/constants/local-routes';
 import { useSessionUCMS } from '@/app/lib/auth';
 import fetcher from '@/app/services/fetcher';
 import { DocumentsType } from '@/app/services/types/document';
@@ -19,10 +19,7 @@ function DocumentsContainer() {
 
   // Get Documents Data
   const { data: responseData, error: responseError, isLoading } = useSWR<DocumentsType>(
-    userId
-      ? `${DOCUMENTS_ROUTE}?user_id=${userId}`
-      : null,
-    fetcher,
+    `${APPLICATION_DOCUMENTS_ROUTE}?user_id=${userId}`
   )
 
   if(responseError) {

@@ -1,5 +1,5 @@
 import { useSessionUCMS } from '@/app/lib/auth'
-import { SessionType } from '@/app/login/types'
+import { SessionType } from '@/app/tarmac/types'
 import React, { createContext, useContext } from 'react'
 
 interface AuthContextType {

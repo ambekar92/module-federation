@@ -1,4 +1,4 @@
-import { USER_PRODUCTIVITY_ROUTE } from '@/app/constants/routes';
+import { USER_DASHBOARD_PRODUCTIVITY_ROUTE } from '@/app/constants/local-routes';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { fetcherGET } from '@/app/services/fetcher-legacy';
 import { Show } from '@/app/shared/components/Show';
@@ -12,7 +12,7 @@ import fetcher from '@/app/services/fetcher';
 
 const Productivity = () => {
   const {data: {user_id}} = useSessionUCMS();
-  const {data, isLoading}  = useSWR<IProductivity[]>(`${USER_PRODUCTIVITY_ROUTE}/${user_id}`, fetcher) || [];
+  const {data, isLoading}  = useSWR<IProductivity[]>(`${USER_DASHBOARD_PRODUCTIVITY_ROUTE}/${user_id}`);
   const {completed_tasks_current_month, completed_tasks_current_quarter, completed_tasks_current_fiscal_year, average_processing_time_seconds} = (data && data.length) ? data[0] : [] as any;
   const isReviewersDashboard = useIsReviewersDashboard();
 

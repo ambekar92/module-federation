@@ -23,9 +23,10 @@ const ReturnToPreviousTaskModal = ({modalRef, processId, handleAction}: {modalRe
 
   useEffect(() =>{
     const userPermissions = session?.data.permissions.map(permission => permission.slug) as unknown as Role[];
+
     if (userPermissions?.some(p => p === Role.APPROVER)) {
       setReturnToType(ReturnToType.Reviewer);
-    } else if (userPermissions?.some(p => p === Role.REVIEWER || p === Role.REVIEWER_HIGH || p === Role.REVIEWER_LOW)) {
+    } else if (userPermissions?.some(p => p === Role.REVIEWER || p === Role.REVIEWER_HIGH_TIER || p === Role.REVIEWER_LOW_TIER)) {
       setReturnToType(ReturnToType.Analyst);
     } else if (userPermissions.some(p => p === Role.ANALYST || p === Role.ANALYST_HIGH || p === Role.ANALYST_LOW || p === Role.ANALYST_CONTRIBUTOR_OGC || p === Role.ANALYST_CONTRIBUTOR_OSS)) {
       setReturnToType(ReturnToType.Screener);

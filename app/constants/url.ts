@@ -35,6 +35,14 @@ export const DOCUMENT_PAGE = '/documents'
 export const APPILCATION = '/application'
 export const APPLICATION_QUESTIONNAIRE_LIST_PAGE = '/application/questionnaire/:applicationId'
 export const APPLICATION_VIEW_PAGE = '/application/view/:applicationId'
+export const NOTIFICATIONS_PAGE = '/notifications';
+export const GET_HELP_ROUTE = 'https://sbaone.atlassian.net/servicedesk/customer/portal/12';
+export const CALCULATOR_DEMO_SBA_ONE_ROUTE = 'https://calculator.demo.sba-one.net/';
+export const SBAONE_ATLASSIAN_SPACES_ROUTE = 'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/overview/';
+export const FEDERAL_CONTRACTING_ASSISTANCE_PROGRAMS_ROUTE = 'https://www.sba.gov/federal-contracting/contracting-assistance-programs';
+export const RESOURCES_GET_READY_ROUTE = '/resources/get-ready';
+export const RESOURCES_ROUTE = '/resources';
+export const CERTIFICATION_SBA_ROUTE = 'https://certification.sba.gov';
 
 export const buildRoute = (template: any, params: any) => {
   let route = template

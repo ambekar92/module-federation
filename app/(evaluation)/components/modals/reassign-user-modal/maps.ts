@@ -1,6 +1,6 @@
 import { Role } from '@/app/shared/types/role';
 import { ReassignType } from './types';
-import { SessionType } from '@/app/login/types';
+import { SessionType } from '@/app/tarmac/types';
 
 export const permissionsMap = {
   [ReassignType.REASSIGN_SCREENER]: [Role.SCREENER, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW_TIER, Role.SCREENER_COMMON_APP],

@@ -53,9 +53,9 @@ locals {
       # okta_oauth2_issuer      = "https://login.test.mysba.ussba.io/oauth2/default"
       next_public_logout_url    = "https://login.stg.mysba.ussba.io"
       okta_oauth2_issuer        = "https://login.stg.mysba.ussba.io/oauth2/default"
-      redis_host              = "demo-shared-services.alb2c1.ng.0001.use1.cache.amazonaws.com:6379"
+      redis_host              = "demo-shared-services.alb2c1.ng.0001.use1.cache.amazonaws.com"
       next_public_random      = "7CKKEae1lWSWuFQVzJ7JkeN8lzcvAVcchp7pqItpsBIXTGZuexwrVZxORYQEnQb5U0AfXRnDWAQXmCQdza5Rtw58CpyO7o9GvP8vwTvFOfBdz8KagO0P2W0tKDy6qySKVoTMEJ7T4ZvCVF1mGACtlV3a6JojkpWO"
-      next_public_debug         = "true"
+      next_public_debug       = "true"
     }
     stg = {
       domain_name           = "stg.certify.sba.gov"
@@ -73,7 +73,7 @@ locals {
       next_base_url             = "https://ucp.stg.certify.sba.gov"
       next_public_logout_url    = "https://login.stg.mysba.ussba.io"
       okta_oauth2_issuer        = "https://login.stg.mysba.ussba.io/oauth2/default"
-      redis_host                = "stg-shared-services.2s2zep.ng.0001.use1.cache.amazonaws.com:6379"
+      redis_host                = "stg-shared-services.2s2zep.ng.0001.use1.cache.amazonaws.com"
       next_public_random        = "7CKKEae1lWSWuFQVzJ7JkeN8lzcvAVcchp7pqItpsBIXTGZuexwrVZxORYQEnQb5U0AfXRnDWAQXmCQdza5Rtw58CpyO7o9GvP8vwTvFOfBdz8KagO0P2W0tKDy6qySKVoTMEJ7T4ZvCVF1mGACtlV3a6JojkpWO"
       next_public_debug         = "true"
     }
@@ -88,7 +88,7 @@ locals {
       next_base_url             = "https://certification.sba.gov"
       next_public_logout_url    = "https://login.sba.gov"
       okta_oauth2_issuer        = "https://login.sba.gov/oauth2/default"
-      redis_host                = "prod-shared-services.2s2zep.ng.0001.use1.cache.amazonaws.com:6379"
+      redis_host                = "prod-shared-services.2s2zep.ng.0001.use1.cache.amazonaws.com"
       next_public_random        = "2ipPd999d2bd39c1c7b83c7b35d84933ba09d492e43a6484560339334e6c4fdfe435bakaOv4M9kPzY7cg4ceXQZOjEgVg"
       next_public_debug         = "false"
 

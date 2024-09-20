@@ -6,6 +6,12 @@ import { OKTA_POST_LOGIN_ROUTE } from '@/app/constants/routes';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { encrypt } from '@/app/shared/utility/encryption';
+import { v4 as uuidv4 } from 'uuid';
+
+// Define the getCsrfToken function
+async function getCsrfToken() {
+  // Implement the logic to get the CSRF token
+}
 
 export async function POST(req: any, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -23,22 +29,24 @@ export async function POST(req: any, res: NextApiResponse) {
     const postData = {
       user: {
         name: name.replace('.', ' '),
-        email: email,
-        okta_id: email
+        email: email
       },
       expires: Date.now() + 1000 * 60 * 60 * 24 * 30,
       csrfToken: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
       colloportus: process.env.COLLOPORTUS
     };
+    const uuid = uuidv4();
     const userDetails = await axiosInstance.post(OKTA_POST_LOGIN_ROUTE, postData);
-    cookies().set('maxgov_auth_token', encrypt(JSON.stringify(userDetails.data)));
-    cookies().set('accesstoken', encrypt(userDetails.data.access));
-    cookies().set('firstPermission', encrypt(userDetails.data.permissions[0].slug));
-    if (userDetails.data.permissions.length > 1) {
-      cookies().set('lastPermission', encrypt(userDetails.data.permissions[userDetails.data.permissions.length - 1].slug));
-    }
-
-    return NextResponse.redirect(new URL(`/?state=${encrypt('true')}`, process.env.NEXT_PUBLIC_POST_REDIRECT_URL), 301);
+    cookies().set('uuid', uuid);
+    cookies().set('email', email)
+    // cookies().set('maxgov_auth_token', encrypt(JSON.stringify(userDetails.data)));
+    // cookies().set('accesstoken', encrypt(userDetails.data.access));
+    // cookies().set('firstPermission', encrypt(userDetails.data.permissions[0].slug));
+    // if (userDetails.data.permissions.length > 1) {
+    //   cookies().set('lastPermission', encrypt(userDetails.data.permissions[userDetails.data.permissions.length - 1].slug));
+    // }
+    console.log('cookeis', uuid)
+    return NextResponse.redirect(new URL(`/protect/?states=${uuid}`, process.env.NEXT_PUBLIC_POST_REDIRECT_URL), 301);
 
   } else {
     return Response.error();

@@ -19,10 +19,13 @@ locals {
     HUBZONE_URL                          = "https://calculator.${local.env.domain_name}"
     NEXT_PUBLIC_HUBZONE_URL              = "https://calculator.${local.env.domain_name}"
     UCP_TRACKING_ID                      = local.env.ucp_tracking_id
-    REDIS_HOST                           = local.env.redis_host
     NEXT_PUBLIC_RANDOM                   = local.env.next_public_random
     NEXT_PUBLIC_DEBUG                    = local.env.next_public_debug
     NEXT_PUBLIC_WS_LIVE_NOTIFICATIONS    = "ws://ucp-communication.${local.env.domain_name}/communication/v1/live-notifications/1"
+    REDIS_HOST                           = local.env.redis_host
+    REDIS_PORT                           = "6379"
+    NEXT_PUBLIC_TOKEN_LOOKUP             = "production"
+    TOKEN_LOOKUP                         = "production"
   }
   container_secrets_parameterstore = {
     OKTA_OAUTH2_CLIENT_ID     = "${terraform.workspace}/ucp/okta/OKTA_OAUTH2_CLIENT_ID"
@@ -30,6 +33,7 @@ locals {
     NEXTAUTH_SECRET           = "${terraform.workspace}/ucp/NEXTAUTH_SECRET"
     UCP_ATLASSIAN_API_KEY     = "${terraform.workspace}/ucp/UCP_ATLASSIAN_API_KEY"
     COLLOPORTUS               = "${terraform.workspace}/ucp/colloportus"
+    SESSION_SECRET            = "${terraform.workspace}/ucp/session_secret"
   }
 }
 

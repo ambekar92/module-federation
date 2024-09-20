@@ -9,7 +9,7 @@ const LoginMenu = () => {
 
   function handleLogin() {
     localStorage.clear()
-    signIn('okta', { callbackUrl: `/?state=${encrypt('true')}` })
+    signIn('okta', { callbackUrl: `/protect/?state=${encrypt('true')}` })
   }
   const handleSSOLogin =  async() => {
     axiosInstance.get('/max-login').then(response => {

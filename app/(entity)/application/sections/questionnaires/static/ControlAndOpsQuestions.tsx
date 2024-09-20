@@ -22,7 +22,7 @@ function ControlAndOpsQuestions() {
   const dispatch = useApplicationDispatch();
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
-  const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : '';
+  const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null;
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
   useUpdateApplicationProgress('Control and Operations');
 

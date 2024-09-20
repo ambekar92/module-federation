@@ -10,7 +10,7 @@ import { Role } from '@/app/shared/types/role'
 import { getUserRole } from '@/app/shared/utility/getUserRole'
 import { Button } from '@trussworks/react-uswds'
 import axios from 'axios'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import React, { useEffect, useMemo, useState } from 'react'
 import useSWR from 'swr'
 import { useCurrentApplication } from '../../../useApplicationData'
@@ -19,6 +19,7 @@ import FirmQuestionRenderer from './FirmQuestionRenderer'
 
 const SectionQuestions = () => {
   const params = useParams<Params>();
+  const searchParams = useSearchParams();
   const sessionData = useSessionUCMS();
   const [title, setTitle] = useState<string>('');
   const userRole = getUserRole(sessionData?.data?.permissions || []);
@@ -52,28 +53,28 @@ const SectionQuestions = () => {
     }
   }, [applicationData, userRole]);
 
-  const analystContributorName = useMemo(() => {
-    if (!applicationData?.application_contributor) {
-      return null;
-    }
+  // const analystContributorName = useMemo(() => {
+  //   if (!applicationData?.application_contributor) {
+  //     return null;
+  //   }
 
-    if (userRole === 'analyst' || userRole === 'reviewer') {
-      const analystRoles: Role[] = [
-        Role.ANALYST,
-        Role.ANALYST_HIGH_TIER,
-        Role.ANALYST_LOW_TIER,
-        Role.ANALYST_HIGH,
-        Role.ANALYST_LOW,
-        Role.ANALYST_CONTRIBUTOR_OGC,
-        Role.ANALYST_CONTRIBUTOR_OSS,
-      ];
+  //   if (userRole === 'analyst' || userRole === 'reviewer') {
+  //     const analystRoles: Role[] = [
+  //       Role.ANALYST,
+  //       Role.ANALYST_HIGH_TIER,
+  //       Role.ANALYST_LOW_TIER,
+  //       Role.ANALYST_HIGH,
+  //       Role.ANALYST_LOW,
+  //       Role.ANALYST_CONTRIBUTOR_OGC,
+  //       Role.ANALYST_CONTRIBUTOR_OSS,
+  //     ];
 
-      const analystContributor = applicationData.application_contributor.find(contributor => {
-        return analystRoles.some(role => role.toLowerCase().replace(/_/g, '-') === contributor.application_role.name);
-      });
-      return `${analystContributor?.user.first_name} ${analystContributor?.user.last_name} - ${analystContributor?.application_role.title}` || null;
-    }
-  }, [applicationData, userRole]);
+  //     const analystContributor = applicationData.application_contributor.find(contributor => {
+  //       return analystRoles.some(role => role.toLowerCase().replace(/_/g, '-') === contributor.application_role.name);
+  //     });
+  //     return `${analystContributor?.user.first_name} ${analystContributor?.user.last_name} - ${analystContributor?.application_role.title}` || null;
+  //   }
+  // }, [applicationData, userRole]);
 
   const reviewerContributorId = useMemo(() => {
     if (!applicationData?.application_contributor || userRole !== 'reviewer') {
@@ -121,11 +122,36 @@ const SectionQuestions = () => {
       : null
   );
 
+  const contributorId = useMemo(() => {
+    const searchParamId = searchParams.get('contributor_id');
+    if (!searchParamId) {return applicationData?.application_contributor?.[0]?.id || null;}
+
+    const isValidContributor = applicationData?.application_contributor?.some(
+      contributor => contributor.id === parseInt(searchParamId)
+    );
+
+    return isValidContributor ? searchParamId : null;
+  }, [searchParams, applicationData]);
+
   const { data: regularData, isLoading: regularLoading } = useSWR<Question[]>(
     !isAnalystQuestionnaire && firstContributorId
-      ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}/${params.section_questions}`
+      ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/${params.section_questions}`
       : null
   );
+
+  const secondContributorId = applicationData?.application_contributor?.[1]?.id;
+  const { data: regularDataTwo } = useSWR<Question[]>(
+    !isAnalystQuestionnaire && secondContributorId && secondContributorId !== firstContributorId
+      ? `${QUESTIONNAIRE_ROUTE}/${secondContributorId}/${params.section_questions}`
+      : null
+  )
+
+  const thirdContributorId = applicationData?.application_contributor?.[2]?.id;
+  const { data: regularDataThree } = useSWR<Question[]>(
+    !isAnalystQuestionnaire && secondContributorId && secondContributorId !== firstContributorId && thirdContributorId && thirdContributorId !== secondContributorId
+      ? `${QUESTIONNAIRE_ROUTE}/${thirdContributorId}/${params.section_questions}`
+      : null
+  )
 
   const { data: navItems } = useSWR<QuestionnaireItem[]>(
     firstContributorId ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}` : null
@@ -252,19 +278,22 @@ const SectionQuestions = () => {
 
   const showHUBZoneCalculatorButton = params.section_questions === 'hubzone-calculator';
 
-  const renderQuestions = (questions: Question[] | undefined, isAnalyst: boolean) => {
+  const renderQuestions = (questions: Question[] | undefined, isAnalyst: boolean, contributorIndex: number) => {
     if (!questions) {return null;}
 
-    return questions.map((question, index) => (
-      <React.Fragment key={index}>
+    const contributorId = applicationData?.application_contributor?.[contributorIndex]?.id;
+    const contributorName = `${applicationData?.application_contributor?.[contributorIndex]?.user.first_name} ${applicationData?.application_contributor?.[contributorIndex]?.user.last_name} - ${applicationData?.application_contributor?.[contributorIndex]?.application_role.title}`;
+
+    return questions && questions.length > 0 && questions.map((question, index) => (
+      <React.Fragment key={`${contributorIndex}-${index}`}>
         {isAnalyst ? (
           <FirmQuestionRenderer
-            contributorId={analystContributorId}
+            contributorId={contributorId}
             userId={sessionData?.data?.user_id}
             key={question.id}
             question={question}
             index={index}
-            userName={analystContributorName}
+            userName={contributorName}
             selectedAnswers={selectedAnswers}
             handleAnswerChange={handleAnswerChange}
             onRefetchQuestionnaires={() => {}}
@@ -272,12 +301,21 @@ const SectionQuestions = () => {
             isReviewer={userRole === 'reviewer'}
           />
         ) : (
-          !showHUBZoneCalculatorButton && <AnswerValue key={index} question={question} />
+          !showHUBZoneCalculatorButton && (
+            <>
+              <AnswerValue key={index} question={question} />
+              {contributorIndex > 0 && (
+                <div className="margin-left-4 border-left-1px border-base-light padding-left-2">
+                  <strong>{contributorName}:</strong>
+                  <AnswerValue key={`${index}-${contributorIndex}`} question={question} />
+                </div>
+              )}
+            </>
+          )
         )}
       </React.Fragment>
     ));
   };
-
   useEffect(() => {
     if (combinedNavItems.length > 0) {
       const currentSection = combinedNavItems.find(item =>
@@ -372,11 +410,15 @@ const SectionQuestions = () => {
           <form>
             {isAnalystQuestionnaire ? (
               <>
-                {userRole === 'reviewer' && renderQuestions(reviewerData, true)}
-                {(userRole === 'analyst') && renderQuestions(analystData, true)}
+                {userRole === 'reviewer' && renderQuestions(reviewerData, true, 0)}
+                {(userRole === 'analyst') && renderQuestions(analystData, true, 0)}
               </>
             ) : (
-              renderQuestions(regularData, false)
+              <>
+                {renderQuestions(regularData, false, 0)}
+                {regularDataTwo && renderQuestions(regularDataTwo, false, 1)}
+                {regularDataThree && renderQuestions(regularDataThree, false, 2)}
+              </>
             )}
           </form>
           {showHUBZoneCalculatorButton ? (
