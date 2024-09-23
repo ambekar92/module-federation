@@ -24,17 +24,27 @@ interface QuestionnaireProps {
 
 const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, onRefetchQuestionnaires, setCanNavigate }) => {
   const dispatch = useApplicationDispatch();
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
+  const { data, error, isLoading, mutate } = useSWR<QaQuestionsType>(url);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const session = useSessionUCMS();
   const userId = session?.data?.user.id;
   const closeApplicationRef = useRef<ModalRef>(null);
   const { application_id } = useParams();
-
+  const is8aSocialDisadvantage = url.includes('individual-contributor-eight-a-social-disadvantage');
   useEffect(() => {
     dispatch(setStep(applicationSteps.questionnaire.stepIndex));
     dispatch(setDisplayStepNavigation(false));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (data && is8aSocialDisadvantage) {
+      const firstQuestion = data[0];
+      const answerCount = Array.isArray(firstQuestion.answer?.value?.answer)
+        ? firstQuestion.answer.value.answer.length
+        : 0;
+      setCanNavigate(answerCount >= 2);
+    }
+  }, [data, title, setCanNavigate, mutate, is8aSocialDisadvantage]);
 
   const handleAnswerChange = async (question: Question, value: any) => {
     if (userId && contributorId) {
@@ -156,6 +166,11 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
   return (
     <>
       <h2>{title}<TooltipIcon text='You must complete each questionnaire associated with the selected certification requests. If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.' /></h2>
+      {is8aSocialDisadvantage && (
+        <h3 className="margin-y-0">
+          <b><i>Describe at least two experiences which have affected your advancement in business or education or career</i></b>
+        </h3>
+      )}
       {sortedAndFilteredQuestions.map((question, index) => (
         <QuestionRenderer
           contributorId={contributorId}
@@ -166,6 +181,7 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
           selectedAnswers={selectedAnswers}
           handleAnswerChange={handleAnswerChange}
           onRefetchQuestionnaires={onRefetchQuestionnaires}
+          refetchQuestions={mutate}
           closeApplicationRef={closeApplicationRef}
         />
       ))}

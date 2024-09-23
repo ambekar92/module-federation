@@ -95,9 +95,9 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
     }
 
     if (name.includes('phone_number')) {
-      const phoneRegex = /^\(\d{3}\)-\d{3}-\d{4}$/;
+      const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
       if (!phoneRegex.test(value as string)) {
-        return 'Please enter a valid phone number in the format (xxx)-xxx-xxxx';
+        return 'Please enter a valid phone number in the format (xxx) xxx-xxxx';
       }
     }
 

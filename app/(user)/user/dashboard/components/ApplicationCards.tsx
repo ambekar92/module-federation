@@ -29,7 +29,7 @@ function ApplicationCards({ data }: ApplicationCardProps) {
                     <span className='text-size-base' style={{ fontWeight: 300 }}>Days Left</span>
                   </div>
                 </Grid>)}
-              <Grid col={12} className='padding-2'>
+              <Grid col={application.workflow_state === 'draft' ? 8 : 12} className='padding-2'>
                 <Grid row gap='sm' className='height-full'>
                   <>
                     {application.program_application.map(programApp => (

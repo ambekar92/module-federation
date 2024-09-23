@@ -59,7 +59,6 @@ export async function handleApiRequest(
       console.log(`Sending ${method} request to ${url}`)
       // Log the full URL and headers
       console.log('Full URL:', url)
-      console.log('Headers:', JSON.stringify(headers, null, 2))
     }
 
     const response = await fetch(url, {

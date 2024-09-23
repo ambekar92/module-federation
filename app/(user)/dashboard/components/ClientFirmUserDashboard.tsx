@@ -6,7 +6,7 @@ import { Application } from '@/app/services/types/application-service/Applicatio
 import Spinner from '@/app/shared/components/spinner/Spinner'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Collection } from '@trussworks/react-uswds'
+import { Button, Collection,ButtonGroup, Card, Grid, Link, Table } from '@trussworks/react-uswds'
 import { useRouter } from 'next/navigation'
 import { ReactElement, useEffect, useState } from 'react'
 import useSWR from 'swr'
@@ -118,9 +118,31 @@ export default function ClientFirmUserDashboard() {
 
   return (
     <>
-      <div>
+      {/* <div>
         <h1>Welcome, {session?.user?.name}</h1>
-      </div>
+      </div> */}
+      
+      <Grid row>
+        <Grid col={6}>
+        <h1>Welcome, {session?.user?.name}</h1>
+        </Grid>
+        <Grid col={6} className="display-flex flex-justify-end margin-bottom-1">
+          <ButtonGroup type="default">
+            <Button type="button"
+              outline
+            >
+              {/* <span><AppRegistrationOutlinedIcon className='margin-right-1' /></span>  */}
+              <span className='margin-bottom-2' style={{ marginBottom: "15px" }}>Invitation Code </span>
+            </Button>
+            <Button
+              type="button"
+              outline
+            >
+              Apply
+            </Button>
+          </ButtonGroup>
+        </Grid>
+      </Grid>
 
       <h2 className="text-size-2xl margin-y-0 border-bottom padding-y-2 border-base-lighter">Applications</h2>
       {data && data.length > 0 && (

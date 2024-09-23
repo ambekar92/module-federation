@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { signIn, getSession } from 'next-auth/react'
 import { Alert } from '@trussworks/react-uswds'
-import LandingPage from '@/app/(home)/home-2/components/LandingPage'
 
 const ProtectedPage = () => {
   const [loading, setLoading] = useState(true);
@@ -78,10 +77,9 @@ const ProtectedPage = () => {
 
   if (loading) {
     return <div style={{ marginLeft: '-2rem', marginRight: '-2rem' }}>
-      <Alert type="info" heading="" headingLevel="h4">
+      {/* <Alert type="info" heading="" headingLevel="h4">
         {'We are currently performing system maintenance. MySBA Certifications will be back up soon.'}
-      </Alert>
-      <LandingPage />
+      </Alert> */}
     </div>;
   }
 

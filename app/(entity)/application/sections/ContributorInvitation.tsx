@@ -22,6 +22,8 @@ import { useApplicationDispatch, useApplicationSelector } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import { convertOperatorAnswerToContributors, convertOwnerAnswerToContributors } from '../utils/convertToContributor';
 import { useUserApplicationInfo } from '../utils/useUserApplicationInfo';
+import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 function ContributorInvitation() {
   useUpdateApplicationProgress('Contributor Invitation');
@@ -50,8 +52,9 @@ function ContributorInvitation() {
   const prevInvitationDataRef = useRef<InvitationType[] | null>(null);
 
   const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
-  const { data: ownerData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : null);
   const { data: operatorData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null);
+  const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+  useRedirectIfNoOwners({ ownerData, applicationId });
 
   useEffect(() => {
     if (contributors.length > 0 && initialContributorsRef.current.length === 0) {
@@ -61,7 +64,7 @@ function ContributorInvitation() {
 
   useEffect(() => {
     if (applicationId && applicationData && session.data?.permissions) {
-      if (!isPrimaryQualifyingOwner && !isDelegate && !isQualifyingOwner) {
+      if (!isPrimaryQualifyingOwner && !isDelegate) {
         window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
           applicationId,
           stepLink: applicationSteps.sign.link
@@ -377,6 +380,9 @@ function ContributorInvitation() {
     // Handle error
   }
 
+  if(!ownerData) {
+    return <Spinner />
+  }
   return (
     <>
       <h1>Contributor Invitations<TooltipIcon text='A contributor may add information to the application; however, the contributor can only see the information he/she is providing. Everyone contributing to your Firm must provide their contribution details before you can submit your Firm’s application.' /></h1>

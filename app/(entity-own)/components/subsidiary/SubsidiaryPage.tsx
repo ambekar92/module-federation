@@ -3,12 +3,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './SubsidiaryPage.module.scss'
 import SubsidiariesForm from './SubsidiariesForm';
-import { ModalRef, Alert } from '@trussworks/react-uswds'
+import { ModalRef, Alert, IdentifierIdentity } from '@trussworks/react-uswds'
 import SubsidiariesTable from './SubsidiariesTable';
 import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close'
-
 import { Button, ButtonGroup, FormGroup, Grid, Icon, InputGroup, InputSuffix, TextInput } from "@trussworks/react-uswds"
+
+import useSWR from 'swr'
+import fetcher from '@/app/services/fetcher'
+import { SUBSIDIARY_PARENT_ENTITY } from '@/app/constants/routes';
+import { createSubsidiary } from '@/app/services/api/subsidiary-service/createSubsidiary';
+import { updateSubsidiary } from '@/app/services/api/subsidiary-service/updateSubsidiary';
+import { deleteSubsidiary } from '@/app/services/api/subsidiary-service/deleteSubsidiary';
 
 const SubsidiaryPage = () => {
     const acceptRequestRef = useRef<ModalRef>(null)
@@ -21,7 +27,6 @@ const SubsidiaryPage = () => {
     const [searchName, setSearchName] = useState('')
     const [showForm, setShowForm] = useState(false)
     const [showAlert, setShowAlert] = useState(false)
-
 
     const subsidiariesTableData = [
         {
@@ -81,9 +86,32 @@ const SubsidiaryPage = () => {
         }
     ];
 
+    const [dataCopy, setDataCopy] = useState([])
+    const [shouldFetch, setShouldFetch] = useState(true)
+
+    const parent_entity_id = 1;
+    const owner_user_id = 1;
+    const { data: responseData, error: responseError, mutate } = useSWR(
+        () => shouldFetch && `${SUBSIDIARY_PARENT_ENTITY}?parent_entity_id=${parent_entity_id}&owner_user_id=${owner_user_id}`, 
+        fetcher)
+
     useEffect(() => {
-        setTableData(subsidiariesTableData);
+        if (responseData) {
+            setTableData(responseData)
+            setDataCopy(responseData)
+        }
+        if (responseError) {
+            //use dummy data if API endpoint is down
+            setShouldFetch(false)
+            setTableData(subsidiariesTableData)
+            setDataCopy(subsidiariesTableData)
+        }
+    }, [responseData, responseError])
+
+    useEffect(() => {
+
     }, [])
+
 
     const handleFormRequest = (param: any, id: any) => {
         let updatedItems = formData.filter(item => item.id !== id);
@@ -141,7 +169,7 @@ const SubsidiaryPage = () => {
 
     const handleSearch = () => {
         if (searchName === '') {
-            setTableData(subsidiariesTableData)
+            setTableData(dataCopy)
         } else {
             const filteredItems = tableData.filter(item =>
                 item.subsidiary_name.toLowerCase().includes(searchName.toLowerCase())
@@ -164,18 +192,34 @@ const SubsidiaryPage = () => {
 
     useEffect(() => {
         if (searchName === '') {
-            setTableData(subsidiariesTableData)
+            setTableData(dataCopy)
         }
     }, [searchName])
 
     const addNew = () => {
         setShowForm(true)
     }
-    const handleSaveFrom = (data: any) => {
-        setTableData([...tableData, data])
+    const handleSaveFrom = async (data: any) => {
         setShowForm(false)
+        if (data?.edit) {
+            const url = `${SUBSIDIARY_PARENT_ENTITY}`;
+            await updateSubsidiary(url, data);
+            await mutate();
+        } else {
+            const url = `${SUBSIDIARY_PARENT_ENTITY}`;
+            await createSubsidiary(url, data);
+            await mutate();
+        }
+        // setTableData([...tableData, data])
+        setTableData(dataCopy)
+
     }
-    const handleDeleteData = (id: any) => {
+    const handleDeleteData = async (id: any) => {
+
+        const url = `${SUBSIDIARY_PARENT_ENTITY}`;
+        await deleteSubsidiary(url, id);
+        await mutate();
+
         const filteredItems = tableData.filter(item => item.id !== id);
         setTableData(filteredItems)
         setShowForm(false)

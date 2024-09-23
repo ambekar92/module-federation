@@ -29,9 +29,10 @@ interface QaGridProps {
 	isSubQuestion?: boolean;
 	userId: number | null;
 	contributorId: number;
+	refetchQuestions?: () => void;
 }
 
-export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId, contributorId }) => {
+export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId, contributorId, refetchQuestions }) => {
   const [gridRows, setGridRows] = useState<GridRow[]>([]);
   const [currentRow, setCurrentRow] = useState<GridRow>({});
   const [errors, setErrors] = useState<ValidationErrors>({});
@@ -79,9 +80,14 @@ export const QaGrid: React.FC<QaGridProps> = ({ question, isSubQuestion, userId,
         answer_by: userId,
         reminder_flag: false,
       };
-      await axios.post(ANSWER_ROUTE, [answer]).catch((error) => {
+      try {
+        await axios.post(ANSWER_ROUTE, [answer])
+        if (refetchQuestions && question.name === 'social_disadvantage_affecting_experiences_individual_contributor_eight_a_social_disadvantage') {
+          refetchQuestions();
+        }
+      } catch(error) {
         // Error caught haha -KJ
-      });
+      };
     }
   };
 

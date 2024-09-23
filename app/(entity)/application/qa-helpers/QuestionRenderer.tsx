@@ -29,6 +29,7 @@ interface QuestionRendererProps {
   contributorId: number | null | undefined;
   onRefetchQuestionnaires: () => void;
   closeApplicationRef?: React.RefObject<ModalRef>;
+	refetchQuestions?: () => void;
 }
 
 const QuestionRenderer: React.FC<QuestionRendererProps> = ({
@@ -40,7 +41,8 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
   userId,
   contributorId,
   onRefetchQuestionnaires,
-  closeApplicationRef
+  closeApplicationRef,
+  refetchQuestions
 }) => {
   const inputId = `input-${question.question_type}-${index}`;
   const answer = selectedAnswers[question.name]?.value ?? question.answer?.value?.answer;
@@ -134,7 +136,7 @@ const QuestionRenderer: React.FC<QuestionRendererProps> = ({
         return (
           question.name === 'legal_management_team_control_and_operation_partnership' || question.name === 'legal_management_team_control_and_operation_llc' || question.name === 'legal_management_team_control_and_operation_corporation' || question.name === 'legal_management_team_control_and_operation_sole_proprietorship'
             ? <OperatorsQaGrid contributorId={contributorId} userId={userId} question={question} isSubQuestion={isSubQuestion} />
-            : <QaGrid contributorId={contributorId} userId={userId} question={question} isSubQuestion={isSubQuestion} />
+            : <QaGrid contributorId={contributorId} refetchQuestions={refetchQuestions} userId={userId} question={question} isSubQuestion={isSubQuestion} />
         );
       case 'date':
         return (

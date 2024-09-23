@@ -46,6 +46,9 @@ input.usa-input.usa-input--success.icon:-internal-autofill-selected {
 }
 
 .attestation-checkbox {
+	.usa-checkbox__input:disabled + [class*="__label"], .usa-checkbox__input[aria-disabled="true"] + [class*="__label"] {
+		color: #a9aeb1
+	}
   label {
     color: white;
 

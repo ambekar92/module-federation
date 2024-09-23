@@ -5,7 +5,7 @@ import QAWrapper from '@/app/shared/components/forms/QAWrapper';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
-import { ButtonGroup, ModalRef } from '@trussworks/react-uswds';
+import { Button, ButtonGroup, ModalRef } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -19,6 +19,8 @@ import applicationStore from '../../../redux/applicationStore';
 import HubzoneResults from '../../../sections/HubzoneResults';
 import { applicationSteps, extractLastPart } from '../../../utils/constants';
 import { QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
+import { useRedirectIfNoOwners } from '../../../hooks/useRedirectNoOwners';
+import { Question } from '@/app/shared/types/questionnaireTypes';
 
 const QuestionnairePage: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,8 +33,9 @@ const QuestionnairePage: React.FC = () => {
   const { data: session } = useSessionUCMS();
   const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
   useUpdateApplicationProgress('Questionnaires');
-
   const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
+  const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+  useRedirectIfNoOwners({ ownerData, applicationId });
 
   const refetchQuestionnaires = () => {
     mutate();
@@ -95,7 +98,7 @@ const QuestionnairePage: React.FC = () => {
     }
   }, [questionnairesData, section]);
 
-  if (!questionnairesData) {
+  if (!questionnairesData || !ownerData) {
     return <Spinner center />
   }
 
@@ -104,7 +107,7 @@ const QuestionnairePage: React.FC = () => {
   }
 
   const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!canNavigate) {
+    if (!canNavigate && section !== 'individual-contributor-eight-a-social-disadvantage') {
       e.preventDefault();
       closeApplicationRef.current?.toggleModal();
     }
@@ -148,68 +151,77 @@ const QuestionnairePage: React.FC = () => {
             }
           />
         )}
-        <ButtonGroup className="display-flex flex-justify border-top padding-y-2 margin-right-2px">
-          {currentIndex === 0 ? (
-            <Link
-              className="usa-button usa-button--outline"
-              href={buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId })}
-              onClick={() => handleNavigation(buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }))}
-            >
-      				Previous
-            </Link>
-          ) : (
-            <Link
-              className="usa-button usa-button--outline"
-              href={
-                buildRoute(QUESTIONNAIRE_PAGE, {
-                  applicationId: applicationId,
-                  section: allSections[currentIndex - 1]
-                })
-              }
-              onClick={() => handleNavigation(
-                buildRoute(QUESTIONNAIRE_PAGE, {
-                  applicationId: applicationId,
-                  section: allSections[currentIndex - 1]
-                })
-              )}
-            >
-      				Previous
-            </Link>
+        <div className="display-flex flex-column border-top padding-y-2 margin-right-2px">
+          {!canNavigate && section === 'individual-contributor-eight-a-social-disadvantage' && (
+            <h3 className="text-right margin-bottom-2 text-red">
+              <i>Describe at least two experiences which have affected your advancement in business or education or career</i>
+            </h3>
           )}
-          {currentIndex === allSections.length - 1 || section === 'hubzone-calculator-supplemental' ? (
-            <Link
-              className="usa-button"
-              href={buildRoute(APPLICATION_STEP_ROUTE, {
-                applicationId: applicationId,
-                stepLink: applicationSteps.documentUpload.link
-              })}
-              onClick={() => handleNavigation(
-                buildRoute(APPLICATION_STEP_ROUTE, {
+          <ButtonGroup className="display-flex flex-justify">
+            {currentIndex === 0 ? (
+              <Link
+                className="usa-button usa-button--outline"
+                href={buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId })}
+                onClick={() => handleNavigation(buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }))}
+              >
+                Previous
+              </Link>
+            ) : (
+              <Link
+                className="usa-button usa-button--outline"
+                href={
+                  buildRoute(QUESTIONNAIRE_PAGE, {
+                    applicationId: applicationId,
+                    section: allSections[currentIndex - 1]
+                  })
+                }
+                onClick={() => handleNavigation(
+                  buildRoute(QUESTIONNAIRE_PAGE, {
+                    applicationId: applicationId,
+                    section: allSections[currentIndex - 1]
+                  })
+                )}
+              >
+                Previous
+              </Link>
+            )}
+            {!canNavigate && section === 'individual-contributor-eight-a-social-disadvantage' ? (
+              <Button type='button' disabled>Next</Button>
+            ) : currentIndex === allSections.length - 1 || section === 'hubzone-calculator-supplemental' ? (
+              <Link
+                className="usa-button"
+                href={buildRoute(APPLICATION_STEP_ROUTE, {
                   applicationId: applicationId,
                   stepLink: applicationSteps.documentUpload.link
-                })
-              )}
-            >
-      				Next
-            </Link>
-          ) : (
-            <Link
-              className="usa-button"
-              href={buildRoute(QUESTIONNAIRE_PAGE, {
-                applicationId: applicationId,
-                section: allSections[currentIndex + 1]
-              })}
-              onClick={() => handleNavigation(
-                buildRoute(QUESTIONNAIRE_PAGE, {
+                })}
+                onClick={() => handleNavigation(
+                  buildRoute(APPLICATION_STEP_ROUTE, {
+                    applicationId: applicationId,
+                    stepLink: applicationSteps.documentUpload.link
+                  })
+                )}
+              >
+                Next
+              </Link>
+            ) : (
+              <Link
+                className="usa-button"
+                href={buildRoute(QUESTIONNAIRE_PAGE, {
                   applicationId: applicationId,
                   section: allSections[currentIndex + 1]
-                })
-              )}
-            >
-      				Next
-            </Link>
-          )}
-        </ButtonGroup>
+                })}
+                onClick={() => handleNavigation(
+                  buildRoute(QUESTIONNAIRE_PAGE, {
+                    applicationId: applicationId,
+                    section: allSections[currentIndex + 1]
+                  })
+                )}
+              >
+                Next
+              </Link>
+            )}
+          </ButtonGroup>
+        </div>
       </ApplicationLayout>
     </Provider>
   );

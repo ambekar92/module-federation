@@ -17,6 +17,7 @@ import QuestionRenderer from '../../../qa-helpers/QuestionRenderer';
 import { setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
+import { useRedirectIfNoOwners } from '../../../hooks/useRedirectNoOwners';
 
 function ControlAndOpsQuestions() {
   const dispatch = useApplicationDispatch();
@@ -24,6 +25,8 @@ function ControlAndOpsQuestions() {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null;
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
+  const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+  useRedirectIfNoOwners({ ownerData, applicationId });
   useUpdateApplicationProgress('Control and Operations');
 
   const { data: session } = useSessionUCMS();
@@ -78,7 +81,7 @@ function ControlAndOpsQuestions() {
   };
 
   if (error) {return <div>Error: {error.message}</div>;}
-  if (!data || isLoading) {return <Spinner center />}
+  if (!data || isLoading || !ownerData) {return <Spinner center />}
 
   const sortedAndFilteredQuestions = data
     .filter(question => question.question_ordinal !== null)
@@ -99,7 +102,7 @@ function ControlAndOpsQuestions() {
             <div>
               <h2>Management Structure</h2>
               <p>Based on the information provided, {applicationData?.sam_entity.legal_business_name} is designated as a {applicationData?.entity.structure}.</p>
-              <p>If this designation is incorrect, please discontinue this application and update your information on <a href="/application">SAM.gov</a></p>
+              <p>If this designation is incorrect, please discontinue this application and update your information on <a href="http://sam.gov/">SAM.gov</a></p>
             </div>
 
             <hr className="margin-y-3 width-full" />

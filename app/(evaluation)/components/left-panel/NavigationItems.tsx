@@ -54,7 +54,7 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
   useEffect(() => {
     const segment = params.section_questions ?? selectedSegment;
     if (!filteredNavItems || !Array.isArray(filteredNavItems)) {return;}
-    const currentSection = filteredNavItems.map(nav => nav.child).flat().find(item => item.url.includes(segment));
+    const currentSection = filteredNavItems.map(nav => nav.child).flat().find(item => item.url?.includes(segment));
     if (currentSection) {
       setActiveSection(currentSection.section);
       setActiveTitle(currentSection.title);

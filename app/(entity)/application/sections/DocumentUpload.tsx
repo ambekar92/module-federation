@@ -11,6 +11,9 @@ import { QuestionnaireListType } from '../components/questionnaire/utils/types';
 import { setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps, extractLastPart } from '../utils/constants';
+import { Question } from '@/app/shared/types/questionnaireTypes';
+import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 function DocumentUpload() {
   const dispatch = useApplicationDispatch();
@@ -23,6 +26,8 @@ function DocumentUpload() {
   const { data: questionnairesData } = useSWR<QuestionnaireListType>(
     contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null,
   );
+  const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+  useRedirectIfNoOwners({ ownerData, applicationId });
 
   useEffect(() => {
     if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
@@ -60,6 +65,9 @@ function DocumentUpload() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contributorId, questionnairesData, skipHubzoneSup]);
 
+  if(!questionnairesData || !ownerData) {
+    return <Spinner />
+  }
   return (
     <>
       <Documents />

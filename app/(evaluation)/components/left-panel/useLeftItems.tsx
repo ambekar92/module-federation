@@ -73,18 +73,18 @@ export function useLeftItems() {
   const mapItems = (items: QuestionnaireItem[] | undefined, contributorId: string | undefined, sectionTitle: string): NavItem => ({
     section: sectionTitle,
     child: [
-      {
+      ...(sectionTitle === 'Application' ? [{
         id: (items?.length || 0) + 1,
         title: 'Owner and Management',
         url: `/${params.application_id}${ownershipQuestionnaire}${contributorId ? `?contributor_id=${contributorId}` : ''}`,
         section: sectionTitle,
-      },
-      {
+      }] : []),
+      ...(sectionTitle === 'Application' ? [{
         id: (items?.length || 0) + 2,
         title: 'Control and Operation',
         url: `/${params.application_id}${controlAndOperationQuestionnaire}${contributorId ? `?contributor_id=${contributorId}` : ''}`,
         section: sectionTitle,
-      },
+      }] : []),
       ...(items?.map(item => ({
         id: item.id,
         title: item.title,

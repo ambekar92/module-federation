@@ -1,4 +1,4 @@
-import { Show } from '@/app/shared/components/Show';
+import { Show } from '@/app/shared/components/Show'
 import {
   Accordion,
   Button,
@@ -9,42 +9,39 @@ import {
   SummaryBox,
   SummaryBoxContent,
   SummaryBoxHeading,
-} from '@trussworks/react-uswds';
-import { useEffect, useState } from 'react';
-import {
-  CmbResponseType,
-  IAccordionItem
-} from '../../utils/types';
-import ConfirmModal from '../modals/ConfirmModal';
-import ErrorModal from '../modals/ErrorModal';
-import SuccessModal from '../modals/SuccessModal';
-import ValidationTable from './ValidationTable';
-import { toolTipCmbValidation } from '@/app/constants/tooltips';
-import Tooltip from '@/app/shared/components/tooltip/Tooltip';
-import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url';
-import { useSessionUCMS } from '@/app/lib/auth';
+} from '@trussworks/react-uswds'
+import { useEffect, useState } from 'react'
+import { CmbResponseType, IAccordionItem } from '../../utils/types'
+import ConfirmModal from '../modals/ConfirmModal'
+import ErrorModal from '../modals/ErrorModal'
+import SuccessModal from '../modals/SuccessModal'
+import ValidationTable from './ValidationTable'
+import { toolTipCmbValidation } from '@/app/constants/tooltips'
+import Tooltip from '@/app/shared/components/tooltip/Tooltip'
+import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
+import { useSessionUCMS } from '@/app/lib/auth'
 interface ValidateBusinessFormProps {
   samData: CmbResponseType
 }
 
 function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
-  const [ open, setOpen ] = useState(false);
-  const [ errorMsg, setErrorMsg ] = useState('');
-  const [ isPostSuccessful, setPostSuccessful ] = useState(false);
-  const [ entityId, setEntityId ] = useState<number | undefined>();
-  const session = useSessionUCMS();
+  const [open, setOpen] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [isPostSuccessful, setPostSuccessful] = useState(false)
+  const [entityId, setEntityId] = useState<number | undefined>()
+  const session = useSessionUCMS()
 
   const handleClose = () => {
-    setOpen(false);
-    if(errorMsg !== '') {
+    setOpen(false)
+    if (errorMsg !== '') {
       setErrorMsg('')
     }
   }
   const handleOpen = () => {
-    if(session && session.data.user_id === 0) {
-      setErrorMsg('cannot create entity');
+    if (session && session.data.user_id === 0) {
+      setErrorMsg('cannot create entity')
     }
-    setOpen(true);
+    setOpen(true)
   }
 
   const validateBusinessAccordionProps = (): IAccordionItem[] => {
@@ -56,18 +53,20 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
       ),
       content: (
         <div className="default-table">
-          <ValidationTable profiles={{
-            ...samData,
-            sam_entity: [entity]
-          }} />
+          <ValidationTable
+            profiles={{
+              ...samData,
+              sam_entity: [entity],
+            }}
+          />
         </div>
       ),
       expanded: true,
       id: `accordion-item-${index}`,
       className: 'myCustomAccordionItem',
       headingLevel: 'h4',
-    }));
-  };
+    }))
+  }
 
   useEffect(() => window.scrollTo({ top: 0, behavior: 'smooth' }), [])
 
@@ -82,16 +81,24 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
 
         <Show>
           <Show.When isTrue={open && errorMsg === 'network error'}>
-            <ErrorModal open={open} handleClose={handleClose} error={errorMsg} />
+            <ErrorModal
+              open={open}
+              handleClose={handleClose}
+              error={errorMsg}
+            />
           </Show.When>
         </Show>
 
         <Show>
           <Show.When isTrue={open && errorMsg === ''}>
             <ConfirmModal
-              handleClose={handleClose} handleOpen={handleOpen} open={open}
-              setErrorMsg={setErrorMsg} setPostSuccessful={setPostSuccessful}
-              business={samData} setEntityId={setEntityId}
+              handleClose={handleClose}
+              handleOpen={handleOpen}
+              open={open}
+              setErrorMsg={setErrorMsg}
+              setPostSuccessful={setPostSuccessful}
+              business={samData}
+              setEntityId={setEntityId}
             />
           </Show.When>
         </Show>
@@ -115,8 +122,8 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
             <SummaryBox style={{ marginBottom: '1.25rem' }}>
               <SummaryBoxHeading headingLevel="h3">
                 Verify your business(es)
-                <span className='text-normal'>
-                  <Tooltip text={toolTipCmbValidation}/>
+                <span className="text-normal">
+                  <Tooltip text={toolTipCmbValidation} />
                 </span>
               </SummaryBoxHeading>
               <SummaryBoxContent>
@@ -160,7 +167,10 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
         </Grid>
         <Grid row>
           <Grid col={12}>
-            <ButtonGroup className="display-flex flex-justify width-full padding-y-2" type="default">
+            <ButtonGroup
+              className="display-flex flex-justify width-full padding-y-2"
+              type="default"
+            >
               <Link
                 href="/claim-your-business"
                 className="usa-button usa-button--outline"
@@ -169,23 +179,22 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
               </Link>
               {isPostSuccessful ? (
                 entityId ? (
-                  <Link href={buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, {entity_id: entityId})} className="usa-button usa-button">
-										Continue
-                  </Link>
-                ): (
-                  <Button
-                    disabled
-                    type='button'
+                  <Link
+                    href={buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, {
+                      entity_id: entityId,
+                    })}
+                    className="usa-button usa-button"
                   >
-                		Continue
+                    Continue
+                  </Link>
+                ) : (
+                  <Button disabled type="button">
+                    Continue
                   </Button>
                 )
-              ): (
-                <Button
-                  onClick={handleOpen}
-                  type='button'
-                >
-                	Next
+              ) : (
+                <Button onClick={handleOpen} type="button">
+                  Next
                 </Button>
               )}
             </ButtonGroup>
@@ -193,7 +202,7 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
         </Grid>
       </GridContainer>
     </>
-  );
+  )
 }
 
-export default ValidateBusinessForm;
+export default ValidateBusinessForm

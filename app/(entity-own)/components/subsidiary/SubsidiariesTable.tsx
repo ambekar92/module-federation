@@ -28,13 +28,13 @@ const SubsidiariesTable: React.FC<SubsidiariesTableProps> = (
         if (rowData.isSelected) {
             setSelectedRowData(prevItems =>
                 prevItems.map(item =>
-                    item.id === rowData.id ? { ...item, isSelected: false } : item
+                    item.id === rowData.id ? { ...item, isSelected: false, edit:false } : item
                 )
             );
         } else {
             setSelectedRowData(prevItems =>
                 prevItems.map(item =>
-                    item.id === rowData.id ? { ...item, isSelected: true } : item
+                    item.id === rowData.id ? { ...item, isSelected: true, edit:true } : item
                 )
             );
         }
@@ -81,6 +81,14 @@ const SubsidiariesTable: React.FC<SubsidiariesTableProps> = (
                                         <td className={row?.isSelected === true ? styles['selected-row'] : styles['row']}>{row.notes}</td>
                                     </tr>
                                 ))}
+
+                                {
+                                    selectedRowData.length === 0 && (
+                                        <tr>
+                                            <td colSpan={10}>No Record Found</td>
+                                        </tr>
+                                    )
+                                }
                             </tbody>
                         </Table>
                     </div>

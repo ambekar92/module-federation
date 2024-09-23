@@ -1,4 +1,4 @@
-import {  CREATE_PROGRAM_APPLICATION_ROUTE, ELIGIBLE_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
+import { CREATE_PROGRAM_APPLICATION_ROUTE, ELIGIBLE_PROGRAMS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { ProgramOption } from '@/app/constants/sba-programs';
 import { APPLICATION_STEP_ROUTE, buildRoute, QUESTIONNAIRE_LIST_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
@@ -7,13 +7,14 @@ import Spinner from '@/app/shared/components/spinner/Spinner';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
-import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
+import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { calculateEligibleSbaPrograms, OwnerType } from '../hooks/useOwnershipApplicationInfo';
+import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
 import { useWorkflowRedirect } from '../hooks/useWorkflowRedirect';
 import { GridRow } from '../qa-helpers/OwnershipQaGrid';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
@@ -27,7 +28,7 @@ function EligiblePrograms() {
   const { applicationId, contributorId, applicationData } = useApplicationContext();
 
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
-  const { data: ownersData, error, isLoading: isLoadingOwnership } = useSWR<QaQuestionsType>(url);
+  const { data: ownersData, error, isLoading: isLoadingOwnership } = useSWR<Question[]>(url);
   useUpdateApplicationProgress('Eligible Programs');
 
   const { data: session } = useSessionUCMS();
@@ -35,6 +36,7 @@ function EligiblePrograms() {
 
   // Redirects user based on application state and permissions
   useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
+  useRedirectIfNoOwners({ ownerData: ownersData, applicationId });
 
   const dispatch = useApplicationDispatch();
 

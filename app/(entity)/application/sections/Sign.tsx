@@ -17,6 +17,9 @@ import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import { APPLICATION_CONTRIBUTORS_ROUTE, EVALUATIONS_ROUTE, INVITATION_ROUTE, QUESTIONNAIRE_ROUTE, UPDATE_APPLICATION_ROUTE } from '@/app/constants/local-routes';
 import axios from 'axios';
+import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
+import { Question } from '@/app/shared/types/questionnaireTypes';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 
 /**
  * SignPage is the final page of the application process, where the user signs and submits the application.
@@ -35,10 +38,12 @@ function SignPage() {
   const [isChecked, setIsChecked] = useState(false);
   const [allContributorsSubmitted, setAllContributorsSubmitted] = useState(false);
   const [allInvitationsAccepted, setAllInvitationsAccepted] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  const [alertMessages, setAlertMessages] = useState<string[]>([]);
 
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
   const { data: invitationData } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
+  const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+  useRedirectIfNoOwners({ ownerData, applicationId });
 
   useEffect(() => {
     dispatch(setStep(applicationSteps.sign.stepIndex));
@@ -47,31 +52,31 @@ function SignPage() {
 
   useEffect(() => {
     const invalidWorkflowStates = ['draft', 'returned_for_firm'];
-    const validRoles = [
-      Role.PRIMARY_QUALIFYING_OWNER,
-      Role.NON_QUALIFYING_OWNER,
-      Role.SPOUSE,
-      Role.OTHER_INDIVIDUALS
+    const invalidRoles = [
+      Role.DELEGATE,
     ];
 
     const userRole = session.data?.permissions[session.data.permissions.length - 1].slug;
-    const isValidRole = userRole && validRoles.includes(userRole);
-    const isValidWorkflowState = applicationData && invalidWorkflowStates.includes(applicationData.workflow_state);
+    const isInvalidRole = userRole && invalidRoles.includes(userRole);
 
-    if (!isValidRole || !isValidWorkflowState) {
+    const currentUserContributor = applicationData?.application_contributor.find(
+      contributor => contributor.user_id === session.data?.user.id
+    );
+
+    const isValidWorkflowState = currentUserContributor && invalidWorkflowStates.includes(currentUserContributor.workflow_state);
+
+    if (isInvalidRole || isValidWorkflowState === false) {
       window.location.href = `/application/view/${applicationId}`;
     }
   }, [applicationData, applicationId, session.data]);
 
   useEffect(() => {
     if (applicationData && applicationData.application_contributor) {
-      // filter out the primary owner from the contributor list
       const nonOwnerContributors = applicationData.application_contributor.filter(
         contributor => contributor.application_role.name !== 'primary-qualifying-owner'
       );
 
       if (nonOwnerContributors.length === 0) {
-        // if there are no other contributors only check the primary owner's questionnaire
         setAllContributorsSubmitted(true);
       } else {
         const allSubmitted = nonOwnerContributors && nonOwnerContributors.length > 0 && nonOwnerContributors.every(
@@ -80,9 +85,7 @@ function SignPage() {
         setAllContributorsSubmitted(allSubmitted);
 
         if (!allSubmitted) {
-          setAlertMessage('Before this application can be signed, all contributors must accept their invitation and submit their application.');
-        } else {
-          setAlertMessage('All contributors have submitted their application.');
+          setAlertMessages(prev => [...prev, 'Before this application can be signed, all contributors must accept their invitation and submit their application.']);
         }
       }
     }
@@ -91,11 +94,10 @@ function SignPage() {
   useEffect(() => {
     if (invitationData && invitationData.length > 0) {
       const allAccepted = invitationData.filter(
-        (invitation) => invitation.invitation_status !== 'accepted' && invitation.invitation_status  !== 'removed'
+        (invitation) => invitation.invitation_status !== 'accepted' && invitation.invitation_status !== 'removed'
       );
       if (allAccepted.length > 0) {
         setAllInvitationsAccepted(false);
-        setAlertMessage('One or more contributors have not accepted their invitation or submitted their application.');
       } else {
         setAllInvitationsAccepted(true);
       }
@@ -114,28 +116,29 @@ function SignPage() {
         const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted;
         setIsCheckboxDisabled(isDisabled);
 
+        setAlertMessages([]);
         if (isDisabled) {
           if (!allCompleted) {
-            setAlertMessage('All questionnaires must be completed before you can sign the application.');
-          } else if (!allContributorsSubmitted) {
-            setAlertMessage('All contributors must submit their applications before you can sign.');
-          } else if (!allInvitationsAccepted) {
-            setAlertMessage('All invitations must be accepted before you can sign the application.');
+            setAlertMessages(prev => [...prev, 'All questionnaires must be completed before you can sign the application.']);
           }
-        } else {
-          setAlertMessage('');
+          if (!allContributorsSubmitted) {
+            setAlertMessages(prev => [...prev, 'All contributors must submit their applications before you can sign.']);
+          }
+          if (!allInvitationsAccepted) {
+            setAlertMessages(prev => [...prev, 'All contributor invitations must be accepted and their applications submitted prior to signing the application..']);
+          }
         }
       } else {
         setIsCheckboxDisabled(!allCompleted);
         if (!allCompleted) {
-          setAlertMessage('You must complete all questionnaires before you can sign the application.');
+          setAlertMessages(['You must complete all questionnaires before you can sign the application.']);
         } else {
-          setAlertMessage('');
+          setAlertMessages([]);
         }
       }
     } else {
       setIsCheckboxDisabled(true);
-      setAlertMessage('Something went wrong. Please try refreshing the page.');
+      // setAlertMessages(['Something went wrong. Please try refreshing the page.']);
     }
   }, [questionnairesData, allContributorsSubmitted, allInvitationsAccepted]);
 
@@ -155,7 +158,7 @@ function SignPage() {
         if (allContributorsSubmitted && allInvitationsAccepted) {
           modalRef.current?.toggleModal();
         } else {
-          alert(alertMessage);
+          alert('Before signing, all contributors must submit their application and accept their invitation.');
         }
       } else {
         handlePostRequest();
@@ -187,7 +190,7 @@ function SignPage() {
         // Error handled
       }
     } catch (error) {
-      setAlertMessage('There was an error submitting your application, please try again.')
+      alert('There was an error submitting your application, please try again.')
     }
   };
 
@@ -212,8 +215,8 @@ function SignPage() {
   ]
   const sidebarContent = <Accordion className='margin-top-2' items={testItems} multiselectable={true} />;
 
-  if (!applicationData || !userId || !userRole) {
-    return null;
+  if (!applicationData || !userId || !userRole || !ownerData) {
+    return <Spinner />;
   }
   return (
     <>
@@ -222,9 +225,21 @@ function SignPage() {
         sidebar={sidebarContent}
         mainContent={
           <div>
+            {(alertMessages.length > 0 && userRole === 'primary-qualifying-owner') && (
+              <div className="usa-alert usa-alert--warning" role="alert">
+                <div className="usa-alert__body">
+                  <h3 className="usa-alert__heading">Incomplete Application</h3>
+                  <ul>
+                    {alertMessages.map((alert, index) => (
+                      <li key={index} className="usa-alert__text margin-left-neg-3">{alert}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
             {userRole === 'primary-qualifying-owner' ? (
               <>
-                <h1>Attestation {userRole}</h1>
+                <h1>Attestation</h1>
                 <p className='margin-bottom-5'>By clicking the Submit button, you are certifying that you are an owner of the company listed below and that you authorized to represent it and electronically sign on its behalf.</p>
                 <p className='margin-bottom-5'>I certify on my own behalf, and on behalf of the applicant, that the information provided in this application and any document or supplemental information submitted, is true and correct as evidenced by the electronic signature confirmation. If assistance was obtained in completing this application and/or submitting supporting documentation, I further certify that I have personally reviewed the information and it is true and accurate.</p>
                 <p className='margin-bottom-5'>I certify that I will immediately inform SBA within 30 days of any changed circumstances that could adversely affect the applicant’s eligibility for the program(s) for which it has applied.</p>
@@ -256,7 +271,7 @@ function SignPage() {
             <div className='padding-2 bg-accent-cool-darker'>
               <h2 className='text-white margin-top-0'>Signature</h2>
               <Checkbox
-                className='bg-accent-cool-darker attestation-checkbox'
+                className={'bg-accent-cool-darker attestation-checkbox'}
                 id={'sign-application'} name={'sign-application'}
                 label={'I hereby certify that any information provided via my Username/Password pair has been reviewed by me personally, and is true and accurate.'}
                 disabled={isCheckboxDisabled || error}
@@ -268,13 +283,6 @@ function SignPage() {
         }
       />
 
-      {(alertMessage && userRole === 'primary-qualifying-owner') && (
-        <div className="usa-alert usa-alert--warning" role="alert">
-          <div className="usa-alert__body">
-            <p className="usa-alert__text">{alertMessage}</p>
-          </div>
-        </div>
-      )}
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
         <Link className='usa-button'
           aria-disabled={!applicationId}

@@ -17,6 +17,8 @@ import { setStep } from '../../redux/applicationSlice';
 import applicationStore from '../../redux/applicationStore';
 import { useApplicationDispatch } from '../../redux/hooks';
 import { applicationSteps, extractLastPart } from '../../utils/constants';
+import { Question } from '@/app/shared/types/questionnaireTypes';
+import { useRedirectIfNoOwners } from '../../hooks/useRedirectNoOwners';
 
 const QuestionnaireListPage: React.FC = () => {
   const { contributorId, applicationId, applicationData } = useApplicationContext();
@@ -27,8 +29,9 @@ const QuestionnaireListPage: React.FC = () => {
 
   const isPrimaryUser = session?.data.permissions?.some(permission => permission.slug.includes('primary_qualifying_owner'));
   const hasDelegateRole = session?.data.permissions?.some(permission => permission.slug.includes('delegate'));
-
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
+  const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+  useRedirectIfNoOwners({ ownerData, applicationId });
 
   const filteredQuestionnaires = questionnairesData?.filter(questionnaire =>
     !(hasDelegateRole && filteredSections.includes(extractLastPart(questionnaire.url)))
@@ -48,7 +51,7 @@ const QuestionnaireListPage: React.FC = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  if (!questionnairesData || !filteredQuestionnaires) {
+  if (!questionnairesData || !filteredQuestionnaires || !ownerData) {
     return <Spinner center />
   }
 

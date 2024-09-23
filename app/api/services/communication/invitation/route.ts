@@ -13,49 +13,16 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  console.log('Handling delete invitation request');
-  const cookieStore = cookies()
-  const accessToken = cookieStore.get('accesstoken')
-  if (!accessToken) {
-    console.error('No access token found');
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { searchParams } = new URL(request.url);
+  const invitationId = searchParams.get('invitation_id');
+
+  if (!invitationId) {
+    return NextResponse.json({ error: 'Invitation ID is required' }, { status: 400 });
   }
-  
-  let token;
-  try {
-    token = decrypt(accessToken.value)
-  } catch (error) {
-    console.error('Error decrypting access token:', error);
-    return NextResponse.json({ error: 'Invalid access token' }, { status: 401 })
-  }
-  
-  try {
-    const { searchParams } = new URL(request.url)
-    const invitationId = searchParams.get('invitation_id')
-    if (!invitationId) {
-      console.error('No invitation ID provided');
-      return NextResponse.json({ error: 'Invitation ID is required' }, { status: 400 })
-    }
-    
-    console.log(`Sending DELETE request to ${INVITATION_ROUTE}?invitation_id=${invitationId}`);
-    const response = await fetch(`${INVITATION_ROUTE}?invitation_id=${invitationId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    
-    console.log('Received response:', response.status);
-    if (response.ok) {
-      return NextResponse.json({ message: 'Invitation deleted successfully' })
-    } else {
-      const errorData = await response.json().catch(() => ({ message: 'An error occurred' }))
-      console.error('Error response from API:', errorData);
-      return NextResponse.json({ error: errorData.message || 'An error occurred' }, { status: response.status })
-    }
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 })
-  }
+	
+  const modifiedRequest = new NextRequest(request, {
+    body: JSON.stringify({ invitation_id: invitationId }),
+  });
+
+  return handleApiRequest(modifiedRequest, INVITATION_ROUTE, 'DELETE');
 }

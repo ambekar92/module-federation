@@ -101,7 +101,7 @@ function OwnershipQuestions() {
             <div>
       			<h2>Business Structure</h2>
               <p>Based on the information provided by SAM, {applicationData?.sam_entity.legal_business_name} is designated as a {applicationData?.entity.structure}.</p>
-              <p>If this designation is incorrect, please discontinue this application and update your information on <a href="/application">SAM.gov</a></p>
+              <p>If this designation is incorrect, please discontinue this application and update your information on <a href="http://sam.gov/">SAM.gov</a></p>
             </div>
 
             <hr className="margin-y-3 width-full" />

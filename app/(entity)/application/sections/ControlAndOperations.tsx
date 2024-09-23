@@ -42,7 +42,7 @@ function ControlAndOperations({contributorId}: QuestionnaireProps) {
       <div>
         <h2>Management Structure</h2>
         <p>Based on the information provided, [Business Name] is designated as a Partnership.</p>
-        <p>If this designation is incorrect, please discontinue this application and update your information on <a href="/application">SAM.gov</a></p>
+        <p>If this designation is incorrect, please discontinue this application and update your information on <a href="http://sam.gov/">SAM.gov</a></p>
       </div>
 
       <hr className="margin-y-3 width-full" />

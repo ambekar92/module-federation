@@ -139,20 +139,6 @@ const SectionQuestions = () => {
       : null
   );
 
-  const secondContributorId = applicationData?.application_contributor?.[1]?.id;
-  const { data: regularDataTwo } = useSWR<Question[]>(
-    !isAnalystQuestionnaire && secondContributorId && secondContributorId !== firstContributorId
-      ? `${QUESTIONNAIRE_ROUTE}/${secondContributorId}/${params.section_questions}`
-      : null
-  )
-
-  const thirdContributorId = applicationData?.application_contributor?.[2]?.id;
-  const { data: regularDataThree } = useSWR<Question[]>(
-    !isAnalystQuestionnaire && secondContributorId && secondContributorId !== firstContributorId && thirdContributorId && thirdContributorId !== secondContributorId
-      ? `${QUESTIONNAIRE_ROUTE}/${thirdContributorId}/${params.section_questions}`
-      : null
-  )
-
   const { data: navItems } = useSWR<QuestionnaireItem[]>(
     firstContributorId ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}` : null
   );
@@ -304,12 +290,6 @@ const SectionQuestions = () => {
           !showHUBZoneCalculatorButton && (
             <>
               <AnswerValue key={index} question={question} />
-              {contributorIndex > 0 && (
-                <div className="margin-left-4 border-left-1px border-base-light padding-left-2">
-                  <strong>{contributorName}:</strong>
-                  <AnswerValue key={`${index}-${contributorIndex}`} question={question} />
-                </div>
-              )}
             </>
           )
         )}
@@ -416,8 +396,6 @@ const SectionQuestions = () => {
             ) : (
               <>
                 {renderQuestions(regularData, false, 0)}
-                {regularDataTwo && renderQuestions(regularDataTwo, false, 1)}
-                {regularDataThree && renderQuestions(regularDataThree, false, 2)}
               </>
             )}
           </form>
