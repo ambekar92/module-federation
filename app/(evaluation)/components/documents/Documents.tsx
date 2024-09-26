@@ -6,10 +6,11 @@ import { useParams } from 'next/navigation'
 import useSWR from 'swr'
 import styles from './Documents.module.scss'
 import { APPLICATION_DOCUMENTS_ROUTE } from '@/app/constants/local-routes'
+import { makeDatePretty } from '@/app/shared/utility/formateDate'
+import humanizeString from 'humanize-string'
 
 function Documents() {
   const { application_id } = useParams();
-  // Get Documents Data
   const { data: responseData, error: responseError } =
     useSWR<DocumentsType>(
       application_id
@@ -18,9 +19,7 @@ function Documents() {
     )
 
   if (responseError){
-
     return <Alert headingLevel='h4' type="error" heading="">Error loading Documents</Alert>;
-
   }
 
   return (
@@ -73,9 +72,11 @@ function Documents() {
                 responseData.map((item: Document) => {
                   return (
                     <tr key={item.id}>
-                      <td>{item.file_name}</td>
-                      <td>{item.created_at}</td>
-                      <td>{item.document_type?.name}</td>
+                      <td>
+                        <a href={`/${item.path_name}`} target="_blank" rel="noopener noreferrer">{item.file_name}</a>
+                      </td>
+                      <td>{makeDatePretty(item.created_at)}</td>
+                      <td>{humanizeString(item.document_type?.name)}</td>
                       <td>
                         {responseData
                           ? `${item.upload_user.first_name} ${item.upload_user.last_name}`

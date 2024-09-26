@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { handleApiRequest } from '@/app/services/handleApiRequest';
 import { VALIDATE_SAM_ENTITY_ROUTE } from '@/app/constants/routes';
 
+export async function POST(request: NextRequest) {
+  return handleApiRequest(request, VALIDATE_SAM_ENTITY_ROUTE, 'POST');
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const uei = searchParams.get('uei')

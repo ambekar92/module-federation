@@ -24,11 +24,11 @@ const ReturnToPreviousTaskModal = ({modalRef, processId, handleAction}: {modalRe
   useEffect(() =>{
     const userPermissions = session?.data.permissions.map(permission => permission.slug) as unknown as Role[];
 
-    if (userPermissions?.some(p => p === Role.APPROVER)) {
+    if (userPermissions?.some(p => p === Role.APPROVER || p === Role.APPROVER_8a_aabd)) {
       setReturnToType(ReturnToType.Reviewer);
     } else if (userPermissions?.some(p => p === Role.REVIEWER || p === Role.REVIEWER_HIGH_TIER || p === Role.REVIEWER_LOW_TIER)) {
       setReturnToType(ReturnToType.Analyst);
-    } else if (userPermissions.some(p => p === Role.ANALYST || p === Role.ANALYST_HIGH || p === Role.ANALYST_LOW || p === Role.ANALYST_CONTRIBUTOR_OGC || p === Role.ANALYST_CONTRIBUTOR_OSS)) {
+    } else if (userPermissions.some(p => p === Role.ANALYST || p === Role.ANALYST_HIGH || p === Role.ANALYST_LOW || p === Role.ANALYST_CONTRIBUTOR_OGC || p === Role.ANALYST_CONTRIBUTOR_OSS || p === Role.ANALYST_HIGH_TIER || p === Role.ANALYST_LOW_TIER)) {
       setReturnToType(ReturnToType.Screener);
     }
   } ,[session])

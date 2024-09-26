@@ -27,10 +27,11 @@ function DocumentUpload() {
     contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null,
   );
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  useRedirectIfNoOwners({ ownerData, applicationId });
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
+  useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
 
   useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_to_firm') {
       window.location.href = `/application/view/${applicationId}`;
     }
   }, [applicationData, applicationId]);
@@ -68,6 +69,7 @@ function DocumentUpload() {
   if(!questionnairesData || !ownerData) {
     return <Spinner />
   }
+
   return (
     <>
       <Documents />
@@ -90,7 +92,7 @@ function DocumentUpload() {
           href={
             buildRoute(APPLICATION_STEP_ROUTE, {
               applicationId: applicationId,
-              stepLink: applicationSteps.contributorInvitation.link
+              stepLink: applicationRole && applicationRole.length > 0 && (applicationRole[0].application_role.name === 'primary-qualifying-owner' || applicationRole[0].application_role.name === 'delegate') ? applicationSteps.contributorInvitation.link : applicationSteps.sign.link,
             })
           }
         >

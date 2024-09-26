@@ -58,9 +58,16 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
     if (currentSection) {
       setActiveSection(currentSection.section);
       setActiveTitle(currentSection.title);
-      setExpandedSections(prev =>
-        prev.includes(currentSection.section) ? prev : [...prev, currentSection.section]
-      );
+      setExpandedSections(prev => {
+        const newExpandedSections = [...prev];
+        if (!newExpandedSections.includes(currentSection.section)) {
+          newExpandedSections.push(currentSection.section);
+        }
+        if (!newExpandedSections.includes('Application')) {
+          newExpandedSections.push('Application');
+        }
+        return newExpandedSections;
+      });
     }
   }, [pathname, filteredNavItems, params.section_questions, selectedSegment]);
 

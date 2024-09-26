@@ -19,6 +19,7 @@ export async function logout() {
   Cookies.remove('entityData');
   Cookies.remove('firstPermission');
   Cookies.remove('lastPermission');
+  Cookies.remove('sessionToken');
 
   localStorage.clear();
 

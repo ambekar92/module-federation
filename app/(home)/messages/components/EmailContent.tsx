@@ -17,7 +17,7 @@ const flexStyles: CSSProperties  = {
 const EmailContent = () => {
 
   const {data, isLoading} = useThreads();
-  const {data: sender} = useSender();
+  // const {data: sender} = useSender();
 
   return (
     <Card style={{height: '100vh'}}>
@@ -27,9 +27,9 @@ const EmailContent = () => {
         {/* <div style={flexStyles}>
                 <strong>To:</strong><span className='text-base'>{data?.[0]?.messages?.[0]?.sender.display_name}</span>
             </div> */}
-        <div style={flexStyles}>
+        {/* <div style={flexStyles}>
           <strong>From:</strong><span className='text-base'>{sender?.email}</span>
-        </div>
+        </div> */}
         <div style={flexStyles}>
           <strong>Subject:</strong><span className='text-base'>{data?.[0]?.subject}</span>
         </div>

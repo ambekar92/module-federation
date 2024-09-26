@@ -45,6 +45,7 @@ const ProtectedPage = () => {
       const session = await getSession(); // Check for session
       if (session) {
         let redirectUrl = CLAIM_YOUR_BUSINESS;
+
         const firstPermission = session.permissions[0].slug ? session.permissions[0].slug : Cookies.get('firstPermission');
         const firstPermissionSlug = firstPermission ? firstPermission as Role : undefined;
         const lastPermission = session.permissions[session.permissions.length - 1].slug ? session.permissions[session.permissions.length - 1].slug : Cookies.get('lastPermission');
@@ -55,7 +56,8 @@ const ProtectedPage = () => {
             console.log('firstPermissionSlug', firstPermissionSlug);
             console.log('lastPermissionSlug', lastPermissionSlug);
           }
-          redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug);
+
+          redirectUrl = postLoginRedirectUrl(firstPermissionSlug, lastPermissionSlug, session);
           if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
             console.log('REDIRECT TO', redirectUrl);
           }

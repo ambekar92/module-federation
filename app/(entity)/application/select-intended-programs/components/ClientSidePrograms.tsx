@@ -62,15 +62,15 @@ export default function ClientSidePrograms({
         newSelection.push(program)
 
         // Handle mutually exclusive selections
-        if (program.id === 6) { // EDWOSB
-          newSelection = newSelection.filter((p) => p.id !== 3) // Removes WOSB if EDWOSB is selected
-        } else if (program.id === 3) { // WOSB
-          newSelection = newSelection.filter((p) => p.id !== 6) // Removes EDWOSB if WOSB is selected
-        } else if (program.id === 5) { // SDVOSB
-          newSelection = newSelection.filter((p) => p.id !== 4) // Removes VOSB if SDVOSB is selected
-        } else if (program.id === 4) { // VOSB
-          newSelection = newSelection.filter((p) => p.id !== 5) // Removes SDVOSB if VOSB is selected
-        }
+        // if (program.id === 6) { // EDWOSB
+        //   newSelection = newSelection.filter((p) => p.id !== 3) // Removes WOSB if EDWOSB is selected
+        // } else if (program.id === 3) { // WOSB
+        //   newSelection = newSelection.filter((p) => p.id !== 6) // Removes EDWOSB if WOSB is selected
+        // } else if (program.id === 5) { // SDVOSB
+        //   newSelection = newSelection.filter((p) => p.id !== 4) // Removes VOSB if SDVOSB is selected
+        // } else if (program.id === 4) { // VOSB
+        //   newSelection = newSelection.filter((p) => p.id !== 5) // Removes SDVOSB if VOSB is selected
+        // }
       }
 
       return newSelection

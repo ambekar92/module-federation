@@ -11,7 +11,7 @@ import { useParams } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Provider } from 'react-redux';
 import useSWR from 'swr';
-import ApplicationLayout from '../../../components/ApplicationLayout';
+import ApplicationLayout from '../../../[application_id]/[section]/_layout';
 import HubMock from '../../../components/questionnaire/HubMock';
 import { QuestionnaireListType } from '../../../components/questionnaire/utils/types';
 import Questions from '../../../qa-helpers/Questions';
@@ -35,7 +35,8 @@ const QuestionnairePage: React.FC = () => {
   useUpdateApplicationProgress('Questionnaires');
   const { data: questionnairesData, error, mutate } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  useRedirectIfNoOwners({ ownerData, applicationId });
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
+  useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
 
   const refetchQuestionnaires = () => {
     mutate();
@@ -68,7 +69,7 @@ const QuestionnairePage: React.FC = () => {
     }
     if (
       applicationData && applicationData.workflow_state !== 'draft'
-  		&& applicationData.workflow_state !== 'returned_for_firm'
+  		&& applicationData.workflow_state !== 'returned_to_firm'
     ) {
       window.location.href = `/application/view/${applicationId}`;
     }

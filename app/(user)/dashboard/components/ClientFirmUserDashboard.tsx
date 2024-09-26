@@ -1,29 +1,31 @@
 'use client'
-import { GET_APPLICATIONS_ROUTE } from '@/app/constants/local-routes'
-import { DELEGATE_DASHBOARD_PAGE } from '@/app/constants/url'
+import InvitationCodeForm from '@/app/(entity)/claim-your-business/components/forms/InvitationCodeForm'
+import { GET_APPLICATIONS_ROUTE, GET_ENTITIES_ROUTE } from '@/app/constants/local-routes'
+import { buildRoute, CLAIM_YOUR_BUSINESS, DELEGATE_DASHBOARD_PAGE, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
-import { Application } from '@/app/services/types/application-service/Application'
+import { Application, EntitiesType } from '@/app/services/types/application-service/Application'
+import { Show } from '@/app/shared/components/Show'
 import Spinner from '@/app/shared/components/spinner/Spinner'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Collection,ButtonGroup, Card, Grid, Link, Table } from '@trussworks/react-uswds'
+import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutlined'
+import { Button, ButtonGroup, Collection, Grid } from '@trussworks/react-uswds'
 import { useRouter } from 'next/navigation'
 import { ReactElement, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import styles from '../utils/FirmDashboard.module.scss'
 import ApplicationCards from './ApplicationCards'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 
 export default function ClientFirmUserDashboard() {
   const router = useRouter()
   const { data: session, status } = useSessionUCMS()
   const [clickedId, setClickedId] = useState<number | null>(null)
   const [actionButton, setActionButton] = useState<ReactElement>()
-  const [openConfirmationModal, setOpenConfirmationModal] =
-    useState<boolean>(false)
-  const [confirmationType, setConfirmationType] = useState<string | undefined>(
-    '',
-  )
+  const [openConfirmationModal, setOpenConfirmationModal] = useState<boolean>(false)
+  const [confirmationType, setConfirmationType] = useState<string | undefined>('')
+  const [enterInvitationCode, setEnterInvitationCode] = useState(false);
   const [userId, setUserId] = useState<number | null>(null)
   const hasDelegate = session?.permissions?.some(permission => permission.slug.includes('delegate'))
 
@@ -41,8 +43,10 @@ export default function ClientFirmUserDashboard() {
 
   const url = userId ? `${GET_APPLICATIONS_ROUTE}?user_id=${userId}` : null
 
-  const { data, error } = useSWR<Application[]>(url);
-
+  const { data, error, isLoading } = useSWR<Application[]>(url);
+  const { data: entityData } = useSWR<EntitiesType[]>(
+    (!isLoading && (data?.length === 0 || !data) && session?.user_id) ? `${GET_ENTITIES_ROUTE}?owner_user_id=${session.user_id}` : null
+  );
   const applicationDeleteOrWithdraw = async (event: any, id: number) => {
     // Prevent default action and event bubbling if needed
     event.preventDefault()
@@ -52,46 +56,49 @@ export default function ClientFirmUserDashboard() {
     if (!currentApplication) {return;}
 
     const status = currentApplication.workflow_state
-    console.log(currentApplication)
     // Conditional rendering based on status
     const buttons =
-    status === 'submitted' ? (
-      <div className={styles.buttonContainer}>
-        <Button
-          type="button"
-          data-type="withdraw"
-          className={styles.actionButton}
-          onClick={handleActionButtonClick}
-        >
-          <div className={styles.container}>Withdraw Application</div>
-        </Button>
-        <Button
-          type="button"
-          className={styles.closeIcon}
-          onClick={() => setClickedId(null)}
-        >
-          <FontAwesomeIcon icon={faTimes} />
-        </Button>
-      </div>
-    ) : (
-      <div className={styles.buttonContainer}>
-        <Button
-          type="button"
-          data-type="delete"
-          className={styles.actionButton}
-          onClick={handleActionButtonClick}
-        >
-          Delete Application
-        </Button>
-        <Button
-          type="button"
-          className={styles.closeIcon}
-          onClick={() => setClickedId(null)}
-        >
-          <FontAwesomeIcon icon={faTimes} />
-        </Button>
-      </div>
-    )
+		status === 'returned_to_firm' || status === 'return_to_firm' || status === 'request_for_information'
+		  ? <></>
+		  : status === 'submitted'
+		    ? (
+		      <div className={styles.buttonContainer}>
+		        <Button
+		          type="button"
+		          data-type="withdraw"
+		          className={styles.actionButton}
+		          onClick={handleActionButtonClick}
+		        >
+		          <div className={styles.container}>Withdraw Application</div>
+		        </Button>
+		        <Button
+		          type="button"
+		          className={styles.closeIcon}
+		          onClick={() => setClickedId(null)}
+		        >
+		          <FontAwesomeIcon icon={faTimes} />
+		        </Button>
+		      </div>
+		    )
+		    : (
+		      <div className={styles.buttonContainer}>
+		        <Button
+		          type="button"
+		          data-type="delete"
+		          className={styles.actionButton}
+		          onClick={handleActionButtonClick}
+		        >
+							Delete Application
+		        </Button>
+		        <Button
+		          type="button"
+		          className={styles.closeIcon}
+		          onClick={() => setClickedId(null)}
+		        >
+		          <FontAwesomeIcon icon={faTimes} />
+		        </Button>
+		      </div>
+		    )
 
     setActionButton(buttons)
     setClickedId(id)
@@ -108,6 +115,20 @@ export default function ClientFirmUserDashboard() {
     setClickedId(null)
   }
 
+  const onEnterCodeCancel = () => {
+    setEnterInvitationCode(false)
+  }
+
+  const handleApply = () => {
+    if(entityData && entityData.length > 0) {
+      window.location.href = buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, {
+        entity_id: entityData[entityData.length - 1].id,
+      })
+    } else {
+      window.location.href = CLAIM_YOUR_BUSINESS
+    }
+  };
+
   if (error) {
     return <div>Error: {error.message}</div>
   }
@@ -118,28 +139,27 @@ export default function ClientFirmUserDashboard() {
 
   return (
     <>
-      {/* <div>
-        <h1>Welcome, {session?.user?.name}</h1>
-      </div> */}
-      
+      <Show>
+        <Show.When isTrue={enterInvitationCode === true}>
+          <InvitationCodeForm onEnterCodeCancel={onEnterCodeCancel} cancelText='Cancel' submitForm={onEnterCodeCancel} />
+        </Show.When>
+      </Show>
       <Grid row>
         <Grid col={6}>
-        <h1>Welcome, {session?.user?.name}</h1>
+          <h1>Welcome, {session?.user?.name}</h1>
         </Grid>
         <Grid col={6} className="display-flex flex-justify-end margin-bottom-1">
           <ButtonGroup type="default">
-            <Button type="button"
-              outline
-            >
-              {/* <span><AppRegistrationOutlinedIcon className='margin-right-1' /></span>  */}
-              <span className='margin-bottom-2' style={{ marginBottom: "15px" }}>Invitation Code </span>
+            <Button type="button" onClick={() => setEnterInvitationCode(true)} outline className="display-flex align-items-center">
+              <AppRegistrationOutlinedIcon className="margin-right-1" />
+              <span style={{ marginTop: '4px' }}>Invitation Code</span>
             </Button>
-            <Button
-              type="button"
-              outline
-            >
-              Apply
-            </Button>
+            {(!data || data.length === 0) && (
+              <Button type="button" onClick={handleApply} outline className="display-flex align-items-center">
+                <PostAddOutlinedIcon className="margin-right-1" />
+                <span style={{ marginTop: '4px' }}>Apply</span>
+              </Button>
+            )}
           </ButtonGroup>
         </Grid>
       </Grid>

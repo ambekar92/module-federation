@@ -8,7 +8,7 @@ import {
   Radio,
   Select,
 } from '@trussworks/react-uswds'
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import { ShouldIApplyFormType } from '../schema'
 
@@ -22,7 +22,22 @@ export default function OwnershipForm() {
     if (data.ownership) {
       setValue('ownership', data.ownership)
     }
+  }, [setValue])
+
+  const updateLocalStorage = useCallback((name: string, value: any) => {
+    const data = JSON.parse(localStorage.getItem('should-i-apply') || '{}')
+    if (!data.ownership) {
+      data.ownership = {}
+    }
+    data.ownership[name] = value
+    localStorage.setItem('should-i-apply', JSON.stringify(data))
   }, [])
+
+  const createChangeHandler = (name: string, onChange: (value: any) => void) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const value = event.target.value
+    onChange(value)
+    updateLocalStorage(name, value)
+  }
 
   return (
     <Controller
@@ -41,7 +56,7 @@ export default function OwnershipForm() {
                 <Radio
                   checked={field.value === 'yes'}
                   value="yes"
-                  onChange={field.onChange}
+                  onChange={createChangeHandler('ownOver50Percent', field.onChange)}
                   name="ownOver50Percent"
                   id="ownOver50Percent-yes"
                   label="Yes"
@@ -49,7 +64,7 @@ export default function OwnershipForm() {
                 <Radio
                   value="no"
                   checked={field.value === 'no'}
-                  onChange={field.onChange}
+                  onChange={createChangeHandler('ownOver50Percent', field.onChange)}
                   name="ownOver50Percent"
                   id="ownOver50Percent-no"
                   label="No"
@@ -68,7 +83,7 @@ export default function OwnershipForm() {
                   name="gender"
                   id="gender"
                   data-testid="testid-gender-select-should-i-apply"
-                  onChange={field.onChange}
+                  onChange={createChangeHandler('gender', field.onChange)}
                   value={field.value}
                 >
                   <option value="">--</option>
@@ -89,7 +104,7 @@ export default function OwnershipForm() {
                   <Icon.Info className="text-primary-dark"></Icon.Info>
                 </Label>
                 <Radio
-                  onChange={field.onChange}
+                  onChange={createChangeHandler('socialDisadvantage', field.onChange)}
                   name="socialDisadvantage"
                   id="socialDisadvantage-yes"
                   value={'yes'}
@@ -98,7 +113,7 @@ export default function OwnershipForm() {
                 ></Radio>
                 <Radio
                   value={'no'}
-                  onChange={field.onChange}
+                  onChange={createChangeHandler('socialDisadvantage', field.onChange)}
                   name="socialDisadvantage"
                   id="socialDisadvantage-no"
                   label="No"
@@ -119,7 +134,7 @@ export default function OwnershipForm() {
                   id="USCitizen"
                   data-testid="testid-us-citizen-select-should-i-apply"
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={createChangeHandler('USCitizen', field.onChange)}
                 >
                   <option>--</option>
                   <option value="yes">Yes</option>
@@ -139,7 +154,7 @@ export default function OwnershipForm() {
                   name="veteran"
                   id="veteran"
                   data-testid="testid-veteran-select-should-i-apply"
-                  onChange={field.onChange}
+                  onChange={createChangeHandler('veteran', field.onChange)}
                   value={field.value}
                 >
                   <option>--</option>

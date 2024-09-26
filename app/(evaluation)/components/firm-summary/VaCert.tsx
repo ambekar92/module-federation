@@ -5,7 +5,8 @@ function VaCert() {
   return (
     <>
       <div className='grid-row margin-0'>
-        <div className="grid-col-12">
+        <p>No data found.</p>
+        {/* <div className="grid-col-12">
           <Table bordered fullWidth>
             <thead>
               <tr>
@@ -28,7 +29,7 @@ function VaCert() {
               </tr>
             </tbody>
           </Table>
-        </div>
+        </div> */}
 
       </div>
     </>

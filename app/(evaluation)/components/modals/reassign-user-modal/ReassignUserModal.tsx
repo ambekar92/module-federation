@@ -18,6 +18,9 @@ import RichText from '../../../../shared/form-builder/form-controls/rich-text/Ri
 import { stripHtmlTags } from '../../../../shared/utility/stripHtmlTags';
 import { subjectSuffixMap, userRolesOptionsMap } from './maps';
 import { ReassignType, ReassignUserType, schema } from './types';
+import axios from 'axios';
+import { useParams } from 'next/navigation';
+import { useCurrentApplication } from '@/app/(evaluation)/firm/useApplicationData';
 
 type Props = {
     modalRef: RefObject<ModalRef>,
@@ -29,10 +32,13 @@ type Props = {
 const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}: Props ) => {
   const currentUser = useSessionUCMS();
   const {trigger, isMutating} = useCreateNote(false);
-  const { applicationData } = useApplicationData(ApplicationFilterType.user_id, currentUser?.data.user_id);
+  // const { applicationData } = useApplicationData(ApplicationFilterType.application_id, applicationId);
+  const { application_id } = useParams<{ application_id: string }>()
+  const { applicationData } = useCurrentApplication()
   const [userOptions, setUserOptions] = useState<ComboBoxOption[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-	 const isModalOpen = () => {
+  const isModalOpen = () => {
     return modalRef.current?.modalIsOpen || false;
   };
 
@@ -58,8 +64,8 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
 
   useEffect(() => {
     if (isLoading || !data) {return;}
-    const opts= data.map(user => ({value: user.id, label: `${user.first_name} ${user.last_name}`})) as unknown as ComboBoxOption[];
-    setUserOptions(opts);
+    const opts= Array.isArray(data) && data.map(user => ({value: user.id, label: `${user.first_name} ${user.last_name}`})) as unknown as ComboBoxOption[];
+    if (opts) {setUserOptions(opts);}
   }, [data]);
 
   async function onSubmit(formData: ReassignUserType) {
@@ -74,7 +80,10 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
       // Redirect after both operations are complete
       window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationId }) + '?name=reassignment-complete';
     } catch (error) {
-      console.error('Failed to reassign or post note:', error);
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Failed to reassign or post note:', error);
+      }
+      setError('Failed to reassign the application. Please try again.');
     } finally {
       onClose();
     }
@@ -93,9 +102,12 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
   }
 
   async function reassign(formData: ReassignUserType) {
-    if(!applicationData?.process?.id) {return;}
+    if(!applicationData?.process?.id) {
+      throw new Error('Process ID is missing');
+    }
+
     const assignUserToViewflowPayload: AssignUserToViewflowPayload = {
-      process_id: applicationData?.process?.id,
+      process_id: applicationData.process.id,
       user_id: formData.user,
       pre_screener_id: 0,
       analyst_id: 0,
@@ -104,7 +116,17 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
       mpp_screener_id: 0,
       mpp_analyst_id: 0
     }
-    await assignUserToViewflow(assignUserToViewflowPayload);
+    try {
+      const response = await assignUserToViewflow(assignUserToViewflowPayload);
+      if (response.status !== 200) {
+        throw new Error(`Failed to assign user to viewflow: ${response.statusText}`);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(`Failed to assign user to viewflow: ${error.response?.data?.message || error.message}`);
+      }
+      throw error;
+    }
   }
 
   function onClose() {
@@ -129,6 +151,11 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
           <h1>Reassign Application</h1>
           {userOptions && <Combobox<ReassignUserType> name='user' required={true} label='Select User' options={userOptions}/>}
           <RichText<ReassignUserType> name='comments' label='Provide more information' required={true} itemId={Math.random()} />
+          {error && <div className="usa-alert usa-alert--error" role="alert">
+            <div className="usa-alert__body">
+              <p className="usa-alert__text">{error}</p>
+            </div>
+          </div>}
           <ModalFooter>
             <ButtonGroup>
               <Button type='submit' onClick={methods.handleSubmit(onSubmit)} disabled={isMutating}>

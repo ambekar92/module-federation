@@ -1,7 +1,7 @@
 'use client'
 import { Show } from '@/app/shared/components/Show'
 import { Alert, Button, Table, TextInput } from '@trussworks/react-uswds'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useFormState, useFormStatus } from 'react-dom'
 import { Controller, useFormContext } from 'react-hook-form'
 import { ShouldIApplyFormType } from '../schema'
@@ -26,8 +26,10 @@ const SubmitButton = ({ disabled }: { disabled: boolean }) => {
 const MatchForm = () => {
   const { control, watch, setValue } = useFormContext<ShouldIApplyFormType>()
   const [state, formAction] = useFormState(getNaicsCodeDetails, initialState);
-  const [localStorageData, setLocalStorageData] = React.useState<any | null>(null);
-  const [savedState, setSavedState] = React.useState<InitialState | null | string>(null);
+  const [localStorageData, setLocalStorageData] = useState<any | null>(null);
+  const [savedState, setSavedState] = useState<InitialState | null | string>(null);
+  const [submitCount, setSubmitCount] = useState(0);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const naics_code = watch('match.naics_code');
 
   useEffect(() => {
@@ -36,21 +38,32 @@ const MatchForm = () => {
   }, [])
 
   useEffect(() => {
-    if (state && Array.isArray(state) && state[0]?.naics_code) {
-      setSavedState(state);
+    if (state && Array.isArray(state)) {
+      if (state.length > 0 && state[0]?.naics_code) {
+        setSavedState(state);
+      } else {
+        setSavedState('No matching records found. Please try again.');
+      }
     } else if (state && !Array.isArray(state)) {
       setSavedState('No matching records found. Please try again.')
-    } else if (localStorageData) {
-      setValue('match.naics_code', JSON.parse(localStorageData)?.match?.searchTerm);
-      setSavedState(JSON.parse(localStorageData)?.match?.results);
+    } else if (localStorageData && submitCount === 0) {
+      const parsedData = JSON.parse(localStorageData);
+      setValue('match.naics_code', parsedData?.match?.searchTerm);
+      setSavedState(parsedData?.match?.results || 'No matching records found. Please try again.');
     }
     setValue('match.results', state)
+  }, [state, localStorageData, submitCount, setValue])
 
-  }, [state, localStorageData])
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitCount(prev => prev + 1);
+    setHasSubmitted(true);
+    formAction(new FormData(event.currentTarget));
+  }
 
   return (
     <div>
-      <form className='bg-base-lightest padding-2 radius-sm' style={{ display: 'flex', gap: '1rem' }} action={formAction}>
+      <form className='bg-base-lightest padding-2 radius-sm' style={{ display: 'flex', gap: '1rem' }} onSubmit={handleSubmit}>
         <Controller control={control} name='match.naics_code' render={({ field }) => (
           <TextInput placeholder='NAICS Code / Description'
             onChange={field.onChange}
@@ -59,44 +72,43 @@ const MatchForm = () => {
         )} />
         <SubmitButton disabled={!naics_code || naics_code?.trim().length === 0} />
       </form>
-      {savedState &&
-                <>
-                  <Show>
-                    <Show.When isTrue={Array.isArray(savedState) && savedState.length > 0} >
-                      <Alert heading='Success' headingLevel='h2' type='success' role='status' aria-live='polite'>
-                        <p>Based on the NAICS code you provided, it appears the Federal Government buys what you sell.
-                                    Continue to see if your should apply to the SBA Certification Program.
-                        </p>
-                      </Alert>
-                    </Show.When>
-                    <Show.Otherwise>
-                      <Alert heading='Sorry' headingLevel='h2' type='warning' role='status' aria-live='polite'>
-                        <p>Based on the NAICS code you provided, it appears the Federal Government does not buy what you sell.
-                                    You may want to pursue business in other NAICS codes if you want to do business with the Federal Government.
-                        </p>
-                      </Alert>
-                    </Show.Otherwise>
-                  </Show>
-                  {savedState && Array.isArray(savedState) && <Table className='width-full'>
-                    <thead>
-                      <tr>
-                        <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >NAICS Code</th>
-                        <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >Description</th>
-                        <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >Amount awarded in FY21</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {savedState?.map((el, idx) => (
-                        <tr key={idx}>
-                          <td>{el.naics_code}</td>
-                          <td>{el.description}</td>
-                          <td>{el.award_amount}</td>
-                        </tr>
-                      ))
-                      }
-                    </tbody>
-                  </Table>}
-                </>
+      {hasSubmitted && savedState &&
+        <>
+          <Show>
+            <Show.When isTrue={Array.isArray(savedState) && savedState.length > 0} >
+              <Alert heading='Success' headingLevel='h2' type='success' role='status' aria-live='polite'>
+                <p>Based on the NAICS code you provided, it appears the Federal Government buys what you sell.
+                  Continue to see if your should apply to the SBA Certification Program.
+                </p>
+              </Alert>
+            </Show.When>
+            <Show.Otherwise>
+              <Alert heading='Sorry' headingLevel='h2' type='warning' role='status' aria-live='polite'>
+                <p>Based on the NAICS code you provided, it appears the Federal Government does not buy what you sell.
+                  You may want to pursue business in other NAICS codes if you want to do business with the Federal Government.
+                </p>
+              </Alert>
+            </Show.Otherwise>
+          </Show>
+          {savedState && Array.isArray(savedState) && savedState.length > 0 && <Table className='width-full'>
+            <thead>
+              <tr>
+                <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >NAICS Code</th>
+                <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >Description</th>
+                <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >Amount awarded in FY21</th>
+              </tr>
+            </thead>
+            <tbody>
+              {savedState.map((el, idx) => (
+                <tr key={idx}>
+                  <td>{el.naics_code}</td>
+                  <td>{el.description}</td>
+                  <td>{el.award_amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>}
+        </>
       }
     </div>
   )
@@ -117,6 +129,6 @@ async function getNaicsCodeDetails(prevState: any, formData: FormData): Promise<
     localStorage.setItem('should-i-apply', JSON.stringify(saved));
     return results as InitialState;
   } catch (error) {
-    console.error(error)
+    if(process.env.NEXT_PUBLIC_DEBUG_MODE) {console.error(error)}
   }
 }

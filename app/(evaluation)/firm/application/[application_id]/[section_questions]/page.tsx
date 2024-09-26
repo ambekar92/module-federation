@@ -53,29 +53,6 @@ const SectionQuestions = () => {
     }
   }, [applicationData, userRole]);
 
-  // const analystContributorName = useMemo(() => {
-  //   if (!applicationData?.application_contributor) {
-  //     return null;
-  //   }
-
-  //   if (userRole === 'analyst' || userRole === 'reviewer') {
-  //     const analystRoles: Role[] = [
-  //       Role.ANALYST,
-  //       Role.ANALYST_HIGH_TIER,
-  //       Role.ANALYST_LOW_TIER,
-  //       Role.ANALYST_HIGH,
-  //       Role.ANALYST_LOW,
-  //       Role.ANALYST_CONTRIBUTOR_OGC,
-  //       Role.ANALYST_CONTRIBUTOR_OSS,
-  //     ];
-
-  //     const analystContributor = applicationData.application_contributor.find(contributor => {
-  //       return analystRoles.some(role => role.toLowerCase().replace(/_/g, '-') === contributor.application_role.name);
-  //     });
-  //     return `${analystContributor?.user.first_name} ${analystContributor?.user.last_name} - ${analystContributor?.application_role.title}` || null;
-  //   }
-  // }, [applicationData, userRole]);
-
   const reviewerContributorId = useMemo(() => {
     if (!applicationData?.application_contributor || userRole !== 'reviewer') {
       return null;
@@ -180,13 +157,32 @@ const SectionQuestions = () => {
 
   const { updateQuestionnaireCompletion } = useQuestionnaireState(applicationData, analystQuestionnaires);
 
+  /**
+   * Handle the "Continue" button click
+   * Find the current nav item index in the combined nav items array
+   * If the current item is the last one, return
+   * Otherwise, navigate to the next item's url
+   */
   function onContinue() {
     const current = combinedNavItems.find(q => q.title === title);
-    if (!current) { setShowNextButton(false); return; }
+    if (!current) {
+      setShowNextButton(false);
+      return;
+    }
     const currIdx = combinedNavItems.indexOf(current);
     if (currIdx === (combinedNavItems.length - 1)) { return; }
-    const next = combinedNavItems[currIdx + 1].url;
-    router.push(next.startsWith('/') ? next : `../${next}`);
+    const next = combinedNavItems[currIdx + 1];
+
+    let nextUrl = next.url.replace(/^(\d+)/, params.application_id);
+
+    if (!nextUrl.startsWith('/')) {
+      nextUrl = `/${nextUrl}`;
+    }
+    if (!nextUrl.startsWith('/firm/application/')) {
+      nextUrl = `/firm/application${nextUrl}`;
+    }
+
+    router.push(nextUrl);
   }
 
   const handleAnswerChange = async (question: Question, value: any) => {
@@ -409,12 +405,15 @@ const SectionQuestions = () => {
               </Button>
             </>
           ) : (
-            (((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
-							(userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
-							(userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
-							(userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
-							showNextButton
-            ) && <Button onClick={onContinue} className='margin-top-4' type='button'>Accept & Continue</Button>
+            !isAnalystQuestionnaire && (
+              ((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
+              (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
+              (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
+              (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
+              showNextButton && (
+                <Button onClick={onContinue} className='margin-top-4' type='button'>Continue</Button>
+              )
+            )
           )}
           {isAnalystQuestionnaire && (
             <Button

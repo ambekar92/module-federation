@@ -14,7 +14,7 @@ import styles from '../../Evaluation.module.scss'
 import DeleteConfirmationModal from '../../modals/request-info/DeleteConfirmationModal'
 import RequestInfoModal from '../../modals/request-info/RequestInfoModal'
 import axios from 'axios'
-import { REASON_CODES_ROUTE, RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/local-routes'
+import { REASON_CODES_ROUTE, RFI_CANCEL_ROUTE, RFI_ITEMS_ROUTE, RTF_ITEMS_ROUTE } from '@/app/constants/local-routes'
 
 export interface ReasonState {
   id: number | null;
@@ -81,6 +81,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
   const handleUpdateRequest = async () => {
     try {
       const requestData = {
+        id: lastPostedItem?.id,
         application_id: applicationData?.id,
         author_id: sessionData.data?.user_id,
         explanation: modalExplanation,
@@ -88,7 +89,7 @@ function RtfRtiForm({ navItems }: RtfRfiFormProps) {
         reason: modalReason.title
       };
 
-      const response = await axios.put(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_ITEMS_ROUTE, requestData);
+      const response = await axios.put(userRole === 'screener' ? RTF_ITEMS_ROUTE : RFI_CANCEL_ROUTE, requestData);
 
       if (response.data) {
         setLastPostedItem({

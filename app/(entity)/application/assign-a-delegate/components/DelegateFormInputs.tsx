@@ -91,6 +91,7 @@ const DelegateFormInputs = ({
   const dispatch = useFormDispatch()
   const { delegates, editingDelegate } = useFormSelector(selectForm)
   const [requestSuccessful, setRequestSuccessful] = useState<boolean>(false);
+  const [hasInitialDelegate, setHasInitialDelegate] = useState<boolean>(false);
   const [showForm, setShowForm] = useState(true)
   const [inviteSent, setInviteSent] = useState(false)
   const { data: session } = useSessionUCMS()
@@ -124,7 +125,7 @@ const DelegateFormInputs = ({
             },
           ]),
         )
-        console.log('delegatesData', delegatesData)
+        setHasInitialDelegate(true)
         setRequestSuccessful(true)
       }
     } else {
@@ -171,6 +172,7 @@ const DelegateFormInputs = ({
     })
     const data = getValues()
     if (isValid) {
+      setHasInitialDelegate(false)
       if (!userId) {
         alert('You must be signed in to continue.')
         return
@@ -444,7 +446,7 @@ const DelegateFormInputs = ({
       <Grid row gap="sm" className="margin-y-2 flex-justify-end" col={12}>
         <hr className="width-full" />
         <ButtonGroup className="display-flex">
-          {inviteSent && requestSuccessful ? (
+          {hasInitialDelegate || (inviteSent && requestSuccessful) ? (
             <>
               {applicationId ? (
                 <Link

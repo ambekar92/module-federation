@@ -82,22 +82,21 @@ export function handleInternalRoles(lastPermissionSlug: Role): string {
   }
 }
 
-export function handlePrimaryQualifyingOwner(applicationData: CookieApplication[] | null, entityData: CookieEntity[] | null): string {
-  if (applicationData?.length) {
-    const lastApplication = applicationData[applicationData.length - 1];
-    return lastApplication.progress
-      ? getApplicationRedirect(lastApplication)
-      : getEntityRedirect(entityData);
+export function handlePrimaryQualifyingOwner(sessionData: []): string {
+  if(sessionData?.permissions[1].slug === Role.PRIMARY_QUALIFYING_OWNER) {
+    if (sessionData.applications.length && sessionData.applications[0]['workflow_state'] !== 'submitted') {
+      return DASHBOARD
+    } else {
+      return sessionData.applications.length ? DASHBOARD : sessionData.entities.length > 0 ? buildRoute(SELECT_INTENDED_PROGRAMS_PAGE, { entity_id: sessionData.entities[0].entity_id }) : CLAIM_YOUR_BUSINESS
+    }
+  } else if (sessionData?.permissions[1].slug === Role.DELEGATE) {
+    return sessionData.entities.length > 0 ? DASHBOARD : CLAIM_YOUR_BUSINESS
   }
-  return getEntityRedirect(entityData);
+  return CLAIM_YOUR_BUSINESS; // Default return statement
 }
 
-export function handleNonPrimaryRoles(applicationData: CookieApplication[] | null): string {
-  if (applicationData?.length) {
-    const lastApplication = applicationData[applicationData.length - 1];
-    return getApplicationRedirect(lastApplication);
-  }
-  return CLAIM_YOUR_BUSINESS;
+export function handleNonPrimaryRoles(sessionData: []): string {
+  return sessionData?.applications.length ? DASHBOARD : CLAIM_YOUR_BUSINESS
 }
 
 function getEntityRedirect(entityData: CookieEntity[] | null): string {

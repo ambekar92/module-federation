@@ -18,7 +18,6 @@ export function useDocuments(params?: Partial<Record<DocumentParams, string | nu
         .filter(([key, value]) => value !== null && value !== undefined)
     )
     : {};
-
   const queryString = Object.keys(filteredParams).length > 0
     ? '?' + new URLSearchParams(filteredParams as Record<string, string>).toString()
     : '';

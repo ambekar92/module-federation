@@ -1,5 +1,5 @@
 'use client'
-import { Grid } from '@trussworks/react-uswds'
+import { Alert, Grid } from '@trussworks/react-uswds'
 import { useEffect, useRef, useState } from 'react'
 import NotificationHeader from './NotificationHeader'
 import styles from './NotificationList.module.scss'
@@ -12,28 +12,19 @@ import Service from '../../../services/fetcher-legacy';
 
 // Data
 import { Avatar } from '@mui/material'
-import notificationData from './notificationData.json'
+import { useSessionUCMS } from '@/app/lib/auth'
+import { GET_NOTIFICATIONS_ROUTE } from '@/app/constants/local-routes'
+import { INotification } from '@/app/services/types/communication-service/Notification'
+import useSWR from 'swr'
 
 const NotificationLists = () => {
-  const dataFetchedRef = useRef(false)
-  const [getNotificationData, setNotificationData] = useState<any>([])
+  const session = useSessionUCMS();
   const [visibleIcons, setVisibleIcons] = useState([]);
   const [markAsAllReadStatus, setMarkAsAllReadStatus] = useState(false);
   const [markAsAllUnReadStatus, setMarkAsAllUnReadStatus] = useState(true);
-
-  useEffect(() => {
-    if (dataFetchedRef.current) {
-      return
-    }
-    dataFetchedRef.current = true
-    fetchNotificationData() // Calling only once
-  }, [])
-
-  const fetchNotificationData = async () => {
-    const user_id = 1
-    const response = await Service.getNotifications(user_id)
-    setNotificationData(response?.data)
-  }
+  const { data: notificationData} = useSWR<INotification[]>(
+    session.data.user.id ? `${GET_NOTIFICATIONS_ROUTE}?user_id=${session.data.user.id}` : null
+  )
 
   const handleToggleIcon = (id: any) => {
     setVisibleIcons((prevState: any) => ({
@@ -54,9 +45,10 @@ const NotificationLists = () => {
 
   return (
     <>
-      <NotificationHeader selectMarkAsAllRead={markAsAllRead} selectMarkAsAllUnRead={markAsAllUnRead} />
+      <NotificationHeader selectMarkAsAllRead={markAsAllRead} selectMarkAsAllUnRead={markAsAllUnRead} cnt={notificationData && Array.isArray(notificationData) && notificationData.length || 0 } />
       <div className="margin-top-5 line-height-mono-4">
-        {notificationData.data?.map((item, index) => {
+        {(notificationData as any)?.error && <Alert headingLevel='h2' type='error' heading="Could not load notifications. Please try again later." />}
+        {notificationData && Array.isArray(notificationData) && notificationData?.map((item, index) => {
           return (
             <div key={index} className={styles['notification-lineItem']} onClick={() => handleToggleIcon(item.id)}>
               <Grid row>
@@ -69,10 +61,9 @@ const NotificationLists = () => {
                   ></Avatar>
                 </Grid>
                 <Grid col={9}>
-                  <h4 className="margin-0">{item.title}</h4>
-                  <p className="margin-0">{item.description}</p>
+                  <p className="margin-0">{item.message}</p>
                   <h6 className={`margin-0 text-normal ${styles['text-h6']}`}>
-                    {item.created_at}
+                    {new Date(item.timestamp).getMinutes()-new Date().getMinutes()} minutes ago.
                   </h6>
                 </Grid>
                 <Grid

@@ -7,6 +7,7 @@ import { decrypt } from '@/app/shared/utility/encryption';
 export function postLoginRedirectUrl(
   firstPermissionSlug: Role,
   lastPermissionSlug: Role,
+  sessionData: []
 ): string {
   const applicationDataString = decrypt(Cookies.get('applicationData'));
       	const entityDataString = decrypt(Cookies.get('entityData'));
@@ -26,10 +27,10 @@ export function postLoginRedirectUrl(
         case Role.OTHER_INDIVIDUALS:
         case Role.NON_QUALIFYING_OWNER:
         case Role.SPOUSE:
-          return handleNonPrimaryRoles(applicationData);
+          return handleNonPrimaryRoles(sessionData);
         case Role.PRIMARY_QUALIFYING_OWNER:
         case Role.DELEGATE:
-          return handlePrimaryQualifyingOwner(applicationData, entityData);
+          return handlePrimaryQualifyingOwner(sessionData);
         case Role.CONTRIBUTOR:
           return DASHBOARD;
         case Role.EXTERNAL:

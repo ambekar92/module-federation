@@ -96,7 +96,13 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.redirect(`${request.nextUrl.origin}/login`);
     }
   }],
-
+  '/aeroad': [async (request: NextRequest) => {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.redirect(`${request.nextUrl.origin}`);
+    } else {
+      return NextResponse.next();
+    }
+  }]
 };
 
 export const config = {

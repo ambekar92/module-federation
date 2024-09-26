@@ -89,7 +89,8 @@ export const UCPTable: React.FC<UCPTableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {gridRows.map((row, rowIndex) => (
+          {/* Todo: Need to remove *** checker after BE fix */}
+          {!gridRows.includes('******') && gridRows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
               {gridQuestions.map((gridQuestion) => (
                 gridQuestion.question_type !== 'document_upload' && (

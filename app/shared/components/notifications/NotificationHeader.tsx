@@ -19,7 +19,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import CloseIcon from '@mui/icons-material/Close';
 
-function NotificationHeader(props:any) {
+function NotificationHeader(props:{cnt:number, selectMarkAsAllRead:()=>void, selectMarkAsAllUnRead:()=>void}) {
   const [getMenuFilter, setMenuFilter] = useState<HTMLElement | null>(null)
   const [getMenu, setMenu] = useState<HTMLElement | null>(null)
   const [filterReadMenu, setFilterReadMenu] = useState(false);
@@ -69,7 +69,7 @@ function NotificationHeader(props:any) {
     <>
       <div className='display-flex flex-align-center'>
         <h1 className='flex-fill'>Notifications
-          <span className={styles['notification-count']}>20</span>
+          <span className={styles['notification-count']}>{props.cnt}</span>
         </h1>
 
         {/* filter Selected */}
@@ -195,7 +195,7 @@ function NotificationHeader(props:any) {
         </div>
       </div>
 
-      <Grid row gap='lg'>
+      {/* <Grid row gap='lg'>
         <Grid col={3}>
           <button
             className={`${styles['mainMenuButton']} display-flex flex-align-center padding-x-105 padding-y-1`}
@@ -229,7 +229,7 @@ function NotificationHeader(props:any) {
             <p className='margin-left-1'>Reminders</p>
           </button>
         </Grid>
-      </Grid>
+      </Grid> */}
     </>
   )
 }

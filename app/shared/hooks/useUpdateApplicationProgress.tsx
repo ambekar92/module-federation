@@ -1,10 +1,10 @@
-import { UPDATE_APPLICATION_ROUTE } from '@/app/constants/local-routes';
+import { APPLICATION_CONTRIBUTORS_ROUTE } from '@/app/constants/local-routes';
 import { useEffect, useRef, useMemo } from 'react';
 import { useApplicationContext } from './useApplicationContext';
 import Cookies from 'js-cookie';
 import { encrypt } from '@/app/shared/utility/encryption';
 import axios from 'axios';
-
+import { useSessionUCMS } from '@/app/lib/auth';
 /**
  * Updates the progress of an application in the database, and also in
  * the user's cookies.
@@ -17,11 +17,13 @@ export const useUpdateApplicationProgress = (progress: string) => {
   const { applicationId, applicationData } = useApplicationContext();
   const previousProgressRef = useRef(progress);
   const updateMadeRef = useRef(false);
+  const session = useSessionUCMS();
 
   const memoizedProgress = useMemo(() => progress, [progress]);
 
   useEffect(() => {
-    if (applicationData && memoizedProgress !== previousProgressRef.current) {
+    console.log('applicationData', memoizedProgress, previousProgressRef.current);
+    if (applicationData) {
       const simpleApplicationData = {
         id: applicationData.id,
         progress: memoizedProgress,
@@ -35,8 +37,10 @@ export const useUpdateApplicationProgress = (progress: string) => {
         try {
           if (applicationId) {
             updateMadeRef.current = true;
-            const response = await axios.put(UPDATE_APPLICATION_ROUTE, {
-              application_id: applicationId,
+            const applicationContributors = session?.data.applications
+            const contributor = applicationContributors.filter((contributor) => contributor.application_id === applicationId);
+
+            const response = await axios.put(APPLICATION_CONTRIBUTORS_ROUTE + `/${contributor[0].id}`, {
               progress: memoizedProgress
             });
             if (!response.data) {

@@ -96,7 +96,7 @@ export const sbaProgramOptions: ProgramOption[] = [
 		businesses owned by America’s veterans. This program encourages veterans to continue
 		contributing to the nation through economic means. VOSB participants benefit from SBA
 		resources, training, and access to government contracts.`,
-    disadvantages: ['veteran'],
+    disadvantages: ['veteran', 'disabled_veteran'],
     details:
       'https://www.sba.gov/federal-contracting/contracting-assistance-programs/veteran-contracting-assistance-programs',
     registration: 'vosb',

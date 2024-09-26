@@ -26,33 +26,54 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  const fetcher = async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error('An error occurred while fetching the data.');
+    }
+    return res.text();
+  };
+
   const { data: apiHtmlContent, error } = useSWR<string>(
-    applicationId && name ? `${LETTER_FOR_APP_ROUTE}?template_name=${name}&application_id=${applicationId}` : null
+    applicationId && name ? `${LETTER_FOR_APP_ROUTE}?template_name=${name}&application_id=${applicationId}` : null,
+    fetcher
   );
 
   const extractBodyContent = (html: string) => {
     const bodyMatch = html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    return bodyMatch ? bodyMatch[1].trim() : '';
+    return bodyMatch ? bodyMatch[1].trim() : html;
   };
 
   const cleanHtmlContent = (html: string) => {
-    // remove scripts
+    if (typeof html !== 'string') {
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Expected string for html, received:', typeof html);
+      }
+      return '';
+    }
+    // Remove scripts
     html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-    // removes Microsoft Office specific functions
+    // Remove style tags
+    html = html.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+    // Remove Microsoft Office specific functions
     html = html.replace(/\b(msoCommentShow|msoCommentHide|msoShowComment)\s*\([^)]*\)/g, '');
-    // removes conditional comments
+    // Remove conditional comments
     html = html.replace(/<!--\[if\s+\S*\]>[\s\S]*?<!\[endif\]-->/g, '');
-
     return html;
   };
 
   useEffect(() => {
     if (apiHtmlContent) {
-      const cleanedContent = cleanHtmlContent(apiHtmlContent);
-      setFullHtmlContent(cleanedContent);
-      const extractedBodyContent = extractBodyContent(cleanedContent);
-      setBodyContent(extractedBodyContent);
-      setMarkdownContent(turndownService.turndown(extractedBodyContent));
+      try {
+        const cleanedContent = cleanHtmlContent(apiHtmlContent);
+        setFullHtmlContent(cleanedContent);
+        const extractedBodyContent = extractBodyContent(cleanedContent);
+        setBodyContent(extractedBodyContent);
+        setMarkdownContent(turndownService.turndown(extractedBodyContent));
+      } catch (error) {
+        console.error('Error processing HTML content:', error);
+        setBodyContent('<p>Error: Failed to process content. Please try again later.</p>');
+      }
     }
   }, [apiHtmlContent]);
 
@@ -72,7 +93,9 @@ const BodyContentRenderer: React.FC<BodyContentRendererProps> = ({ name, isEdita
       setBodyContent(newHtmlContent);
       setIsEditing(false);
     } catch (error) {
-      console.error('Error converting markdown to html:', error);
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error converting markdown to html:', error);
+      }
     } finally {
       setIsSaving(false);
     }

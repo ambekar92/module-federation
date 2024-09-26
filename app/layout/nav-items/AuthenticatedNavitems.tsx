@@ -39,13 +39,6 @@ const AuthenticatedNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileN
         <span>Documents</span>
       </Link>
     </React.Fragment>,
-    ...(userRole === 'analyst' || userRole === 'approver' || userRole === 'reviewer' || userRole === 'screener' ? [
-      <React.Fragment key="auth_3">
-        <Link className="usa-nav_link" href={TASKS_DASHBOARD_PAGE}>
-          <span>My Tasks</span>
-        </Link>
-      </React.Fragment>
-    ] : []),
     ...(userRole === 'analyst' || userRole === 'approver' ? [
       <React.Fragment key="auth_4">
         <Link

@@ -5,7 +5,7 @@ import { IRTFRequestItem } from '@/app/services/types/evaluation-service/RTFItem
 import useSWR from 'swr';
 
 export const useRtfRequestData = (application_id: string, permission: string) => {
-  const { data: requestData, error, mutate } = useSWR<IRTFRequestItem[]>(permission === 'screener' ? `${RTF_REQUEST_ROUTE}/${application_id}` : `${RFI_REQUEST_ROUTE}/${application_id}`);
+  const { data: requestData, error, mutate } = useSWR<IRTFRequestItem[] | {message: string}>(permission === 'screener' ? `${RTF_REQUEST_ROUTE}/${application_id}` : `${RFI_REQUEST_ROUTE}/${application_id}`);
   const { data: reasonCodes, error: reasonError } = useSWR<ReasonCode[]>(REASON_CODES_ROUTE);
 
   const isLoading = !requestData || !reasonCodes;

@@ -13,7 +13,10 @@ export const superFetcher = async (url: string) => {
   const data: IEncryptedResponse = await response.json();
 
   if (data.encryptedData) {
-    const decryptedString = superDecrypt(data.encryptedData);
+    const cookies = (await import('js-cookie'))
+    const secretKey = cookies.default.get('sessionToken')
+
+    const decryptedString = superDecrypt(data.encryptedData, secretKey);
     if (decryptedString) {
       try {
         return JSON.parse(decryptedString);

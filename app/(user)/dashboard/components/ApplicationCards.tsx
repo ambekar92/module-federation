@@ -16,7 +16,13 @@ interface ApplicationCardProps {
 }
 
 function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWithdraw }: ApplicationCardProps) {
-  const { data: session, status } = useSessionUCMS();
+  const { data: session } = useSessionUCMS();
+
+  const hasActiveCertification = (application: Application, programTitle: string) => {
+    return application?.certifications?.some(cert =>
+      cert.program.title === programTitle && cert.workflow_state === 'active'
+    );
+  };
 
   return (
     <GridContainer containerSize="widescreen" className='padding-x-0'>
@@ -64,7 +70,7 @@ function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWi
                         <>
                           <Grid className='margin-bottom-1' key={programApp.id} col='auto'>
                             <span
-                              className='radius-md bg-base-dark text-size-xs padding-y-05 padding-x-1 text-white margin-right-1'
+                              className={`radius-md text-size-xs padding-y-05 padding-x-1 text-white margin-right-1 ${hasActiveCertification(application, programApp.programs.title) ? 'bg-green' : 'bg-base-dark'}`}
                               key={programApp.programs.name}
                             >
                               {programApp.programs.title}
@@ -87,7 +93,7 @@ function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWi
                         <p className='margin-y-0'><strong>Application ID</strong> <span>{application.id}</span></p>
                       </div>
                       <div>
-                        {(userContributor?.workflow_state === 'draft' || userContributor?.workflow_state === 'returned_to_firm') && application.id
+                        {(userContributor?.workflow_state === 'draft' || application.workflow_state === 'returned_to_firm') && application.id
                           ?
                           <Link
                             href={buildRoute(APPLICATION_QUESTIONNAIRE_LIST_PAGE, {

@@ -55,10 +55,12 @@ const TableContent: React.FC<TableContentProps> = ({  searchParams, onReassign }
           columns={columns}
         />
         <tbody>
+          {/* Todo: Need to add pagination back in the next release */}
+          {/* pagination causing task not displaying correctly randomly */}
           {tasks && tasks.length > 0 ? (
             tasks
               .sort((a, b) => sortData(a, b, searchParams))
-              .slice((parseInt(searchParams.page) - 1) * PAGE_SIZE, (parseInt(searchParams.page) - 1) * PAGE_SIZE + PAGE_SIZE)
+              // .slice((parseInt(searchParams.page) - 1) * PAGE_SIZE, (parseInt(searchParams.page) - 1) * PAGE_SIZE + PAGE_SIZE)
               .map((task) => (
                 <tr className='text-base-darker' key={task.application_id}>
                   <td style={{backgroundColor: 'white', color: '#3d4551',}}>
@@ -116,9 +118,10 @@ const TableContent: React.FC<TableContentProps> = ({  searchParams, onReassign }
           )}
         </tbody>
       </Table>
-      {tasks && tasks.length > 0 && Math.ceil(tasks.length / PAGE_SIZE) > 1 && (
+      {/* Todo: Need to add pagination back in the next release */}
+      {/* {tasks && tasks.length > 0 && Math.ceil(tasks.length / PAGE_SIZE) > 1 && (
         <TablePagination totalPages={Math.ceil(tasks.length / PAGE_SIZE)} />
-      )}
+      )} */}
     </>
   );
 };

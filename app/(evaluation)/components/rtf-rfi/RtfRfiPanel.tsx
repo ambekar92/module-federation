@@ -6,13 +6,14 @@ import RtfRtiDataTable from './tables/RtfRfiDataTable'
 import { useRtfRfiDraftData } from './hooks/useRtfRfiDraftData'
 import { useRtfRequestData } from './hooks/useRtfRequestData'
 import SentRtfTable from './tables/SentRtfTable'
+import { IRTFRequestItem } from '@/app/services/types/evaluation-service/RTFItems'
 
 function RtfRtiPanel() {
   const sessionData = useSessionUCMS()
   const userRole = getUserRole(sessionData?.data?.permissions || []);
   const params = useParams<{application_id: string}>()
   const { draftData, reasonCodes, isLoading, hasError, mutate: mutateDraft } = useRtfRfiDraftData(params.application_id, userRole);
-  const { requestData, hasError: hasRfiError,  mutate: mutateRequest } = useRtfRequestData(params.application_id, userRole);
+  const { requestData, hasError: hasRfiError, mutate: mutateRequest } = useRtfRequestData(params.application_id, userRole);
 
   const getHeaderText = () => {
     switch (userRole) {
@@ -24,18 +25,17 @@ function RtfRtiPanel() {
   }
 
   if (isLoading) {
-    return
+    return null;
   }
 
-  if (hasError) {
+  if (hasError || hasRfiError) {
     return <div>Error loading data</div>
   }
 
-  if (!draftData && !requestData
-		|| (requestData && typeof requestData === 'object' && hasError)
-		|| (draftData && typeof draftData === 'object' && hasRfiError)
-		|| (draftData?.length === 0 && requestData?.length === 0)
-  ) {
+  const isRequestDataValid = Array.isArray(requestData) && requestData.length > 0;
+  const isDraftDataValid = draftData && Object.keys(draftData).length > 0;
+
+  if (!isDraftDataValid && !isRequestDataValid) {
     return null;
   }
 
@@ -49,7 +49,7 @@ function RtfRtiPanel() {
             </h3>
           </div>
           <div>
-            {draftData && Object.keys(draftData).length > 0 && reasonCodes && (
+            {isDraftDataValid && reasonCodes && (
               <div className="usa-card__body">
                 <RtfRtiDataTable
                   draftData={draftData}
@@ -59,10 +59,10 @@ function RtfRtiPanel() {
                 />
               </div>
             )}
-            {requestData && Object.keys(requestData).length > 0 && reasonCodes && (
+            {isRequestDataValid && reasonCodes && (
               <div className="usa-card__body">
                 <SentRtfTable
-                  requestData={requestData}
+                  requestData={requestData as IRTFRequestItem[]}
                   reasonCodes={reasonCodes}
                 />
               </div>

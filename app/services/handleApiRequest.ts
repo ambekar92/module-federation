@@ -24,7 +24,7 @@ export async function handleApiRequest(
       console.log('************************** emailPasswordAuthToken lookup production mode')
     }
     const emailPasswordAuthToken = cookieStore.get('email_password_auth_token');
-    const userData = emailPasswordAuthToken ? JSON.parse(decrypt(emailPasswordAuthToken.value)) : undefined;
+    const userData = emailPasswordAuthToken ? JSON.parse(decrypt(emailPasswordAuthToken.value) ?? '') : undefined;
     const redisData = await redisClient.get(userData.email);
     token = redisData ? JSON.parse(redisData).access : null;
   }
@@ -42,10 +42,7 @@ export async function handleApiRequest(
       'Authorization': `Bearer ${token}`
     }
 
-    if (method === 'DELETE') {
-      const { searchParams } = new URL(request.url)
-      url = `${url}?${searchParams.toString()}`
-    } else if (method !== 'GET') {
+    if (method !== 'GET') {
       const contentType = request.headers.get('content-type')
       if (contentType && contentType.includes('multipart/form-data')) {
         body = await request.formData()
@@ -53,6 +50,11 @@ export async function handleApiRequest(
         body = await request.text()
         headers['Content-Type'] = 'application/json'
       }
+    }
+
+    if (method === 'DELETE') {
+      const { searchParams } = new URL(request.url)
+      url = `${url}?${searchParams.toString()}`
     }
 
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
@@ -69,19 +71,31 @@ export async function handleApiRequest(
 
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
       console.log(`Received response with status: ${response.status}`)
+      console.log(`Response Message: ${response}`)
     }
 
     if (response.ok) {
-      const data = await response.json()
-      // encrypt GET responses
-      if ( process.env.NEXT_PUBLIC_DEBUG_MODE ) {
-        console.log(`Response Data ${request.url}:`, data)
-      }
-      if (method === 'GET') {
-        const encryptedData = encrypt(JSON.stringify(data))
-        return NextResponse.json({ encryptedData })
+      const contentType = response.headers.get('content-type')
+      if (contentType && contentType.includes('text/html')) {
+        const htmlContent = await response.text()
+        return new NextResponse(htmlContent, {
+          status: 200,
+          headers: { 'Content-Type': 'text/html' }
+        })
       } else {
-        return NextResponse.json(data)
+        // Handle JSON responses as before
+        const data = await response.json()
+        // encrypt GET responses
+        if ( process.env.NEXT_PUBLIC_DEBUG_MODE ) {
+          console.log(`Response Data ${request.url}:`, data)
+        }
+        if (method === 'GET') {
+          const secretKey = cookies().get('sessionToken')?.value
+          const encryptedData = encrypt(JSON.stringify(data), secretKey)
+          return NextResponse.json({ encryptedData })
+        } else {
+          return NextResponse.json(data)
+        }
       }
     } else {
       let errorData

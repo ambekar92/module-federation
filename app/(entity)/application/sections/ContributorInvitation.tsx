@@ -54,7 +54,8 @@ function ContributorInvitation() {
   const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
   const { data: operatorData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null);
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  useRedirectIfNoOwners({ ownerData, applicationId });
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
+  useRedirectIfNoOwners({ ownerData, applicationId , applicationRole});
 
   useEffect(() => {
     if (contributors.length > 0 && initialContributorsRef.current.length === 0) {
@@ -69,7 +70,7 @@ function ContributorInvitation() {
           applicationId,
           stepLink: applicationSteps.sign.link
         });
-      } else if (applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+      } else if (applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_to_firm') {
         window.location.href = `/application/view/${applicationId}`;
       }
     }

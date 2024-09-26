@@ -4,7 +4,7 @@ import styles from '../WorkloadDashboard.module.scss';
 import { UserTaskDashboard } from '@/app/services/types/evaluation-service/UserTaskDashboard';
 
 const OpenAssignments: React.FC<{ tasks: UserTaskDashboard[] | undefined }> = ({ tasks }) => {
-  if (!tasks || tasks.length === 0) {
+  if (!tasks || tasks.length === 0 || tasks?.error ) {
     return <div>No tasks available</div>;
   }
 

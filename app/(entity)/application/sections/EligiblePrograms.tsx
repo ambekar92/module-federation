@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { calculateEligibleSbaPrograms, OwnerType } from '../hooks/useOwnershipApplicationInfo';
 import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
-import { useWorkflowRedirect } from '../hooks/useWorkflowRedirect';
+// import { useWorkflowRedirect } from '../hooks/useWorkflowRedirect';
 import { GridRow } from '../qa-helpers/OwnershipQaGrid';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
@@ -30,13 +30,14 @@ function EligiblePrograms() {
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : '';
   const { data: ownersData, error, isLoading: isLoadingOwnership } = useSWR<Question[]>(url);
   useUpdateApplicationProgress('Eligible Programs');
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
 
   const { data: session } = useSessionUCMS();
   const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
 
   // Redirects user based on application state and permissions
-  useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
-  useRedirectIfNoOwners({ ownerData: ownersData, applicationId });
+  // useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
+  useRedirectIfNoOwners({ ownerData: ownersData, applicationId, applicationRole });
 
   const dispatch = useApplicationDispatch();
 
@@ -144,15 +145,15 @@ function EligiblePrograms() {
       } else {
         newSelection.push(program);
 
-        if (program.name === 'Economically-Disadvantaged Women-Owned') {
-          newSelection = newSelection.filter(p => p.name !== 'Women-Owned');
-        } else if (program.name === 'Women-Owned') {
-          newSelection = newSelection.filter(p => p.name !== 'Economically-Disadvantaged Women-Owned');
-        } else if (program.name === 'Service-Disabled Veteran-Owned') {
-          newSelection = newSelection.filter(p => p.name !== 'Veteran-Owned');
-        } else if (program.name === 'Veteran-Owned') {
-          newSelection = newSelection.filter(p => p.name !== 'Service-Disabled Veteran-Owned');
-        }
+        // if (program.name === 'Economically-Disadvantaged Women-Owned') {
+        //   newSelection = newSelection.filter(p => p.name !== 'Women-Owned');
+        // } else if (program.name === 'Women-Owned') {
+        //   newSelection = newSelection.filter(p => p.name !== 'Economically-Disadvantaged Women-Owned');
+        // } else if (program.name === 'Service-Disabled Veteran-Owned') {
+        //   newSelection = newSelection.filter(p => p.name !== 'Veteran-Owned');
+        // } else if (program.name === 'Veteran-Owned') {
+        //   newSelection = newSelection.filter(p => p.name !== 'Service-Disabled Veteran-Owned');
+        // }
       }
 
       return newSelection;
@@ -207,12 +208,13 @@ function EligiblePrograms() {
       <div className='flex-fill'></div>
       <hr className='margin-y-3 width-full border-base-lightest'/>
       <ButtonGroup className='display-flex flex-justify'>
+        {applicationRole && applicationRole.length > 0 && applicationRole[0].application_role.name === 'primary-qualifying-owner' && applicationRole[0].user_id === session.user_id &&
         <Link aria-disabled={!applicationId} href={ buildRoute(APPLICATION_STEP_ROUTE, {
           applicationId: applicationId,
           stepLink: applicationSteps.controlAndOwnership.link
         })} className='usa-button usa-button--outline'>
           Back
-        </Link>
+        </Link>}
         {eligiblePrograms.length === 0 ? (
           <Button disabled type='button'>
             Next

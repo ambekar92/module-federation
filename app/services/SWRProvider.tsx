@@ -1,4 +1,3 @@
-'use client'
 import { PropsWithChildren } from 'react';
 import { SWRConfig } from 'swr';
 import { superFetcher } from './superFetcher';

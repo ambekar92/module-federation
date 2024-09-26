@@ -21,7 +21,7 @@ import { UnauthenticatedNavigation } from './UnauthenticatedNavigation'
 const selectedBottomRedBorder = '3px solid #CC0000'
 
 import dynamic from 'next/dynamic'
-import useIsMobile from '../shared/hooks/useIsMobile'
+// import useIsMobile from '../shared/hooks/useIsMobile'
 import AuthenticatedNavitems from './nav-items/AuthenticatedNavitems'
 import MobileNavitems from './nav-items/MobileNavitems'
 import PrimaryNavitems from './nav-items/PrimaryNavitems'
@@ -34,7 +34,7 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const session = useSessionUCMS()
   const path = usePathname();
-  const isMobile = useIsMobile();
+  // const isMobile = useIsMobile();
 
   ReactGA.initialize(`${REACT_GA_REPORT}`);
 
@@ -147,7 +147,7 @@ const Navbar = () => {
             <ClientSideBusinessName />
           </Header>
         ))
-      ) : isAuthenticated && isMobile ? (
+      ) : isAuthenticated ? (
         <MobileNavitems mobileExpanded={mobileNavOpen} toggleMobileNav={toggleMobileNav} />
       ) : isAuthenticated ? <>
         <AuthenticatedNavitems  mobileExpanded={mobileNavOpen} toggleMobileNav={toggleMobileNav} />

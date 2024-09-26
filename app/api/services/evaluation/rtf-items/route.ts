@@ -19,6 +19,8 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required query parameters' }, { status: 400 });
   }
 
-  const url = `${RTF_ITEMS_ROUTE}?id=${id}&author_id=${authorId}`;
-  return handleApiRequest(request, url, 'DELETE');
+  const modifiedRequest = new NextRequest(request, {
+    body: JSON.stringify({ author_id: authorId, id: id}),
+  });
+  return handleApiRequest(modifiedRequest, RTF_ITEMS_ROUTE, 'DELETE');
 }

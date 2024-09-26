@@ -12,6 +12,7 @@ function HeaderPanel() {
   if(!applicationData?.process || !applicationData.process.data) {
     return <h3>No Application process data found.</h3>
   }
+  const entity_structure = applicationData?.entity.structure && humanizeString(applicationData?.entity.structure)
 
   function getStepIndicatorClass(currentState: string | null | undefined, stepState: string): string {
     if (currentState === null && stepState === 'submitted') {
@@ -50,7 +51,9 @@ function HeaderPanel() {
           <div className="grid-col-2 margin-right-3">
             <p className="margin-0 text-bold">Business type</p>
             <div className="margin-top-1">
-              <span>{applicationData && applicationData?.entity?.structure}</span>
+              <span>
+                {entity_structure?.toLocaleLowerCase() === 'llc' ? 'LLC' : entity_structure}
+              </span>
             </div>
           </div>
           <div className="grid-col-2 margin-right-3">
@@ -75,7 +78,7 @@ function HeaderPanel() {
               {stateOrder.map((step) => (
                 <li key={step} className={`usa-step-indicator__segment ${getStepIndicatorClass(applicationData?.process?.data.step, step)}`}>
                   <span className="usa-step-indicator__segment-label font-ui-2xs">
-                    {step === 'screening' ? 'Screening' :  step === 'analyst' ? 'Analysis' : step === 'reviewer' ? 'Review' : step === 'ogc' ? 'Expert Review OGC' : step === 'oss' ? 'Expert Review OSS' : step === 'approver' ? 'Decision' : humanizeString(step)}
+                    {step === 'screening' ? 'Screening' :  step === 'analyst' ? 'Analysis' : step === 'reviewer' ? 'Review' : step === 'ogc' ? 'Escalate Review OGC' : step === 'oss' ? 'Escalate Review OSS' : step === 'approver' ? 'Decision' : humanizeString(step)}
                     <span className="usa-sr-only">
                       {getStepIndicatorClass(applicationData?.progress, step).includes('current')
                         ? 'current step'

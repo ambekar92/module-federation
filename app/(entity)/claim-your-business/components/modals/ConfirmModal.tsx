@@ -52,6 +52,19 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     setIsProcessing(true);
     try {
       const currentEntity = business.sam_entity[currentEntityIndex];
+      const invalidStructures = [
+        'Corporate Entity (Tax Exempt)',
+        'U.S. Government Entity',
+        'Country - Foreign Government',
+        'International Organization',
+        'Other'
+      ];
+
+      if (invalidStructures.includes(currentEntity.entity_structure) ||
+          invalidStructures.includes(business.sam_entity_structure)) {
+        throw new Error('wrong structure');
+      }
+
       const postData = [{
         owner_user_id: user_id,
         sam_entity_id: currentEntity.sam_entity_id
@@ -77,7 +90,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         throw new Error('POST Request Failed');
       }
     } catch (error: any) {
-      setErrorMsg('network error');
+      if (error.message === 'wrong structure') {
+        setErrorMsg('wrong structure');
+      } else {
+        setErrorMsg('network error');
+      }
       setPostSuccessful(false);
       handleOpen();
     } finally {

@@ -7,7 +7,7 @@ export function useUserTaskDashboard() {
   const { data: session, status } = useSessionUCMS();
 
   const { data, error } = useSWR<UserTaskDashboard[]>(
-    status === 'authenticated' && session?.user_id
+    session && session?.user_id
       ? `${USER_DASHBOARD_TASKS_ROUTE}/${session.user_id}`
       : null,
     { revalidateOnMount: true }

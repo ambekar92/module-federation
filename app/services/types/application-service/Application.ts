@@ -117,6 +117,32 @@ export type Application = {
 		first_name: string,
 		last_name: string
 	}
+	certifications: [{
+		id: number,
+		program: {
+				id: number,
+				deleted_at: string | null,
+				created_at: string,
+				updated_at: string,
+				name: string,
+				description: string | null,
+				title: string,
+				duration_in_years: number
+		},
+		deleted_at: string | null,
+		created_at: string,
+		updated_at: string,
+		issue_date: string,
+		expiry_date: string,
+		recertification_eligibility_flag: boolean,
+		legacy_certification_number: number | null,
+		agreement_signed_at: string | null,
+		uuid: string,
+		entity: number,
+		workflow_state: string,
+		certification_status_qualifier: string | null,
+		certification_status_reason: string | null
+	}]
 }
 
 export type ApplicationEligibilityType = {

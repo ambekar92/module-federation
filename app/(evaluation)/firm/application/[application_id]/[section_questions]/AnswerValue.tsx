@@ -32,13 +32,27 @@ const AnswerValue = ({ question }: { question: Question }) => {
 
     return (
       <>
-        {/* do not display the title of the grid question */}
-        {q.rules.length > 0 && (
-          <Label style={{marginBottom: '18px', maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={q.name}>
+        <div>
+          <Label className='margin-bottom-05' style={{ maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={q.name}>
             {q?.title}
-          </Label>)}
+          </Label>
 
-        <TableContainer component={Paper} style={{ maxWidth: '100%', overflowX: 'auto' }}>
+          {q.description && <p className='margin-top-05'>{q.description}</p>}
+        </div>
+
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{
+            border: '1px solid #adadad',
+            borderRadius: '4px',
+            maxWidth: '100%',
+            width: 'fit-content',
+            overflowX: 'auto',
+            marginTop: '20px',
+            padding: '0 16px',
+          }}
+        >
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>

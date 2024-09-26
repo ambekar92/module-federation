@@ -4,8 +4,9 @@ import { useEffect } from 'react';
 import { applicationSteps } from '../utils/constants';
 
 interface Props {
-	ownerData: Question[] | undefined;
-	applicationId: number;
+  ownerData: Question[] | undefined;
+  applicationId: number;
+  applicationRole: any | undefined;
 }
 /**
    * Hook to redirect to the ownership step if there are no owners
@@ -15,17 +16,24 @@ interface Props {
    *
    * If there are no owners, redirect to the ownership step
 */
-export const useRedirectIfNoOwners = ({ownerData, applicationId}: Props) => {
+export const useRedirectIfNoOwners = ({ownerData, applicationId, applicationRole}: Props) => {
   useEffect(() => {
-    if (ownerData &&
-        (!ownerData[0]?.answer ||
-         !ownerData[0]?.answer.value.answer ||
-         !Array.isArray(ownerData[0]?.answer.value.answer) ||
-         ownerData[0]?.answer.value.answer.length === 0)) {
-      window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
-        applicationId,
-        stepLink: applicationSteps.ownership.link
-      });
+    if (applicationRole && applicationRole.length > 0 && applicationRole[0].application_role.name === 'primary-qualifying-owner') {
+      const isOwnerDataEmpty = (data: Question) =>
+        !data?.answer ||
+        !data?.answer.value?.answer ||
+        !Array.isArray(data?.answer.value?.answer) ||
+        data?.answer.value?.answer.length === 0;
+
+      if (ownerData &&
+          isOwnerDataEmpty(ownerData[0]) &&
+          isOwnerDataEmpty(ownerData[1])
+      ) {
+        window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+          applicationId,
+          stepLink: applicationSteps.ownership.link
+        });
+      }
     }
   }, [ownerData, applicationId]);
 };

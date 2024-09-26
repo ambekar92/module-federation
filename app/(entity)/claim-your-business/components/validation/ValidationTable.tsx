@@ -13,8 +13,12 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => {
     const businessTypeMap: { [key: string]: string } = {
       '2J': 'Sole Proprietorship',
       '2K': 'Partnership',
-      '2L': 'Corporation',
-      '8H': 'Corporation',
+      '2L': 'Corporate Entity (Not Tax Exempt)',
+      '8H': 'Corporate Entity (Tax Exempt)',
+      '2A': 'U.S. Government Entity',
+      'CY': 'Country - Foreign Government',
+      'X6': 'International Organization',
+      'ZZ': 'Other',
     }
     let businessType =
       businessTypeMap[entityStructure as keyof typeof businessTypeMap] ||

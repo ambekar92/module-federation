@@ -14,9 +14,9 @@ const MobileNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any
   const params = useParams<{application_id: string}>();
 
   const navitems = [
-    ...(isInApplicationFlow() ? [
-      <React.Fragment key="auth_1">
-        <Link className="usa-nav_link" href={buildRoute(FIRM_EVALUATION_PAGE, { application_id: params.application_id })}>
+    ...(userRole === 'analyst' || userRole === 'approver' || userRole === 'reviewer' || userRole === 'screener' ? [
+      <React.Fragment key="auth_3">
+        <Link className="usa-nav_link" href={TASKS_DASHBOARD_PAGE}>
           <span>Home</span>
         </Link>
       </React.Fragment>
@@ -40,14 +40,7 @@ const MobileNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any
         <span>Documents</span>
       </Link>
     </React.Fragment>,
-    ...(userRole === 'analyst' || userRole === 'approver' || userRole === 'reviewer' || userRole === 'screener' ? [
-      <React.Fragment key="auth_3">
-        <Link className="usa-nav_link" href={TASKS_DASHBOARD_PAGE}>
-          <span>My Tasks</span>
-        </Link>
-      </React.Fragment>
-    ] : []),
-    ...(userRole === 'analyst' || userRole === 'approver' ? [
+    ...(userRole === 'reviewer' || userRole === 'approver' ? [
       <React.Fragment key="auth_4">
         <Link
           className="usa-nav_link"

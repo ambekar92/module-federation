@@ -43,15 +43,16 @@ function SignPage() {
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
   const { data: invitationData } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  useRedirectIfNoOwners({ ownerData, applicationId });
-
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
+  useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
   useEffect(() => {
     dispatch(setStep(applicationSteps.sign.stepIndex));
     dispatch(setDisplayStepNavigation(false));
   }, []);
 
   useEffect(() => {
-    const invalidWorkflowStates = ['draft', 'returned_for_firm'];
+    {/* todo: return_to_firm is a temp fix until BE fix it */}
+    const invalidWorkflowStates = ['draft', 'returned_to_firm', 'return_to_firm'];
     const invalidRoles = [
       Role.DELEGATE,
     ];
@@ -73,13 +74,13 @@ function SignPage() {
   useEffect(() => {
     if (applicationData && applicationData.application_contributor) {
       const nonOwnerContributors = applicationData.application_contributor.filter(
-        contributor => contributor.application_role.name !== 'primary-qualifying-owner'
+        contributor => !['primary-qualifying-owner', 'analyst', 'supervisor'].includes(contributor.application_role.name)
       );
 
       if (nonOwnerContributors.length === 0) {
         setAllContributorsSubmitted(true);
       } else {
-        const allSubmitted = nonOwnerContributors && nonOwnerContributors.length > 0 && nonOwnerContributors.every(
+        const allSubmitted = nonOwnerContributors.every(
           (contributor) => contributor.workflow_state === 'submitted'
         );
         setAllContributorsSubmitted(allSubmitted);
@@ -89,13 +90,14 @@ function SignPage() {
         }
       }
     }
-  }, [applicationData, session.data]);
+  }, [applicationData]);
 
   useEffect(() => {
     if (invitationData && invitationData.length > 0) {
       const allAccepted = invitationData.filter(
-        (invitation) => invitation.invitation_status !== 'accepted' && invitation.invitation_status !== 'removed'
+        (invitation) => invitation.invitation_status !== 'accepted' && invitation.invitation_status !== 'removed' && invitation.application_role.name !== 'delegate'
       );
+
       if (allAccepted.length > 0) {
         setAllInvitationsAccepted(false);
       } else {
@@ -255,7 +257,7 @@ function SignPage() {
               </>
             ): (
               <>
-                <h1>Contributor Attestation</h1>
+                <h1>Attestation</h1>
                 <p className='margin-bottom-5'>
 									Pursuant to 18 U.S.C. § 1001 and 15 U.S.C. § 645, any person who makes any false statement in order to influence the certification or continuing eligibility process in any
 									way or to obtain a contract awarded under the preference programs established pursuant to section 8(a), 8(d), 9, or 15 of the Small Business Act, or any other provision
@@ -288,7 +290,7 @@ function SignPage() {
           aria-disabled={!applicationId}
           href={buildRoute(APPLICATION_STEP_ROUTE, {
             applicationId: applicationId,
-            stepLink: applicationSteps.contributorInvitation.link
+            stepLink: applicationRole && applicationRole.length > 0 && (applicationRole[0].application_role.name === 'primary-qualifying-owner' || applicationRole[0].application_role.name === 'delegate') ? applicationSteps.contributorInvitation.link : applicationSteps.documentUpload.link
           })}
         >
           Previous

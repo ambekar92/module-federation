@@ -40,6 +40,8 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
     headingMsg = 'Thank you for your interest!'
   } else if(error === 'cannot create entity') {
     headingMsg = 'Please Logout and Login again.'
+  } else if(error === 'wrong structure') {
+    headingMsg = 'Cannot Claim this Business'
   } else {
     headingMsg =
       'Uh-oh! Looks like something broke on our side. If you need immediate assistance, please contact our support team at 1-202-205-6459'
@@ -64,8 +66,11 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
                     <p>We appreciate your patience and understanding.</p>
                   </>
                 )
-                :
-                <ul className='padding-left-1'>
+                : error === 'wrong structure' ? (
+                  <>
+                    <p>Your business type is not supported by any SBA Certification programs.  For more information about the basic requirements, please visit <a href="https://www.sba.gov/federal-contracting/contracting-guide/basic-requirements">Basic Requirements</a>.</p>
+                  </>
+                ): <ul className='padding-left-1'>
                   <li>
 											If you claimed the business using another email account, please log in using that account.
                   </li>

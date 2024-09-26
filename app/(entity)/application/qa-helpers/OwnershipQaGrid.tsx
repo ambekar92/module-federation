@@ -65,8 +65,8 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
     return (
       <div className="usa-form-group">
         <div className='display-flex'>
-          <Label htmlFor="owner-type">Owner Type</Label>
-          <TooltipIcon text='If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.' />
+          <Label htmlFor="owner-type">Type of Owner</Label>
+          {/* <TooltipIcon text='If you decide you do not want to apply to one or more certifications, please navigate back to the certification selection page and unselect the certifications.' /> */}
         </div>
         <Select
           id="owner-type"

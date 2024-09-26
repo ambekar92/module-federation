@@ -18,7 +18,7 @@ interface UseWorkflowRedirectProps {
    * @param {UseWorkflowRedirectProps.hasDelegateRole} hasDelegateRole - if the user has the delegate role
    *
    * if the user has the delegate role, redirect to the dashboard
-   * if the application is not in draft or returned_for_firm state, redirect to the application view page
+   * if the application is not in draft or returned_to_firm state, redirect to the application view page
 */
 
 export const useWorkflowRedirect = ({
@@ -34,7 +34,7 @@ export const useWorkflowRedirect = ({
     if (
       applicationData &&
       applicationData.workflow_state !== 'draft' &&
-      applicationData.workflow_state !== 'returned_for_firm' &&
+      applicationData.workflow_state !== 'returned_to_firm' &&
       !hasDelegateRole
     ) {
       window.location.href = (buildRoute(APPLICATION_VIEW_PAGE, { applicationId: applicationId }));

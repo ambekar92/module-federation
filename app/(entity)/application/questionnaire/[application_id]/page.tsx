@@ -11,7 +11,7 @@ import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import useSWR from 'swr';
-import ApplicationLayout from '../../components/ApplicationLayout';
+import ApplicationLayout from '../../[application_id]/[section]/_layout';
 import { QuestionnaireListType } from '../../components/questionnaire/utils/types';
 import { setStep } from '../../redux/applicationSlice';
 import applicationStore from '../../redux/applicationStore';
@@ -31,14 +31,15 @@ const QuestionnaireListPage: React.FC = () => {
   const hasDelegateRole = session?.data.permissions?.some(permission => permission.slug.includes('delegate'));
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  useRedirectIfNoOwners({ ownerData, applicationId });
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
+  useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
 
   const filteredQuestionnaires = questionnairesData?.filter(questionnaire =>
     !(hasDelegateRole && filteredSections.includes(extractLastPart(questionnaire.url)))
   );
 
   useEffect(() => {
-    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_for_firm') {
+    if (applicationData && applicationData.workflow_state !== 'draft' && applicationData.workflow_state !== 'returned_to_firm') {
       window.location.href = `/application/view/${applicationId}`;
     }
   }, [applicationData, applicationId]);
@@ -83,9 +84,9 @@ const QuestionnaireListPage: React.FC = () => {
           </Card>
         ))}
       </CardGroup>
+
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-right-2px'>
-        {isPrimaryUser
-          ? (
+        {applicationRole && applicationRole.length > 0 && (applicationRole[0].application_role.name === 'primary-qualifying-owner' || applicationRole[0].application_role.name === 'delegate') &&
             <Link className='usa-button usa-button--outline' href={
               buildRoute(APPLICATION_STEP_ROUTE, {
                 applicationId: applicationId,
@@ -94,11 +95,6 @@ const QuestionnaireListPage: React.FC = () => {
             }>
           		Previous
             </Link>
-          ): (
-            <Button type='button' disabled>
-							Previous
-            </Button>
-          )
         }
         <Link className='usa-button' href={
           buildRoute(QUESTIONNAIRE_PAGE, {

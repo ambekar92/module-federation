@@ -24,9 +24,10 @@ import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/local-routes'
 interface invitationCodeFormProps {
   submitForm: () => void
 	onEnterCodeCancel: () => void
+	cancelText?: string
 }
 
-function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFormProps) {
+function InvitationCodeForm({ submitForm, onEnterCodeCancel, cancelText = 'Back' }: invitationCodeFormProps) {
   const session = useSessionUCMS()
   const [showAlert, setShowAlert] = useState(false)
 
@@ -145,7 +146,7 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel }: invitationCodeFor
             >
               {invitationCode === '' ? (
                 <Button type="button" onClick={onEnterCodeCancel}>
-                	Back
+                	{cancelText}
                 </Button>
               ): (
                 <Button type="button" onClick={onClear}>

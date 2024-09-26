@@ -111,7 +111,7 @@ const Documents = () => {
     return <Alert headingLevel='h2' type='error'>Error occurred while loading documents. Please come back later.</Alert>
   }
   if (questions && questions.length === 0) {
-    return <p>No questions that required document upload found</p>
+    return <h2>No documents are required. Please click &quot;Next&quot; to continue.</h2>
   }
 
   const hubzoneQuestions = groupQuestionsByHubzoneKey(questions);

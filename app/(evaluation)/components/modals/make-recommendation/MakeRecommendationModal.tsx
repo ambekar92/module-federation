@@ -166,7 +166,7 @@ const MakeRecommendationModal: React.FC<MakeRecommendationModalProps> = ({
           </tr>
         </thead>
         <tbody>
-          {programData.map((program: ProgramApplicationType, i:number) => (
+          {(programData && Array.isArray(programData)) && programData.map((program: ProgramApplicationType, i:number) => (
             <tr key={`action-modal-table-tr-${i}`}>
               <td>{program.title}</td>
               <td>

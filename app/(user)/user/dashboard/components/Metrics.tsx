@@ -8,7 +8,7 @@ import { UserTaskDashboard } from '@/app/services/types/evaluation-service/UserT
 
 const Metrics: React.FC<{tasks?: UserTaskDashboard[]}> = ({ tasks }) => {
   const session = useSessionUCMS();
-  if (!session.data || isRole(session.data?.permissions, Role.EXTERNAL)) {return null;}
+  if (!session.data || isRole(session.data?.permissions, Role.INTERNAL)) {return null;}
 
   return (<>
     <OpenAssignments tasks={tasks}/>

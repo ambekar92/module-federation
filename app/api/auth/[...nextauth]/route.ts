@@ -10,6 +10,7 @@ import { encrypt } from "@/app/shared/utility/encryption";
 import { logout } from "@/app/lib/logout";
 import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
 import axios from "axios";
+import CryptoJS from 'crypto-js';
 
 // @ts-ignore
 async function auth(req: NextRequest, res: NextResponse ) {
@@ -77,6 +78,18 @@ async function auth(req: NextRequest, res: NextResponse ) {
           maxAge: 1800,
         },
         callbacks: {
+          signIn: async (user, account, profile) => {
+
+            if (user) {
+              const crypto = await import('crypto');
+              const secretKey = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
+              // Store it in the cookie
+              cookies().set('sessionToken', encrypt(secretKey, secretKey), { maxAge: 3600 });
+
+              return true
+            }
+            return null
+          },
           jwt: async ({ token, account, profile, user }) => {
             if (account && account.provider === 'max') {
               token.email = user.email;

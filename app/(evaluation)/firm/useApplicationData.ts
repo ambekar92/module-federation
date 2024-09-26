@@ -8,6 +8,7 @@ export function useApplicationData(filterParam: ApplicationFilterType, filterVal
     return { applicationData: null, isLoading: false, mutate: () => Promise.resolve() };
   }
   const { data, isLoading, mutate, error } = useApplication(filterParam, filterValue);
+
   const applicationData = data?.[0] ?? null;
   return { applicationData, isLoading, mutate , error};
 }

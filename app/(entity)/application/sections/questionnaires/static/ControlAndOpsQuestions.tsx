@@ -26,7 +26,8 @@ function ControlAndOpsQuestions() {
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null;
   const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  useRedirectIfNoOwners({ ownerData, applicationId });
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
+  useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
   useUpdateApplicationProgress('Control and Operations');
 
   const { data: session } = useSessionUCMS();

@@ -6,10 +6,16 @@ export interface IEncryptedResponse {
   encryptedData?: string;
 }
 
-export function encrypt(text: string) {
-  const encryptText = CryptoJS.AES.encrypt(text, secretKey).toString();
-
-  return encryptText;
+export function encrypt(text: string, key?: string) {
+  if (key) {
+    const newKey = decrypt(key, key)
+    return CryptoJS.AES.encrypt(text, newKey + secretKey).toString();
+  } else {
+    if (!secretKey) {
+      throw new Error('Secret key is not defined');
+    }
+    return CryptoJS.AES.encrypt(text, secretKey).toString();
+  }
 }
 export function decrypt(hash: string) {
   if (hash !== undefined) {
@@ -19,10 +25,13 @@ export function decrypt(hash: string) {
     console.log('Error: hash is undefined');
   }
 }
-export function superDecrypt(hash: string | undefined): string | undefined {
-  if (hash !== undefined && secretKey) {
+
+export function superDecrypt(hash: string | undefined, key: string): string | undefined {
+  let decryptText: string | undefined;
+  if (hash !== undefined && key) {
     try {
-      const decryptText = CryptoJS.AES.decrypt(hash, secretKey).toString(CryptoJS.enc.Utf8);
+      const newKey = decrypt(key, key)
+      decryptText = CryptoJS.AES.decrypt(hash, newKey + secretKey).toString(CryptoJS.enc.Utf8);
       return decryptText;
     } catch (error) {
       if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
@@ -30,10 +39,15 @@ export function superDecrypt(hash: string | undefined): string | undefined {
       }
       return undefined;
     }
-  } else {
-    if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
-      console.log('Error: hash is undefined or secretKey is missing');
+  } else if (hash === undefined && secretKey) {
+    try {
+      decryptText = CryptoJS.AES.decrypt(hash, secretKey).toString(CryptoJS.enc.Utf8);
+      return decryptText;
+    } catch (error) {
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Decryption error:', error);
+      }
+      return undefined;
     }
-    return undefined;
   }
 }

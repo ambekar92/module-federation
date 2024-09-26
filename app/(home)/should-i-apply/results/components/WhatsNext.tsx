@@ -36,7 +36,9 @@ const WhatsNext = () => {
         </div>
         <div className='padding-bottom-2'>
           <CardActionArea style={{ marginLeft: 'auto', width: 'fit-content' }} >
-            <Button type='button' onClick={handleClickAppPrep} outline>Next</Button>
+            <Button type='button' onClick={handleClickAppPrep} outline>
+              <a href="/resources/get-ready">Next</a>
+            </Button>
           </CardActionArea>
         </div>
       </Card>
@@ -44,14 +46,16 @@ const WhatsNext = () => {
       <Card>
         <div className='padding-x-2'>
           <h3 className='margin-bottom-05'>HUBZone Calculator</h3>
-          <p className='margin-top-0'>CHECK IF YOUR BUSINESS QUALIFIES FOR HUBZONE</p>
+          <p className='margin-top-0'>CHECK IF YOUR BUSINESS QUALIFIES FOR HUBZone</p>
 
           <p>The HUBZone Calculator is a tool designed to help applicants determine their eligibility for the HUBZone certification.</p>
 
         </div>
         <div className='padding-bottom-2'>
           <CardActionArea style={{ marginLeft: 'auto', width: 'fit-content' }}>
-            <Button type='button' onClick={handleClickHubZone} outline>Next</Button>
+            <Button type='button' onClick={handleClickHubZone} outline>
+              Next
+            </Button>
           </CardActionArea>
         </div>
       </Card>

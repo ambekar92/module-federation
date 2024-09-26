@@ -132,6 +132,7 @@ export function useSessionUCMS(): SessionType {
       user_id: email_password_auth_token?.user_id,
       permissions: email_password_auth_token?.permissions,
       entities: email_password_auth_token?.entities,
+      applications: email_password_auth_token?.applications,
     },
     status: email_password_auth_token ? 'authenticated' : 'unauthenticated'
   };
