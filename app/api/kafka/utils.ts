@@ -20,13 +20,13 @@ import * as fs from 'fs'
  * @returns An object representing the Kafka client configuration. Each key-value pair in the configuration file
  * becomes a property on the returned object.
  */
-export function readConfig(fileName: string) {
-  const data = fs.readFileSync(fileName, 'utf8').toString().split('\n')
-  return data.reduce((config: Record<string, string>, line) => {
-    const [key, value] = line.split('=')
-    if (key && value) {
-      config[key.trim()] = value.trim()
-    }
-    return config
-  }, {})
-}
+// export function readConfig(fileName: string) {
+//   const data = fs.readFileSync(fileName, 'utf8').toString().split('\n')
+//   return data.reduce((config: Record<string, string>, line) => {
+//     const [key, value] = line.split('=')
+//     if (key && value) {
+//       config[key.trim()] = value.trim()
+//     }
+//     return config
+//   }, {})
+// }

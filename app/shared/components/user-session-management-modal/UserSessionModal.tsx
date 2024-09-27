@@ -1,4 +1,7 @@
+/* eslint-disable no-console */
 'use client'
+import { REFRESH_TOKEN_ROUTE } from '@/app/constants/local-routes'
+import { useSessionUCMS } from '@/app/lib/auth'
 import { logout } from '@/app/lib/logout'
 import {
   Button,
@@ -6,14 +9,18 @@ import {
   Modal,
   ModalFooter,
 } from '@trussworks/react-uswds'
+import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useIdleTimer } from 'react-idle-timer'
 import styles from './UserSessionModal.module.scss'
+import { th } from '@faker-js/faker'
 
-const timeout = 60 * 60_000
-const promptBeforeIdle = 5 * 60_000
+const timeout = 60 * 60_000 // 1 hour
+const promptBeforeIdle = 5 * 60_000 // 5 minutes
+const refreshTokenInterval = 60 * 15_000 // 15 minutes
 
 const UserSessionModal: React.FC = () => {
+  const { data: session } = useSessionUCMS()
   const [userActivityState, setUserActivityState] = useState<string>('Active')
   const [remaining, setRemaining] = useState<{ minutes: number, seconds: number }>({ minutes: 0, seconds: 0 })
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
@@ -71,6 +78,33 @@ const UserSessionModal: React.FC = () => {
     }
   }, [getRemainingTime])
 
+  useEffect(() => {
+    if (!session) {
+      return
+    }
+    if(!session.refresh) {
+      return
+    }
+    const refreshToken = async () => {
+      const payload = {
+        refresh_token: session.refresh
+      }
+      try {
+        await axios.post(REFRESH_TOKEN_ROUTE, payload)
+        if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.log('Token refreshed successfully')
+        }
+      } catch (error) {
+        if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.error('Failed to refresh token:', error)
+        }
+      }
+    }
+
+    const interval = setInterval(refreshToken, refreshTokenInterval)
+
+    return () => clearInterval(interval)
+  }, [session])
   const handleActive = () => {
     activate()
     setIsModalOpen(false)

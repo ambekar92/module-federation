@@ -1,10 +1,32 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
+import createNextJsObfuscator from 'nextjs-obfuscator';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+const withNextJsObfuscator = createNextJsObfuscator(
+  {
+    // Options for javascript-obfuscator
+    compact: true,
+    controlFlowFlattening: true,
+    deadCodeInjection: true,
+    disableConsoleOutput: process.env.NODE_ENV === 'production' ? true : false, // Disable console output in production
+  },
+  {
+    // Options for nextjs-obfuscator
+    enabled: process.env.NODE_ENV === 'production', // Enable obfuscation only in production
+    patterns: ['./**/*.(js|jsx|ts|tsx)'], // Files to obfuscate
+  }
+);
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig = withNextJsObfuscator({
+  reactStrictMode: true,
+  productionBrowserSourceMaps: false,  // Disable source maps in production
+  optimization: {
+    minimize: true
+  },
+  swcMinify: true,  // Enable SWC-based minification
   async redirects() {
     return [
       {
@@ -33,7 +55,6 @@ const nextConfig = {
       path.join(__dirname, 'styles', 'base'),
     ],
   },
-  reactStrictMode: false,  // Disable React Strict Mode
   async headers() {
     return [
       {
@@ -82,6 +103,6 @@ const nextConfig = {
       },
     ]
   },
-}
+});
 
 export default nextConfig

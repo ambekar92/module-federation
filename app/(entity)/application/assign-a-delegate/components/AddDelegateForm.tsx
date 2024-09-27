@@ -16,7 +16,7 @@ import {
   Radio,
 } from '@trussworks/react-uswds'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import useSWR from 'swr'
 import { useWorkflowRedirect } from '../../hooks/useWorkflowRedirect'
@@ -38,6 +38,11 @@ function AddDelegateForm() {
   const { data: session } = useSessionUCMS();
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext()
   const hasDelegateRole = session?.permissions?.some(permission => permission.slug.includes('delegate'));
+
+  const isDisabled = useMemo(() => {
+    if (!session || !applicationData) {return true;}
+    return session.user_id !== applicationData?.application_contributor[0].user_id;
+  }, [session, applicationData]);
 
   // Redirects user based on application state and permissions
   useWorkflowRedirect({ applicationData, applicationId, hasDelegateRole });
@@ -147,6 +152,9 @@ function AddDelegateForm() {
     setOption('yes')
   }
 
+  if(isDisabled) {
+    return <p>You are not authorized to view this page</p>
+  }
   return (
     <GridContainer
       className="height-full display-flex flex-column padding-x-0"

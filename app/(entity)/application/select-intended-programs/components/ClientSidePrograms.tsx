@@ -8,19 +8,20 @@ import { Application } from '@/app/services/types/application-service/Applicatio
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard'
 import { EntitiesType } from '@/app/shared/types/responses'
 import { encrypt } from '@/app/shared/utility/encryption'
+import { en } from '@faker-js/faker'
 import { Button, Grid } from '@trussworks/react-uswds'
 import axios from 'axios'
 import cookies from 'js-cookie'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 interface ClientSideProgramsProps {
   entityId: string
   initialSelectedPrograms: ProgramOption[]
   sbaProgramOptions: ProgramOption[]
-	applicationData: Application[] | undefined,
-	entityData: EntitiesType | undefined
+  applicationData: Application[] | undefined,
+  entityData: EntitiesType | undefined
 }
 
 export default function ClientSidePrograms({
@@ -34,6 +35,12 @@ export default function ClientSidePrograms({
   const { data: session } = useSessionUCMS()
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>(initialSelectedPrograms)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const isDisabled = useMemo(() => {
+    if (!session || !entityData || entityData.length === 0 || !Array.isArray(entityData)) {return true;}
+    const currentEntity = entityData.find(entity => entity.id === parseInt(entityId, 10));
+    return session.user_id !== currentEntity?.owner_user_id;
+  }, [session, entityData, entityId]);
 
   useEffect(() => {
     if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0) {
@@ -49,40 +56,25 @@ export default function ClientSidePrograms({
       cookies.set('applicationData', encrypt(JSON.stringify([cookieApplicationData])))
       router.push(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: lastApplication.id }))
     }
+  }, [entityData, applicationData, entityId, router])
 
-  }, [])
   const handleCheckboxChange = (program: ProgramOption) => {
+    if (isDisabled) {return;}
     setSelectedPrograms((prev) => {
-      let newSelection = [...prev]
-      const isAlreadySelected = newSelection.find((p) => p.id === program.id)
-
-      if (isAlreadySelected) {
-        newSelection = newSelection.filter((p) => p.id !== program.id)
-      } else {
-        newSelection.push(program)
-
-        // Handle mutually exclusive selections
-        // if (program.id === 6) { // EDWOSB
-        //   newSelection = newSelection.filter((p) => p.id !== 3) // Removes WOSB if EDWOSB is selected
-        // } else if (program.id === 3) { // WOSB
-        //   newSelection = newSelection.filter((p) => p.id !== 6) // Removes EDWOSB if WOSB is selected
-        // } else if (program.id === 5) { // SDVOSB
-        //   newSelection = newSelection.filter((p) => p.id !== 4) // Removes VOSB if SDVOSB is selected
-        // } else if (program.id === 4) { // VOSB
-        //   newSelection = newSelection.filter((p) => p.id !== 5) // Removes SDVOSB if VOSB is selected
-        // }
-      }
-
-      return newSelection
+      const isAlreadySelected = prev.some((p) => p.id === program.id)
+      return isAlreadySelected
+        ? prev.filter((p) => p.id !== program.id)
+        : [...prev, program]
     })
   }
 
   const handleCardClick = (program: ProgramOption) => {
+    if (isDisabled) {return;}
     handleCheckboxChange(program)
   }
 
   const handlePostRequest = async () => {
-    if(!session) {return}
+    if (!session || isDisabled) {return;}
     setIsSubmitting(true)
     try {
       const postData = {
@@ -91,16 +83,22 @@ export default function ClientSidePrograms({
         programs: selectedPrograms.map(program => program.id),
         workflow_state: 'draft',
         application_role_id: 1,
-        user_id: session?.user_id
+        user_id: session.user_id
       }
 
       const response = await axios.post(CREATE_APPLICATION_ROUTE, postData);
       router.push(buildRoute(ASSIGN_DELEGATE_PAGE, {applicationId: response.data.id}))
     } catch (error) {
-      // Error handled lol -KJ
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error creating application:', error);
+      }
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  if(!entityData || entityData.length === 0 || !Array.isArray(entityData)) {
+    return <p>No entity data</p>
   }
 
   return (
@@ -123,9 +121,8 @@ export default function ClientSidePrograms({
                 <input
                   className="custom-checkbox"
                   type="checkbox"
-                  checked={selectedPrograms.some(
-                    (p) => p.name === program.name,
-                  )}
+                  disabled={isDisabled}
+                  checked={selectedPrograms.some((p) => p.name === program.name)}
                   onChange={(e) => {
                     e.stopPropagation()
                     handleCheckboxChange(program)
@@ -144,20 +141,14 @@ export default function ClientSidePrograms({
         >
           Back
         </Link>
-        {selectedPrograms.length === 0 ? (
-          <Button disabled type="button">
-            Next
-          </Button>
-        ) : (
-          <Button
-            type='button'
-            className="usa-button"
-            onClick={handlePostRequest}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Submitting...' : 'Next'}
-          </Button>
-        )}
+        <Button
+          type='button'
+          className="usa-button"
+          onClick={handlePostRequest}
+          disabled={isSubmitting || isDisabled || selectedPrograms.length === 0}
+        >
+          {isSubmitting ? 'Submitting...' : 'Next'}
+        </Button>
       </div>
     </>
   )

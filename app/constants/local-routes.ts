@@ -73,3 +73,4 @@ export const NOTIFYING_READ_MESSAGE_ROUTE =
   '/api/services/communication/notify-read-message'
 export const APPLICATION_ELIGIBILITY_ROUTE =
   '/api/services/application/eligibility'
+export const REFRESH_TOKEN_ROUTE = '/api/services/users/refresh'

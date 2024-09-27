@@ -3,6 +3,8 @@ import { cookies } from 'next/headers'
 import { decrypt, encrypt } from '@/app/shared/utility/encryption'
 import { API_ROUTE } from '../constants/routes'
 import redisClient from '@/app/lib/redis';
+import { REFRESH_TOKEN_ROUTE } from '../constants/local-routes';
+import refreshToken from './refreshToken';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
@@ -13,6 +15,7 @@ export async function handleApiRequest(
 ) {
   const cookieStore = cookies()
   let token
+  let refresh
   if (process.env.TOKEN_LOOKUP === 'development') {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
       console.log('******************************* accessToken lookup in development mode')
@@ -27,6 +30,7 @@ export async function handleApiRequest(
     const userData = emailPasswordAuthToken ? JSON.parse(decrypt(emailPasswordAuthToken.value) ?? '') : undefined;
     const redisData = await redisClient.get(userData.email);
     token = redisData ? JSON.parse(redisData).access : null;
+    refresh = redisData ? JSON.parse(redisData).refresh : null;
   }
 
   if (!token) {
@@ -40,6 +44,22 @@ export async function handleApiRequest(
     let body: string | FormData | undefined
     const headers: HeadersInit = {
       'Authorization': `Bearer ${token}`
+    }
+
+    if (endpoint === REFRESH_TOKEN_ROUTE && method === 'POST') {
+      let bodyObj: any = {}
+      try {
+        bodyObj = JSON.parse(body as string)
+      } catch (e) {
+        // Error caught -KJ
+      }
+
+      if (!bodyObj.refresh_token && refresh) {
+        bodyObj.refresh_token = refresh
+        body = JSON.stringify(bodyObj)
+      } else if (!bodyObj.refresh_token && !refresh) {
+        return NextResponse.json({ error: 'No refresh token available' }, { status: 401 });
+      }
     }
 
     if (method !== 'GET') {
