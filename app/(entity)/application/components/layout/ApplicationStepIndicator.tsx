@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { applicationSteps } from '../../utils/constants';
 import StepsIndicator from './StepIndicator';
 import { useEffect, useState } from 'react';
+import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 
 interface ApplicationStepIndicatorProps {
   stepNumber: number
@@ -14,7 +15,7 @@ function ApplicationStepIndicator({
   stepNumber = 0,
 }: ApplicationStepIndicatorProps) {
   const [isClient, setIsClient] = useState(false);
-  const session = useSessionUCMS();
+  const { applicationData, userId  } = useApplicationContext()
   const params = useParams<{application_id: string}>();
 
   useEffect(() => {
@@ -25,12 +26,14 @@ function ApplicationStepIndicator({
     return null;
   }
 
-  const userRole: string = session.data.permissions?.[session.data.permissions.length - 1]?.slug || ''
+  const userRole: string | undefined = applicationData?.application_contributor.find(
+    (contributor) => contributor.user.id === userId
+  )?.application_role.name;
 
   let steps: string[] = []
   let stepLinks: string[] = []
 
-  if (userRole === 'primary_qualifying_owner' || userRole === 'delegate') {
+  if (userRole === 'primary-qualifying-owner' || userRole === 'delegate') {
     steps = [
       'Ownership',
       'Control & Operations',

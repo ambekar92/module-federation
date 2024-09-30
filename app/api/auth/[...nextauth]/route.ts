@@ -71,11 +71,11 @@ async function auth(req: NextRequest, res: NextResponse ) {
         secret: process.env.SESSION_SECRET,
         session: {
           strategy: "jwt",
-          maxAge: 1800,
-          rolling: true, // Extend session on user activity
+          maxAge: 2700,
+          rolling: true, // Extends session on user activity
         },
         jwt: {
-          maxAge: 1800,
+          maxAge: 2700
         },
         callbacks: {
           signIn: async (user, account, profile) => {

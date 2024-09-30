@@ -39,6 +39,15 @@ async function handleProtectedRoute(request: NextRequest) {
 
 const middlewares: { [key: string]: any } = {
   '/(.*)': [handleProtectedRoute],
+  '/user/dashboard/:path*': [async (request: NextRequest) => {
+    const {permissions} = await getData(request)
+    const isInternalUser = isRole(permissions, Role.INTERNAL);
+    if (isInternalUser) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}`);
+    }
+  }],
   '/dashboard/:path*': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
@@ -69,7 +78,6 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(`${request.nextUrl.origin}`);
-
     }
   }],
   '/admin/:path*': [async (request: NextRequest) => {
@@ -126,6 +134,7 @@ export const config = {
     '/application(.*)', // all sub-routes
     '/firm(.*)', // all sub-routes
     '/dashboard/(.*)',
+    '/user/dashboard/(.*)',
     '/login-tester',
     '/tester-login',
     '/entity-owned/(.*)',

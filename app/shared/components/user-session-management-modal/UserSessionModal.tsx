@@ -13,7 +13,6 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useIdleTimer } from 'react-idle-timer'
 import styles from './UserSessionModal.module.scss'
-import { th } from '@faker-js/faker'
 
 const timeout = 60 * 60_000 // 1 hour
 const promptBeforeIdle = 5 * 60_000 // 5 minutes
@@ -21,7 +20,6 @@ const refreshTokenInterval = 60 * 15_000 // 15 minutes
 
 const UserSessionModal: React.FC = () => {
   const { data: session } = useSessionUCMS()
-  const [userActivityState, setUserActivityState] = useState<string>('Active')
   const [remaining, setRemaining] = useState<{ minutes: number, seconds: number }>({ minutes: 0, seconds: 0 })
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false)
@@ -31,31 +29,23 @@ const UserSessionModal: React.FC = () => {
     try {
       await logout()
     } catch (error) {
-      console.error('Logout failed:', error);
-      setIsLoggingOut(false);
-      setIsModalOpen(false);
+      console.error('Logout failed:', error)
+      setIsLoggingOut(false)
+      setIsModalOpen(false)
     }
   }
 
   const onIdle = () => {
-    setUserActivityState('Idle')
     setIsModalOpen(false)
     handleSignOut()
   }
 
-  const onActive = () => {
-    setUserActivityState('Active')
-    setIsModalOpen(false)
-  }
-
   const onPrompt = () => {
-    setUserActivityState('Prompted')
     setIsModalOpen(true)
   }
 
   const { getRemainingTime, activate } = useIdleTimer({
     onIdle,
-    onActive,
     onPrompt,
     timeout,
     promptBeforeIdle,

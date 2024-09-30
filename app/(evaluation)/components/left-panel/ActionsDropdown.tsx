@@ -170,7 +170,18 @@ const ActionsDropdown = () => {
     const userPermissions: Role[] =
       sessionData.data?.permissions?.map((p) => p.slug) || []
 
+    const hasVeteranProgramId = applicationData?.program_application.some(
+      app => app.program_id === 4 || app.program_id === 5
+    );
+    const workflow_state = applicationData?.workflow_state;
     return actionMenuData.filter((action) => {
+      if (action.id === ActionMenuIDs.UPDATE_VA_STATUS && !hasVeteranProgramId) {
+        return false;
+      }
+      if((workflow_state !== 'escalate_review' && workflow_state !== 'escalate review') && action.id === ActionMenuIDs.ESCALATE_REVIEW) {
+        return false;
+      }
+
       if (action.permissions.length === 0) {
         return true
       }
