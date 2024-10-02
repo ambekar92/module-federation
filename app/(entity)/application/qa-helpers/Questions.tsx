@@ -48,38 +48,43 @@ const Questions: React.FC<QuestionnaireProps> = ({ url, title, contributorId, on
 
   const handleAnswerChange = async (question: Question, value: any) => {
     if (userId && contributorId) {
-      setSelectedAnswers(prevState => ({
-        ...prevState,
-        [question.name]: {
-          id: question.id,
-          profile_answer_flag: question.profile_answer_flag,
-          reminder_flag: false,
-          application_contributor_id: contributorId,
-          value: question.question_type === 'multi_select'
-            ? value.map((option: { value: string }) => option.value)
-            : value,
-          question_id: question.id,
-          answer_by: userId,
-        }
-      }));
-
-      // Saves the answer immediately
-      const answer = {
+      const newAnswer = {
+        id: question.id,
         profile_answer_flag: question.profile_answer_flag,
+        reminder_flag: false,
         application_contributor_id: contributorId,
-        value: { answer: question.question_type === 'multi_select'
+        value: question.question_type === 'multi_select'
           ? value.map((option: { value: string }) => option.value)
-          : value
-        },
+          : value,
         question_id: question.id,
         answer_by: userId,
-        reminder_flag: false
       };
 
-      try {
-        await axios.post(ANSWER_ROUTE, [answer]);
-      } catch (error) {
-        // Error caught haha -KJ
+      // Check if the new answer is different from the existing one
+      const existingAnswer = selectedAnswers[question.name];
+      const isAnswerChanged = JSON.stringify(existingAnswer?.value) !== JSON.stringify(newAnswer.value);
+
+      if (isAnswerChanged) {
+        setSelectedAnswers(prevState => ({
+          ...prevState,
+          [question.name]: newAnswer
+        }));
+
+        // Only post the answer if it has changed
+        const answerToPost = {
+          profile_answer_flag: question.profile_answer_flag,
+          application_contributor_id: contributorId,
+          value: { answer: newAnswer.value },
+          question_id: question.id,
+          answer_by: userId,
+          reminder_flag: false
+        };
+
+        try {
+          await axios.post(ANSWER_ROUTE, [answerToPost]);
+        } catch (error) {
+          // Error caught haha -KJ
+        }
       }
 
       // Check if navigation should be blocked

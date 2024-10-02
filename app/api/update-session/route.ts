@@ -22,8 +22,8 @@ export async function POST(request: Request) {
     };
     const userDetails = await axiosInstance.post(OKTA_POST_LOGIN_ROUTE, postData);
     if (userDetails.data.access) {
-      const cookieStore = cookies();
-      cookieStore.set('email_password_auth_token', encrypt(JSON.stringify(userDetails.data)));
+      // const cookieStore = cookies();
+      // cookieStore.set('email_password_auth_token', encrypt(JSON.stringify(userDetails.data)));
       return NextResponse.json({ message: 'Session updated successfully' }, { status: 200 });
     } else {
       return NextResponse.json({ message: 'Failed to update session' }, { status: 400 });

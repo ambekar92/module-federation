@@ -9,15 +9,6 @@ export function postLoginRedirectUrl(
   lastPermissionSlug: Role,
   sessionData: []
 ): string {
-  const applicationDataString = decrypt(Cookies.get('applicationData'));
-      	const entityDataString = decrypt(Cookies.get('entityData'));
-  const applicationData: CookieApplication[] | null = applicationDataString
-    ? JSON.parse(applicationDataString)
-    : null;
-  const entityData: CookieEntity[] | null = entityDataString
-    ? JSON.parse(entityDataString)
-    : null;
-
   switch (firstPermissionSlug) {
     case Role.INTERNAL:
       return handleInternalRoles(lastPermissionSlug);

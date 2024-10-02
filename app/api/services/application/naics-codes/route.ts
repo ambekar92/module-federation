@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { handleApiRequest } from '@/app/services/handleApiRequest';
 import { API_ROUTE } from '@/app/constants/routes';
 
 export async function GET(request: NextRequest) {
@@ -12,5 +11,16 @@ export async function GET(request: NextRequest) {
 
   const url = `${API_ROUTE}/amount-awarded?naics_code=${encodeURIComponent(naicsCode)}`;
 
-  return handleApiRequest(request, url, 'GET');
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return NextResponse.json({ error: 'An error occurred' }, { status: response.status });
+    }
+
+    const data = await response.json();
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
+  }
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { decrypt, encrypt } from '@/app/shared/utility/encryption'
+import { decrypt, encrypt, decryptData, encryptData } from '@/app/shared/utility/encryption'
 import { API_ROUTE } from '../constants/routes'
 import redisClient from '@/app/lib/redis';
 import { REFRESH_TOKEN_ROUTE } from '../constants/local-routes';
@@ -21,13 +21,17 @@ export async function handleApiRequest(
       console.log('******************************* accessToken lookup in development mode')
     }
     const accessToken = cookieStore.get('access');
-    token = accessToken ? decrypt(accessToken.value) : null;
+    token = accessToken ? accessToken.value : null;
   } else {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
       console.log('************************** emailPasswordAuthToken lookup production mode')
     }
     const emailPasswordAuthToken = cookieStore.get('email_password_auth_token');
-    const userData = emailPasswordAuthToken ? JSON.parse(decrypt(emailPasswordAuthToken.value) ?? '') : undefined;
+    const sessionToken = cookieStore.get('sessionToken');
+    const pk = cookieStore.get('pk');
+    const secretKey2 = decryptData(sessionToken?.value, pk?.value);
+
+    const userData = emailPasswordAuthToken ? JSON.parse(decryptData(emailPasswordAuthToken.value, secretKey2) ?? '') : undefined;
     const redisData = await redisClient.get(userData.email);
     token = redisData ? JSON.parse(redisData).access : null;
     refresh = redisData ? JSON.parse(redisData).refresh : null;
@@ -110,8 +114,11 @@ export async function handleApiRequest(
           console.log(`Response Data ${request.url}:`, data)
         }
         if (method === 'GET') {
-          const secretKey = cookies().get('sessionToken')?.value
-          const encryptedData = encrypt(JSON.stringify(data), secretKey)
+          const sessionToken = cookieStore.get('sessionToken');
+          const pk = cookieStore.get('pk');
+          const secretKey2 = decryptData(sessionToken?.value, pk?.value);
+
+          const encryptedData = encryptData(JSON.stringify(data), secretKey2)
           return NextResponse.json({ encryptedData })
         } else {
           return NextResponse.json(data)

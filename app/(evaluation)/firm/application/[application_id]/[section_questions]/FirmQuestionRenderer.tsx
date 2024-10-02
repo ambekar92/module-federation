@@ -260,7 +260,9 @@ const FirmQuestionRenderer: React.FC<FirmQuestionRendererProps> = ({
         {question.rules?.map((rule: Rule, ruleIndex: number) => {
           let shouldRenderSubQuestion = false;
 
-          if (Array.isArray(answer) && question.question_type === 'multi_select') {
+          if (rule.answer_given_value['boolean'] === null) {
+            shouldRenderSubQuestion = true;
+          } else if (Array.isArray(answer) && question.question_type === 'multi_select') {
             shouldRenderSubQuestion = answer.some(item => rule.answer_given_value.multi_select?.includes(item));
           } else {
             switch (question.question_type) {
@@ -287,6 +289,8 @@ const FirmQuestionRenderer: React.FC<FirmQuestionRendererProps> = ({
                   isSubQuestion={true}
                   onRefetchQuestionnaires={onRefetchQuestionnaires}
                   closeApplicationRef={closeApplicationRef}
+                  reviewerQuestion={isReviewer ? rule.sub_question : undefined}
+                  isReviewer={isReviewer}
                 />
               </Grid>
             );

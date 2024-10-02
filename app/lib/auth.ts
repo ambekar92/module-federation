@@ -2,14 +2,13 @@
 import Cookies from 'js-cookie';
 import { NextAuthOptions, getServerSession } from 'next-auth';
 import OktaProvider from 'next-auth/providers/okta';
-import BoxyHQSAMLProvider from 'next-auth/providers/boxyhq-saml';
 import { useSession } from 'next-auth/react';
 import { LoginResponseUser } from '../(admin)/aeroad/types';
 import { generateCsrfToken } from '../api/auth/utils/generateCsrfToken';
 import { SessionType } from '../tarmac/types';
 import { IUserDetails } from './next-auth';
 import { axiosInstance } from '../services/axiosInstance';
-import { decrypt } from '@/app/shared/utility/encryption';
+import { decrypt, decryptData } from '@/app/shared/utility/encryption';
 import { OKTA_POST_LOGIN_ROUTE } from '@/app/constants/routes';
 
 /**
@@ -109,10 +108,31 @@ export function useSessionUCMS(): SessionType {
   const oktaSession = useSession() as unknown as SessionType;
 
   const emailPasswordAuthCookie = Cookies.get('email_password_auth_token');
+  const sessionToken = Cookies.get('sessionToken');
+  const pk = Cookies.get('pk');
+  const secretKey2 = sessionToken && pk ? decryptData(sessionToken, pk) : null;
+
   const maxAuthCookie = Cookies.get('maxgov_auth_token');
-  const email_password_auth_token = emailPasswordAuthCookie
-    ? JSON.parse(decrypt(emailPasswordAuthCookie)) : maxAuthCookie ? JSON.parse(decrypt(maxAuthCookie))  as LoginResponseUser
-      : null;
+
+  let email_password_auth_token: LoginResponseUser | null = null;
+
+  if (secretKey2) {
+    try {
+      if (emailPasswordAuthCookie) {
+        const decryptedData = decryptData(emailPasswordAuthCookie, secretKey2);
+        email_password_auth_token = decryptedData ? JSON.parse(decryptedData) : null;
+      } else if (maxAuthCookie) {
+        const decryptedData = decryptData(maxAuthCookie, secretKey2);
+        email_password_auth_token = decryptedData ? JSON.parse(decryptedData) : null;
+      }
+    } catch (error) {
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error parsing auth token:', error);
+      }
+      // Set email_password_auth_token to null if there is an error
+      email_password_auth_token = null;
+    }
+  }
 
   const fullName = email_password_auth_token?.first_name && email_password_auth_token?.last_name
     ? `${email_password_auth_token.first_name} ${email_password_auth_token.last_name}`

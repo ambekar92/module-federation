@@ -17,6 +17,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { SignInFormData, SignInFormSchema } from './Schema'
 import { encrypt } from '@/app/shared/utility/encryption';
 import { signIn } from 'next-auth/react';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   title: 'Page Templates/Sign In',
@@ -56,7 +57,7 @@ export const SignIn = (): React.ReactElement => {
         password: getValues('password'),
       }
       const result = await signIn('credentials', {
-        callbackUrl: `/protect/?state=${encrypt('true')}`,
+        callbackUrl: `/protect/?state=${uuidv4()}`,
         email: getValues('email'),
         password: getValues('password'),
       });

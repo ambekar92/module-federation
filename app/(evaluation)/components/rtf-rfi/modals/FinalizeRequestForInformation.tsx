@@ -71,7 +71,7 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
 
     const additionalInfo = (
       <p>
-        If you have questions, please contact {sessionData.data?.user.name} at 636-555-3226 or our main help desk at 317-555-0113.
+        If you have questions, please contact our main help desk at 317-555-0113.
       </p>
     );
 
@@ -186,7 +186,6 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
             name="subject"
             type="text"
             className={styles['maxWidth']}
-            placeholder="Stark Tech, LLC - Request for Information - 07/22/2024"
             value={subject}
             onChange={e => setSubject(e.target.value)}
           />

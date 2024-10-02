@@ -62,7 +62,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
 							 {error === 'early access'
                 ? (
                   <>
-                    <p>It looks like you don’t have early access. Please return to MySBA Certifications on September 9 to submit your application.</p>
+                    <p>It looks like you don’t have early access. Please return to MySBA Certifications on October to submit your application.</p>
                     <p>We appreciate your patience and understanding.</p>
                   </>
                 )

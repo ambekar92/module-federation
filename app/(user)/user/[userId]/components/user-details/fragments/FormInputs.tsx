@@ -14,7 +14,7 @@ import {
   UseFormHandleSubmit,
   UseFormStateReturn
 } from 'react-hook-form'
-import { KAFKA_ROUTE } from '../../../../../../constants/routes'
+// import { KAFKA_ROUTE } from '../../../../../../constants/routes'
 import { filterText, userInputDetails } from '../utils/helpers'
 import { FormData, UserFormInputs } from '../utils/types'
 import { roleOptions, stateOptions, statusOptions } from './FormOptions'
@@ -47,7 +47,7 @@ const FormInputs = ({
   const onSubmit: SubmitHandler<UserFormInputs> = async (data) => {
     try {
       //send POST to Kafka
-      const response = await fetch(KAFKA_ROUTE, {
+      const response = await fetch('', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

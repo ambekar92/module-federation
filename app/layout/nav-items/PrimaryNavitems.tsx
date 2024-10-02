@@ -1,5 +1,5 @@
 import { SBA_LOGO_SQUARE_WHITE_URL } from '@/app/constants/icons';
-import { USER_PROFILE_PAGE } from '@/app/constants/url';
+import { GET_HELP_ROUTE, USER_PROFILE_PAGE } from '@/app/constants/url';
 import { logout } from '@/app/lib/logout';
 import { Button, Icon, Link, Menu, PrimaryNav } from '@trussworks/react-uswds';
 import React, { useState } from 'react';
@@ -79,7 +79,7 @@ const PrimaryNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: an
       />
     </React.Fragment>,
 
-    <a key="primaryNav_2" className="usa-nav__link" href="/help">
+    <a key="primaryNav_2" className="usa-nav__link" href={GET_HELP_ROUTE}>
       <span className={styleSettings.textColor}>Get Help</span>
     </a>,
 

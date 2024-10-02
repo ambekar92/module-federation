@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { LoginResponseUser } from './app/(admin)/aeroad/types';
 import { Role } from './app/shared/types/role';
 import { Permission } from './app/tarmac/types';
-import { decrypt } from '@/app/shared/utility/encryption';
+import { decrypt, decryptData } from '@/app/shared/utility/encryption';
 
 async function handleProtectedRoute(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
@@ -135,6 +135,7 @@ export const config = {
     '/firm(.*)', // all sub-routes
     '/dashboard/(.*)',
     '/user/dashboard/(.*)',
+    '/user/dashboard/:path*',
     '/login-tester',
     '/tester-login',
     '/entity-owned/(.*)',
@@ -154,9 +155,18 @@ export function isRole(permissions:  Permission[], role: Role) {
 
 async function getData(request: NextRequest) {
   const cookies = request.cookies;
+  const secretKey = cookies.get('sessionToken')
+  const sessionToken = cookies.get('sessionToken');
+  const pk = cookies.get('pk');
+  const secretKey2 = decryptData(sessionToken?.value, pk?.value);
 
-  const email_password_auth_token = cookies.has('email_password_auth_token') ? JSON.parse(decrypt(cookies.get('email_password_auth_token')?.value) ?? '') : null as unknown as LoginResponseUser;
-  const maxgov_auth_token = cookies.has('maxgov_auth_token') ? JSON.parse(decrypt(cookies.get('maxgov_auth_token')?.value) ?? '') : null as unknown as LoginResponseUser;
+  const email_password_auth_token = cookies.has('email_password_auth_token')
+    ? JSON.parse(decryptData(cookies.get('email_password_auth_token')?.value, secretKey2) ?? '')
+    : null as unknown as LoginResponseUser;
+
+  const maxgov_auth_token = cookies.has('maxgov_auth_token')
+    ? JSON.parse(decryptData(cookies.get('maxgov_auth_token')?.value, secretKey2) ?? '')
+    : null as unknown as LoginResponseUser;
 
   const token = email_password_auth_token || maxgov_auth_token || null;
   const permissions = token?.permissions || [];

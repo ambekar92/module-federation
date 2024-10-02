@@ -32,14 +32,6 @@ const AnswerValue = ({ question }: { question: Question }) => {
 
     return (
       <>
-        <div>
-          <Label className='margin-bottom-05' style={{ maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={q.name}>
-            {q?.title}
-          </Label>
-
-          {q.description && <p className='margin-top-05'>{q.description}</p>}
-        </div>
-
         <TableContainer
           component={Paper}
           elevation={0}

@@ -7,6 +7,7 @@ import { Accordion } from '@trussworks/react-uswds';
 import { AccordionItemProps } from '@trussworks/react-uswds/lib/components/Accordion/Accordion';
 import { NavItem } from '../types/types';
 import RtfRtiForm from './rtf-rfi/form/RtfRfiForm';
+import ApplicationDocument from './notes-widget/ApplicationDocument';
 
 interface RightPanelProps {
   navItems: NavItem[];
@@ -36,17 +37,17 @@ function RightPanel({ navItems }: RightPanelProps) {
       expanded: false,
       headingLevel: 'h2',
     },
-    // {
-    //   id: 'item3',
-    //   title: 'Analyst Documents',
-    //   content: (
-    //     <div>
-    //       <AnalystDocument />
-    //     </div>
-    //   ),
-    //   expanded: false,
-    //   headingLevel: 'h2',
-    // },
+    {
+      id: 'item3',
+      title: 'Application Documents',
+      content: (
+        <div>
+          <ApplicationDocument />
+        </div>
+      ),
+      expanded: false,
+      headingLevel: 'h2',
+    },
   ]
   return (
     <>

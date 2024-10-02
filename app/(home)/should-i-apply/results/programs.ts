@@ -101,17 +101,17 @@ export const programs: Program[] =  [
     url: 'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3236528776/Veteran-Owned+Initial+Application+Guide', //TODO need correct url
     description: 'The Veterans Benefits, Health Care, and Information Technology Act of 2006 (Public Law 109-461) provides the U.S. Department of Veterans Affairs (VA) with unique authority for Service-Disabled Veteran-Owned Small Business (SDVOSB) and Veteran-Owned Small Business (VOSB) set-aside and sole source contracts.', // TODO: need correct description
   },
-  {
-    title: 'VetCert',
-    rules: {
-      ownership: {
-        USCitizen: 'yes',
-        veteran: 'yes',
-        ownOver50Percent: 'yes'
-      },
-      eligibility: {suspended: 'yes',  ownBusinessInUS: 'yes',}},
-    subtitle: 'Veteran-Owned Small Business Program', // TODO: need correct subtitle
-    url: 'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3236528776/Veteran-Owned+Initial+Application+Guide', //TODO need correct url
-    description: 'The Veterans Benefits, Health Care, and Information Technology Act of 2006 (Public Law 109-461) provides the U.S. Department of Veterans Affairs (VA) with unique authority for Service-Disabled Veteran-Owned Small Business (SDVOSB) and Veteran-Owned Small Business (VOSB) set-aside and sole source contracts.', // TODO: need correct description
-  },
+  // {
+  //   title: 'VetCert',
+  //   rules: {
+  //     ownership: {
+  //       USCitizen: 'yes',
+  //       veteran: 'yes',
+  //       ownOver50Percent: 'yes'
+  //     },
+  //     eligibility: {suspended: 'yes',  ownBusinessInUS: 'yes',}},
+  //   subtitle: 'Veteran-Owned Small Business Program', // TODO: need correct subtitle
+  //   url: 'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/pages/3236528776/Veteran-Owned+Initial+Application+Guide', //TODO need correct url
+  //   description: 'The Veterans Benefits, Health Care, and Information Technology Act of 2006 (Public Law 109-461) provides the U.S. Department of Veterans Affairs (VA) with unique authority for Service-Disabled Veteran-Owned Small Business (SDVOSB) and Veteran-Owned Small Business (VOSB) set-aside and sole source contracts.', // TODO: need correct description
+  // },
 ];

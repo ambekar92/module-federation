@@ -50,22 +50,22 @@ const MobileNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any
       </React.Fragment>
     ] : []),
     <React.Fragment key="auth_2">
-      <Link className="usa-nav_link" href={NOTIFICATIONS_PAGE}>
+      <Link className="usa-nav_link mobile-only-nav-item" href={NOTIFICATIONS_PAGE}>
         <span>Notifications</span>
       </Link>
     </React.Fragment>,
     <React.Fragment key="auth_2">
-      <Link className="usa-nav_link" href={GET_HELP_ROUTE}>
+      <Link className="usa-nav_link mobile-only-nav-item" href={GET_HELP_ROUTE}>
         <span>Get Help</span>
       </Link>
     </React.Fragment>,
     <React.Fragment key="auth_2">
-      <Link className="usa-nav_link" href={USER_PROFILE_PAGE}>
+      <Link className="usa-nav_link mobile-only-nav-item" href={USER_PROFILE_PAGE}>
         <span>Profile</span>
       </Link>
     </React.Fragment>,
     <React.Fragment key="auth_2">
-      <Link className="usa-nav_link" href={''} onClick={() => logout()}>
+      <Link className="usa-nav_link mobile-only-nav-item" href={''} onClick={() => logout()}>
         <span>Logout</span>
       </Link>
     </React.Fragment>,

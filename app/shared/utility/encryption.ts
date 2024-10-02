@@ -1,9 +1,26 @@
 import CryptoJS from 'crypto-js';
 
-const secretKey = process.env.NEXT_PUBLIC_RANDOM;
-
 export interface IEncryptedResponse {
   encryptedData?: string;
+}
+
+export function encryptData(text: string, key?: string) {
+  if (key) {
+    return CryptoJS.AES.encrypt(text, key).toString();
+  } else {
+    if (key) {
+      throw new Error('Secret key is not defined');
+    }
+  }
+}
+
+export function decryptData(text: string, key?: string) {
+  if (key) {
+    const decryptText = CryptoJS.AES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
+    return decryptText;
+  } else {
+    console.log('error')
+  }
 }
 
 export function encrypt(text: string, key?: string) {
@@ -11,12 +28,10 @@ export function encrypt(text: string, key?: string) {
     const newKey = decrypt(key, key)
     return CryptoJS.AES.encrypt(text, newKey + secretKey).toString();
   } else {
-    if (!secretKey) {
-      throw new Error('Secret key is not defined');
-    }
-    return CryptoJS.AES.encrypt(text, secretKey).toString();
+    console.log('error')
   }
 }
+
 export function decrypt(hash: string) {
   if (hash !== undefined) {
     const decryptText = CryptoJS.AES.decrypt(hash, secretKey).toString(CryptoJS.enc.Utf8);
@@ -30,8 +45,7 @@ export function superDecrypt(hash: string | undefined, key: string): string | un
   let decryptText: string | undefined;
   if (hash !== undefined && key) {
     try {
-      const newKey = decrypt(key, key)
-      decryptText = CryptoJS.AES.decrypt(hash, newKey + secretKey).toString(CryptoJS.enc.Utf8);
+      decryptText = CryptoJS.AES.decrypt(hash, key).toString(CryptoJS.enc.Utf8);
       return decryptText;
     } catch (error) {
       if(process.env.NEXT_PUBLIC_DEBUG_MODE) {

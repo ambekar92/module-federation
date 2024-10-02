@@ -42,16 +42,7 @@ export default async function Programs({ params }: { params: { entity_id: string
   const { entityData, applicationData, eligibilityData } = await getServerSideData(params.entity_id)
 
   if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0) {
-    const cookieEntityData = [{ id: parseInt(params.entity_id, 10) }]
-    cookies().set('entityData', encrypt(JSON.stringify(cookieEntityData)))
-
     const lastApplication = applicationData[applicationData.length - 1]
-    const cookieApplicationData = {
-      id: lastApplication.id,
-      progress: lastApplication.progress || 'Contributor Invitation',
-      workflow_state: lastApplication.workflow_state || 'draft'
-    }
-    cookies().set('applicationData', encrypt(JSON.stringify([cookieApplicationData])))
     redirect(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: lastApplication.id }))
   }
 

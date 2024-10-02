@@ -1,4 +1,4 @@
-import { IEncryptedResponse, superDecrypt } from '../shared/utility/encryption';
+import { IEncryptedResponse, superDecrypt, decryptData } from '../shared/utility/encryption';
 
 /**
  * This function fetches a resource from the given URL. If the response is an
@@ -15,8 +15,12 @@ export const superFetcher = async (url: string) => {
   if (data.encryptedData) {
     const cookies = (await import('js-cookie'))
     const secretKey = cookies.default.get('sessionToken')
+    const sessionToken = cookies.default.get('sessionToken');
+    const pk = cookies.default.get('pk');
+    const secretKey2 = decryptData(sessionToken, pk);
 
-    const decryptedString = superDecrypt(data.encryptedData, secretKey);
+    const decryptedString = superDecrypt(data.encryptedData, secretKey2);
+
     if (decryptedString) {
       try {
         return JSON.parse(decryptedString);

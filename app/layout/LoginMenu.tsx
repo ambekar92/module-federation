@@ -1,18 +1,20 @@
-import { Button } from '@trussworks/react-uswds'
-import { signIn } from 'next-auth/react';
-import { axiosInstance } from '../services/axiosInstance';
-import { useRouter } from 'next/navigation';
 import { encrypt } from '@/app/shared/utility/encryption';
+import { v4 as uuidv4 } from 'uuid';
+import { Button } from '@trussworks/react-uswds';
+import axios from 'axios';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { MAX_LOGIN_ROUTE } from '../constants/local-routes';
 
 const LoginMenu = () => {
   const router = useRouter();
 
   function handleLogin() {
     localStorage.clear()
-    signIn('okta', { callbackUrl: `/protect/?state=${encrypt('true')}` })
+    signIn('okta', { callbackUrl: `/protect/?state=${uuidv4()}` })
   }
   const handleSSOLogin =  async() => {
-    axiosInstance.get('/max-login').then(response => {
+    axios.get(MAX_LOGIN_ROUTE).then(response => {
       router.push(response.data)
     })
   };
@@ -35,11 +37,11 @@ const LoginMenu = () => {
       </div>
 
       <div>
-        <h3>Are you an SBA user?</h3>
+        <h3>Are you an SBA Employee?</h3>
         <p>Click the button below to login</p>
       </div>
 
-      <Button outline type='button' onClick={handleSSOLogin}>SBA User Login</Button>
+      <Button outline type='button' onClick={handleSSOLogin}>SBA Employee Login</Button>
     </div>
   )
 }

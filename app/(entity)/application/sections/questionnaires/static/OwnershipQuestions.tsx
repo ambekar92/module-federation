@@ -10,6 +10,7 @@ import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplic
 import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import axios from 'axios';
+import humanizeString from 'humanize-string';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -19,8 +20,6 @@ import { OwnershipQaGrid } from '../../../qa-helpers/OwnershipQaGrid';
 import { selectApplication, setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
-import { set } from 'zod';
-import humanizeString from 'humanize-string';
 
 function OwnershipQuestions() {
   // Redux
@@ -57,7 +56,6 @@ function OwnershipQuestions() {
   }, [ownerApplicationInfo.owners]);
 
   useEffect(() => {
-    console.log('applicationRole', applicationRole);
     if (applicationRole && applicationRole.length > 0 && applicationRole[0].application_role.name !== 'primary-qualifying-owner') {
       setIsPrimaryQualifyingOwner(false);
     }
@@ -71,7 +69,7 @@ function OwnershipQuestions() {
   }, [owners]);
 
   const handleSubmit = async () => {
-    if (totalOwnershipPercentage >= 99.99 && totalOwnershipPercentage <= 100) {
+    if (totalOwnershipPercentage >= 99 && totalOwnershipPercentage <= 100) {
       setIsSubmitting(true);
       try {
         const postData = {
@@ -85,7 +83,9 @@ function OwnershipQuestions() {
           stepLink: applicationSteps.controlAndOwnership.link
         });
       } catch (error) {
-        console.log('Error submitting data:', error);
+        if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.log('Error submitting data:', error);
+        }
       } finally {
         setIsSubmitting(false);
       }

@@ -60,15 +60,6 @@ export function useApplicationContext() {
           return;
         }
       }
-      // Save cookies
-      if (session.permissions && session.permissions.length > 0) {
-        Cookies.set('firstPermission', encrypt(session.permissions[0].slug));
-        Cookies.set('lastPermission', encrypt(session.permissions[session.permissions.length - 1].slug));
-      }
-      if (entityData && entityData.length > 0) {
-        const simpleEntityData = entityData.map(entity => ({ id: entity.id }));
-        Cookies.set('entityData', encrypt(JSON.stringify(simpleEntityData)));
-      }
     }
   }, [applicationData, userId, session, isApplicationDelegate, hasDelegateRole, entityData, router]);
 

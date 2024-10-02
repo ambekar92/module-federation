@@ -17,6 +17,7 @@ import styles from '../utils/FirmDashboard.module.scss'
 import ApplicationCards from './ApplicationCards'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
 import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
+import { getApplicationRole } from '@/app/shared/utility/getApplicationRole'
 
 export default function ClientFirmUserDashboard() {
   const router = useRouter()
@@ -27,7 +28,14 @@ export default function ClientFirmUserDashboard() {
   const [confirmationType, setConfirmationType] = useState<string | undefined>('')
   const [enterInvitationCode, setEnterInvitationCode] = useState(false);
   const [userId, setUserId] = useState<number | null>(null)
+  const url = userId ? `${GET_APPLICATIONS_ROUTE}?user_id=${userId}` : null
+  const { data, error, isLoading } = useSWR<Application[]>(url);
+  const { data: entityData } = useSWR<EntitiesType[]>(
+    (!isLoading && (data?.length === 0 || !data) && session?.user_id) ? `${GET_ENTITIES_ROUTE}?owner_user_id=${session.user_id}` : null
+  );
+
   const hasDelegate = session?.permissions?.some(permission => permission.slug.includes('delegate'))
+  const applicationRole = (data && session?.user_id) && getApplicationRole(data, session?.user_id)
 
   useEffect(() => {
     if (status === 'authenticated' && session?.user_id) {
@@ -36,17 +44,11 @@ export default function ClientFirmUserDashboard() {
   }, [session, status])
 
   useEffect(() => {
-    if (hasDelegate) {
+    if (hasDelegate || applicationRole === 'delegate') {
       router.push(DELEGATE_DASHBOARD_PAGE)
     }
-  }, [hasDelegate])
+  }, [hasDelegate, applicationRole])
 
-  const url = userId ? `${GET_APPLICATIONS_ROUTE}?user_id=${userId}` : null
-
-  const { data, error, isLoading } = useSWR<Application[]>(url);
-  const { data: entityData } = useSWR<EntitiesType[]>(
-    (!isLoading && (data?.length === 0 || !data) && session?.user_id) ? `${GET_ENTITIES_ROUTE}?owner_user_id=${session.user_id}` : null
-  );
   const applicationDeleteOrWithdraw = async (event: any, id: number) => {
     // Prevent default action and event bubbling if needed
     event.preventDefault()
@@ -180,7 +182,6 @@ export default function ClientFirmUserDashboard() {
       {(!data || data.length === 0) && <div>No applications found.</div>}
       {openConfirmationModal && (
         <DeleteWithdrawConfirmationModal
-          entityId={data[0].entity.entity_id}
           openConfirmationModal={openConfirmationModal}
           confirmationType={confirmationType}
           clickedId={clickedId}

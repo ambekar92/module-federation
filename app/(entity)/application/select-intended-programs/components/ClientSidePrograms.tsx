@@ -44,16 +44,7 @@ export default function ClientSidePrograms({
 
   useEffect(() => {
     if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0) {
-      const cookieEntityData = [{ id: parseInt(entityId, 10) }]
-      cookies.set('entityData', encrypt(JSON.stringify(cookieEntityData)))
-
       const lastApplication = applicationData[applicationData.length - 1]
-      const cookieApplicationData = {
-        id: lastApplication.id,
-        progress: lastApplication.progress || 'Contributor Invitation',
-        workflow_state: lastApplication.workflow_state || 'draft'
-      }
-      cookies.set('applicationData', encrypt(JSON.stringify([cookieApplicationData])))
       router.push(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: lastApplication.id }))
     }
   }, [entityData, applicationData, entityId, router])

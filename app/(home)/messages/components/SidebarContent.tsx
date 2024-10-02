@@ -23,7 +23,7 @@ const SidebarContent: React.FC = () => {
       id: 'inbox-all',
       title: 'Inbox-All',
       content: <InboxEmailList />,
-      expanded: params?.messageId ? true : false,
+      expanded: true,
       headingLevel: 'h2',
     },
     // {

@@ -18,7 +18,7 @@ const UserPage =  () => {
   if (error) {
     return <Alert type='error' headingLevel='h4'>Failed to load user details</Alert>;
   }
-  if (isLoading) {
+  if (isLoading || !user || !userSession) {
     return <Spinner center />
   }
   return (

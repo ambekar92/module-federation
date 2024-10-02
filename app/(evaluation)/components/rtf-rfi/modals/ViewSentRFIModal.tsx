@@ -90,7 +90,7 @@ const ViewSentRFIModal: React.FC<ViewSentRFIModalProps> = ({
 
             <div>
               <p>
-                If you have questions, please contact {sessionData.data?.user.name} at <a href="tel:+">636-555-3226</a> or our main help desk at <a href="tel:+">317-555-0113</a>.
+                If you have questions, please contact our main help desk at <a href="tel:+">317-555-0113</a>.
               </p>
             </div>
           </>

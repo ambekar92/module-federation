@@ -58,10 +58,6 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => {
                   <td>{entity.dba_name}</td>
                 </tr>
                 <tr>
-                  <th scope="row">Business UEI</th>
-                  <td>{entity.uei}</td>
-                </tr>
-                <tr>
                   <th scope="row">Business Address</th>
                   <td>
                     {`${entity.physical_addr_1}, ${entity.physical_addr_2},`}

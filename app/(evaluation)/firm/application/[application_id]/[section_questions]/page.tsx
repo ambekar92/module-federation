@@ -30,6 +30,10 @@ const SectionQuestions = () => {
   const [showNextButton, setShowNextButton] = useState<boolean>(true);
   const router = useRouter();
 
+  const { data: navItems } = useSWR<QuestionnaireItem[]>(
+    firstContributorId ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}` : null
+  );
+
   const analystContributorId = useMemo(() => {
     if (!applicationData?.application_contributor) {
       return null;
@@ -77,49 +81,6 @@ const SectionQuestions = () => {
     return getAnalystQuestionnaires(applicationData.program_application);
   }, [applicationData?.program_application]);
 
-  const isLastQuestionnaire = useMemo(() => {
-    if (!analystQuestionnaires.length) {return false;}
-    const lastQuestionnaire = analystQuestionnaires[analystQuestionnaires.length - 1];
-    return params.section_questions === lastQuestionnaire.replace(/^\//, '');
-  }, [params.section_questions, analystQuestionnaires]);
-
-  const isAnalystQuestionnaire = useMemo(() => {
-    return params.section_questions?.startsWith('analyst-questionnaire');
-  }, [params.section_questions]);
-
-  const { data: reviewerData, isLoading: reviewerLoading } = useSWR<Question[]>(
-    userRole === 'reviewer' && reviewerContributorId && isAnalystQuestionnaire
-      ? `${QUESTIONNAIRE_ROUTE}/${reviewerContributorId}/${params.section_questions}`
-      : null,
-  );
-
-  const { data: analystData, isLoading: analystLoading } = useSWR<Question[]>(
-    (userRole === 'analyst' || userRole === 'reviewer') && analystContributorId && isAnalystQuestionnaire
-      ? `${QUESTIONNAIRE_ROUTE}/${analystContributorId}/${params.section_questions}`
-      : null
-  );
-
-  const contributorId = useMemo(() => {
-    const searchParamId = searchParams.get('contributor_id');
-    if (!searchParamId) {return applicationData?.application_contributor?.[0]?.id || null;}
-
-    const isValidContributor = applicationData?.application_contributor?.some(
-      contributor => contributor.id === parseInt(searchParamId)
-    );
-
-    return isValidContributor ? searchParamId : null;
-  }, [searchParams, applicationData]);
-
-  const { data: regularData, isLoading: regularLoading } = useSWR<Question[]>(
-    !isAnalystQuestionnaire && firstContributorId
-      ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/${params.section_questions}`
-      : null
-  );
-
-  const { data: navItems } = useSWR<QuestionnaireItem[]>(
-    firstContributorId ? `${QUESTIONNAIRE_ROUTE}/${firstContributorId}` : null
-  );
-
   const combinedNavItems = useMemo(() => {
     if (!navItems) {return [];}
 
@@ -154,6 +115,45 @@ const SectionQuestions = () => {
 
     return baseItems;
   }, [navItems, params.application_id, userRole, analystQuestionnaires]);
+
+  const isLastQuestionnaire = useMemo(() => {
+    if (!combinedNavItems || combinedNavItems.length === 0) {return false;}
+    const lastItem = combinedNavItems[combinedNavItems.length - 1];
+    return params.section_questions === lastItem.url.split('/').pop();
+  }, [params.section_questions, combinedNavItems]);
+
+  const isAnalystQuestionnaire = useMemo(() => {
+    return params.section_questions?.startsWith('analyst-questionnaire');
+  }, [params.section_questions]);
+
+  const { data: reviewerData, isLoading: reviewerLoading } = useSWR<Question[]>(
+    userRole === 'reviewer' && reviewerContributorId && isAnalystQuestionnaire
+      ? `${QUESTIONNAIRE_ROUTE}/${reviewerContributorId}/${params.section_questions}`
+      : null,
+  );
+
+  const { data: analystData, isLoading: analystLoading } = useSWR<Question[]>(
+    (userRole === 'analyst' || userRole === 'reviewer') && analystContributorId && isAnalystQuestionnaire
+      ? `${QUESTIONNAIRE_ROUTE}/${analystContributorId}/${params.section_questions}`
+      : null
+  );
+
+  const contributorId = useMemo(() => {
+    const searchParamId = searchParams.get('contributor_id');
+    if (!searchParamId) {return applicationData?.application_contributor?.[0]?.id || null;}
+
+    const isValidContributor = applicationData?.application_contributor?.some(
+      contributor => contributor.id === parseInt(searchParamId)
+    );
+
+    return isValidContributor ? searchParamId : null;
+  }, [searchParams, applicationData]);
+
+  const { data: regularData, isLoading: regularLoading } = useSWR<Question[]>(
+    !isAnalystQuestionnaire && firstContributorId
+      ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/${params.section_questions}`
+      : null
+  );
 
   const { updateQuestionnaireCompletion } = useQuestionnaireState(applicationData, analystQuestionnaires);
 
@@ -263,14 +263,17 @@ const SectionQuestions = () => {
   const renderQuestions = (questions: Question[] | undefined, isAnalyst: boolean, contributorIndex: number) => {
     if (!questions) {return null;}
 
-    const contributorId = applicationData?.application_contributor?.[contributorIndex]?.id;
-    const contributorName = `${applicationData?.application_contributor?.[contributorIndex]?.user.first_name} ${applicationData?.application_contributor?.[contributorIndex]?.user.last_name} - ${applicationData?.application_contributor?.[contributorIndex]?.application_role.title}`;
+    let qaContributorId: number | undefined | null = null;
+    let contributorName = '';
+    qaContributorId = analystContributorId;
+    const analystContributor = applicationData?.application_contributor?.find(c => c.id === analystContributorId);
+    contributorName = analystContributor ? `${analystContributor.user.first_name} ${analystContributor.user.last_name} - ${analystContributor.application_role.title}` : '';
 
     return questions && questions.length > 0 && questions.map((question, index) => (
       <React.Fragment key={`${contributorIndex}-${index}`}>
         {isAnalyst ? (
           <FirmQuestionRenderer
-            contributorId={contributorId}
+            contributorId={qaContributorId}
             userId={sessionData?.data?.user_id}
             key={question.id}
             question={question}
@@ -373,7 +376,7 @@ const SectionQuestions = () => {
 
   return (
     <div className="width-full maxw-full">
-      <h1>{title}</h1>
+      <h1>{title.replace(/\band\b/gi, '&')}</h1>
 
       {(reviewerLoading || analystLoading || regularLoading) && <Spinner center />}
 
@@ -406,11 +409,11 @@ const SectionQuestions = () => {
             </>
           ) : (
             !isAnalystQuestionnaire && (
-              ((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
-              (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
-              (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
-              (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
-              showNextButton && (
+              // ((userRole === 'screener' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'screening' && applicationData?.process.data?.review_start === true) ||
+              // (userRole === 'analyst' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'analyst' && applicationData?.process.data?.review_start === true) ||
+              // (userRole === 'reviewer' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'reviewer') ||
+              // (userRole === 'approver' && applicationData?.workflow_state === 'under_review' && applicationData?.process?.data.step === 'approver')) &&
+              (showNextButton) && !isLastQuestionnaire && (
                 <Button onClick={onContinue} className='margin-top-4' type='button'>Continue</Button>
               )
             )

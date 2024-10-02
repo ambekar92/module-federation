@@ -6,7 +6,7 @@ import OktaProvider from 'next-auth/providers/okta';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { cookies } from "next/headers";
 import { generateCsrfToken } from "../utils/generateCsrfToken";
-import { encrypt } from "@/app/shared/utility/encryption";
+import { encryptData } from "@/app/shared/utility/encryption";
 import { logout } from "@/app/lib/logout";
 import { TESTER_LOGIN_ROUTE } from '@/app/constants/routes'
 import axios from "axios";
@@ -78,13 +78,25 @@ async function auth(req: NextRequest, res: NextResponse ) {
           maxAge: 2700
         },
         callbacks: {
+          authorized: ({ req, token }) => {
+            if (token && new Date() > new Date((token as any).expires_at))
+              return true;
+            return false;
+          },
           signIn: async (user, account, profile) => {
 
             if (user) {
               const crypto = await import('crypto');
               const secretKey = CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
+              const secretKey2 = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
+              cookies().set('pk', secretKey2, { maxAge: 7200 });
               // Store it in the cookie
-              cookies().set('sessionToken', encrypt(secretKey, secretKey), { maxAge: 3600 });
+              cookies().set(
+                'sessionToken',
+                encryptData(secretKey, secretKey2),
+                { maxAge: 7200 }
+              );
+              user.user.sessionToken = secretKey;
 
               return true
             }
@@ -94,6 +106,14 @@ async function auth(req: NextRequest, res: NextResponse ) {
             if (account && account.provider === 'max') {
               token.email = user.email;
               token.name = user.name;
+            }
+            if (account && account.provider === 'okta') {
+              token.email = user.email;
+              token.name = `${user.name.split(' ')[0]} ${user.name.split(' ')[1]}`;
+            }
+            if (account && account.provider === 'credentials') {
+              token.email = user.email;
+              token.name = `${user.first_name} ${user.last_name}`;
             }
             if (account && account.access_token) {
               token.accessToken = account.access_token;
@@ -108,7 +128,7 @@ async function auth(req: NextRequest, res: NextResponse ) {
             if (user) {
               token.user_id = user.id;
               token.email = user.email;
-              token.name = `${user.first_name} ${user.last_name}`;
+              token.sessionToken = user.sessionToken;
             }
             return token
           },
@@ -142,24 +162,27 @@ async function auth(req: NextRequest, res: NextResponse ) {
             try {
               userDetails = await axiosInstance.post(OKTA_POST_LOGIN_ROUTE, postData);
               if (userDetails.data) {
-                session.access = userDetails.data.access;
+                session.user.sessionToken = token.sessionToken
+
                 // Todo: cookies for email_password_auth_token
                 // Todo: need to consider how to handle the email_password_auth_token differently
                 const { refresh, access, entities, ...filterData } = userDetails.data
 
-                cookies().set('email_password_auth_token', encrypt(JSON.stringify(filterData)));
-                cookies().set('idtoken', encrypt(session.user.idToken));
+                cookies().set(
+                  'email_password_auth_token',
+                  encryptData(JSON.stringify(filterData), token.sessionToken)
+                );
+                cookies().set(
+                  'idtoken',
+                  encryptData(session.user.idToken, token.sessionToken)
+                );
 
                 if (process.env.TOKEN_LOOKUP === 'development') {
-                  cookies().set('access', encrypt(userDetails.data.access));
+                  cookies().set('access', userDetails.data.access);
                 }
                 if (session.user.name === "undefined undefined") {
                   session.permissions = userDetails.data.permissions;
                 }
-                // cookies().set('firstPermission', encrypt(userDetails.data.permissions[0].slug));
-                // if (userDetails.data.permissions.length > 1) {
-                //   cookies().set('lastPermission', encrypt(userDetails.data.permissions[userDetails.data.permissions.length - 1].slug));
-                // }
               }
               if (typeof token.accessToken === 'string') {
                 session.user.accessToken = userDetails.data.access;

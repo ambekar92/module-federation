@@ -62,19 +62,19 @@ export function useQuestionnaireState(applicationData: Application | null, analy
 
   useEffect(() => {
     if (questionnaireData && !isLoading) {
-      const lastQuestion = questionnaireData[questionnaireData.length - 1];
-      const islastQuestionAnswered = lastQuestion && lastQuestion.answer &&
-        lastQuestion.answer.value !== null && lastQuestion.answer.value !== undefined;
+      const isAnyQuestionAnswered = questionnaireData.some(question =>
+        question.answer && question.answer.value !== null && question.answer.value !== undefined
+      );
       const currentQuestionnaireKey = currentQuestionnaire.replace('/', '').replace('analyst-questionnaire-', '');
 
       setCompletedQuestionnaires(prev => {
-        if (prev[currentQuestionnaireKey] !== islastQuestionAnswered) {
-          return { ...prev, [currentQuestionnaireKey]: islastQuestionAnswered };
+        if (prev[currentQuestionnaireKey] !== isAnyQuestionAnswered) {
+          return { ...prev, [currentQuestionnaireKey]: (isAnyQuestionAnswered || currentQuestionnaireIndex === analystQuestionnaires.length - 1) };
         }
         return prev;
       });
 
-      if (islastQuestionAnswered && currentQuestionnaireIndex < analystQuestionnaires.length - 1) {
+      if (isAnyQuestionAnswered && currentQuestionnaireIndex < analystQuestionnaires.length - 1) {
         setCurrentQuestionnaireIndex(prevIndex => {
           if (prevIndex === currentQuestionnaireIndex) {
             return prevIndex + 1;

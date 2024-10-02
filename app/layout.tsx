@@ -38,6 +38,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
         <SessionProvider session={session}>
           <SWRProvider>
             <div className={`${theme.palette.mode} layout`}>
+              {isHomePage && <Alert type="info" heading="We are currently performing system maintenance. MySBA Certifications will be back up soon." headingLevel="h5" />}
               <Navbar />
               <UserSessionModal />
               <div className={`start grid-container-widescreen display-flex ${isHomePage && 'padding-x-0'} ${(isApplicationPage || isResourcePage) ? 'padding-x-0 bg-gray-5' : ''}`}>

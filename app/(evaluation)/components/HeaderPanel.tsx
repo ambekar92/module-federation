@@ -3,11 +3,24 @@
 import { SamEntity } from '@/app/services/types/application-service/Application';
 import humanizeString from 'humanize-string';
 import { useCurrentApplication } from '../firm/useApplicationData';
+import { useMemo } from 'react';
 
 function HeaderPanel() {
   const { applicationData } = useCurrentApplication();
   const samEntity = applicationData?.sam_entity ?? null;
-  const stateOrder = ['screening', 'analyst', 'reviewer', 'ogc', 'oss', 'approver'];
+  const workflow_state = applicationData?.workflow_state;
+
+  const stateOrder = useMemo(() => {
+    const baseStates = ['screening', 'analyst', 'reviewer'];
+    const escalatedStates = ['ogc', 'oss'];
+    const finalStates = ['approver'];
+
+    if (workflow_state === 'escalate_review' || workflow_state === 'escalate review') {
+      return [...baseStates, ...escalatedStates, ...finalStates];
+    } else {
+      return [...baseStates, ...finalStates];
+    }
+  }, [workflow_state]);
 
   if(!applicationData?.process || !applicationData.process.data) {
     return <h3>No Application process data found.</h3>
@@ -78,7 +91,13 @@ function HeaderPanel() {
               {stateOrder.map((step) => (
                 <li key={step} className={`usa-step-indicator__segment ${getStepIndicatorClass(applicationData?.process?.data.step, step)}`}>
                   <span className="usa-step-indicator__segment-label font-ui-2xs">
-                    {step === 'screening' ? 'Screening' :  step === 'analyst' ? 'Analysis' : step === 'reviewer' ? 'Review' : step === 'ogc' ? 'Escalate Review OGC' : step === 'oss' ? 'Escalate Review OSS' : step === 'approver' ? 'Decision' : humanizeString(step)}
+                    {step === 'screening' ? 'Screening' :
+                      step === 'analyst' ? 'Analysis' :
+                        step === 'reviewer' ? 'Review' :
+                          step === 'ogc' ? 'Escalate Review OGC' :
+                            step === 'oss' ? 'Escalate Review OSS' :
+                              step === 'approver' ? 'Decision' :
+                                humanizeString(step)}
                     <span className="usa-sr-only">
                       {getStepIndicatorClass(applicationData?.progress, step).includes('current')
                         ? 'current step'

@@ -7,6 +7,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import { ShouldIApplyFormType } from '../schema'
 import { matchSchema } from './schema'
 import { API_ROUTE } from '@/app/constants/routes'
+import { NAICS_CODES_ROUTE } from '@/app/constants/local-routes'
 
 const initialState = [{
   naics_code: '',
@@ -122,7 +123,7 @@ async function getNaicsCodeDetails(prevState: any, formData: FormData): Promise<
   });
   try {
     const searchTerm = data.naics_code.replace(/[^0-9]/g, '') ? `naics_code=${data.naics_code.replace(/[^0-9]/g, '')}` : `keyword=${data.naics_code.replace(/[0-9]/g, '').trim()}`;
-    const response = await fetch(`${API_ROUTE}/amount-awarded?${searchTerm}`);
+    const response = await fetch(`${NAICS_CODES_ROUTE}?${searchTerm}`);
     const results = await response.json();
     const saved = JSON.parse(localStorage.getItem('should-i-apply') || '{}');
     saved.match = {results: results, searchTerm: data.naics_code};

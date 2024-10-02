@@ -9,55 +9,57 @@ import {
   ModalHeading,
 } from '@trussworks/react-uswds'
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styles from './DeleteWithdrawConfirmationModal.module.scss'
 
 interface ModalProps {
   confirmationType: string | undefined,
   openConfirmationModal: boolean,
-	entityId?: number | null | undefined
-	clickedId?: number | null,
-	applicationData?: Application[],
-	resetClickedId?: () => void,
+  clickedId?: number | null,
+  applicationData?: Application[],
+  resetClickedId?: () => void,
 }
 
 const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
   confirmationType,
   openConfirmationModal,
   applicationData,
-  clickedId, resetClickedId
+  clickedId,
+  resetClickedId
 }) => {
-  const [openModal, setOpenModal] = useState<boolean>(
-    openConfirmationModal !== undefined ? true : false,
-  )
+  const [openModal, setOpenModal] = useState<boolean>(openConfirmationModal !== undefined ? true : false)
+  const [currentApplication, setCurrentApplication] = useState<Application | null>(null)
+
+  useEffect(() => {
+    if (applicationData && clickedId) {
+      const foundApplication = applicationData.find(app => app.id === clickedId)
+      setCurrentApplication(foundApplication || null)
+    }
+  }, [applicationData, clickedId])
 
   const handleBtnClick = async () => {
     try {
-      const application = applicationData?.filter(app => (
-        app.id === clickedId
-      ))
-      if (!application) {
-        return
+      if (!currentApplication || !currentApplication.id || !currentApplication.entity.entity_id) {
+        throw new Error('Error with application data');
       }
 
       const putData = {
-        application_id: application[0].id,
-        entity_id: application[0].entity.entity_id,
+        application_id: currentApplication.id,
+        entity_id: currentApplication.entity.entity_id,
         state_action: confirmationType
       };
 
-      const adverb = confirmationType === 'delete' ? 'deleted' : 'withdrawn';
-
-      console.log(adverb)
-      await axios.put(`${UPDATE_APPLICATION_STATE_ROUTE}`, putData);
-      alert(`Success! Your application has been ${adverb}.`)
+    	await axios.put(`${UPDATE_APPLICATION_STATE_ROUTE}`, putData);
       resetClickedId && resetClickedId()
+      setOpenModal(false)
     } catch (error: any) {
-      console.log(error)
-			 alert('There was an error processing your request.');
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.log(error)
+      }
+      setOpenModal(false)
+      alert('There was an error processing your request.');
       return;
     }
-    setOpenModal(false)
   }
 
   const deleteModalBody = (
@@ -83,7 +85,7 @@ const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
 
   return (
     <>
-      {openModal && (
+      {openModal && currentApplication && (
         <Modal
           forceAction
           aria-labelledby="modal-heading"

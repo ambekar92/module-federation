@@ -236,3 +236,9 @@ li.usa-card {
 	left: 50%;
 	top: 50%;
 }
+
+@media screen and (min-width: 1100px) {
+  .mobile-only-nav-item {
+    display: none !important;
+  }
+}

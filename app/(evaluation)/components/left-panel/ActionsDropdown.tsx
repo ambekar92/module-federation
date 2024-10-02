@@ -178,9 +178,6 @@ const ActionsDropdown = () => {
       if (action.id === ActionMenuIDs.UPDATE_VA_STATUS && !hasVeteranProgramId) {
         return false;
       }
-      if((workflow_state !== 'escalate_review' && workflow_state !== 'escalate review') && action.id === ActionMenuIDs.ESCALATE_REVIEW) {
-        return false;
-      }
 
       if (action.permissions.length === 0) {
         return true

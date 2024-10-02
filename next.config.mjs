@@ -23,9 +23,6 @@ const withNextJsObfuscator = createNextJsObfuscator(
 const nextConfig = withNextJsObfuscator({
   reactStrictMode: true,
   productionBrowserSourceMaps: false,  // Disable source maps in production
-  optimization: {
-    minimize: true
-  },
   swcMinify: true,  // Enable SWC-based minification
   async redirects() {
     return [
@@ -93,11 +90,11 @@ const nextConfig = withNextJsObfuscator({
         ],
       },
       {
-        source: "/(.*)", // Apply globally
+        source: '/(.*)', // Apply globally
         headers: [
           {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin", // Change the policy as needed
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin', // Change the policy as needed
           },
         ],
       },

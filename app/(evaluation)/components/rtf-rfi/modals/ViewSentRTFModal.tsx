@@ -121,7 +121,7 @@ const ViewSentRTFModal: React.FC<ViewSentRTFModalProps> = ({
             Once you have addressed all issues listed above, please resubmit your application.
             Upon resubmission, your application will be assigned to a screener, who will review the contents of your application package to ensure it is complete.
             If you have not resubmitted your application within 30 days, your application may be removed for inactivity.
-            If you have questions, please contact {sessionData.data?.user.name} at 636-555-3226 or our main help desk at 317-555-0113.
+            If you have questions, please contact our main help desk at 317-555-0113.
             We also encourage you to visit our resource library at <a href="https://certification.sba.gov/resources" target="_blank" rel="noreferrer">https://certification.sba.gov/resources</a> or meet with a local SBA Resource Partner or District Office for assistance.
             Visit <a href="https://www.sba.gov/tools/local-assistance" target="_blank" rel="noopener noreferrer">https://www.sba.gov/tools/local-assistance</a> to locate the one nearest you.
           </p>

@@ -12,8 +12,8 @@ import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { Alert, Button, Icon, Table } from '@trussworks/react-uswds';
 import moment from 'moment';
 import React, { useRef } from 'react';
-import styles from './Documents.module.scss';
 import useSWR from 'swr';
+import styles from './Documents.module.scss';
 
 const Documents = () => {
   const {contributorId, userId, applicationData} = useApplicationContext()
@@ -192,8 +192,8 @@ const Documents = () => {
             <h2>HUBZone Calculator Uploads</h2>
           </AccordionSummary>
           <AccordionDetails>
-            {hubzoneQuestions.map((question) => (
-              <div key={question.id}>
+            {hubzoneQuestions.map((question, key) => (
+              <div key={`${question.id}-${key}`}>
                 <h2>{question.title}</h2>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '3rem'}}>
                   <p>{question.description}</p>

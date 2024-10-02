@@ -1,6 +1,6 @@
 import { headers, cookies } from 'next/headers';
 import redisClient from '@/app/lib/redis';
-import { decrypt } from '@/app/shared/utility/encryption'
+import { decrypt, decryptData } from '@/app/shared/utility/encryption'
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
@@ -16,7 +16,11 @@ export async function GET(request: Request) {
 
   const cookieStore = cookies();
   const emailPasswordAuthToken = cookieStore.get('email_password_auth_token');
-  const userData = emailPasswordAuthToken ? JSON.parse(decrypt(emailPasswordAuthToken.value)) : undefined;
+  const sessionToken = cookieStore.get('sessionToken');
+  const pk = cookieStore.get('pk');
+  const secretKey2 = decryptData(sessionToken?.value, pk?.value);
+
+  const userData = emailPasswordAuthToken ? JSON.parse(decryptData(emailPasswordAuthToken.value, secretKey2)) : undefined;
   const redisData = await redisClient.get(userData.email);
   const token = redisData ? JSON.parse(redisData).access : null;
 

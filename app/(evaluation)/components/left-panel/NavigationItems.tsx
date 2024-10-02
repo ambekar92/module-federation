@@ -112,6 +112,7 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
         </Button>
       );
     }
+    const questionnaireKey = childItem.url.split('/').pop()?.replace('analyst-questionnaire-', '') || '';
 
     return (
       <Link
@@ -122,13 +123,9 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
       >
         {childItem.title} {isAnalystQuestionnaire && isClickable && (
           <CheckCircleIcon className={`${
-            index === analystQuestionnaires.length - 1
-              ? completedQuestionnaires['hubzone-specific']
-                ? 'text-green'
-                : 'text-gold'
-              : isItemClickable(index + 1)
-                ? 'text-green'
-                : 'text-gold'
+            completedQuestionnaires[questionnaireKey]
+              ? 'text-green'
+              : 'text-gold'
           }`} />
         )}
       </Link>

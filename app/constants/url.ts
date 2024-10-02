@@ -24,7 +24,7 @@ export const FIRM_APPLICATION_DONE_PAGE =
   '/firm/application/:application_id/done'
 export const REVIEWERS_DASHBOARD_PAGE = '/user/dashboard/reviewers'
 export const TASKS_DASHBOARD_PAGE = '/user/dashboard/tasks'
-export const DELEGATE_DASHBOARD_PAGE = '/user/dashboard/delegate'
+export const DELEGATE_DASHBOARD_PAGE = '/dashboard/delegate'
 export const ASSIGN_DELEGATE_PAGE = '/application/assign-a-delegate/:applicationId'
 export const QUESTIONNAIRE_PAGE = '/application/questionnaire/:applicationId/:section'
 export const QUESTIONNAIRE_LIST_PAGE = '/application/questionnaire/:applicationId'
@@ -36,7 +36,7 @@ export const APPILCATION = '/application'
 export const APPLICATION_QUESTIONNAIRE_LIST_PAGE = '/application/questionnaire/:applicationId'
 export const APPLICATION_VIEW_PAGE = '/application/view/:applicationId'
 export const NOTIFICATIONS_PAGE = '/notifications';
-export const GET_HELP_ROUTE = 'https://sbaone.atlassian.net/servicedesk/customer/portal/12';
+export const GET_HELP_ROUTE = '/help';
 export const CALCULATOR_DEMO_SBA_ONE_ROUTE = 'https://calculator.demo.sba-one.net/';
 export const SBAONE_ATLASSIAN_SPACES_ROUTE = 'https://sbaone.atlassian.net/wiki/spaces/UCPUKB/overview/';
 export const FEDERAL_CONTRACTING_ASSISTANCE_PROGRAMS_ROUTE = 'https://www.sba.gov/federal-contracting/contracting-assistance-programs';
