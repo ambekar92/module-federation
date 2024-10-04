@@ -8,6 +8,7 @@ import { useCurrentApplication } from '../../firm/useApplicationData'
 import NaicsCodes from './NaicsCodes'
 import SamInfo from './SamInfo'
 import VaCert from './VaCert'
+import ControllingEntity from './ControllingEntity'
 
 function FirmSummary() {
   const { applicationData } = useCurrentApplication();
@@ -95,7 +96,7 @@ function FirmSummary() {
     <>
       <div className='grid-row'>
         <div className="grid-col-12">
-          <h1>Business Summary</h1>
+          <h1>Firm Summary</h1>
           <p>{application?.description ?? 'N/A'} </p>
         </div>
         <div className="grid-col-12 margin-top-4">

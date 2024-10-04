@@ -1,16 +1,17 @@
 'use client'
 import InvitationCodeForm from '@/app/(entity)/claim-your-business/components/forms/InvitationCodeForm'
 import { GET_APPLICATIONS_ROUTE, GET_ENTITIES_ROUTE } from '@/app/constants/local-routes'
-import { buildRoute, CLAIM_YOUR_BUSINESS, DELEGATE_DASHBOARD_PAGE, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
+import { buildRoute, CLAIM_YOUR_BUSINESS, CONTRIBUTOR_DASHBOARD_PAGE, DELEGATE_DASHBOARD_PAGE, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { Application, EntitiesType } from '@/app/services/types/application-service/Application'
 import { Show } from '@/app/shared/components/Show'
 import Spinner from '@/app/shared/components/spinner/Spinner'
+import { getApplicationRole } from '@/app/shared/utility/getApplicationRole'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import AppRegistrationOutlinedIcon from '@mui/icons-material/AppRegistrationOutlined'
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined'
 import { Button, ButtonGroup, Collection, Grid } from '@trussworks/react-uswds'
-import { useRouter } from 'next/navigation'
 import { ReactElement, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import styles from '../utils/FirmDashboard.module.scss'
@@ -20,7 +21,6 @@ import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 import { getApplicationRole } from '@/app/shared/utility/getApplicationRole'
 
 export default function ClientFirmUserDashboard() {
-  const router = useRouter()
   const { data: session, status } = useSessionUCMS()
   const [clickedId, setClickedId] = useState<number | null>(null)
   const [actionButton, setActionButton] = useState<ReactElement>()
@@ -35,6 +35,7 @@ export default function ClientFirmUserDashboard() {
   );
 
   const hasDelegate = session?.permissions?.some(permission => permission.slug.includes('delegate'))
+  const isPrimaryOwner = session?.permissions?.some(permission => permission.slug.includes('primary_qualifying_owner'))
   const applicationRole = (data && session?.user_id) && getApplicationRole(data, session?.user_id)
 
   useEffect(() => {
@@ -44,8 +45,13 @@ export default function ClientFirmUserDashboard() {
   }, [session, status])
 
   useEffect(() => {
+    if((!data || data?.length === 0) || !session) {return;}
+
     if (hasDelegate || applicationRole === 'delegate') {
-      router.push(DELEGATE_DASHBOARD_PAGE)
+      window.location.href = DELEGATE_DASHBOARD_PAGE
+    }
+    if(applicationRole !== 'primary-qualifying-owner' || !isPrimaryOwner) {
+      window.location.href = CONTRIBUTOR_DASHBOARD_PAGE
     }
   }, [hasDelegate, applicationRole])
 
