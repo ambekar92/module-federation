@@ -367,13 +367,17 @@ function ContributorInvitation() {
   }
 
   const handleNextClick = () => {
-    if (contributors.length > 0) {
-      setShowModal(true);
-    } else {
+    const nonOwnerContributors = contributors.filter(
+      contributor => contributor.emailAddress.toLowerCase() !== ownerEmail?.toLowerCase()
+    );
+
+    if (nonOwnerContributors.length === 0) {
       window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
         applicationId: applicationId,
         stepLink: applicationSteps.sign.link
       });
+    } else {
+      setShowModal(true);
     }
   }
 
@@ -631,24 +635,11 @@ function ContributorInvitation() {
             stepLink: applicationSteps.documentUpload.link
           })
         }>
-					Previous
+          Previous
         </Link>
-        {contributors.length === 0
-          ? (
-            <Link className='usa-button' aria-disabled={!applicationId} href={
-              buildRoute(APPLICATION_STEP_ROUTE, {
-                applicationId: applicationId,
-                stepLink: applicationSteps.sign.link
-              })
-            }>
-							Next
-            </Link>
-          ) : (
-            <Button type='button' onClick={handleNextClick}>
-							Next
-            </Button>
-          )
-        }
+        <Button type='button' onClick={handleNextClick}>
+          Next
+        </Button>
       </ButtonGroup>
     </>
   );

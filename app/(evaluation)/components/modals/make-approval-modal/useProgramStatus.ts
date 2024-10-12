@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Decision, ReviewSummaryType } from './types';
+import { Decision, ReviewerDecisionType, ReviewSummaryType } from './types';
 import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate';
 
 interface ProgramStatus {
@@ -10,78 +10,126 @@ interface ProgramStatus {
   isLoading: boolean;
 }
 
-export const useProgramStatus = (reviewSummaryData: ReviewSummaryType | null): ProgramStatus => {
+export const useProgramStatus = (reviewSummaryData: ReviewSummaryType | null, reviewerDecisions: ReviewerDecisionType[]): ProgramStatus => {
   const [status, setStatus] = useState<ProgramStatus>({
     approvedPrograms: [],
     declinedPrograms: [],
-    approvedLetters: [],
-    declinedLetters: [],
+    approvedLetters: [DocumentTemplateType.generalApproval],
+    declinedLetters: [DocumentTemplateType.generalDecline],
     isLoading: true,
   });
 
   useEffect(() => {
-    if (reviewSummaryData) {
+    if (reviewSummaryData && reviewerDecisions && reviewerDecisions.length > 0) {
       const newStatus: ProgramStatus = {
         approvedPrograms: [],
         declinedPrograms: [],
         approvedLetters: [DocumentTemplateType.generalApproval],
-        declinedLetters: [DocumentTemplateType.generalDecline],
+        declinedLetters: [],
         isLoading: false,
       };
-      if (reviewSummaryData.approvalvosb === Decision.Concur) {
-        newStatus.approvedPrograms.push('vosb');
-        newStatus.approvedLetters.push(DocumentTemplateType.vetCertApproval);
+
+      const isApproved = (programName: string) =>
+        reviewerDecisions.some(decision => decision.name === programName && decision.value === 'approved');
+
+      // Combined VOSB and SD-VOSB logic
+      let vosbDeclined = false;
+      if (reviewSummaryData.approvalvosb !== undefined || reviewSummaryData.approvalsd_vosb !== undefined) {
+        if ((reviewSummaryData.approvalvosb === Decision.Concur && isApproved('vosb')) ||
+            (reviewSummaryData.approvalsd_vosb === Decision.Concur && isApproved('sd_vosb')) ||
+            (reviewSummaryData.approvalvosb === Decision.Disagree && !isApproved('vosb')) ||
+            (reviewSummaryData.approvalsd_vosb === Decision.Disagree && !isApproved('sd_vosb'))) {
+          if (reviewSummaryData.approvalvosb !== undefined) {
+            newStatus.approvedPrograms.push('vosb');
+          }
+          if (reviewSummaryData.approvalsd_vosb !== undefined) {
+            newStatus.approvedPrograms.push('sd_vosb');
+          }
+          newStatus.approvedLetters.push(DocumentTemplateType.vetCertApproval);
+        } else {
+          if (reviewSummaryData.approvalvosb !== undefined && (reviewSummaryData.approvalvosb === Decision.Disagree || !isApproved('vosb'))) {
+            newStatus.declinedPrograms.push('vosb');
+          }
+          if (reviewSummaryData.approvalsd_vosb !== undefined && (reviewSummaryData.approvalsd_vosb === Decision.Disagree || !isApproved('sd_vosb'))) {
+            newStatus.declinedPrograms.push('sd_vosb');
+          }
+          vosbDeclined = true;
+        }
       }
-      if (reviewSummaryData.approvalsd_vosb === Decision.Concur) {
-        newStatus.approvedPrograms.push('sd_vosb');
-        newStatus.approvedLetters.push(DocumentTemplateType.vetCertApproval);
+
+      // WOSB
+      let wosbDeclined = false;
+      if (reviewSummaryData.approvalwosb !== undefined) {
+        if ((reviewSummaryData.approvalwosb === Decision.Concur && isApproved('wosb')) ||
+      (reviewSummaryData.approvalwosb === Decision.Disagree && !isApproved('wosb'))) {
+          newStatus.approvedPrograms.push('wosb');
+          if (!newStatus.approvedLetters.includes(DocumentTemplateType.wosbApproval)) {
+            newStatus.approvedLetters.push(DocumentTemplateType.wosbApproval);
+          }
+        } else {
+          newStatus.declinedPrograms.push('wosb');
+          wosbDeclined = true;
+        }
       }
-      if (reviewSummaryData.approvalvosb === Decision.Disagree) {
-        newStatus.declinedPrograms.push('vosb');
+
+      // EDWOSB
+      let edwosbDeclined = false;
+      if (reviewSummaryData.approvaled_wosb !== undefined) {
+        if ((reviewSummaryData.approvaled_wosb === Decision.Concur && isApproved('ed_wosb')) ||
+      (reviewSummaryData.approvaled_wosb === Decision.Disagree && !isApproved('ed_wosb'))) {
+          newStatus.approvedPrograms.push('ed_wosb');
+          if (!newStatus.approvedLetters.includes(DocumentTemplateType.wosbApproval)) {
+            newStatus.approvedLetters.push(DocumentTemplateType.wosbApproval);
+          }
+        } else {
+          newStatus.declinedPrograms.push('ed_wosb');
+          edwosbDeclined = true;
+        }
+      }
+
+      // HUBZone
+      if (reviewSummaryData.approvalhubzone !== undefined) {
+        if ((reviewSummaryData.approvalhubzone === Decision.Concur && isApproved('hubzone')) ||
+            (reviewSummaryData.approvalhubzone === Decision.Disagree && !isApproved('hubzone'))) {
+          newStatus.approvedPrograms.push('hubzone');
+          newStatus.approvedLetters.push(DocumentTemplateType.hubzoneApproval);
+        } else {
+          newStatus.declinedPrograms.push('hubzone');
+        }
+      }
+
+      // 8(a)
+      if (reviewSummaryData.approvaleight_a !== undefined) {
+        if ((reviewSummaryData.approvaleight_a === Decision.Concur && isApproved('eight_a')) ||
+            (reviewSummaryData.approvaleight_a === Decision.Disagree && !isApproved('eight_a'))) {
+          newStatus.approvedPrograms.push('eight_a');
+          newStatus.approvedLetters.push(DocumentTemplateType.eightAApproval);
+        } else {
+          newStatus.declinedPrograms.push('eight_a');
+        }
+      }
+
+      // Add specific decline letters
+      if (vosbDeclined) {
         newStatus.declinedLetters.push(
-          reviewSummaryData['reviewerAppeal-vosb'] === 'yes'
+          (reviewSummaryData['reviewerAppeal-vosb'] === 'yes' || reviewSummaryData['reviewerAppeal-sd_vosb'] === 'yes')
             ? DocumentTemplateType.vetCertDeclineAppeal
             : DocumentTemplateType.vetCertDecline
         );
       }
-      if (reviewSummaryData.approvalsd_vosb === Decision.Disagree) {
-        newStatus.declinedPrograms.push('sd_vosb');
-        newStatus.declinedLetters.push(
-          reviewSummaryData['reviewerAppeal-sd_vosb'] === 'yes'
-            ? DocumentTemplateType.vetCertDeclineAppeal
-            : DocumentTemplateType.vetCertDecline
-        );
-      }
-      if (reviewSummaryData.approvalwosb === Decision.Concur || reviewSummaryData.approvaled_wosb === Decision.Concur) {
-        newStatus.approvedPrograms.push('wosb');
-        newStatus.approvedLetters.push(DocumentTemplateType.wosbApproval);
-      }
-      if (reviewSummaryData.approvalhubzone === Decision.Concur) {
-        newStatus.approvedPrograms.push('hubzone');
-        newStatus.approvedLetters.push(DocumentTemplateType.hubzoneApproval);
-      }
-      if (reviewSummaryData.approvaleight_a === Decision.Concur) {
-        newStatus.approvedPrograms.push('eight_a');
-        newStatus.approvedLetters.push(DocumentTemplateType.eightAApproval);
-      }
-      if ((reviewSummaryData.approvalwosb === Decision.Disagree || reviewSummaryData.approvaled_wosb === Decision.Disagree)) {
-        newStatus.declinedPrograms.push('wosb');
+      if (wosbDeclined || edwosbDeclined) {
         newStatus.declinedLetters.push(DocumentTemplateType.wosbDecline);
       }
-      if (reviewSummaryData.approvalhubzone === Decision.Disagree ||
-        (reviewSummaryData.approvalhubzone === Decision.Concur && reviewSummaryData['reviewerAppeal-hubzone'] === 'yes')) {
-        newStatus.declinedPrograms.push('hubzone');
+      if (newStatus.declinedPrograms.includes('hubzone')) {
         newStatus.declinedLetters.push(DocumentTemplateType.hubzoneDecline);
       }
-      if (reviewSummaryData.approvaleight_a === Decision.Disagree ||
-        (reviewSummaryData.approvaleight_a === Decision.Concur && reviewSummaryData['reviewerAppeal-eight_a'] === 'yes')) {
-        newStatus.declinedPrograms.push('eight_a');
+      if (newStatus.declinedPrograms.includes('eight_a')) {
         newStatus.declinedLetters.push(DocumentTemplateType.eightADecline);
       }
 
       setStatus(newStatus);
     }
-  }, [reviewSummaryData]);
+  }, [reviewSummaryData, reviewerDecisions]);
 
   return status;
 };

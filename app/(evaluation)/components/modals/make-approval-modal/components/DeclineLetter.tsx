@@ -12,7 +12,7 @@ import React, { Dispatch, RefObject, useEffect, useRef, useState } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import BodyContentRenderer from '../../../BodyContentRenderer'
 import { declineLetterSchema } from '../schema'
-import { Decision, DeclineLetterType, MakeApprovalFormType, ReviewSummaryType, Steps } from '../types'
+import { Decision, DeclineLetterType, MakeApprovalFormType, ReviewerDecisionType, ReviewSummaryType, Steps } from '../types'
 import { useProgramStatus } from '../useProgramStatus'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
@@ -23,6 +23,7 @@ interface DeclineLetterProps {
   applicationData: Application | null;
   reviewSummaryData: ReviewSummaryType | null;
   processId: number | undefined;
+	reviewerDecisions: ReviewerDecisionType[];
 }
 
 const DeclineLetter: React.FC<DeclineLetterProps> = ({
@@ -30,11 +31,12 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
   setCurrentStep,
   applicationData,
   reviewSummaryData,
-  processId
+  processId,
+  reviewerDecisions
 }) => {
   const [currentLetterIdx, setCurrentLetterIdx] = useState<number>(0);
   const [supplementalLetters, setSupplementalLetters] = useState<DocumentTemplateType[]>([]);
-  const { approvedLetters, declinedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData);
+  const { approvedLetters, declinedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData, reviewerDecisions);
   const {setValue, reset} = useFormContext<MakeApprovalFormType>();
   const { data: session } = useSessionUCMS();
   const bodyContentRef = useRef<HTMLDivElement>(null);
@@ -88,7 +90,6 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
         throw new Error('Invalid response from server');
       }
     } catch (error) {
-      console.error('Error generating PDF:', error);
       alert('There was an error generating the PDF. Please try again.');
     }
   }
@@ -106,7 +107,6 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
       methods.handleSubmit(onSubmit)();
     } else {
       setCurrentLetterIdx(prevIdx => prevIdx + 1);
-      console.log(supplementalLetters)
     }
   }
 
@@ -136,19 +136,25 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
         const programApplication = applicationData?.program_application || []
         const programDecisions = programApplication.map((program) => {
           const programName = program.programs.name
-          const decision = reviewSummaryData[`approval${programName}`]
+          const reviewerDecision = reviewerDecisions.find(d => d.name === programName)
+          const reviewSummary = reviewSummaryData[`approval${programName}`]
+
           const baseDecision = {
             program_id: program.program_id,
             approved: 1
           }
 
-          if (decision === Decision.Disagree) {
-            const reviewerAppealValue = reviewSummaryData[`approvalReviewerAppeal-${programName}`] === Decision.Concur ? 1 : 0
+          if (reviewSummary === Decision.Disagree || reviewerDecision?.value !== 'approved') {
+            const reviewerAppealKey = `approvalReviewerAppeal-${programName}` as keyof ReviewSummaryType
+            const commentsKey = `approvalCommentsOnDisagreement-${programName}` as keyof ReviewSummaryType
+
+            const reviewerDeclineReason = reviewSummaryData[commentsKey] as string
+            const reviewerCanAppeal = reviewSummaryData[reviewerAppealKey] === 'yes'
 
             return {
               ...baseDecision,
-              approver_decline_reason: reviewSummaryData[`approvalCommentsOnDisagreement-${programName}`],
-              approver_can_appeal: reviewerAppealValue,
+              approver_decline_reason: reviewerDeclineReason || 'Approver concurs with reviewer',
+              approver_can_appeal: reviewerCanAppeal ? 1 : (program.reviewer_can_appeal ? 1 : 0),
             }
           }
 

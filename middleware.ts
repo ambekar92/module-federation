@@ -11,33 +11,29 @@ import { decrypt, decryptData } from '@/app/shared/utility/encryption';
 
 async function handleProtectedRoute(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-    console.log('door opened')
+    console.log('door opened');
   }
-  const { token } = await getData(request)
-  const path = request.nextUrl.pathname
-  if (
-    path === '/login' ||
-    path === '/login-tester' ||
-    path === '/tester-login'
-  ) {
-    return NextResponse.next()
+  const {token} = await getData(request);
+  const path = request.nextUrl.pathname;
+  if (path === '/login' || path === '/login-tester' || path === '/tester-login') {
+    return NextResponse.next();
   }
 
   // somehow if logging in via okta, user_id is not available at this point,
   // however this check is not for okta authenticated users so we are ignoring this checking okta authenticated used.
   if (token && !token.user_id && !token.okta_id) {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-      console.log('not available at this point')
+      console.log('not available at this point');
     }
-    return NextResponse.redirect(`${request.nextUrl.origin}?shouldLogout=true`)
+    return NextResponse.redirect(`${request.nextUrl.origin}?shouldLogout=true`);
   }
   if (!token) {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-      console.log('something went wrong', request.nextUrl.origin)
+      console.log('something went wrong', request.nextUrl.origin);
     }
-    return NextResponse.redirect(`${request.nextUrl.origin}`)
+    return NextResponse.redirect(`${request.nextUrl.origin}`);
   } else {
-    return NextResponse.next()
+    return NextResponse.next();
   }
 }
 
@@ -57,9 +53,7 @@ const middlewares: { [key: string]: any } = {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
       console.log('handleProtectedRoute', permissions);
     }
-    if (isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) || isRole(permissions, Role.CONTRIBUTOR)) {
-      return NextResponse.redirect(`${request.nextUrl.origin}/admin/dashboard`)
-    } else if (!isRole(permissions, Role.PRIMARY_QUALIFYING_OWNER) && !isRole(permissions, Role.CONTRIBUTOR) && !isRole(permissions, Role.ADMIN)) {
+    if (!isRole(permissions, Role.EXTERNAL)) {
       return NextResponse.redirect(`${request.nextUrl.origin}/user/dashboard/tasks`);
     } else {
       return NextResponse.next();
@@ -75,15 +69,15 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.next();
     }
   }],
-  '/firm/:path*': [async (request: NextRequest) => {
-    const {permissions} = await getData(request)
-    const isInternalUser = isRole(permissions, Role.INTERNAL);
-    if (isInternalUser) {
-      return NextResponse.next();
-    } else {
-      return NextResponse.redirect(`${request.nextUrl.origin}`);
-    }
-  }],
+  // '/firm/:path*': [async (request: NextRequest) => {
+  //   const {permissions} = await getData(request)
+  //   const isInternalUser = isRole(permissions, Role.INTERNAL);
+  //   if (isInternalUser) {
+  //     return NextResponse.next();
+  //   } else {
+  //     return NextResponse.redirect(`${request.nextUrl.origin}`);
+  //   }
+  // }],
   '/admin/:path*': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
     const isAdminUser = isRole(permissions, Role.ADMIN);
@@ -136,28 +130,25 @@ export const config = {
     '/additional-information',
     '/application',
     '/application(.*)', // all sub-routes
-    '/firm(.*)', // all sub-routes
+    // '/firm(.*)', // all sub-routes
     '/dashboard/(.*)',
     '/user/dashboard/(.*)',
     '/user/dashboard/:path*',
     '/login-tester',
     '/tester-login',
     '/entity-owned/(.*)',
-    '/field-function/(.*)',
   ],
 }
 
-export const middleware = createMiddleware(middlewares)
+export const middleware = createMiddleware(middlewares);
 
 export function isRole(permissions:  Permission[], role: Role) {
   // if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
   //   console.log('yolo');
   // }
 
-  if (!permissions) {
-    return false
-  }
-  return permissions.some((permission) => permission.slug === role)
+  if (!permissions) {return false;}
+  return permissions.some(permission => permission.slug === role);
 }
 
 async function getData(request: NextRequest) {
@@ -175,12 +166,14 @@ async function getData(request: NextRequest) {
     ? JSON.parse(decryptData(cookies.get('maxgov_auth_token')?.value, secretKey2) ?? '')
     : null as unknown as LoginResponseUser;
 
-  const originalUrl = encodeURIComponent(request.nextUrl.pathname)
+  const token = email_password_auth_token || maxgov_auth_token || null;
+  const permissions = token?.permissions || [];
+  const originalUrl = encodeURIComponent(request.nextUrl.pathname);
 
   if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-    console.log('URL', originalUrl)
-    console.log('token', token)
+    console.log('URL', originalUrl);
+    console.log('token', token ?? null);
   }
 
-  return { token, permissions, originalUrl }
+  return {token, permissions, originalUrl}
 }

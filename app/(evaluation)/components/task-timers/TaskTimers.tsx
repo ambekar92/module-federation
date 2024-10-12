@@ -11,27 +11,19 @@ import { useRtfRequestData } from '../rtf-rfi/hooks/useRtfRequestData';
 import Spinner from '@/app/shared/components/spinner/Spinner';
 
 const TaskTimers = () => {
-  const params = useParams<{ application_id: string }>();
+  const params = useParams<{application_id: string}>();
   const sessionData = useSessionUCMS()
   const userRole = getUserRole(sessionData?.data?.permissions || []);
-  const [tasks, setTasks] = useState<IRTFRequestItem[]>();
+  const [ tasks, setTasks ] = useState<IRTFRequestItem[]>();
   const { requestData, isLoading, hasError: hasRfiError } = useRtfRequestData(params.application_id, userRole);
 
   useEffect(() => {
     requestData && requestData.length > 0 && setTasks(requestData)
   }, [requestData]);
 
-  if (hasRfiError) {
-    return <p>{hasRfiError}</p>
+  if(hasRfiError) {
+    return <Alert headingLevel='h4' type="error" heading="">Error loading Task Timers</Alert>;
   }
-
-  const taskData = [
-    { id: "1", task: "Time with Business (initial submission)", time: "3 hours" },
-    { id: "2", task: "Time in First Level Review", time: "12 Days" },
-    { id: "3", task: "Time in Next Level Review", time: "5 hours" },
-    { id: "4", task: "Time in Final Review", time: "1 hour" },
-    { id: "5", task: "Time with Business (Return To Business)", time: "2 hours" }
-  ];
 
   const taskDropdownItems: AccordionItemProps[] = tasks?.map((task, index) => ({
     id: task.id.toString(),
@@ -93,24 +85,7 @@ const TaskTimers = () => {
       {!isLoading && (
         <>
           <p>Task timers represent the amount of time spent on each task. Time is rounded up to the nearest hour and/or day.</p>
-          {/* <Accordion items={taskDropdownItems} multiselectable={true} /> */}
-          <Table bordered={true} fullWidth>
-            <thead>
-              <tr>
-                <th>Tasks</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {taskData.map((task) => (
-                <tr key={task.id}>
-                  <td>{task.task}</td>
-                  <td>{task.time}</td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-
+          <Accordion items={taskDropdownItems} multiselectable={true} />
         </>
       )}
     </div>

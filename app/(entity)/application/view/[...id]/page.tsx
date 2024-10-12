@@ -1,17 +1,21 @@
 'use client'
 
 import AnswerValue from '@/app/(evaluation)/firm/application/[application_id]/[section_questions]/AnswerValue';
-import { GET_APPLICATIONS_ROUTE } from '@/app/constants/local-routes';
+import { GET_APPLICATIONS_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { buildRoute, DASHBOARD } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
 import { useGetQuestionnaireList } from '@/app/services/queries/application-service/useGetQuestionnaireList';
 import { useGetQuestionnaire } from '@/app/services/queries/application-service/useGetQuestionResponses';
+import { DocumentParams, useDocuments } from '@/app/services/queries/document-service/useDocuments';
 import { Application } from '@/app/services/types/application-service/Application';
+import { QuestionnaireListItem } from '@/app/services/types/application-service/QuestionnaireItem';
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 const Responses = () => {
   const [currentSection, setCurrentSection] = useState('');
@@ -24,6 +28,7 @@ const Responses = () => {
   );
   const { data: responses, isLoading: isLoadingResponses } = useGetQuestionnaire(sectionUrl as string);
   const { data: sections } = useGetQuestionnaireList(Number(contributorId));
+  const { data: navItems } = useSWR<QuestionnaireListItem[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null)
 
   useEffect(() => {
     if (applicationData && applicationData.length > 0 && contributorId) {
@@ -56,6 +61,28 @@ const Responses = () => {
     }
   }, [sectionUrl, sections]);
 
+  const documentSectionId = useMemo(() => {
+    if (!navItems || !sectionUrl) {return null;}
+    const foundItem = navItems.find(item =>
+      item.url.includes(sectionUrl)
+    );
+    if (foundItem) {return foundItem.id;}
+    return null;
+  }, [navItems, contributorId, sectionUrl]);
+
+  const { data: documentsData, error: documentsError, isLoading: isLoadingDocuments } = useDocuments({
+    [DocumentParams.user_id]: (documentSectionId && session.user_id) ? session.user_id : null,
+    [DocumentParams.application_section_id]: documentSectionId ? documentSectionId : null,
+  });
+
+  if (documentsError) {
+    return <p>Error loading documents</p>
+  }
+
+  if(isLoadingDocuments) {
+    return <p>Loading...</p>
+  }
+
   if (isLoadingResponses) {return <div>Loading...</div>;}
 
   return (
@@ -69,6 +96,20 @@ const Responses = () => {
             </div>
           </div>
         ))}
+        <div className='grid-row'>
+          {documentsData && Array.isArray(documentsData) && documentsData.length > 0 && documentsData?.map(document => (
+            <div key={document.id} className='grid-col-12 flex-align-center margin-top-2'>
+              <a
+                className='flex-align-center display-flex text-base-darker hover:text-primary'
+                style={{ textDecoration: 'none', fontWeight: 400, fontSize: '16px' }}
+                href={document.signed_url} target="_blank" rel="noreferrer"
+              >
+                {document.file_name.includes('.pdf') ? <PictureAsPdfIcon /> : <InsertDriveFileIcon />}
+                <span className='margin-left-05'>{document.file_name}</span>
+              </a>
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );

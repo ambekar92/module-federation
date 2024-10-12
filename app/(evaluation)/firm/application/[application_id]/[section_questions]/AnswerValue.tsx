@@ -2,6 +2,7 @@ import React from 'react';
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Label } from '@trussworks/react-uswds';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { usePathname } from 'next/navigation';
 
 type GridRow = {
   [key: string]: string | string[];
@@ -15,13 +16,15 @@ const isGridAnswer = (value: any): value is GridAnswer => {
   return Array.isArray(value.answer) && value.answer.every((row: any) => typeof row === 'object' && row !== null);
 };
 
-const AnswerValue = ({ question }: { question: Question }) => {
+const AnswerValue = ({ question, isSubQuestion }: { question: Question; isSubQuestion?: boolean }) => {
+  const pathname = usePathname();
+  const showLabel = pathname?.includes('/view');
   const renderGridAnswer = (q: Question): JSX.Element | null => {
     if (!q.answer?.value || !isGridAnswer(q.answer.value)) {
       return null;
     }
     const gridRows = q.answer.value.answer;
-    if (gridRows.length === 0 || !q.grid_questions) {
+    if (Array.isArray(gridRows) && gridRows.length === 0 || !q.grid_questions) {
       return null;
     }
 
@@ -32,6 +35,11 @@ const AnswerValue = ({ question }: { question: Question }) => {
 
     return (
       <>
+        {((showLabel && !isSubQuestion) || !isSubQuestion) && (
+          <Label style={{maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={q.name}>
+            {q.title}
+          </Label>
+        )}
         <TableContainer
           component={Paper}
           elevation={0}
@@ -110,7 +118,7 @@ const AnswerValue = ({ question }: { question: Question }) => {
     const subQuestions = q.rules
       .filter(rule => rule.sub_question)
       .map(rule => rule.sub_question as Question);
-    if (subQuestions.length === 0) {return null;}
+    if (Array.isArray(subQuestions) && subQuestions.length === 0) {return null;}
     return (
       <div style={{ marginLeft: '20px' }}>
         {subQuestions.map((subQ, index) => {
@@ -124,10 +132,7 @@ const AnswerValue = ({ question }: { question: Question }) => {
               <Label style={{maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={subQ.name}>
                 {subQ.title}
               </Label>
-              {/* <span className='text-base'>
-                {subQ.description?.toLowerCase() !== subQ.title?.toLowerCase() ? subQ.description : ''}
-              </span> */}
-              <p>{subQ?.question_type !== 'grid' && (<b>Answer:</b>)} {renderAnswerValue(subQ)}</p>
+              <AnswerValue question={subQ} isSubQuestion={true} />
               {renderSubQuestions(subQ)}
             </div>
           );
@@ -140,15 +145,15 @@ const AnswerValue = ({ question }: { question: Question }) => {
     return null;
   }
 
-  if (question.grid_questions && question.grid_questions.length > 0) {
+  if (question.grid_questions && Array.isArray(question.grid_questions) && question.grid_questions.length > 0) {
     return renderGridAnswer(question);
   }
 
   return (
     <div className="margin-bottom-205 border-bottom">
-      <Label style={{maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={question.name}>
+      {!isSubQuestion && <Label style={{maxWidth: 'fit-content', fontWeight: 'bold'}} htmlFor={question.name}>
         {question.title}
-      </Label>
+      </Label>}
       {/* <p>{question.description}</p> */}
       <div className="margin-top-2 margin-bottom-2">
         <b>Answer:</b> {renderAnswerValue(question)}

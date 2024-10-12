@@ -1,4 +1,4 @@
-import { Documents, DocumentsType } from '@/app/services/types/document';
+import { DocumentUpload } from '@/app/services/types/document-service/DocumentUpload';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import { Icon } from '@trussworks/react-uswds';
@@ -12,7 +12,7 @@ type SortConfig = {
   direction: 'ascending' | 'descending';
 };
 
-function DocsTable({ documentsData }: { documentsData: DocumentsType }) {
+function DocsTable({ documentsData }: { documentsData: DocumentUpload[] }) {
   const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
   const sortedData = useMemo(() => {
@@ -62,10 +62,12 @@ function DocsTable({ documentsData }: { documentsData: DocumentsType }) {
   };
 
   const LoadTableRow = () => {
-    return sortedData.map((item: Documents, index: number) => {
+    return sortedData.map((item: DocumentUpload, index: number) => {
       return (
         <tr key={index}>
-          <th scope="row">{item.file_name}</th>
+          <th scope="row">
+            <a href={`/${item.signed_url}`} target="_blank" rel="noopener noreferrer">{item.file_name}</a>
+          </th>
           <td>{item.upload_user.first_name} {item.upload_user.last_name}</td>
           <td>{new Date(item.created_at).toLocaleString()}</td>
           <td>{new Date(item.updated_at).toLocaleString()}</td>

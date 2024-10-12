@@ -1,8 +1,6 @@
-import { DASHBOARD } from '@/app/constants/url'
 import Tooltip from '@/app/shared/components/tooltip/Tooltip'
 import { Button, ButtonGroup } from '@trussworks/react-uswds'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import CustomHeader from '../../../../shared/components/forms/CustomHeader'
 import InvitationCodeForm from '../forms/InvitationCodeForm'
@@ -15,7 +13,6 @@ function ClaimBusinessLanding({
   proceedToClaimBusiness,
 }: claimBusinessLandingProps) {
   const [enterInvitationCode, setEnterInvitationCode] = useState(false);
-  const router = useRouter()
 
   const onEnterCodeClick = () => {
     setEnterInvitationCode(true)
@@ -25,14 +22,10 @@ function ClaimBusinessLanding({
     setEnterInvitationCode(false)
   }
 
-  const submitForm = () => {
-    router.push(DASHBOARD)
-  }
-
   return (
     <section>
       {enterInvitationCode ? (
-        <InvitationCodeForm onEnterCodeCancel={onEnterCodeCancel} submitForm={submitForm} />
+        <InvitationCodeForm onEnterCodeCancel={onEnterCodeCancel} />
       ) : (
         <section>
           <CustomHeader title="Small Business Certification"></CustomHeader>

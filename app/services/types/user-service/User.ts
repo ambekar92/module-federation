@@ -30,3 +30,10 @@ type PrbacRole = {
     description: string,
     parameters: string
 }
+
+export type UpdateProfilePayloadType = {
+	id: number,
+	user_id: number,
+	okta_id: string,
+	out_of_office: boolean
+}

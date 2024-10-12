@@ -71,11 +71,11 @@ async function auth(req: NextRequest, res: NextResponse ) {
         secret: process.env.SESSION_SECRET,
         session: {
           strategy: "jwt",
-          maxAge: 2700,
+          maxAge: 86400,
           rolling: true, // Extends session on user activity
         },
         jwt: {
-          maxAge: 2700
+          maxAge: 86400
         },
         callbacks: {
           authorized: ({ req, token }) => {
@@ -94,7 +94,7 @@ async function auth(req: NextRequest, res: NextResponse ) {
               cookies().set(
                 'sessionToken',
                 encryptData(secretKey, secretKey2),
-                { maxAge: 7200 }
+                { maxAge: 86400 }
               );
               user.user.sessionToken = secretKey;
 

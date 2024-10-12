@@ -61,7 +61,7 @@ export function useQuestionnaireState(applicationData: Application | null, analy
   );
 
   useEffect(() => {
-    if (questionnaireData && !isLoading) {
+    if (questionnaireData && questionnaireData.length > 0 && !isLoading) {
       const isAnyQuestionAnswered = questionnaireData.some(question =>
         question.answer && question.answer.value !== null && question.answer.value !== undefined
       );

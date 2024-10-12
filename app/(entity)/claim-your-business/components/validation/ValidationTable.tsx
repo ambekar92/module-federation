@@ -60,7 +60,7 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => {
                 <tr>
                   <th scope="row">Business Address</th>
                   <td>
-                    {`${entity.physical_addr_1}, ${entity.physical_addr_2},`}
+                    {entity.physical_addr_1}, {entity.physical_addr_2 && `${entity.physical_addr_2},`}
                     <br />
                     {`${entity.physical_city}, ${entity.physical_state_or_province}, ${entity.physical_zip_code_5}`}
                   </td>

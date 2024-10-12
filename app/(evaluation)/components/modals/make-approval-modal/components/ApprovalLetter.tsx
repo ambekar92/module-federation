@@ -1,3 +1,4 @@
+import { COMPLETE_EVAL_TASK_ROUTE, HTML_TO_PDF_ROUTE } from '@/app/constants/local-routes'
 import { buildRoute, FIRM_APPLICATION_DONE_PAGE } from '@/app/constants/url'
 import { useSessionUCMS } from '@/app/lib/auth'
 import { Application } from '@/app/services/types/application-service/Application'
@@ -6,14 +7,13 @@ import { HtmlToPdfDocument } from '@/app/services/types/document-service/HtmlToP
 import Checkbox from '@/app/shared/form-builder/form-controls/Checkbox'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, ButtonGroup, ModalFooter, ModalRef } from '@trussworks/react-uswds'
+import axios from 'axios'
 import React, { Dispatch, RefObject, useEffect, useState } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import BodyContentRenderer from '../../../BodyContentRenderer'
 import { approvalLetterSchema } from '../schema'
-import { ApprovalLetterType, Decision, MakeApprovalFormType, ReviewSummaryType, Steps } from '../types'
+import { ApprovalLetterType, MakeApprovalFormType, ReviewerDecisionType, ReviewSummaryType, Steps } from '../types'
 import { useProgramStatus } from '../useProgramStatus'
-import axios from 'axios'
-import { COMPLETE_EVAL_TASK_ROUTE, HTML_TO_PDF_ROUTE } from '@/app/constants/local-routes'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
 
@@ -23,6 +23,7 @@ interface ApprovalLetterProps {
   applicationData: Application | null;
   reviewSummaryData: ReviewSummaryType | null;
 	processId: number | undefined;
+	reviewerDecisions: ReviewerDecisionType[]
 }
 
 const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
@@ -30,11 +31,12 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
   setCurrentStep,
   applicationData,
   reviewSummaryData,
-  processId
+  processId,
+  reviewerDecisions
 }) => {
   const [currentLetterIdx, setCurrentLetterIdx] = useState<number>(0);
   const [supplementalLetters, setSupplementalLetters] = useState<string[]>([]);
-  const { approvedPrograms, approvedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData);
+  const { approvedPrograms, approvedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData, reviewerDecisions);
   const {setValue, reset} = useFormContext<MakeApprovalFormType>()
   const { data: session } = useSessionUCMS();
 
@@ -87,7 +89,6 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
         }
       }
     } catch (error) {
-      console.error('Error generating PDF:', error);
       alert('There was an error generating the PDF. Please try again.');
     }
   }
@@ -98,23 +99,10 @@ const ApprovalLetter: React.FC<ApprovalLetterProps> = ({
       if (processId !== undefined && reviewSummaryData) {
         const programApplication = applicationData?.program_application || []
         const programDecisions = programApplication.map((program) => {
-          const programName = program.programs.name
-          const decision = reviewSummaryData[`approval${programName}`]
           const baseDecision = {
             program_id: program.program_id,
-            approved: 1
+            approved: 1,
           }
-
-          if (decision === Decision.Disagree) {
-            const reviewerAppealValue = reviewSummaryData[`approvalReviewerAppeal-${programName}`] === Decision.Concur ? 1 : 0
-
-            return {
-              ...baseDecision,
-              approver_decline_reason: reviewSummaryData[`approvalCommentsOnDisagreement-${programName}`],
-              approver_can_appeal: reviewerAppealValue,
-            }
-          }
-
           return baseDecision
         })
 

@@ -9,7 +9,7 @@ function HeaderPanel() {
   const { applicationData } = useCurrentApplication();
   const samEntity = applicationData?.sam_entity ?? null;
   const workflow_state = applicationData?.workflow_state;
-
+  const includes8a = applicationData?.program_application.some(program => program?.program_id === 1);
   const stateOrder = useMemo(() => {
     const baseStates = ['screening', 'analyst', 'reviewer'];
     const escalatedStates = ['ogc', 'oss'];
@@ -96,8 +96,9 @@ function HeaderPanel() {
                         step === 'reviewer' ? 'Review' :
                           step === 'ogc' ? 'Escalate Review OGC' :
                             step === 'oss' ? 'Escalate Review OSS' :
-                              step === 'approver' ? 'Decision' :
-                                humanizeString(step)}
+                              step === 'approver' && includes8a ? 'Decision' :
+                                humanizeString(step)
+                    }
                     <span className="usa-sr-only">
                       {getStepIndicatorClass(applicationData?.progress, step).includes('current')
                         ? 'current step'

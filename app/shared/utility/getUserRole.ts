@@ -1,6 +1,6 @@
 import { Role } from '../types/role';
 
-export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'screener' | 'approver' | 'external' | 'default' => {
+export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'screener' | 'approver' | 'ogc' | 'oss' | 'external' | 'default' => {
   const externalRoles = [
     Role.EXTERNAL,
     Role.CONTRIBUTOR,
@@ -32,9 +32,15 @@ export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'scree
     Role.ANALYST_LOW_TIER,
     Role.ANALYST_HIGH,
     Role.ANALYST_LOW,
-    Role.ANALYST_CONTRIBUTOR_OGC,
-    Role.ANALYST_CONTRIBUTOR_OSS,
   ];
+
+  const ogcRoles = [
+    Role.ANALYST_CONTRIBUTOR_OGC,
+  ]
+
+  const ossRoles = [
+    Role.ANALYST_CONTRIBUTOR_OSS,
+  ]
 
   const screenerRoles = [
     Role.SCREENER,
@@ -49,6 +55,10 @@ export const getUserRole = (permissions: any[]): 'reviewer' | 'analyst' | 'scree
     return 'screener';
   } else if (permissions.some(permission => approverRoles.includes(permission.slug))) {
     return 'approver'
+  } else if (permissions.some(permission => ogcRoles.includes(permission.slug))) {
+    return 'ogc'
+  } else if (permissions.some(permission => ossRoles.includes(permission.slug))) {
+    return 'oss'
   } else if (permissions.some(permission => externalRoles.includes(permission.slug))) {
     return 'external';
   } else {

@@ -8,7 +8,7 @@ import { useCurrentApplication } from '../../firm/useApplicationData'
 import NaicsCodes from './NaicsCodes'
 import SamInfo from './SamInfo'
 import VaCert from './VaCert'
-import ControllingEntity from './ControllingEntity'
+import SBACertificationsHeld from './SBACertificationsHeld'
 
 function FirmSummary() {
   const { applicationData } = useCurrentApplication();
@@ -50,6 +50,17 @@ function FirmSummary() {
       expanded: false,
       headingLevel: 'h2',
     },
+    {
+      id: 'sba_certifications_held',
+      title: 'SBA Certifications Held',
+      content: (
+        <div>
+          <SBACertificationsHeld />
+        </div>
+      ),
+      expanded: false,
+      headingLevel: 'h2',
+    },
   ];
 
   if (hasVosbSdvosb) {
@@ -66,18 +77,18 @@ function FirmSummary() {
     });
   }
 
-  if (hasHubZone) {
-    accordionItems.push({
-      id: 'hubzone_calculator',
-      title: 'HUBZone Calculator',
-      content: (
-        <div>
-        </div>
-      ),
-      expanded: false,
-      headingLevel: 'h2',
-    });
-  }
+  // if (hasHubZone) {
+  //   accordionItems.push({
+  //     id: 'hubzone_calculator',
+  //     title: 'HUBZone Calculator',
+  //     content: (
+  //       <div>
+  //       </div>
+  //     ),
+  //     expanded: false,
+  //     headingLevel: 'h2',
+  //   });
+  // }
 
   if (hasMpp) {
     accordionItems.push({
@@ -96,7 +107,7 @@ function FirmSummary() {
     <>
       <div className='grid-row'>
         <div className="grid-col-12">
-          <h1>Firm Summary</h1>
+          <h1>Business Summary</h1>
           <p>{application?.description ?? 'N/A'} </p>
         </div>
         <div className="grid-col-12 margin-top-4">

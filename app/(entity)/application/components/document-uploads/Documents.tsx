@@ -147,10 +147,10 @@ const Documents = () => {
                 </tr>
               </thead>
               <tbody>
-                {documents?.filter(d => d.question.question_id && d.question.question_id === question.id).length === 0 ?
+                {documents && Array.isArray(documents) && documents?.filter(d => d.question?.question_id && d.question.question_id === question.id).length === 0 ?
                   <tr><td colSpan={5}>No documents have been uploaded for this question yet.</td></tr> : (
                     <>
-                      {documents?.filter(d => d.question.question_id === question.id).map(d => (
+                      {documents?.filter(d => d.question?.question_id === question.id).map(d => (
                         <tr key={d.id}>
                           <td><a className='usa-link' href={d.signed_url} target="_blank" rel="noopener noreferrer">{d.file_name}</a></td>
                           <td>{d.upload_user.first_name} {d.upload_user.last_name}</td>

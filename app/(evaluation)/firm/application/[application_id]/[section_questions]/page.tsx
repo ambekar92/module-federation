@@ -100,7 +100,7 @@ const SectionQuestions = () => {
       ...navItems
     ];
 
-    if (userRole === 'analyst') {
+    if (userRole === 'analyst' || userRole === 'reviewer') {
       const analystItems = analystQuestionnaires.map(url => ({
         title: url.replace(/-/g, ' ')
           .replace(/(\b\w)/g, l => l.toUpperCase())
@@ -251,7 +251,7 @@ const SectionQuestions = () => {
     const applicationId = params.application_id;
 
     if (accessToken && firstContributorId && userId && applicationId) {
-      const url = `${process.env.NEXT_PUBLIC_HUBZONE_URL}?wt=${accessToken}&application_contributor_id=${firstContributorId}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
+      const url = `/hubzone?application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
       window.open(url, '_blank'); // Makes sure it opens in a new tab
     } else {
       // Handled

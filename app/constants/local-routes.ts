@@ -43,6 +43,7 @@ export const EXTENDED_MESSAGES_ROUTE =
 export const INBOX_ROUTE = '/api/services/communication/inbox'
 export const MESSAGES_ROUTE = '/api/services/communication/messages'
 export const THREADS_ROUTE = '/api/services/communication/threads'
+export const USER_THREADS_ROUTE = '/api/services/communication/user-threads'
 export const USER_ROUTE = '/api/services/users'
 export const APPLICATION_ROUTES = '/api/services/application'
 export const COMPLETE_EVAL_TASK_ROUTE =
@@ -75,3 +76,5 @@ export const APPLICATION_ELIGIBILITY_ROUTE =
   '/api/services/application/eligibility'
 export const REFRESH_TOKEN_ROUTE = '/api/services/users/refresh'
 export const MAX_LOGIN_ROUTE = '/api/services/users/max-login'
+export const CREATE_USER_TO_USER_MESSAGE_ROUTE = '/api/services/communication/create-user-to-user-message'
+export const UPDATE_PROFILE_ROUTE = '/api/services/users/update-profile'

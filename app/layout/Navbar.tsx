@@ -82,11 +82,11 @@ const Navbar = () => {
       >
         <div
           className={
-            'usa-nav-container display-flex flex-align-center flex-justify maxw-full'
+            'usa-nav-container display-flex flex-align-center flex-justify maxw-full margin-top-2'
           }
         >
           <div
-            className={`usa-navbar ${styles['mobile-border--none']} width-full`}
+            className={`usa-navbar ${styles['mobile-border--none']}`}
           >
             <Title id="extended-logo">
               <Link  href={'https://www.sba.gov/'}
@@ -99,11 +99,11 @@ const Navbar = () => {
                 />
               </Link>
             </Title>
-            <NavMenuButton
+            {/* <NavMenuButton
               label="Menu"
               onClick={toggleMobileNav}
               className="usa-menu-btn margin-left-auto"
-            />
+            /> */}
           </div>
           {isAuthenticated ? (
             <PrimaryNavitems toggleMobileNav={toggleMobileNav}

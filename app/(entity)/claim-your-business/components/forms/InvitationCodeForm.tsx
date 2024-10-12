@@ -1,4 +1,3 @@
-
 import { tooltipCmbInvite } from '@/app/constants/tooltips'
 import { useSessionUCMS } from '@/app/lib/auth'
 
@@ -20,16 +19,18 @@ import { InvitationCodeFormSchema } from '../../utils/schemas'
 import { InvitationCodeInputType } from '../../utils/types'
 import axios from 'axios'
 import { ACCEPT_INVITATION_ROUTE } from '@/app/constants/local-routes'
+import { useRouter } from 'next/navigation'
+import { CONTRIBUTOR_DASHBOARD_PAGE, DASHBOARD, DELEGATE_DASHBOARD_PAGE } from '@/app/constants/url'
 
 interface invitationCodeFormProps {
-  submitForm: () => void
 	onEnterCodeCancel: () => void
 	cancelText?: string
 }
 
-function InvitationCodeForm({ submitForm, onEnterCodeCancel, cancelText = 'Back' }: invitationCodeFormProps) {
+function InvitationCodeForm({ onEnterCodeCancel, cancelText = 'Back' }: invitationCodeFormProps) {
   const session = useSessionUCMS()
   const [showAlert, setShowAlert] = useState(false)
+  const router = useRouter()
 
   const {
     control,
@@ -65,7 +66,24 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel, cancelText = 'Back'
       reset({
         invitationCode: '',
       })
-      submitForm();
+      if(response.data.application_role) {
+        switch(response.data.application_role) {
+          case 'delegate':
+            router.push(DELEGATE_DASHBOARD_PAGE)
+            break;
+          case 'spouse':
+          case 'contributor':
+          case 'qualifying-owner':
+            router.push(CONTRIBUTOR_DASHBOARD_PAGE)
+            break;
+          default:
+            router.push(DASHBOARD)
+            break;
+        }
+      }
+      if(response.data.detail && response.data.detail !== 'No invitation record found.' || response.data.detail !== 'invitation code already used.') {
+        setShowAlert(true)
+      }
     } else {
       setShowAlert(true)
     }
@@ -90,9 +108,9 @@ function InvitationCodeForm({ submitForm, onEnterCodeCancel, cancelText = 'Back'
       {showAlert ? (
         <div className="usa-alert usa-alert--error maxw-full width-full">
           <div className="usa-alert__body maxw-full width-full">
-            <h4 className="usa-alert__heading">Error status</h4>
+            <h4 className="usa-alert__heading">Error</h4>
             <p className="usa-alert__text">
-              This code does not match the user&apos;s account. Please check to
+              This code does not match the user&apos;s account or is already used. Please check to
               see that you have entered the correct code.
             </p>
           </div>

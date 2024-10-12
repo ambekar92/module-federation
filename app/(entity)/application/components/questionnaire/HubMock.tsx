@@ -5,8 +5,13 @@ import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext'
 function HubMock() {
   const session = useSessionUCMS();
   const access = session?.data?.access;
+  const role = session?.data?.permissions?.[session?.data?.permissions?.length - 1]?.slug;
   const userId = session?.data?.user.id;
   const { applicationId, contributorId } = useApplicationContext();
+
+  if(!session) {
+    return null;
+  }
 
   return (
     <div style={{lineHeight: 1.5}}>
@@ -26,7 +31,7 @@ function HubMock() {
       <p>You can always check your eligibility by visiting the HUBZone Calculator located on the MySBA Certifications homepage.</p>
 
       <div className='display-flex flex-justify-end margin-top-5'>
-        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`/hubzone?application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}`}>
+        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`/hubzone?application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}&role=${role}`}>
 					Start
         </a>
       </div>

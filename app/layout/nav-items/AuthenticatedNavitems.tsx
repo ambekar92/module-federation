@@ -7,11 +7,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import { isInApplicationFlow } from '../utils';
+import { useInbox } from '@/app/services/queries/communication-service/useInbox';
 
 const AuthenticatedNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any, mobileExpanded: boolean}) => {
   const session = useSessionUCMS()
   const userRole = getUserRole(session?.data?.permissions || []);
   const params = useParams<{application_id: string}>();
+  const {data: messagesData, isLoading: messagesLoading} = useInbox()
 
   let dashboardLink;
   if(checkUserPermissionSlug(session.data, 'delegate')) {
@@ -39,6 +41,21 @@ const AuthenticatedNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileN
     ] : []),
     <React.Fragment key="auth_2">
       <Link className="usa-nav_link" href={MESSAGE_PAGE}>
+        {!messagesLoading && messagesData
+				&& Array.isArray(messagesData)
+				&& messagesData.results.length > 0
+				&& messagesData.results.some(message => message.total_unread > 0) && (
+          <span style={{ position: 'relative', top: '2px', right: '5px' }}>
+            <div
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                backgroundColor: '#E41D3D',
+              }}
+            ></div>
+          </span>
+        )}
         <span>Messages</span>
       </Link>
     </React.Fragment>,

@@ -14,10 +14,17 @@ const LoginMenu = () => {
     signIn('okta', { callbackUrl: `/protect/?state=${uuidv4()}` })
   }
   const handleSSOLogin =  async() => {
-    axios.get(MAX_LOGIN_ROUTE).then(response => {
-      router.push(response.data)
-    })
+    try {
+      const currentTime = new Date().getTime();
+      const response = await axios.get(`${MAX_LOGIN_ROUTE}?t=${currentTime}`);
+      router.push(response.data);
+    } catch (error) {
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error fetching MAX_LOGIN_ROUTE:', error);
+      }
+    }
   };
+
   return (
     <div style={{
       textWrap: 'wrap',

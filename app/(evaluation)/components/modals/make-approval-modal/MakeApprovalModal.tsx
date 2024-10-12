@@ -16,7 +16,7 @@ import ApprovalLetter from './components/ApprovalLetter'
 import DeclineLetter from './components/DeclineLetter'
 import ReviewSummary from './components/ReviewSummary'
 import { schema } from './schema'
-import { MakeApprovalFormType, Steps, ReviewSummaryType } from './types';
+import { MakeApprovalFormType, Steps, ReviewSummaryType, ReviewerDecisionType } from './types';
 import { Application } from '@/app/services/types/application-service/Application'
 
 interface MakeApprovalProps {
@@ -40,6 +40,17 @@ const MakeApprovalModal: React.FC<MakeApprovalProps> = ({
 
   const [currentStep, setCurrentStep] = useState(Steps.ReviewSummary)
   const [reviewSummaryData, setReviewSummaryData] = useState<ReviewSummaryType | null>(null)
+  const [reviewerDecisions, setReviewerDecisions] = useState<ReviewerDecisionType[]>([]);
+
+  useEffect(() => {
+    if (applicationData?.program_application) {
+      const decisions = applicationData.program_application.map((program) => ({
+        name: program.programs.name,
+        value: program.reviewer_decision as string
+      }));
+      setReviewerDecisions(decisions);
+    }
+  }, [applicationData?.program_application]);
 
   function onCancel() {
     setCurrentStep(Steps.ReviewSummary)
@@ -105,6 +116,7 @@ const MakeApprovalModal: React.FC<MakeApprovalProps> = ({
         }
         {currentStep === Steps.ApprovalLetter &&
           <ApprovalLetter
+            reviewerDecisions={reviewerDecisions}
             applicationData={applicationData}
             processId={processId}
             modalRef={modalRef}
@@ -114,6 +126,7 @@ const MakeApprovalModal: React.FC<MakeApprovalProps> = ({
         }
         {currentStep === Steps.DeclineLetter &&
           <DeclineLetter
+            reviewerDecisions={reviewerDecisions}
             applicationData={applicationData}
             modalRef={modalRef}
             setCurrentStep={setCurrentStep}

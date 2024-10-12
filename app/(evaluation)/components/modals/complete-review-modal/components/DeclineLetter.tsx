@@ -14,6 +14,7 @@ import { Decision, DeclineLetterType, CompleteReviewFormType, ReviewSummaryType,
 import { useProgramStatus } from '../useProgramStatus'
 import axios from 'axios'
 import { COMPLETE_EVAL_TASK_ROUTE, HTML_TO_PDF_ROUTE } from '@/app/constants/local-routes'
+import { ReviewerDecisionType } from '../../make-approval-modal/types'
 
 const containerStyles: React.CSSProperties = {padding: '0rem 1rem', minHeight: '20vh', maxHeight: '60vh', overflowY: 'auto', border: '1px solid black'}
 
@@ -23,6 +24,7 @@ interface DeclineLetterProps {
   applicationData: Application | null;
   reviewSummaryData: ReviewSummaryType | null;
   processId: number | undefined;
+	analystDecisions: ReviewerDecisionType[];
 }
 
 const DeclineLetter: React.FC<DeclineLetterProps> = ({
@@ -30,11 +32,12 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
   setCurrentStep,
   applicationData,
   reviewSummaryData,
-  processId
+  processId,
+  analystDecisions
 }) => {
   const [currentLetterIdx, setCurrentLetterIdx] = useState<number>(0);
   const [supplementalLetters, setSupplementalLetters] = useState<DocumentTemplateType[]>([]);
-  const { approvedLetters, declinedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData);
+  const { approvedLetters, declinedLetters, declinedPrograms, isLoading } = useProgramStatus(reviewSummaryData, analystDecisions);
   const {setValue, reset} = useFormContext<CompleteReviewFormType>();
   const { data: session } = useSessionUCMS();
   const bodyContentRef = useRef<HTMLDivElement>(null);
@@ -88,7 +91,6 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
         throw new Error('Invalid response from server');
       }
     } catch (error) {
-      console.error('Error generating PDF:', error);
       alert('There was an error generating the PDF. Please try again.');
     }
   }
@@ -134,19 +136,27 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
         const programApplication = applicationData?.program_application || []
         const programDecisions = programApplication.map((program) => {
           const programName = program.programs.name
-          const decision = reviewSummaryData[`${programName}`]
+          const analystDecision = analystDecisions.find(d => d.name === programName)
+          const reviewSummary = reviewSummaryData[programName as keyof ReviewSummaryType]
+
           const baseDecision = {
             program_id: program.program_id,
             approved: 1
           }
 
-          if (decision === Decision.Disagree) {
-            const reviewerAppealValue = reviewSummaryData[`reviewerAppeal-${programName}`] === Decision.Concur ? 1 : 0
+          if (reviewSummary === Decision.Disagree || analystDecision?.value !== 'approved') {
+            const reviewerAppealKey = `reviewerAppeal-${programName}` as keyof ReviewSummaryType
+            const commentsKey = `commentsOnDisagreement-${programName}` as keyof ReviewSummaryType
+
+            const reviewerDeclineReason = reviewSummaryData[commentsKey] as string
+            const reviewerCanAppeal = reviewSummaryData[reviewerAppealKey] === 'yes'
 
             return {
               ...baseDecision,
-              reviewer_decline_reason: reviewSummaryData[`commentsOnDisagreement-${programName}`],
-              reviewer_can_appeal: reviewerAppealValue,
+              reviewer_decline_reason: 'Analyst declined application',
+              reviewer_decision: 'disagree',
+              approver_decline_reason: reviewerDeclineReason || 'Analyst concurs with reviewer',
+              approver_can_appeal: reviewerCanAppeal ? 1 : (program.reviewer_can_appeal ? 1 : 0),
             }
           }
 
@@ -176,12 +186,10 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
   }
 
   function getContinueButtonTxt() {
-    if (currentLetterIdx === 0) {
-      return `Continue & View ${supplementalLetters.length - 1} Supplemental Letter${supplementalLetters.length > 2 ? 's' : ''}`;
-    } else if (currentLetterIdx < supplementalLetters.length - 1) {
-      return 'Sign and Continue';
-    } else {
+    if (currentLetterIdx === supplementalLetters.length - 1) {
       return 'Sign and Submit';
+    } else {
+      return `Continue & View ${supplementalLetters.length - currentLetterIdx - 1} Supplemental Letter${supplementalLetters.length - currentLetterIdx - 1 > 1 ? 's' : ''}`;
     }
   }
 

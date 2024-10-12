@@ -8,8 +8,6 @@ import { useCurrentApplication } from '../../firm/useApplicationData';
 import { Params, QuestionnaireItem, NavItem } from '../../types/types';
 import { controlAndOperationQuestionnaire, getAnalystQuestionnaires, getStaticNavItems, ownershipQuestionnaire } from './constants';
 import { useQuestionnaireState } from './useQuestionnaireState';
-import { getUserRole } from '@/app/shared/utility/getUserRole'
-import { useSessionUCMS } from '@/app/lib/auth'
 
 export function useLeftItems() {
   const params = useParams<Params>();
@@ -64,7 +62,7 @@ export function useLeftItems() {
           id: index,
           section: 'Analyst Review',
           url: `/${params.application_id}${url}`,
-          title: url.split('/').pop()?.replace(/-/g, ' ').replace(/(\b\w)/g, l => l.toUpperCase()).replace(/Analyst Questionnaire/g, '').replace(/Eight A/g, '8(a)') || '',
+          title: url.split('/').pop()?.replace(/-/g, ' ').replace(/(\b\w)/g, l => l.toUpperCase()).replace(/Analyst Questionnaire/g, '').replace(/Eight A/g, '8(a)').replace(/Hubzone/g, 'HUBZone') || '',
           isCompleted: completedQuestionnaires[url.split('-').pop() || ''] || false
         }))
       };
@@ -76,13 +74,13 @@ export function useLeftItems() {
     section: sectionTitle,
     child: [
       ...(sectionTitle === 'Application' ? [{
-        id: (items?.length || 0) + 1,
+        id: 63,
         title: 'Owner and Management',
         url: `/${params.application_id}${ownershipQuestionnaire}${contributorId ? `?contributor_id=${contributorId}` : ''}`,
         section: sectionTitle,
       }] : []),
       ...(sectionTitle === 'Application' ? [{
-        id: (items?.length || 0) + 2,
+        id: 64,
         title: 'Control and Operation',
         url: `/${params.application_id}${controlAndOperationQuestionnaire}${contributorId ? `?contributor_id=${contributorId}` : ''}`,
         section: sectionTitle,

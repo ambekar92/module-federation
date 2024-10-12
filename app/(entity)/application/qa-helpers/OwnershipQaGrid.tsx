@@ -379,6 +379,7 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
         .map(createOwnerObject)
         .filter((owner): owner is OwnerType => owner !== null);
       dispatch(setOwners(newOwners));
+      updateTotalPercentage();
     }
   };
 

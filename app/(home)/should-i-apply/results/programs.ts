@@ -60,7 +60,6 @@ export const programs: Program[] =  [
     title: 'SDVOSB',
     rules: {
       ownership: {
-        USCitizen: 'yes',
         ownOver50Percent: 'yes',
         veteran: 'yes'
       },
@@ -73,7 +72,6 @@ export const programs: Program[] =  [
     title: 'VOSB',
     rules: {
       ownership: {
-        USCitizen: 'yes',
         ownOver50Percent: 'yes',
         veteran: 'yes'
       },

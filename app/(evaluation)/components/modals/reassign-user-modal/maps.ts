@@ -3,17 +3,17 @@ import { ReassignType } from './types';
 import { SessionType } from '@/app/tarmac/types';
 
 export const permissionsMap = {
-  [ReassignType.REASSIGN_SCREENER]: [Role.SCREENER, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW_TIER, Role.SCREENER_COMMON_APP],
+  [ReassignType.REASSIGN_SCREENER]: [Role.SCREENER, Role.SCREENER_COMMON_APP],
   [ReassignType.REASSIGN_ANALYST]: [Role.ANALYST_HIGH_TIER, Role.ANALYST_LOW_TIER, Role.REVIEWER_HIGH_TIER, Role.REVIEWER_LOW_TIER],
   [ReassignType.REASSIGN_APPROVER]: [Role.APPROVER_8a_aabd],
   [ReassignType.REASSIGN_EXPERT]: [Role.ANALYST_CONTRIBUTOR_OGC, Role.ANALYST_CONTRIBUTOR_OSS],
 }
 
 export const titleMap = {
-  [ReassignType.REASSIGN_SCREENER]: 'Reassign Application',
-  [ReassignType.REASSIGN_ANALYST]: 'Reassign User',
-  [ReassignType.REASSIGN_APPROVER]: 'Reassign Approver',
-  [ReassignType.REASSIGN_EXPERT]: 'Reassign Expert',
+  [ReassignType.REASSIGN_SCREENER]: 'Reassign Case',
+  [ReassignType.REASSIGN_ANALYST]: 'Reassign Case',
+  [ReassignType.REASSIGN_APPROVER]: 'Reassign Case',
+  [ReassignType.REASSIGN_EXPERT]: 'Reassign Case',
 }
 
 export const userRolesOptionsMap = (reassignType: ReassignType | null, currentUserSession: SessionType) => {

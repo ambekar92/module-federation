@@ -16,6 +16,7 @@ export default function OwnershipForm() {
   const { watch, control, setValue } = useFormContext<ShouldIApplyFormType>()
 
   const usC = watch('ownership.USCitizen')
+  const vC = watch('ownership.veteran')
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('should-i-apply') || '{}')
@@ -164,7 +165,7 @@ export default function OwnershipForm() {
               </FormGroup>
             )}
           />
-          {usC === 'no' && (
+          {usC === 'no' && vC === 'no' && (
             <Alert type="warning" heading="Sorry" headingLevel="h1">
               <p>
                 Based on your responses, it doesn&apos;t look like you are

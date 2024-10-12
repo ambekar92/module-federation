@@ -18,6 +18,7 @@ import ReviewSummary from './components/ReviewSummary'
 import { schema } from './schema'
 import { CompleteReviewFormType, Steps, ReviewSummaryType } from './types';
 import { Application } from '@/app/services/types/application-service/Application'
+import { ReviewerDecisionType } from '../make-approval-modal/types'
 
 interface CompleteReviewProps {
   modalRef: RefObject<ModalRef>;
@@ -40,6 +41,17 @@ const CompleteReviewModal: React.FC<CompleteReviewProps> = ({
 
   const [currentStep, setCurrentStep] = useState(Steps.ReviewSummary);
   const [reviewSummaryData, setReviewSummaryData] = useState<ReviewSummaryType | null>(null);
+  const [analystDecisions, setAnalystDecisions] = useState<ReviewerDecisionType[]>([]);
+
+  useEffect(() => {
+    if (applicationData?.program_application) {
+      const decisions = applicationData.program_application.map((program) => ({
+        name: program.programs.name,
+        value: program.analyst_recommendation as string
+      }));
+      setAnalystDecisions(decisions);
+    }
+  }, [applicationData?.program_application]);
 
   function onCancel() {
     setCurrentStep(Steps.ReviewSummary)
@@ -105,6 +117,7 @@ const CompleteReviewModal: React.FC<CompleteReviewProps> = ({
         }
         {currentStep === Steps.ApprovalLetter &&
           <ApprovalLetter
+            analystDecisions={analystDecisions}
             applicationData={applicationData}
             processId={processId}
             modalRef={modalRef}
@@ -114,6 +127,7 @@ const CompleteReviewModal: React.FC<CompleteReviewProps> = ({
         }
         {currentStep === Steps.DeclineLetter &&
           <DeclineLetter
+            analystDecisions={analystDecisions}
             applicationData={applicationData}
             modalRef={modalRef}
             setCurrentStep={setCurrentStep}

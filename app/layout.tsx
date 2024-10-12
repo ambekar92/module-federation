@@ -29,11 +29,18 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
   return (
     <html lang="en">
       <head>
+        <title>MySBA Certifications</title>
         {pathname?.includes('/aeroad') || pathname?.includes('/aethos') &&
           <meta name="robots" content="noindex, nofollow" />
         }
       </head>
       <body>
+        {
+          (process.env.NODE_ENV !== 'production') &&
+          <p className='margin-0 envBanner'>
+            You are in the {process.env.NODE_ENV} environment. Git Commit: {process.env.GIT_COMMIT}
+          </p>
+        }
         <GovBanner />
         <SessionProvider session={session}>
           <SWRProvider>

@@ -14,6 +14,7 @@ function ApplicationDocument() {
     .replace(/(\b\w)/g, l => l.toUpperCase())
     .replace(/^\//, '')
     .replace(/Eight A/g, '8(a)')
+    .replace(/HUBZone/g, 'HUBZone')
 
   const { applicationData } = useCurrentApplication();
   const { navItems } = useContributorData(applicationData);

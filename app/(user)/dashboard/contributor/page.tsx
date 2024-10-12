@@ -4,7 +4,7 @@ import { ApplicationFilterType } from '@/app/services/queries/application-servic
 import { useApplication } from '@/app/services/queries/application-service/useApplication'
 import Spinner from '@/app/shared/components/spinner/Spinner'
 import { Collection } from '@trussworks/react-uswds'
-import ApplicationCards from '../components/ApplicationCards'
+import ApplicationCards from '../../user/dashboard/components/ApplicationCards'
 
 export default function ContributorDashboardPage() {
   const { data: session } = useSessionUCMS()

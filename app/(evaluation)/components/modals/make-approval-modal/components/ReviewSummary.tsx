@@ -25,18 +25,18 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({
   const { getValues, setValue } = useFormContext<MakeApprovalFormType>();
   const programApplication = applicationData?.program_application || []
 
-  const reviewSummarySchema = useMemo(() => generateReviewSummarySchema(programApplication), [programApplication])
+  const reviewSummarySchema = useMemo(() => generateReviewSummarySchema(applicationData?.program_application || []), [applicationData?.program_application])
 
   const defaultValues = useMemo(() => {
     const currentValues = getValues('reviewSummary') || {}
-    return programApplication.reduce((acc, program) => {
+    return applicationData?.program_application.reduce((acc, program) => {
       const programName = program.programs.name
       acc[`approval${programName}`] = currentValues[`approval${programName}`] || undefined
       acc[`approvalCommentsOnDisagreement-${programName}`] = currentValues[`approvalCommentsOnDisagreement-${programName}`] || ''
       acc[`approvalReviewerAppeal-${programName}`] = currentValues[`approvalReviewerAppeal-${programName}`] || undefined
       return acc
     }, {} as Record<string, any>)
-  }, [programApplication, getValues])
+  }, [applicationData?.program_application, getValues])
 
   const methods = useForm<ReviewSummaryType>({
     defaultValues,

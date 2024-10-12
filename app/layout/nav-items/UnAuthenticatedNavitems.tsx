@@ -84,6 +84,8 @@ const UnAuthenticatedNavitems = ({toggleMobileNav, mobileExpanded, ReactGA}: {to
       <a onClick={handleClickGetHelp}
         className="usa-nav_link margin-left-4"
         href={GET_HELP_ROUTE}
+        target="_blank"
+        rel="noopener noreferrer"
       >
         <span>Get Help</span>
       </a>

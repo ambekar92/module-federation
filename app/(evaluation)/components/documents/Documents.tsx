@@ -1,5 +1,5 @@
 'use client'
-import { Documents as Document, DocumentsType } from '@/app/services/types/document'
+import { Documents as Document } from '@/app/services/types/document'
 import HeightIcon from '@mui/icons-material/Height'
 import { Alert, Table } from '@trussworks/react-uswds'
 import { useParams } from 'next/navigation'
@@ -8,11 +8,12 @@ import styles from './Documents.module.scss'
 import { APPLICATION_DOCUMENTS_ROUTE } from '@/app/constants/local-routes'
 import { makeDatePretty } from '@/app/shared/utility/formateDate'
 import humanizeString from 'humanize-string'
+import { DocumentUpload } from '@/app/services/types/document-service/DocumentUpload'
 
 function Documents() {
   const { application_id } = useParams();
   const { data: responseData, error: responseError } =
-    useSWR<DocumentsType>(
+    useSWR<DocumentUpload[]>(
       application_id
         ? `${APPLICATION_DOCUMENTS_ROUTE}/?application_id=${application_id}`
         : null
@@ -69,11 +70,11 @@ function Documents() {
             <tbody>
 
               {responseData && Array.isArray(responseData) &&
-                responseData.map((item: Document) => {
+                responseData.map((item: DocumentUpload) => {
                   return (
                     <tr key={item.id}>
                       <td>
-                        <a href={`/${item.path_name}`} target="_blank" rel="noopener noreferrer">{item.file_name}</a>
+                        <a href={`${item.signed_url}`} target="_blank" rel="noopener noreferrer">{item.file_name}</a>
                       </td>
                       <td>{makeDatePretty(item.created_at)}</td>
                       <td>{humanizeString(item.document_type?.name)}</td>

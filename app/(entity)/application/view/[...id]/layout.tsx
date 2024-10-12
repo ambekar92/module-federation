@@ -16,13 +16,15 @@ const QuestionsNav = ({ children }: PropsWithChildren) => {
   const session = useSessionUCMS();
   const queryParam = useSearchParams();
   const route = useRouter();
-  const userRole = session.data?.permissions[session.data.permissions.length - 1].slug;
-  const { data: applications, isLoading: isLoadingApplications } = useApplication(ApplicationFilterType.id, params.id[0]);
+
+  const userRole = session.data?.permissions?.[session.data.permissions.length - 1]?.slug;
+  const { data: applications, isLoading: isLoadingApplications } = useApplication(ApplicationFilterType.id, params.id?.[0]);
   let applicationContributorId = applications?.[0]?.application_contributor.find(ac => ac.user_id === session?.data?.user_id)?.id;
   if (applicationContributorId === undefined && userRole === 'delegate') {
     // Need application to return delegate user_id
     applicationContributorId = applications?.[0]?.application_contributor.find(ac => ac.application_role_id === 1)?.id;
   }
+
   const { data, isLoading } = useGetQuestionnaireList(applicationContributorId);
 
   const allQuestionnaires = useMemo(() => {
@@ -37,7 +39,7 @@ const QuestionsNav = ({ children }: PropsWithChildren) => {
     }
 
     return [...additionalQuestionnaires, ...data];
-  }, [data, applicationContributorId]);
+  }, [data, applicationContributorId, userRole]);
 
   useEffect(() => {
     if (!allQuestionnaires.length) {return;}

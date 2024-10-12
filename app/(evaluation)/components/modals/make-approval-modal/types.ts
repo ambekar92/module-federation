@@ -16,3 +16,8 @@ export enum Steps {
   ApprovalLetter = 2,
   DeclineLetter = 3
 }
+
+export type ReviewerDecisionType = {
+	name: string;
+	value: string;
+}

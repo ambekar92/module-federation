@@ -7,11 +7,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import { isInApplicationFlow } from '../utils';
+import { useInbox } from '@/app/services/queries/communication-service/useInbox';
 
 const MobileNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any, mobileExpanded: boolean}) => {
   const session = useSessionUCMS()
   const userRole = getUserRole(session?.data?.permissions || []);
   const params = useParams<{application_id: string}>();
+  const {data: messagesData, isLoading: messagesLoading} = useInbox()
 
   const navitems = [
     ...(userRole === 'analyst' || userRole === 'approver' || userRole === 'reviewer' || userRole === 'screener' ? [
@@ -32,6 +34,21 @@ const MobileNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any
     ] : []),
     <React.Fragment key="auth_2">
       <Link className="usa-nav_link" href={MESSAGE_PAGE}>
+        {!messagesLoading && messagesData
+				&& Array.isArray(messagesData)
+				&& messagesData.results.length > 0
+				&& messagesData.results.some(message => message.total_unread > 0) && (
+          <span style={{ position: 'relative', top: '1px', right: '5px' }}>
+            <div
+              style={{
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                backgroundColor: '#E41D3D',
+              }}
+            ></div>
+          </span>
+        )}
         <span>Messages</span>
       </Link>
     </React.Fragment>,
@@ -55,7 +72,7 @@ const MobileNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any
       </Link>
     </React.Fragment>,
     <React.Fragment key="auth_2">
-      <Link className="usa-nav_link mobile-only-nav-item" href={GET_HELP_ROUTE}>
+      <Link className="usa-nav_link mobile-only-nav-item" target="_blank" rel="noopener noreferrer" href={GET_HELP_ROUTE}>
         <span>Get Help</span>
       </Link>
     </React.Fragment>,

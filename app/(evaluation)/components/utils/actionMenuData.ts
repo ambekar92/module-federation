@@ -94,12 +94,12 @@ export const actionMenuData = [
   },
   {
     id: ActionMenuIDs.REASSIGN_ANALYST,
-    optionLabel: 'Reassign User',
+    optionLabel: 'Reassign Case',
     permissions: permissionsMap[ReassignType.REASSIGN_ANALYST],
   },
   {
     id: ActionMenuIDs.REASSIGN_APPROVER,
-    optionLabel: 'Reassign Approver',
+    optionLabel: 'Reassign Case',
     permissions: permissionsMap[ReassignType.REASSIGN_APPROVER],
   },
   {
@@ -119,7 +119,7 @@ export const actionMenuData = [
   },
   {
     id: ActionMenuIDs.REASSIGN_EXPERT,
-    optionLabel: 'Reassign Application',
+    optionLabel: 'Reassign Case',
     permissions: permissionsMap[ReassignType.REASSIGN_EXPERT],
   },
   {

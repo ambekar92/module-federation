@@ -7,16 +7,16 @@ const resources = [
   {
     title: 'Loans',
     subtitle: 'start or expand your business with loans guaranteed by the Small Business Administration',
-    description: `The U.S. Small Business Administration (SBA) helps small businesses get funding by setting 
+    description: `The U.S. Small Business Administration (SBA) helps small businesses get funding by setting
         guidelines for loans and reducing lender risk. These SBA-backed loans make it easier for small
         business to get the funding they need.`,
     url: 'https://www.sba.gov/funding-programs/loans',
   },
   {
     title: 'Investment Capital',
-    subtitle: 'find an investor for your business. investors make both debt and quity investments',
-    description: `Find an investor for your business from among more than 300 Small Business 
-        Investment Companies (SBICs) liscened by SBA.`,
+    subtitle: 'find an investor for your business. investors make both debt and equity investments',
+    description: `Find an investor for your business from among more than 300 Small Business
+        Investment Companies (SBICs) licensed by SBA.`,
     url: 'https://www.sba.gov/funding-programs/investment-capital',
   },
   {
@@ -35,7 +35,7 @@ const resources = [
   {
     title: 'Grants',
     subtitle: 'look for government grants that help business do scientific research and development',
-    description: `SBA provides grants to nonprofits, Resource Partners, and educational organizations. These grands aim to support entrepreneurship, through 
+    description: `SBA provides grants to nonprofits, Resource Partners, and educational organizations. These grands aim to support entrepreneurship, through
         counseling and training programs.`,
     url: 'https://www.sba.gov/funding-programs/grants',
   }
