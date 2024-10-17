@@ -8,6 +8,8 @@ import { useCurrentApplication } from '../../firm/useApplicationData';
 import { Params, QuestionnaireItem, NavItem } from '../../types/types';
 import { controlAndOperationQuestionnaire, getAnalystQuestionnaires, getStaticNavItems, ownershipQuestionnaire } from './constants';
 import { useQuestionnaireState } from './useQuestionnaireState';
+import { getUserRole } from '@/app/shared/utility/getUserRole'
+import { useSessionUCMS } from '@/app/lib/auth'
 
 export function useLeftItems() {
   const params = useParams<Params>();

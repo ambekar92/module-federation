@@ -45,7 +45,7 @@ locals {
       ucp_env                 = "demo"
       max_sba_issuer          = "demo-certify-sba-gov"
       oai_id                  = "E1PVFJGLUVYCEO" # This is only needed if we use cloudfront
-      db_host                 = "ucp-db.demo.sba-one.net"
+      db_host                 = "ucms-db.demo.sba-one.net"
       distribution_url        = "https://d3eivjwm5b8rit.cloudfront.net"
       ucp_tracking_id         = "null"
       next_base_url           = "https://ucp.demo.sba-one.net"
@@ -64,9 +64,9 @@ locals {
       certs_bucket          = "298969701643-us-east-1-staging-certifications" # Not sure if this is needed
       distribution_url      = "https://d2ooza27avgm5e.cloudfront.net"
 
-      desired_capacity_ucp     = 1
-      min_container_count_ucp  = 1
-      max_container_count_ucp  = 1
+      desired_capacity_ucms     = 2
+      min_container_count_ucms  = 2
+      max_container_count_ucms  = 2
       ucp_env                   = "stage"
       db_host                   = "ucp-db.stg.certify.sba.gov" 
       ucp_tracking_id           = "null"
@@ -96,8 +96,8 @@ locals {
       min_container_count_ucp = 1
       max_container_count_ucp = 10
       ucp_env                 = "prod"
-      task_cpu_ucp            = "8192"
-      task_memory_ucp         = "32768"
+      task_cpu_ucp            = "4096"
+      task_memory_ucp         = "24576"
     }
   }
   # Condense all config into a single `local.env.*`

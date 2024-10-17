@@ -19,7 +19,10 @@ const Input = <T extends FieldValues>({name, label, hint, ...props}: InputProps<
           <Label error={!!error} htmlFor={name} requiredMarker={props.required}>{label}</Label>
           <span className='text-base'>{hint}</span>
           <ErrorMessage>{error?.message}</ErrorMessage>
-          <TextInput style={{borderRadius: 0}} value={field.value} onChange={field.onChange} id={name} name={name} type={props.type as any} disabled={props.disabled}/>
+          <TextInput style={{borderRadius: 0, minWidth: '100%'}}
+            value={field.value} onChange={field.onChange}
+
+            id={name} name={name} type={props.type as any} disabled={props.disabled}/>
         </FormGroup>
       )}
     />

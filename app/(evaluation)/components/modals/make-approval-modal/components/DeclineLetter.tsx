@@ -4,7 +4,7 @@ import { useSessionUCMS } from '@/app/lib/auth'
 import { Application } from '@/app/services/types/application-service/Application'
 import { DocumentTemplateType } from '@/app/services/types/document-service/DocumentTemplate'
 import { HtmlToPdfDocument } from '@/app/services/types/document-service/HtmlToPdfDocument'
-import Checkbox from '@/app/shared/form-builder/form-controls/Checkbox'
+import CheckboxInput from '@/app/shared/form-builder/form-controls/Checkbox'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, ButtonGroup, ModalFooter, ModalRef } from '@trussworks/react-uswds'
 import axios from 'axios'
@@ -206,7 +206,7 @@ const DeclineLetter: React.FC<DeclineLetterProps> = ({
       {currentLetterIdx === supplementalLetters.length - 1 && (
         <>
           <h5>Signature</h5>
-          <Checkbox<DeclineLetterType>
+          <CheckboxInput<DeclineLetterType>
             name="approvalDecisions"
             label={'By clicking this checkbox, you are attesting that you’ve done a thorough review and are ready to officially approve or deny the certifications listed in this application. Once you select “Sign and Submit”, the applicant will be notified and receive their official letters.'}
           />

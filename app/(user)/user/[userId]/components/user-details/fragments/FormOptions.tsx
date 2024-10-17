@@ -18,6 +18,7 @@ export const statusOptions = (
 
 export const stateOptions = (
   <>
+    <option value="">-- Select --</option>
     <option value="AL">Alabama</option>
     <option value="AK">Alaska</option>
     <option value="AZ">Arizona</option>

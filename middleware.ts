@@ -11,29 +11,33 @@ import { decrypt, decryptData } from '@/app/shared/utility/encryption';
 
 async function handleProtectedRoute(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-    console.log('door opened');
+    console.log('door opened')
   }
-  const {token} = await getData(request);
-  const path = request.nextUrl.pathname;
-  if (path === '/login' || path === '/login-tester' || path === '/tester-login') {
-    return NextResponse.next();
+  const { token } = await getData(request)
+  const path = request.nextUrl.pathname
+  if (
+    path === '/login' ||
+    path === '/login-tester' ||
+    path === '/tester-login'
+  ) {
+    return NextResponse.next()
   }
 
   // somehow if logging in via okta, user_id is not available at this point,
   // however this check is not for okta authenticated users so we are ignoring this checking okta authenticated used.
   if (token && !token.user_id && !token.okta_id) {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-      console.log('not available at this point');
+      console.log('not available at this point')
     }
-    return NextResponse.redirect(`${request.nextUrl.origin}?shouldLogout=true`);
+    return NextResponse.redirect(`${request.nextUrl.origin}?shouldLogout=true`)
   }
   if (!token) {
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
-      console.log('something went wrong', request.nextUrl.origin);
+      console.log('something went wrong', request.nextUrl.origin)
     }
-    return NextResponse.redirect(`${request.nextUrl.origin}`);
+    return NextResponse.redirect(`${request.nextUrl.origin}`)
   } else {
-    return NextResponse.next();
+    return NextResponse.next()
   }
 }
 
@@ -137,18 +141,21 @@ export const config = {
     '/login-tester',
     '/tester-login',
     '/entity-owned/(.*)',
+    '/field-function/(.*)',
   ],
 }
 
-export const middleware = createMiddleware(middlewares);
+export const middleware = createMiddleware(middlewares)
 
 export function isRole(permissions:  Permission[], role: Role) {
   // if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
   //   console.log('yolo');
   // }
 
-  if (!permissions) {return false;}
-  return permissions.some(permission => permission.slug === role);
+  if (!permissions) {
+    return false
+  }
+  return permissions.some((permission) => permission.slug === role)
 }
 
 async function getData(request: NextRequest) {
@@ -166,14 +173,12 @@ async function getData(request: NextRequest) {
     ? JSON.parse(decryptData(cookies.get('maxgov_auth_token')?.value, secretKey2) ?? '')
     : null as unknown as LoginResponseUser;
 
-  const token = email_password_auth_token || maxgov_auth_token || null;
-  const permissions = token?.permissions || [];
-  const originalUrl = encodeURIComponent(request.nextUrl.pathname);
+  const originalUrl = encodeURIComponent(request.nextUrl.pathname)
 
   if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
     console.log('URL', originalUrl);
     console.log('token', token ?? null);
   }
 
-  return {token, permissions, originalUrl}
+  return { token, permissions, originalUrl }
 }

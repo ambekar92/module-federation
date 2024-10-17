@@ -46,6 +46,12 @@ export default function ClientSidePrograms({
     return applicationData[applicationData.length - 1];
   }, [applicationData]);
 
+  const isDisabled = useMemo(() => {
+    if (!session || !entityData || entityData.length === 0 || !Array.isArray(entityData)) {return true;}
+    const currentEntity = entityData.find(entity => entity.id === parseInt(entityId, 10));
+    return session.user_id !== currentEntity?.owner_user_id;
+  }, [session, entityData, entityId]);
+
   useEffect(() => {
     if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0 && lastApplication) {
       const workflowState = lastApplication.workflow_state

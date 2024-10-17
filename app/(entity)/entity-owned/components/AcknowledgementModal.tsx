@@ -1,67 +1,49 @@
 'use client'
-import React from 'react'
 import {
-  Modal,
-  ModalHeading,
-  ModalFooter,
-  ButtonGroup,
   Button,
-  Label,
+  Modal,
+  ModalFooter
 } from '@trussworks/react-uswds'
+import React from 'react'
 
 interface AcknowledgementModalProps {
-  open: boolean
-  onClick: () => void
-  heading?: string
+  modalRef: any,
+  controllingEntityName: string,
+  controllingEntityType: string
 }
 
 const AcknowledgementModal: React.FC<AcknowledgementModalProps> = ({
-  open,
-  onClick,
-  heading = '',
+  modalRef, controllingEntityName, controllingEntityType
 }) => {
   return (
     <>
-      {open && (
-        <>
-          <Modal
-            className="usa-modal--sm"
-            forceAction
-            aria-labelledby="modal-heading"
-            aria-describedby="modal-description"
-            isInitiallyOpen
-            renderToPortal={false}
-            id="acknowledgement-modal"
-          >
-            <ModalHeading id="acknowledgement-modal-heading">
-              <Label htmlFor="acknowledgement-modal" className="text-bold">
-                <h3>{heading}</h3>
-              </Label>
-            </ModalHeading>
-            {/* <Grid row>
-              <Grid>
-                {' '} */}
-            <Label htmlFor="acknowledgement-modal" className="text-normal">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </Label>
-            {/* </Grid>
-            </Grid> */}
-            <ModalFooter>
-              <ButtonGroup className="float-left">
-                <Button type="button" className="float-right" onClick={onClick}>
-                  Continue
-                </Button>
-              </ButtonGroup>
-            </ModalFooter>
-          </Modal>
-        </>
-      )}
+      <Modal
+        ref={modalRef}
+        id="confirm-modal"
+        aria-labelledby="confirm-modal"
+        aria-describedby="confirm-modal"
+      >
+        <h3 id="confirm-modal">New Controlling Entity Form Submitted</h3>
+        <div style={{marginBottom: '3rem'}}>
+          <p>Your request to register {controllingEntityName} under  {controllingEntityType}
+              has been submitted. The designated contact will receive instructions to complete the registration.
+          </p>
+          <p>
+              You can now continue with your application while we process your request.
+          </p>
+          <p>
+              Click &quot;Continue&quot; to proceed to the ownership section.
+          </p>
+        </div>
+        <ModalFooter>
+          <Button
+            type="button"
+            // once moved to appication route, will navigate to ownership
+            onClick={() => modalRef.current?.toggleModal()}>
+                Continue
+          </Button>
+        </ModalFooter>
+      </Modal>
     </>
   )
 }

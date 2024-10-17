@@ -4,7 +4,7 @@ export const controllingEntityTypeOptions: EntityTypeOption[] = [
   { label: 'Agricultural Co-Op (AGCO)', value: 'AGCO' },
   { label: 'American Indian Tribe (AIT)', value: 'AIT' },
   { label: 'Alaska Native Corporation (ANC)', value: 'ANC' },
-  { label: 'National Hawaiian Organization (NHO)', value: 'NHO' },
+  { label: 'Native Hawaiian Organization (NHO)', value: 'NHO' },
   { label: 'Community Development Corporation (CDC)', value: 'CDC' },
 ]
 

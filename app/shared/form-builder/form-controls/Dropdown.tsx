@@ -42,10 +42,11 @@ const Dropdown = <T extends FieldValues>({
               {error?.message}
             </ErrorMessage>
             <Select
+              style={{minWidth: '100%'}}
               disabled={props.disabled}
               id={`${name}-select`}
               name={name}
-              // value={field.value}
+              value={field.value}
               onChange={field.onChange}
               multiple={props.multiple}
             >
