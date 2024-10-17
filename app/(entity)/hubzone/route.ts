@@ -9,7 +9,6 @@ const SECRET_KEY = process.env.NEXTAUTH_SECRET;
 // Handling GET request and redirecting
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  console.log('**********', searchParams)
   const application_contributor_id = searchParams.get('application_contributor_id');
   const user_id = searchParams.get('user_id');
   const application_id = searchParams.get('application_id');
@@ -30,7 +29,7 @@ export async function GET(request: Request) {
     SECRET_KEY,
     { expiresIn: 86400 } // 24 hours
   )
-  const url = `${process.env.NEXT_PUBLIC_HUBZONE_URL}?&wt=${jwtToken}`
+  const url = `${process.env.NEXT_PUBLIC_HUBZONE_URL}?&wt=${jwtToken}&role=role`
   if (token) {
     return NextResponse.redirect(url);
   }

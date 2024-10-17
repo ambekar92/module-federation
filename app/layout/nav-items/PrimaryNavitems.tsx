@@ -15,6 +15,18 @@ const styleSettings = {
   textColor: 'text-white',
   logo: SBA_LOGO_SQUARE_WHITE_URL,
 }
+const RedCircle: React.FC = () => {
+  return (
+    <div
+      style={{
+        width: '7px',
+        height: '7px',
+        borderRadius: '50%',
+        backgroundColor: '#E41D3D',
+      }}
+    />
+  )
+}
 
 const PrimaryNavitems = ({
   toggleMobileNav,

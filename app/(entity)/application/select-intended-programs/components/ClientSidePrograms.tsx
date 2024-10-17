@@ -7,14 +7,11 @@ import { useSessionUCMS } from '@/app/lib/auth'
 import { Application } from '@/app/services/types/application-service/Application'
 import ProgramCard from '@/app/shared/components/ownership/ProgramCard'
 import { EntitiesType } from '@/app/shared/types/responses'
-import { encrypt } from '@/app/shared/utility/encryption'
-import { en } from '@faker-js/faker'
-import { Button, Grid } from '@trussworks/react-uswds'
+import { Button, Grid, ModalRef } from '@trussworks/react-uswds'
 import axios from 'axios'
-import cookies from 'js-cookie'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import SIPErrorModal from './SIPErrorModal'
 
 interface ClientSideProgramsProps {
   entityId: string
@@ -34,7 +31,9 @@ export default function ClientSidePrograms({
   const router = useRouter()
   const { data: session } = useSessionUCMS()
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>(initialSelectedPrograms)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>();
+  const modalRef = useRef<ModalRef>(null);
 
   const isDisabled = useMemo(() => {
     if (!session || !entityData || entityData.length === 0 || !Array.isArray(entityData)) {return true;}
@@ -42,12 +41,20 @@ export default function ClientSidePrograms({
     return session.user_id !== currentEntity?.owner_user_id;
   }, [session, entityData, entityId]);
 
+  const lastApplication = useMemo(() => {
+    if (!applicationData || applicationData.length === 0 || !Array.isArray(applicationData)) {return null;}
+    return applicationData[applicationData.length - 1];
+  }, [applicationData]);
+
   useEffect(() => {
-    if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0) {
-      const lastApplication = applicationData[applicationData.length - 1]
-      router.push(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: lastApplication.id }))
+    if (entityData && entityData.length > 0 && applicationData && applicationData.length > 0 && lastApplication) {
+      const workflowState = lastApplication.workflow_state
+
+      if(workflowState === 'draft' || workflowState === 'returned_to_firm') {
+        router.push(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: lastApplication.id }))
+      }
     }
-  }, [entityData, applicationData, entityId, router])
+  }, [entityData, applicationData, entityId, router, lastApplication]);
 
   const handleCheckboxChange = (program: ProgramOption) => {
     if (isDisabled) {return;}
@@ -78,7 +85,12 @@ export default function ClientSidePrograms({
       }
 
       const response = await axios.post(CREATE_APPLICATION_ROUTE, postData);
-      router.push(buildRoute(ASSIGN_DELEGATE_PAGE, {applicationId: response.data.id}))
+      if(response.data && response.data.non_field_errors) {
+        setErrorMessage(response.data.non_field_errors[0])
+        modalRef.current?.toggleModal()
+      } else if(response.data && response.data.id) {
+        router.push(buildRoute(ASSIGN_DELEGATE_PAGE, { applicationId: response.data.id }))
+      }
     } catch (error) {
       if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
         console.error('Error creating application:', error);
@@ -126,12 +138,7 @@ export default function ClientSidePrograms({
         ))}
       </Grid>
       <div className="display-flex flex-justify margin-bottom-4">
-        <Link
-          href="/claim-your-business"
-          className="usa-button usa-button--outline"
-        >
-          Back
-        </Link>
+        <div></div>
         <Button
           type='button'
           className="usa-button"
@@ -141,6 +148,7 @@ export default function ClientSidePrograms({
           {isSubmitting ? 'Submitting...' : 'Next'}
         </Button>
       </div>
+      <SIPErrorModal applicationData={lastApplication} modalRef={modalRef} message={errorMessage} />
     </>
   )
 }

@@ -31,7 +31,7 @@ function HubMock() {
       <p>You can always check your eligibility by visiting the HUBZone Calculator located on the MySBA Certifications homepage.</p>
 
       <div className='display-flex flex-justify-end margin-top-5'>
-        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`/hubzone?application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}&role=${role}`}>
+        <a target="_blank" rel="noopener noreferrer" className='usa-button' href={`/hubzone?application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}&role=external_user`}>
 					Start
         </a>
       </div>

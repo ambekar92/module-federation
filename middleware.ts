@@ -69,15 +69,15 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.next();
     }
   }],
-  // '/firm/:path*': [async (request: NextRequest) => {
-  //   const {permissions} = await getData(request)
-  //   const isInternalUser = isRole(permissions, Role.INTERNAL);
-  //   if (isInternalUser) {
-  //     return NextResponse.next();
-  //   } else {
-  //     return NextResponse.redirect(`${request.nextUrl.origin}`);
-  //   }
-  // }],
+  '/firm/:path*': [async (request: NextRequest) => {
+    const {permissions} = await getData(request)
+    const isInternalUser = isRole(permissions, Role.INTERNAL);
+    if (isInternalUser) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}`);
+    }
+  }],
   '/admin/:path*': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
     const isAdminUser = isRole(permissions, Role.ADMIN);
@@ -130,7 +130,7 @@ export const config = {
     '/additional-information',
     '/application',
     '/application(.*)', // all sub-routes
-    // '/firm(.*)', // all sub-routes
+    '/firm(.*)', // all sub-routes
     '/dashboard/(.*)',
     '/user/dashboard/(.*)',
     '/user/dashboard/:path*',

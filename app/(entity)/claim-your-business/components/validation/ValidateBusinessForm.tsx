@@ -1,35 +1,42 @@
+import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
+import { useSessionUCMS } from '@/app/lib/auth'
 import { Show } from '@/app/shared/components/Show'
 import {
-  Accordion,
   Button,
   ButtonGroup,
   Grid,
   GridContainer,
+  Label,
   Link,
-  SummaryBox,
-  SummaryBoxContent,
-  SummaryBoxHeading,
+  Select
 } from '@trussworks/react-uswds'
+import { lowerCase } from 'lodash'
 import { useEffect, useState } from 'react'
-import { CmbResponseType, IAccordionItem } from '../../utils/types'
+import { CmbResponseType } from '../../utils/types'
 import ConfirmModal from '../modals/ConfirmModal'
 import ErrorModal from '../modals/ErrorModal'
 import SuccessModal from '../modals/SuccessModal'
 import ValidationTable from './ValidationTable'
-import { toolTipCmbValidation } from '@/app/constants/tooltips'
-import Tooltip from '@/app/shared/components/tooltip/Tooltip'
-import { buildRoute, SELECT_INTENDED_PROGRAMS_PAGE } from '@/app/constants/url'
-import { useSessionUCMS } from '@/app/lib/auth'
+
 interface ValidateBusinessFormProps {
   samData: CmbResponseType
 }
+const BusinessStructureOptions = [
+  'Sole Proprietorship',
+  'Partnership',
+  'Corporation',
+  'Limited Liability Company',
+]
 
 function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
   const [open, setOpen] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [isPostSuccessful, setPostSuccessful] = useState(false)
   const [entityId, setEntityId] = useState<number | undefined>()
+  const [selectedStructure, setSelectedStructure] = useState<string>('');
+  const [structureError, setStructureError] = useState(false)
   const session = useSessionUCMS()
+  const entityStructure = samData?.sam_entity_structure
 
   const handleClose = () => {
     setOpen(false)
@@ -37,35 +44,18 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
       setErrorMsg('')
     }
   }
+
   const handleOpen = () => {
+    if (!selectedStructure) {
+      setStructureError(true)
+      return
+    }
+    setStructureError(false)
+
     if (session && session.data.user_id === 0) {
       setErrorMsg('cannot create entity')
     }
     setOpen(true)
-  }
-
-  const validateBusinessAccordionProps = (): IAccordionItem[] => {
-    return samData.sam_entity.map((entity, index) => ({
-      title: (
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          {entity.legal_business_name}
-        </div>
-      ),
-      content: (
-        <div className="default-table">
-          <ValidationTable
-            profiles={{
-              ...samData,
-              sam_entity: [entity],
-            }}
-          />
-        </div>
-      ),
-      expanded: true,
-      id: `accordion-item-${index}`,
-      className: 'myCustomAccordionItem',
-      headingLevel: 'h4',
-    }))
   }
 
   useEffect(() => window.scrollTo({ top: 0, behavior: 'smooth' }), [])
@@ -95,6 +85,7 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
               handleClose={handleClose}
               handleOpen={handleOpen}
               open={open}
+              selectedStructure={selectedStructure}
               setErrorMsg={setErrorMsg}
               setPostSuccessful={setPostSuccessful}
               business={samData}
@@ -112,45 +103,10 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
             />
           </Show.When>
         </Show>
+
         <Grid row>
           <Grid col={12}>
-            <h1 className="underline-heading">Claim Your Business</h1>
-          </Grid>
-        </Grid>
-        <Grid row gap>
-          <Grid mobile={{ col: 12 }}>
-            <SummaryBox style={{ marginBottom: '1.25rem' }}>
-              <SummaryBoxHeading headingLevel="h3">
-                Verify your business(es)
-                <span className="text-normal">
-                  <Tooltip text={toolTipCmbValidation} />
-                </span>
-              </SummaryBoxHeading>
-              <SummaryBoxContent>
-                <p>
-                  Below are the SAM registrations linked to your Taxpayer
-                  Identification Number (TIN). Review the information and click
-                  the Claim button if correct.
-                </p>
-                <p>
-                  If any of the information here is incorrect,{' '}
-                  <b style={{ color: 'red' }}>STOP</b> now and go to{' '}
-                  <a
-                    href="https://sam.gov/content/home"
-                    target="_blank"
-                    title="Open SAM.gov"
-                    rel="noreferrer"
-                  >
-                    SAM.gov
-                  </a>{' '}
-                  to make corrections. Note that if the business structure is
-                  incorrect, you will be required to resubmit your entire
-                  application. After your updates have been reviewed and
-                  ACTIVATED by SAM.gov, the changes will appear here within 3
-                  business days.
-                </p>
-              </SummaryBoxContent>
-            </SummaryBox>
+            <h1 className="underline-heading border-bottom-1px border-base-lighter padding-bottom-2">Claim Your Business</h1>
           </Grid>
         </Grid>
         <Grid row gap>
@@ -159,10 +115,55 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
             desktop={{ col: 6 }}
             style={{ marginBottom: '1rem' }}
           >
-            <Accordion
-              bordered={true}
-              items={validateBusinessAccordionProps()}
-            />
+            <div className='margin-bottom-3'>
+              <Label className={'maxw-full text-bold display-flex'} requiredMarker htmlFor='business-type'>
+								Confirm your Business Type
+              </Label>
+              <Select
+                id='business-type'
+                name='business-type'
+                value={selectedStructure}
+                onChange={(e) => setSelectedStructure(e.target.value)}
+                disabled={isPostSuccessful}
+              >
+                <option value="">- Select -</option>
+                {BusinessStructureOptions.map((option, idx) => (
+                  <option key={idx} value={lowerCase(option)}>
+                    {option}
+                  </option>
+                ))}
+              </Select>
+              {structureError && <p style={{ color: '#e41d3d' }}>Please select your business type.</p>}
+            </div>
+            {samData.sam_entity.length > 0 && (
+              <div className="margin-bottom-4">
+                <div className="default-table">
+                  <ValidationTable
+                    profiles={{
+                      ...samData,
+                      sam_entity: [samData.sam_entity[0]],
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+            {samData.sam_entity.length > 1 && (
+              <>
+                <h2>Associated Businesses</h2>
+                {samData.sam_entity.slice(1).map((entity, index) => (
+                  <div key={index} className="margin-bottom-4">
+                    <div className="default-table">
+                      <ValidationTable
+                        profiles={{
+                          ...samData,
+                          sam_entity: [entity],
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </Grid>
         </Grid>
         <Grid row>
@@ -175,7 +176,7 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
                 href="/claim-your-business"
                 className="usa-button usa-button--outline"
               >
-                Back
+								Back
               </Link>
               {isPostSuccessful ? (
                 entityId ? (
@@ -185,16 +186,16 @@ function ValidateBusinessForm({ samData }: ValidateBusinessFormProps) {
                     })}
                     className="usa-button usa-button"
                   >
-                    Continue
+										Continue
                   </Link>
                 ) : (
                   <Button disabled type="button">
-                    Continue
+										Continue
                   </Button>
                 )
               ) : (
                 <Button onClick={handleOpen} type="button">
-                  Next
+									Next
                 </Button>
               )}
             </ButtonGroup>

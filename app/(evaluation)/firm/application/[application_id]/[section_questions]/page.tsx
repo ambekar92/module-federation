@@ -27,6 +27,7 @@ const SectionQuestions = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, Answer>>({});
   const firstContributorId = applicationData?.application_contributor?.[0]?.id;
   const [isComplete, setIsComplete] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const [showNextButton, setShowNextButton] = useState<boolean>(true);
   const router = useRouter();
 
@@ -162,7 +163,7 @@ const SectionQuestions = () => {
    * Find the current nav item index in the combined nav items array
    * If the current item is the last one, return
    * Otherwise, navigate to the next item's url
-   */
+  */
   function onContinue() {
     const current = combinedNavItems.find(q => q.title === title);
     if (!current) {
@@ -246,15 +247,15 @@ const SectionQuestions = () => {
   // TODO Update url for hubzone redirect -KJ
   const handleHUBZoneCalculatorRedirect = () => {
     const userRole = getUserRole(sessionData?.data?.permissions || []);
-    const accessToken = sessionData?.data?.access;
     const userId = sessionData?.data?.user_id;
     const applicationId = params.application_id;
+    const matchingContributor = userRole === 'reviewer' ? reviewerContributorId : analystContributorId;
 
-    if (accessToken && firstContributorId && userId && applicationId) {
-      const url = `/hubzone?application_contributor_id=${contributorId}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
+    if (matchingContributor && userId && applicationId) {
+      const url = `/hubzone?application_contributor_id=${matchingContributor}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
       window.open(url, '_blank'); // Makes sure it opens in a new tab
     } else {
-      // Handled
+      // error handling
     }
   };
 
@@ -320,12 +321,21 @@ const SectionQuestions = () => {
   useEffect(() => {
     if (isAnalystQuestionnaire) {
       const relevantData = userRole === 'analyst' ? analystData : reviewerData;
-      if (relevantData && relevantData.length > 0) {
-        const firstQuestion = relevantData[0];
-        const isFirstQuestionAnswered = firstQuestion.answer &&
-          firstQuestion.answer.value !== null &&
-          firstQuestion.answer.value !== undefined;
-        setIsComplete(isFirstQuestionAnswered);
+      if (relevantData) {
+        if (relevantData.length === 0 || Array.isArray(relevantData) === false) {
+          setIsEmpty(true);
+          setIsComplete(true);
+        } else if(Array.isArray(relevantData) && relevantData.length > 0) {
+          const firstQuestion = relevantData[0];
+          const isFirstQuestionAnswered = firstQuestion.answer &&
+            firstQuestion.answer.value !== null &&
+            firstQuestion.answer.value !== undefined;
+          setIsEmpty(false);
+          setIsComplete(isFirstQuestionAnswered);
+        } else {
+          setIsEmpty(true);
+          setIsComplete(true);
+        }
       }
     }
   }, [isAnalystQuestionnaire, userRole, analystData, reviewerData]);
@@ -381,8 +391,12 @@ const SectionQuestions = () => {
       {(reviewerLoading || analystLoading || regularLoading) && <Spinner center />}
 
       {!reviewerLoading && !analystLoading && !regularLoading && !reviewerData && !analystData && !regularData && (
-        <div>No data found</div>
+        <div>No response required for this section</div>
       )}
+
+      {isEmpty && isAnalystQuestionnaire
+				&& <div>No response required for this section</div>
+      }
 
       {(reviewerData || analystData || regularData) && !reviewerLoading && !analystLoading && !regularLoading && (
         <>
@@ -423,9 +437,9 @@ const SectionQuestions = () => {
               onClick={handleNextQuestionnaire}
               className={isAnalystQuestionnaire ? 'float-right margin-left-auto' : 'margin-top-4'}
               type='button'
-              disabled={!isComplete}
+              disabled={!isComplete && isEmpty === false}
             >
-              {isLastQuestionnaire ? 'Done' : 'Save & Continue'}
+              {isLastQuestionnaire ? 'Done' : isEmpty ? 'Continue' : 'Save & Continue'}
             </Button>
           )}
         </>

@@ -5,6 +5,7 @@ import { Box } from '@mui/material'
 import Modal from '@mui/material/Modal'
 import { Button, ButtonGroup, Icon } from '@trussworks/react-uswds'
 import axios from 'axios'
+import { snakeCase, startCase } from 'lodash'
 import React, { useState } from 'react'
 import { CmbResponseType } from '../../utils/types'
 
@@ -22,6 +23,7 @@ interface ConfirmModalProps {
   setErrorMsg: (errorMsg: string) => void;
   setPostSuccessful: (isSuccess: boolean) => void;
   setEntityId: (id: number) => void;
+  selectedStructure: string;
 }
 
 const boxStyles = {
@@ -40,7 +42,7 @@ const boxStyles = {
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
   business, open, handleClose, handleOpen, setErrorMsg,
-  setPostSuccessful, setEntityId
+  setPostSuccessful, setEntityId, selectedStructure
 }) => {
   const session = useSessionUCMS();
   const user_id = session?.data?.user_id;
@@ -56,8 +58,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         'Corporate Entity (Tax Exempt)',
         'U.S. Government Entity',
         'Country - Foreign Government',
-        'International Organization',
-        'Other'
+        'International Organization'
       ];
 
       if (invalidStructures.includes(currentEntity.entity_structure) ||
@@ -67,7 +68,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
       const postData = [{
         owner_user_id: user_id,
-        sam_entity_id: currentEntity.sam_entity_id
+        sam_entity_id: currentEntity.sam_entity_id,
+        structure: startCase(selectedStructure) === 'Limited Liability Company' ? 'llc' : snakeCase(selectedStructure)
       }];
       const response = await axios.post(CLAIM_ENTITY_ROUTE, postData);
 
@@ -114,18 +116,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             </Button>
           </div>
           <div>
-            <h2 className='margin-top-0'>Confirm your Business and Entity Structure</h2>
-            <ul className='padding-left-2'>
-              <li>
-                You are confirming that the structure of <strong>{currentEntity.legal_business_name}</strong> is a <strong>{business.sam_entity_structure}</strong>
-              </li>
-            </ul>
+            <h2 className='margin-top-0'>Confirm your Entity Structure</h2>
             <p>
-              If this designation is incorrect, please update your information on SAM.gov immediately.
+              You are confirming that the structure of {currentEntity.legal_business_name} is a {startCase(selectedStructure)}.
             </p>
-            <ButtonGroup>
+            <ButtonGroup className='margin-top-3'>
               <Button type="button" onClick={handlePostRequest} disabled={isProcessing}>
-                {isProcessing ? 'Processing...' : (currentEntityIndex < business.sam_entity.length - 1 ? 'Continue' : 'Finish')}
+                {isProcessing ? 'Processing...' : 'Continue'}
               </Button>
               <div className='width-1'></div>
               <Button type="button" unstyled className="text-underline" onClick={handleClose}>

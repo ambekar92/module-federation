@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
   const uei = searchParams.get('uei')
   const tin = searchParams.get('tax_identifier_number')
   const cageCode = searchParams.get('cage_code')
+	const entityStructure = searchParams.get('structure')
   const bankAccountNumber = searchParams.get('account_hash')
 
   if (!uei || !tin) {
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
   let query = `?uei=${uei}&tax_identifier_number=${tin}`
   if (cageCode) query += `&cage_code=${cageCode}`
   if (bankAccountNumber) query += `&account_hash=${bankAccountNumber}`
+	if (entityStructure) query += `&structure=${entityStructure}`
 
   return handleApiRequest(request, `${VALIDATE_SAM_ENTITY_ROUTE}${query}`, 'GET')
 }

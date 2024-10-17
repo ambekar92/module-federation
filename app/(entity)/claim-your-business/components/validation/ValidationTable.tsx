@@ -1,9 +1,30 @@
-import { Table } from '@trussworks/react-uswds'
-import { CmbResponseType } from '../../utils/types'
+import React from 'react';
+import { CmbResponseType } from '../../utils/types';
+import { Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { styled } from '@mui/system';
 
 interface ValidationTableProps {
-  profiles: CmbResponseType
+  profiles: CmbResponseType;
 }
+
+const StyledTable = styled(Table)({
+  borderCollapse: 'separate',
+  borderSpacing: 0,
+  border: '1px solid #DFE1E2',
+  borderRadius: '8px',
+  overflow: 'hidden',
+});
+
+const StyledTableCell = styled(TableCell)({
+  backgroundColor: '#F0F0F0',
+  fontWeight: 'bold',
+  width: '30%',
+  borderBottom: '1px solid #DFE1E2',
+});
+
+const StyledDataCell = styled(TableCell)({
+  borderBottom: '1px solid #DFE1E2',
+});
 
 const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => {
   const getBusinessType = (
@@ -30,7 +51,7 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => {
     }
     return businessType
   }
-  //fixed table layout and width
+
   return (
     <>
       {profiles.sam_entity.map((entity, index) => {
@@ -39,55 +60,46 @@ const ValidationTable: React.FC<ValidationTableProps> = ({ profiles }) => {
           profiles.sam_business_type,
         )
         return (
-          <div style={{ tableLayout: 'fixed' }} key={index}>
-            <Table bordered={false}>
-              <thead>
-                <tr>
-                  <th scope="col" colSpan={2}>
-                    SAM.gov profile
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Business Name</th>
-                  <td>{entity.legal_business_name}</td>
-                </tr>
-                <tr>
-                  <th scope="row">DBA</th>
-                  <td>{entity.dba_name}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Business Address</th>
-                  <td>
-                    {entity.physical_addr_1}, {entity.physical_addr_2 && `${entity.physical_addr_2},`}
-                    <br />
-                    {`${entity.physical_city}, ${entity.physical_state_or_province}, ${entity.physical_zip_code_5}`}
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row">Government Contact</th>
-                  <td>{`${entity.govt_bus_poc_first_name} ${entity.govt_bus_poc_last_name}`}</td>
-                </tr>
-                <tr>
-                  <th scope="row">Business Type</th>
-                  <td>{businessType}</td>
-                </tr>
-                <tr>
-                  <th scope="row">NAICS Code</th>
-                  <td>
-                    <div style={{ wordBreak: 'break-all' }}>
-                      {entity.naics_code_string}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
+          <StyledTable key={index} style={{ tableLayout: 'fixed', width: '100%' }}>
+            <TableBody>
+              <TableRow>
+                <StyledTableCell>Business Name</StyledTableCell>
+                <StyledDataCell>{entity.legal_business_name}</StyledDataCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell>DBA</StyledTableCell>
+                <StyledDataCell>{entity.dba_name}</StyledDataCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell>Address</StyledTableCell>
+                <StyledDataCell>
+                  {entity.physical_addr_1}, {entity.physical_addr_2 && `${entity.physical_addr_2},`}
+                  <br />
+                  {`${entity.physical_city}, ${entity.physical_state_or_province}, ${entity.physical_zip_code_5}`}
+                </StyledDataCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell>Entity Type</StyledTableCell>
+                <StyledDataCell>{businessType}</StyledDataCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell style={{ borderBottom: 'none' }}>NAICS Code</StyledTableCell>
+                <StyledDataCell style={{ borderBottom: 'none' }}>
+                  <div style={{ wordBreak: 'break-all' }}>
+                    {entity.naics_code_string}
+                  </div>
+                </StyledDataCell>
+              </TableRow>
+              <TableRow>
+                <StyledTableCell>Government Contact</StyledTableCell>
+                <StyledDataCell>{`${entity.govt_bus_poc_first_name} ${entity.govt_bus_poc_last_name}`}</StyledDataCell>
+              </TableRow>
+            </TableBody>
+          </StyledTable>
         )
       })}
     </>
   )
 }
 
-export default ValidationTable
+export default ValidationTable;

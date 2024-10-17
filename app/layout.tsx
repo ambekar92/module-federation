@@ -33,6 +33,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
         {pathname?.includes('/aeroad') || pathname?.includes('/aethos') &&
           <meta name="robots" content="noindex, nofollow" />
         }
+        <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body>
         {

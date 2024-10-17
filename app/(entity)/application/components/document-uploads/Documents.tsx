@@ -2,7 +2,6 @@ import { APPLICATION_DOCUMENTS_ROUTE, REQUIRED_DOCUMENTS_ROUTE } from '@/app/con
 import { createDocument } from '@/app/services/api/document-service/createDocument';
 import { updateDocument } from '@/app/services/api/document-service/updateDocument';
 import { useDeleteDocument } from '@/app/services/mutations/document-service/useDeleteDocument';
-import { useDocumentRequiredQuestions } from '@/app/services/queries/application-service/useDocumentRequiredQuestions';
 import { DocumentParams, useDocuments } from '@/app/services/queries/document-service/useDocuments';
 import { DocumentRequiredQuestions } from '@/app/services/types/application-service/DocumentRequiredQuestions';
 import Spinner from '@/app/shared/components/spinner/Spinner';
@@ -11,15 +10,20 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { Alert, Button, Icon, Table } from '@trussworks/react-uswds';
 import moment from 'moment';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import useSWR from 'swr';
 import styles from './Documents.module.scss';
+import { set } from 'lodash';
 
 const Documents = () => {
   const {contributorId, userId, applicationData} = useApplicationContext()
-  const [selectedQuestionId, setSelectedQuestionId] = React.useState<number | null>(null);
-  const [selectedDocumentId, setSelectedDocumentId] = React.useState<number | null>(null);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number | null>(null);
+  const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState(true);
+  const hubzoneFileInputRef = useRef<HTMLInputElement>(null);
+
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoadingHubzone, setIsLoadingHubzone] = React.useState<boolean>(false);
   const {data: questions, error: questionsError, isLoading: isLoadingQuestions} = useSWR<DocumentRequiredQuestions[]>( contributorId ? `${REQUIRED_DOCUMENTS_ROUTE}/${contributorId}` : null)
   const { data: documents, error: documentsError, isLoading: isLoadingDocuments } = useDocuments({
     [DocumentParams.user_id]: userId,
@@ -61,11 +65,16 @@ const Documents = () => {
 
   async function handleDelete(e: any, documentId: number) {
     setSelectedDocumentId(documentId);
-    setIsLoading(true)
     await triggerDelete({document_id: documentId});
     await mutate();
-    setIsLoading(false)
     setSelectedDocumentId(null)
+  }
+
+  function onHubzoneFileUpload(e: React.SyntheticEvent) {
+    const fileInput = hubzoneFileInputRef.current;
+    if (!fileInput) {return;}
+
+    fileInput.click();
   }
 
   async function handleUploadFile(file: File, questionId: number, questionType: number) {
@@ -78,16 +87,60 @@ const Documents = () => {
 
       const question = questions?.find(q => q.id === questionId);
 
-      const url = `${APPLICATION_DOCUMENTS_ROUTE}?application_contributor_id=${contributorId}&entity_id=${applicationData?.entity.entity_id}&upload_user_id=${userId}&question_id=${questionId}${question?.hubzone_key ? `&hubzone_key=${question.hubzone_key.toString()}` : ''}`;
+      let url = `${APPLICATION_DOCUMENTS_ROUTE}?application_contributor_id=${contributorId}&entity_id=${applicationData?.entity.entity_id}&upload_user_id=${userId}&question_id=${questionId}`;
+
+      if (question?.hubzone_key) {
+        url += `&hubzone_key=${question.hubzone_key.toString()}`;
+      }
+      const timestamp = new Date().getTime();
+      url += `&timestamp=${timestamp}`;
 
       await createDocument(url, formData);
 
       await mutate();
     } catch (error) {
-      // Handled error
+      if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error uploading file:', error);
+      }
     } finally {
       setIsLoading(false);
       setSelectedQuestionId(null);
+      if(fileInputRefs.current[questionId]) {
+        fileInputRefs.current[questionId].value = '';
+      }
+    }
+  }
+
+  async function handleHubzoneUpload() {
+    const fileInput = hubzoneFileInputRef.current;
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {return;}
+
+    const file = fileInput.files[0];
+    setIsLoadingHubzone(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+      formData.append('document_type_id', hubzoneQuestions[0].valid_documents[0].document_type_id.toString());
+      formData.append('internal_document', 'false');
+
+      let url = `${APPLICATION_DOCUMENTS_ROUTE}?application_contributor_id=${contributorId}&entity_id=${applicationData?.entity.entity_id}&upload_user_id=${userId}&question_id=${hubzoneQuestions[0].id}`;
+
+      if (hubzoneQuestions[0].hubzone_key) {
+        url += `&hubzone_key=${hubzoneQuestions[0].hubzone_key.toString()}`;
+      }
+      const timestamp = new Date().getTime();
+      url += `&timestamp=${timestamp}`;
+
+      await createDocument(url, formData);
+      await mutate();
+    } catch (error) {
+      if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error uploading file:', error);
+      }
+    } finally {
+      setIsLoadingHubzone(false);
+      if (fileInput) {fileInput.value = '';}
     }
   }
 
@@ -183,7 +236,12 @@ const Documents = () => {
         </div>
       ))}
       {hubzoneQuestions.length > 0 && (
-        <Accordion className='margin-y-4 border border-base-lighter' style={{boxShadow: 'none'}}>
+        <Accordion
+          expanded={expanded}
+          onChange={() => setExpanded(!expanded)}
+          className='margin-y-4 border border-base-lighter'
+          style={{boxShadow: 'none'}}
+        >
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="hubzone-content"
@@ -194,27 +252,31 @@ const Documents = () => {
           <AccordionDetails>
             {hubzoneQuestions.map((question, key) => (
               <div key={`${question.id}-${key}`}>
-                <h2>{question.title}</h2>
                 <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '3rem'}}>
-                  <p>{question.description}</p>
-                  <input accept='.doc, .docx, .pdf'
-                    ref={(el) => {
-                      fileInputRefs.current[question.id] = el;
-                    }}
-                    type='file' hidden={true}/>
+                  <h2 className='margin-bottom-0'>{question.title}</h2>
+                  <input
+                    ref={hubzoneFileInputRef}
+                    accept='.doc, .docx, .pdf'
+                    type='file'
+                    hidden={true}
+                    onChange={handleHubzoneUpload}
+                  />
                   <Button
-                    disabled={isLoading && selectedQuestionId === question.id}
-                    onClick={(e) => onFileUpload(e, question.id, question.valid_documents[0].document_type_id)}
+                    disabled={isLoadingHubzone}
+                    onClick={onHubzoneFileUpload}
                     outline
                     type='button'
                   >
-                    {isLoading && selectedQuestionId === question.id ? 'Uploading...' : 'Upload'}
+                    {isLoadingHubzone ? 'Uploading...' : 'Upload'}
                   </Button>
                 </div>
+                <p>{question.description}</p>
               </div>
             ))}
             <fieldset style={{borderLeft: 'none', borderRight: 'none', borderBottom: 'none', marginTop: '2rem'}}>
-              <legend>UPLOADED DOCUMENTS</legend>
+              <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <legend>UPLOADED DOCUMENTS</legend>
+              </div>
               <Table fullWidth>
                 <thead>
                   <tr>

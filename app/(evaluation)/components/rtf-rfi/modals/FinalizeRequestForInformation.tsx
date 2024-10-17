@@ -71,7 +71,7 @@ const FinalizeRequestForInformation: React.FC<EditFormModalProps> = ({
 
     const additionalInfo = (
       <p>
-        If you have questions, please contact our main help desk at 317-555-0113.
+        If you have questions, please contact our main help desk at 866-443-4110.
       </p>
     );
 

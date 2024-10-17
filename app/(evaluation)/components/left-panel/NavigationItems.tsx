@@ -96,9 +96,9 @@ const NavigationItems: React.FC<NavigationItemsProps> = React.memo(({
     const isAnalystQuestionnaire = childItem.url.includes('analyst-questionnaire');
     const isClickable = isItemClickable(index);
 
-    if (childItem.title === 'HUBZone Calculator' && userRole !== 'analyst' && userRole !== 'reviewer') {
-      return null;
-    }
+    // if (childItem.title === 'HUBZone Calculator' && userRole !== 'analyst' && userRole !== 'reviewer') {
+    //   return null;
+    // }
 
     if (isAnalystQuestionnaire && !isClickable) {
       return (

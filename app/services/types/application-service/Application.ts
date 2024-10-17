@@ -77,6 +77,11 @@ export type Application = {
   workflow_state_status: {
     title_internal: string
     title_external: string
+		updated_at: string
+		created_at: string
+		deleted_at: string | null
+		code: string
+		description: string
   }
   application_contributor: Array<{
     id: number,
