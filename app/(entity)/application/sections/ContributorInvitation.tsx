@@ -57,6 +57,10 @@ function ContributorInvitation() {
   const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
   useRedirectIfNoOwners({ ownerData, applicationId , applicationRole});
 
+  const is8aOrEdwosb = applicationData?.program_application?.some(program =>
+    program.id === 1 || program.id === 6
+  );
+
   useEffect(() => {
     if (contributors.length > 0 && initialContributorsRef.current.length === 0) {
       initialContributorsRef.current = JSON.parse(JSON.stringify(contributors));
@@ -565,8 +569,17 @@ function ContributorInvitation() {
           {ownerTableRows.length > 0 && (
             <>
               <h2>Owners<TooltipIcon text='An applicant or Participant must be at least 51 percent unconditionally and directly owned by one or more socially and economically disadvantaged individuals who are citizens of the United States, except for concerns owned by Indian tribes, Alaska Native Corporations, Native Hawaiian Organizations, or Community Development Corporations.' /></h2>
-              <p>Your firm must be at least 51% owned by one or more economically disadvantaged individuals to qualify for the SBA program. If you do not own 51% or more of the firm, send the other owner(s) who are claiming economic disadvantage an invitation to submit their information and questionnaire.</p>
-              <p>Note: An individual can only claim disadvantage for SBA certification once in their lifetime. If you own 51% or more of the firm, the other owner(s) do not need to submit their information and questionnaire</p>
+              {
+                is8aOrEdwosb ? (
+                  <>
+                    <p>Your firm must be at least 51% owned by one or more economically disadvantaged individuals to qualify for the SBA program. If you do not own 51% or more of the firm, send the other owner(s) who are claiming economic disadvantage an invitation to submit their information and questionnaire.</p>
+                    <p>Note: An individual can only claim disadvantage for SBA certification once in their lifetime. If you own 51% or more of the firm, the other owner(s) do not need to submit their information and questionnaire</p>
+                  </>
+                )
+                  : (
+                    <p>Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</p>
+                  )
+              }
               <CustomTable
                 header={tableHeaders}
                 rows={ownerTableRows}

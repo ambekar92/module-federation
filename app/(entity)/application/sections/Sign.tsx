@@ -20,6 +20,7 @@ import axios from 'axios';
 import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import Spinner from '@/app/shared/components/spinner/Spinner';
+import { useCheckOwnersPercent } from '../hooks/useCheckOwnersPercent';
 
 /**
  * SignPage is the final page of the application process, where the user signs and submits the application.
@@ -38,11 +39,13 @@ function SignPage() {
   const [isChecked, setIsChecked] = useState(false);
   const [allContributorsSubmitted, setAllContributorsSubmitted] = useState(false);
   const [allInvitationsAccepted, setAllInvitationsAccepted] = useState(false);
+  const [isHundredPercentOwners, setIsHundredPercentOwners] = useState(false);
   const [alertMessages, setAlertMessages] = useState<string[]>([]);
 
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
   const { data: invitationData } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+  const { totalOwnershipPercentage } = useCheckOwnersPercent(ownerData || []);
   const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
   useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
   useEffect(() => {
@@ -71,6 +74,14 @@ function SignPage() {
     }
   }, [applicationData, applicationId, session.data]);
 
+  useEffect(() => {
+    if(totalOwnershipPercentage >= 99 && totalOwnershipPercentage <= 100) {
+      setIsHundredPercentOwners(true);
+    } else {
+      setIsHundredPercentOwners(false);
+      setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
+    }
+  }, [totalOwnershipPercentage]);
   useEffect(() => {
     if (applicationData && applicationData.application_contributor) {
       const nonOwnerContributors = applicationData.application_contributor.filter(
@@ -115,7 +126,7 @@ function SignPage() {
       );
 
       if (userRole === 'primary-qualifying-owner') {
-        const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted;
+        const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted || !isHundredPercentOwners;
         setIsCheckboxDisabled(isDisabled);
 
         setAlertMessages([]);
@@ -300,6 +311,7 @@ function SignPage() {
           onClick={handleModalToggle}
           disabled={
             !isChecked || isCheckboxDisabled || error ||
+						!isHundredPercentOwners ||
             (userRole === 'primary-qualifying-owner' && (!allContributorsSubmitted || !allInvitationsAccepted))
           }
         >

@@ -75,7 +75,9 @@ const EscalateReviewModal: React.FC<EscalateReviewProps> = ({
     if(applicationData && selectedContributor && selectedOffice) {
       const selectedUser = filteredUsers.find(user => parseInt(user.id) === parseInt(selectedContributor));
       if (!selectedUser) {
-        console.error('Selected contributor not found in filtered users');
+        if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.error('Selected contributor not found in filtered users');
+        }
         return;
       }
 
@@ -84,6 +86,7 @@ const EscalateReviewModal: React.FC<EscalateReviewProps> = ({
 
       const payload = {
         process_id: applicationData.process?.id,
+        user_id: selectedUser.id,
         data: {
           request_ogc_expert: isOgcExpert,
           request_oss_expert: isOssExpert,
@@ -102,12 +105,13 @@ const EscalateReviewModal: React.FC<EscalateReviewProps> = ({
       try {
         await trigger(payload);
         await triggerNote(notePayload);
-        console.log('Task completed successfully');
         // Todo - need to validate the response to display error message or redirect on success
         window.location.href = buildRoute(FIRM_APPLICATION_DONE_PAGE, { application_id: applicationData.id }) + '?name=escalate-review'
         handleCancel();
       } catch (error) {
-        console.error('Failed to complete task', error);
+        if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
+          console.error('Failed to complete task', error);
+        }
       }
     }
   }

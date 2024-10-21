@@ -71,16 +71,8 @@ const SubsidiariesForm: React.FC<SubsidiariesFormProps> = ({
     handleCancelFrom()
   }
   const handleSave = () => {
-    if(formInputs.id){
-      formInputs.contributor_name = formInputs?.firstName + " " + formInputs?.middleName + " " + formInputs?.lastName; 
-      formInputs.isNew = false;      
-      handleSaveFrom(formInputs)
-    }else{
-      formInputs.id = Math.floor(1000 + Math.random() * 9000);
-      formInputs.contributor_name = formInputs?.firstName + " " + formInputs?.middleName + " " + formInputs?.lastName;    
-      formInputs.isNew = true;    
-      handleSaveFrom(formInputs)
-    }
+    formInputs.id = Math.floor(1000 + Math.random() * 9000).toString();
+    handleSaveFrom(formInputs)
   }
   const handleDelete = () => {
     const obj = {

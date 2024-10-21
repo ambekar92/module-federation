@@ -33,9 +33,10 @@ interface QaGridProps {
   userId: number | null;
   contributorId: number | null;
 	setTotalOwnershipPercentage: React.Dispatch<React.SetStateAction<number>>;
+	entityStructure: string | undefined;
 }
 
-export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, contributorId, setTotalOwnershipPercentage }) => {
+export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, contributorId, setTotalOwnershipPercentage, entityStructure }) => {
   const { updateOwners } = useOwnerApplicationInfo();
   const dispatch = useDispatch();
   const [gridRows, setGridRows] = useState<GridRow[]>([]);
@@ -77,7 +78,7 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
         >
           <option value="-Select-">-Select-</option>
           <option value="Individual">Individual</option>
-          <option value="Organization">Organization</option>
+          {entityStructure !== 'Sole Proprietorship' &&  <option value="Organization">Organization</option>}
         </Select>
       </div>
     );

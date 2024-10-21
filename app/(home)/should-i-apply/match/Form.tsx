@@ -62,6 +62,15 @@ const MatchForm = () => {
     formAction(new FormData(event.currentTarget));
   }
 
+  function formatMoney(amount: number) {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+
+    return formatter.format(amount);
+  }
+
   return (
     <div>
       <form className='bg-base-lightest padding-2 radius-sm' style={{ display: 'flex', gap: '1rem' }} onSubmit={handleSubmit}>
@@ -96,7 +105,7 @@ const MatchForm = () => {
               <tr>
                 <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >NAICS Code</th>
                 <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >Description</th>
-                <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >Amount awarded in FY21</th>
+                <th style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }} >Amount awarded in FY23</th>
               </tr>
             </thead>
             <tbody>
@@ -104,7 +113,7 @@ const MatchForm = () => {
                 <tr key={idx}>
                   <td>{el.naics_code}</td>
                   <td>{el.description}</td>
-                  <td>{el.award_amount}</td>
+                  <td>{el.award_amount && formatMoney(el.award_amount)}</td>
                 </tr>
               ))}
             </tbody>

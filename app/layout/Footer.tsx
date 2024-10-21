@@ -5,6 +5,8 @@ import { GridContainer, Grid, Link } from '@trussworks/react-uswds'
 import { SBA_LOGO_CIRCLE_URL } from '../constants/icons'
 import styles from './Layout.module.scss'
 import { decrypt } from '@/app/shared/utility/encryption';
+import Image from 'next/image'
+import { SBA_FOOTER_LOGO_URL } from '../constants/image'
 
 export default function Footer() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -138,7 +140,7 @@ export default function Footer() {
                           href="tel:12022056459"
                         >
                           <span className="text-underline">
-                                1-202-205-6459
+                                1-866-443-4110
                           </span>
                         </a>
                       </li>
@@ -170,40 +172,16 @@ export default function Footer() {
                   <div
                     className={' display-flex flex-align-center grid-row margin-bottom-3 padding-top-2'}
                   >
-                    <GridContainer>
-                      <Grid className={`${styles['grid-container']}`}>
-                        <Grid className={`${styles['item1']}`}>
-                          <img
-                            className="position-relative margin-right-105"
-                            src={styleSettings.logo}
-                            alt="logo"
-                            height={50}
-                          />
-                        </Grid>
-                        <Grid>
-                          <div
-                            className={`${styleSettings.textColor} `}
-                            style={{
-                              fontSize: '1.17em',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                                U.S. Small Business
-                          </div>
-                        </Grid>
-                        <Grid>
-                          <div
-                            className={`${styleSettings.textColor} `}
-                            style={{
-                              fontSize: '1.17em',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                                Administration
-                          </div>
-                        </Grid>
+                    <Grid className={`${styles['grid-container']} margin-top-1`}>
+                      <Grid>
+                        <Image
+                          src={SBA_FOOTER_LOGO_URL}
+                          alt='sba logo'
+                          width={200}
+                          height={55}
+                        />
                       </Grid>
-                    </GridContainer>
+                    </Grid>
                   </div>
                 </div>
               </GridContainer>

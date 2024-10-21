@@ -13,7 +13,7 @@ import moment from 'moment';
 import React, { useRef, useState } from 'react';
 import useSWR from 'swr';
 import styles from './Documents.module.scss';
-import { set } from 'lodash';
+import { startCase } from 'lodash';
 
 const Documents = () => {
   const {contributorId, userId, applicationData} = useApplicationContext()
@@ -206,7 +206,7 @@ const Documents = () => {
                       {documents?.filter(d => d.question?.question_id === question.id).map(d => (
                         <tr key={d.id}>
                           <td><a className='usa-link' href={d.signed_url} target="_blank" rel="noopener noreferrer">{d.file_name}</a></td>
-                          <td>{d.upload_user.first_name} {d.upload_user.last_name}</td>
+                          <td>{d.upload_user.first_name} {d.upload_user.last_name} {d.upload_user.roles && `- ${startCase(d.upload_user.roles[d.upload_user.roles.length - 1])}`}</td>
                           <td>{moment(d.created_at).format('MM/DD/YYYY')}</td>
                           <td><select
                             disabled={isLoading && selectedDocumentId === d.id}
@@ -295,7 +295,7 @@ const Documents = () => {
                       .map(d => (
                         <tr key={d.id}>
                           <td><a className='usa-link' href={d.signed_url} target="_blank" rel="noopener noreferrer">{d.file_name}</a></td>
-                          <td>{d.upload_user.first_name} {d.upload_user.last_name}</td>
+                          <td>{d.upload_user.first_name} {d.upload_user.last_name} {d.upload_user.roles && `- ${startCase(d.upload_user.roles[d.upload_user.roles.length - 1])}`}</td>
                           <td>{moment(d.created_at).format('MM/DD/YYYY')}</td>
                           <td>
                             <select

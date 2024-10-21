@@ -1,16 +1,18 @@
-import { Application } from '@/app/services/types/application-service/Application';
 import { Alert, Button, Modal, ModalRef } from '@trussworks/react-uswds';
 import { RefObject } from 'react';
 
 interface ErrorModalProps {
-  applicationData: Application | null;
-	modalRef: RefObject<ModalRef>;
-	message: string | undefined
+  modalRef: RefObject<ModalRef>;
+  message: string | undefined;
 }
-function SIPErrorModal({ applicationData, modalRef, message }: ErrorModalProps) {
+function SIPErrorModal({ modalRef, message }: ErrorModalProps) {
   const handleCancel = () => {
     modalRef.current?.toggleModal();
   }
+
+  const formatMessage = (msg: string) => {
+    return msg.replace(/\.(?!\s|$)/g, '. ').replace(/^\['|'\]$/g, '');
+  };
 
   return (
     <Modal
@@ -18,23 +20,37 @@ function SIPErrorModal({ applicationData, modalRef, message }: ErrorModalProps) 
       isLarge={true}
       forceAction={true}
       ref={modalRef}
-      aria-labelledby="sip-error-modal"
-      aria-describedby="sip-error-modal"
+      aria-labelledby="sip-error-modal-heading"
+      aria-describedby="sip-error-modal-description"
     >
-      {applicationData && (
+      {message && (
         <div>
-          <Alert type="error" headingLevel="h3" heading={message?.replace(/^\['|'\]$/g, '')}>
-            <Button
-              type="button"
-              className="float-right"
-              onClick={handleCancel}
-            >
-            Close
-            </Button>
-          </Alert>
+          <Alert
+            type="error"
+            headingLevel="h3"
+            heading={formatMessage(message)}
+            id="sip-error-modal-heading"
+          />
         </div>
       )}
+      <Button
+        type="button"
+        className="float-right"
+        onClick={handleCancel}
+      >
+            	Close
+      </Button>
+      <button
+        type="button"
+        className="usa-button usa-modal__close"
+        aria-label="Close this window"
+        data-close-modal
+        onClick={handleCancel}
+      >
+        x
+      </button>
     </Modal>
   )
 }
-export default SIPErrorModal
+
+export default SIPErrorModal;

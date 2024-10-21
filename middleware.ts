@@ -173,12 +173,14 @@ async function getData(request: NextRequest) {
     ? JSON.parse(decryptData(cookies.get('maxgov_auth_token')?.value, secretKey2) ?? '')
     : null as unknown as LoginResponseUser;
 
-  const originalUrl = encodeURIComponent(request.nextUrl.pathname)
+  const token = email_password_auth_token || maxgov_auth_token || null;
+  const permissions = token?.permissions || [];
+  const originalUrl = encodeURIComponent(request.nextUrl.pathname);
 
   if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
     console.log('URL', originalUrl);
     console.log('token', token ?? null);
   }
 
-  return { token, permissions, originalUrl }
+  return {token, permissions, originalUrl}
 }

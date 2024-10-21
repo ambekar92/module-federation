@@ -44,7 +44,7 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
     headingMsg = 'Cannot Claim this Business'
   } else {
     headingMsg =
-      'Uh-oh! Looks like something broke on our side. If you need immediate assistance, please contact our support team at 1-202-205-6459'
+      'Uh-oh! Looks like something broke on our side. If you need immediate assistance, please contact our support team at 1-866-443-4110'
   }
 
   return (

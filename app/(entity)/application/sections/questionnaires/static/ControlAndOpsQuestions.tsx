@@ -96,8 +96,11 @@ function ControlAndOpsQuestions() {
           <>
             <div>
               <h1>Control & Operations</h1>
-              <h3 className="light" style={{ fontSize: '22px', fontWeight: 'lighter', lineHeight: '1.5' }}>
+              <h3 className="light margin-bottom-0" style={{ fontSize: '22px', fontWeight: 'lighter', lineHeight: '1.5' }}>
           			Please enter the following information about any individual who is on the management team of the company, but is not an owner.
+              </h3>
+              <h3 className="light margin-top-05" style={{ fontSize: '22px', fontWeight: 'lighter', lineHeight: '1.5' }}>
+								If this does not apply to your business, please click &quot;Next&quot; to continue.
               </h3>
             </div>
             <div>

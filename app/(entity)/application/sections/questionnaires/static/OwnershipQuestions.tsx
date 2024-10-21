@@ -11,6 +11,7 @@ import { QaQuestionsType } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid } from '@trussworks/react-uswds';
 import axios from 'axios';
 import humanizeString from 'humanize-string';
+import { startCase } from 'lodash';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -112,7 +113,7 @@ function OwnershipQuestions() {
               </div>
               <div>
                 <h2>Business Structure</h2>
-                <p>Based on the information provided by SAM, {applicationData?.sam_entity.legal_business_name} is designated as a {entity_structure?.toLocaleLowerCase() === 'llc' ? 'LLC' : entity_structure}.</p>
+                <p>Based on the information provided by SAM, {applicationData?.sam_entity.legal_business_name} is designated as a {entity_structure?.toLocaleLowerCase() === 'llc' ? 'LLC' : startCase(entity_structure)}.</p>
                 <p>If this designation is incorrect, please discontinue this application and update your information on <a href="http://sam.gov/">SAM.gov</a></p>
               </div>
 
@@ -120,7 +121,15 @@ function OwnershipQuestions() {
 
               <Grid row>
                 <Grid col={12}>
-                  { contributorId && <OwnershipQaGrid questions={data} userId={userId} contributorId={contributorId} setTotalOwnershipPercentage={setTotalOwnershipPercentage} />}
+                  { contributorId && (
+                    <OwnershipQaGrid
+                      questions={data}
+                      userId={userId}
+                      contributorId={contributorId}
+                      setTotalOwnershipPercentage={setTotalOwnershipPercentage}
+                      entityStructure={startCase(entity_structure)}
+                    />
+                  )}
                 </Grid>
               </Grid>
             </>
@@ -142,7 +151,7 @@ function OwnershipQuestions() {
                 className="usa-button"
                 disabled
               >
-                  Previous
+                Previous
               </Button>
             )}
           <Button

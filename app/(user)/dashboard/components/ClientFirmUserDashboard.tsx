@@ -17,8 +17,6 @@ import useSWR from 'swr'
 import styles from '../utils/FirmDashboard.module.scss'
 import ApplicationCards from './ApplicationCards'
 import DeleteWithdrawConfirmationModal from './delete-withdraw-confirmation-modal/DeleteWithdrawConfirmationModal'
-import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
-import { getApplicationRole } from '@/app/shared/utility/getApplicationRole'
 
 export default function ClientFirmUserDashboard() {
   const { data: session, status } = useSessionUCMS()
@@ -29,9 +27,9 @@ export default function ClientFirmUserDashboard() {
   const [enterInvitationCode, setEnterInvitationCode] = useState(false);
   const [userId, setUserId] = useState<number | null>(null)
   const url = userId ? `${GET_APPLICATIONS_ROUTE}?user_id=${userId}` : null
-  const { data, error, isLoading } = useSWR<Application[]>(url);
+  const { data, error, isLoading } = useSWR<Application[] | {error: string}>(url);
   const { data: entityData } = useSWR<EntitiesType[]>(
-    (!isLoading && (data?.length === 0 || !data) && session?.user_id) ? `${GET_ENTITIES_ROUTE}?owner_user_id=${session.user_id}` : null
+    (!isLoading && (Array.isArray(data) && data?.length === 0 || !data) && session?.user_id) ? `${GET_ENTITIES_ROUTE}?owner_user_id=${session.user_id}` : null
   );
 
   const hasDelegate = session?.permissions?.some(permission => permission.slug.includes('delegate'))
@@ -60,7 +58,7 @@ export default function ClientFirmUserDashboard() {
     event.preventDefault()
     event.stopPropagation()
     if(!data) {return;}
-    const currentApplication = data.find(app => app.id === id)
+    const currentApplication = Array.isArray(data) && data.find(app => app.id === id)
     if (!currentApplication) {return;}
 
     const status = currentApplication.workflow_state
@@ -142,7 +140,7 @@ export default function ClientFirmUserDashboard() {
     return <div>Error: {error.message}</div>
   }
 
-  if (!data) {
+  if (!data || isLoading) {
     return <Spinner center />
   }
 
@@ -150,7 +148,7 @@ export default function ClientFirmUserDashboard() {
     <>
       <Show>
         <Show.When isTrue={enterInvitationCode === true}>
-          <InvitationCodeForm onEnterCodeCancel={onEnterCodeCancel} cancelText='Cancel' submitForm={onEnterCodeCancel} />
+          <InvitationCodeForm onEnterCodeCancel={onEnterCodeCancel} cancelText='Cancel' />
         </Show.When>
       </Show>
       <Grid row>
@@ -163,7 +161,7 @@ export default function ClientFirmUserDashboard() {
               <AppRegistrationOutlinedIcon className="margin-right-1" />
               <span style={{ marginTop: '4px' }}>Invitation Code</span>
             </Button>
-            {(!data || data.length === 0) && (
+            {(!data || (Array.isArray(data) && data.length === 0) || (data && 'error' in data)) && (
               <Button type="button" onClick={handleApply} outline className="display-flex align-items-center">
                 <PostAddOutlinedIcon className="margin-right-1" />
                 <span style={{ marginTop: '4px' }}>Apply</span>
@@ -174,7 +172,7 @@ export default function ClientFirmUserDashboard() {
       </Grid>
 
       <h2 className="text-size-2xl margin-y-0 border-bottom padding-y-2 border-base-lighter">Applications</h2>
-      {data && data.length > 0 && (
+      {data && Array.isArray(data) && data.length > 0 && (
         <div>
           <Collection>
             <ApplicationCards
@@ -186,14 +184,14 @@ export default function ClientFirmUserDashboard() {
           </Collection>
         </div>
       )}
-      {(!data || data.length === 0) && <div>No applications found.</div>}
+      {(!data || (Array.isArray(data) && data.length === 0)) && <div>No applications found.</div>}
       {openConfirmationModal && (
         <DeleteWithdrawConfirmationModal
           openConfirmationModal={openConfirmationModal}
           confirmationType={confirmationType}
           clickedId={clickedId}
           resetClickedId={resetClickedId}
-          applicationData={data}
+          applicationData={Array.isArray(data) ? data : null}
         />
       )}
     </>

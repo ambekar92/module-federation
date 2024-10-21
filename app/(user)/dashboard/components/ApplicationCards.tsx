@@ -31,7 +31,9 @@ function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWi
         const userContributor = application.application_contributor.find(
           contributor => contributor.user_id === session?.user_id
         );
-        const isOwner = application.application_contributor[0] && application.application_contributor[0].user_id === session?.user_id
+        const isOwner = application.application_contributor[0].user_id === session?.user_id
+        const dateSubmitted = moment(application.submitted_at).format('MMMM D, YYYY');
+
         return (
           <>
             <p className="text-size-lg margin-y-0">
@@ -39,7 +41,10 @@ function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWi
             </p>
             <span className="text-size-sm">
               {application.workflow_state !== 'completed' &&
-              <i>{humanizeText(userContributor?.workflow_state === 'returned_to_firm' ? 'Application Correction' : userContributor?.workflow_state ? userContributor?.workflow_state : '')}</i>
+              <i>
+                {humanizeText(userContributor?.workflow_state === 'returned_to_firm' ? 'Application Correction' : userContributor?.workflow_state ? userContributor?.workflow_state : '')}
+                {userContributor?.workflow_state === 'submitted' && dateSubmitted && ` - ${dateSubmitted}`}
+              </i>
               }
             </span>
             <div  key={application.id} className='radius-md bg-primary-lighter margin-top-1 margin-bottom-4'>

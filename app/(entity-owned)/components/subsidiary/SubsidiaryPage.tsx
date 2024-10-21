@@ -10,14 +10,6 @@ import CloseIcon from '@mui/icons-material/Close'
 
 import { Button, ButtonGroup, FormGroup, Grid, Icon, InputGroup, InputSuffix, TextInput } from '@trussworks/react-uswds'
 
-import useSWR from 'swr'
-import fetcher from '@/app/services/fetcher'
-import { SUBSIDIARY_PARENT_ENTITY } from '@/app/constants/routes';
-import { createSubsidiary } from '@/app/services/api/subsidiary-service/createSubsidiary';
-import { updateSubsidiary } from '@/app/services/api/subsidiary-service/updateSubsidiary';
-import { deleteSubsidiary } from '@/app/services/api/subsidiary-service/deleteSubsidiary';
-
-
 const SubsidiaryPage = () => {
   const acceptRequestRef = useRef<ModalRef>(null)
   const [selectedRowData, setSelectedRowData] = useState<any[]>([])
@@ -88,28 +80,9 @@ const SubsidiaryPage = () => {
     }
   ];
 
-  const [dataCopy, setDataCopy] = useState<any[]>([])
-  const [shouldFetch, setShouldFetch] = useState(true)
-
-  const parent_entity_id = 1;
-  const owner_user_id = 1;
-  const { data: responseData, error: responseError, mutate } = useSWR(
-    () => shouldFetch && `${SUBSIDIARY_PARENT_ENTITY}?parent_entity_id=${parent_entity_id}&owner_user_id=${owner_user_id}`,
-    fetcher)
-
   useEffect(() => {
-    if (responseData) {
-      setTableData(responseData)
-      setDataCopy(responseData)
-    }
-    if (responseError) {
-      //use dummy data if API endpoint is down
-      setShouldFetch(false)
-      setTableData(subsidiariesTableData)
-      setDataCopy(subsidiariesTableData)
-    }
-  }, [responseData, responseError])
-
+    setTableData(subsidiariesTableData);
+  }, [])
 
   const handleFormRequest = (param: any, id: any) => {
     const updatedItems = formData.filter(item => item.id !== id);
@@ -197,28 +170,11 @@ const SubsidiaryPage = () => {
   const addNew = () => {
     setShowForm(true)
   }
-  const handleSaveFrom = async (data: any) => {
-    // setTableData([...tableData, data])
-    console.log(">> data", data);
-    
+  const handleSaveFrom = (data: any) => {
+    setTableData([...tableData, data])
     setShowForm(false)
-    if (!data?.isNew) {
-      const url = `${SUBSIDIARY_PARENT_ENTITY}`;
-      await updateSubsidiary(url, data);
-      await mutate();
-    } else {
-      const url = `${SUBSIDIARY_PARENT_ENTITY}`;
-      await createSubsidiary(url, data);
-      await mutate();
-    }
-    // setTableData([...tableData, data])
-    setTableData(dataCopy)
   }
-  const handleDeleteData = async (id: any) => {
-    const url = `${SUBSIDIARY_PARENT_ENTITY}`;
-    await deleteSubsidiary(url, id);
-    await mutate();
-
+  const handleDeleteData = (id: any) => {
     const filteredItems = tableData.filter(item => item.id !== id);
     setTableData(filteredItems)
     setShowForm(false)
@@ -268,25 +224,25 @@ const SubsidiaryPage = () => {
               outline
               disabled={(selectedRowData.length > 1 || selectedRowData.length === 0) ? true : false}
             >
-              Edit
+                            Edit
             </Button>
             <Button
               type="button"
               onClick={addNew}
               disabled={(selectedRowData.length > 0) ? true : false}
             >
-              Add New
+                            Add New
             </Button>
           </ButtonGroup>
         </Grid>
 
         {
           showAlert &&
-          <Grid col={12} className="margin-bottom-105">
-            <Alert type="success" headingLevel="h4" noIcon>
-              Record Deleted Successfully.
-            </Alert>
-          </Grid>
+                    <Grid col={12} className="margin-bottom-105">
+                      <Alert type="success" headingLevel="h4" noIcon>
+                            sdfsdfsdf
+                      </Alert>
+                    </Grid>
         }
 
         <Grid row className='margin-bottom-105'>
@@ -319,12 +275,12 @@ const SubsidiaryPage = () => {
 
       {
         showForm &&
-        <SubsidiariesForm
-          data={selectedRowData as any}
-          handleCancelFrom={() => setShowForm(false)}
-          handleSaveFrom={handleSaveFrom}
-          handleDeleteData={handleDeleteData}
-        />
+                <SubsidiariesForm
+                  data={selectedRowData as any}
+                  handleCancelFrom={() => setShowForm(false)}
+                  handleSaveFrom={handleSaveFrom}
+                  handleDeleteData={handleDeleteData}
+                />
       }
 
     </>

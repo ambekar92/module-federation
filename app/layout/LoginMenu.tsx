@@ -1,9 +1,8 @@
-import { encrypt } from '@/app/shared/utility/encryption';
-import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@trussworks/react-uswds';
 import axios from 'axios';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { v4 as uuidv4 } from 'uuid';
 import { MAX_LOGIN_ROUTE } from '../constants/local-routes';
 
 const LoginMenu = () => {
@@ -13,11 +12,16 @@ const LoginMenu = () => {
     localStorage.clear()
     signIn('okta', { callbackUrl: `/protect/?state=${uuidv4()}` })
   }
-  const handleSSOLogin =  async() => {
+
+  const handleSSOLogin = async() => {
     try {
       const currentTime = new Date().getTime();
       const response = await axios.get(`${MAX_LOGIN_ROUTE}?t=${currentTime}`);
-      router.push(response.data);
+      if (response.data && typeof response.data === 'string') {
+        router.push(response.data);
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (error) {
       if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
         console.error('Error fetching MAX_LOGIN_ROUTE:', error);

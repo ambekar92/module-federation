@@ -16,7 +16,7 @@ interface ModalProps {
   confirmationType: string | undefined,
   openConfirmationModal: boolean,
   clickedId?: number | null,
-  applicationData?: Application[],
+  applicationData?: Application[] | null,
   resetClickedId?: () => void,
 }
 

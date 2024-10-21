@@ -268,7 +268,11 @@ const SectionQuestions = () => {
     let contributorName = '';
     qaContributorId = analystContributorId;
     const analystContributor = applicationData?.application_contributor?.find(c => c.id === analystContributorId);
-    contributorName = analystContributor ? `${analystContributor.user.first_name} ${analystContributor.user.last_name} - ${analystContributor.application_role.title}` : '';
+    contributorName = analystContributor ?
+      `${analystContributor.user.first_name && `${analystContributor.user.first_name} `}
+				${analystContributor.user.last_name && `${analystContributor.user.last_name} `}-
+				${analystContributor.application_role.title && ` ${analystContributor.application_role.title}`}`
+      : '';
 
     return questions && questions.length > 0 && questions.map((question, index) => (
       <React.Fragment key={`${contributorIndex}-${index}`}>

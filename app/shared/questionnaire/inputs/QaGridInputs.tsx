@@ -86,18 +86,26 @@ export const PhoneInput: React.FC<{ question: Question; value: string; onChange:
 };
 
 export const NumberInput: React.FC<{ question: Question; value: string; onChange: (value: string) => void }> = ({ question, value, onChange }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const regex = /^\d*\.?\d{0,2}$/;
+    if (regex.test(inputValue) || inputValue === '') {
+      onChange(inputValue);
+    }
+  };
+
   return (
     <div className='usa-form-group'>
       <Label className='maxw-full text-bold' requiredMarker={question.answer_required_flag} htmlFor={question.name}>
         {question.title}
       </Label>
       <UsTextInput
-        type="number"
+        type="text"
         id={question.name}
         name={question.name}
         value={value}
         className={`${question.name.includes('owner_and_management') && 'maxw-full'}`}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
       />
     </div>
   );

@@ -78,4 +78,3 @@ export const UPDATE_PROFILE_ROUTE = API_ROUTE + '/update-profile'
 export const PARENT_ENTITY_ROUTE = API_ROUTE + '/parent-entity';
 export const ENTITY_INVITATION_ROUTE = API_ROUTE + '/invitation';
 export const PRBAC_ROLES_ROUTE = API_ROUTE + '/prbac_roles';
-// export const SUBSIDIARY_PARENT_ENTITY = API_ROUTE + '/parent-entity';

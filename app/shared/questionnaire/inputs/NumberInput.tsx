@@ -14,7 +14,10 @@ export const NumberInput = ({ question, ordinalLabel, handleChange, isSubQuestio
   };
 
   const handleLocalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalValue(e.target.value);
+    const value = e.target.value;
+    if (value === '' || /^-?\d*\.?\d*$/.test(value)) {
+      setLocalValue(value);
+    }
   };
 
   return (
@@ -23,7 +26,8 @@ export const NumberInput = ({ question, ordinalLabel, handleChange, isSubQuestio
         {ordinalLabel && `${question.question_ordinal}. `}<span className={`${ordinalLabel && 'padding-left-1'}`}>{question.title}</span>
       </Label>
       <TextInput
-        type='number'
+        type='text'
+        inputMode='decimal'
         id={question.name}
         name={question.name}
         className={`${ordinalLabel && 'margin-left-3'}`}
