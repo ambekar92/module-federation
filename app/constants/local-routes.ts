@@ -78,5 +78,3 @@ export const REFRESH_TOKEN_ROUTE = '/api/services/users/refresh'
 export const MAX_LOGIN_ROUTE = '/api/services/users/max-login'
 export const CREATE_USER_TO_USER_MESSAGE_ROUTE = '/api/services/communication/create-user-to-user-message'
 export const UPDATE_PROFILE_ROUTE = '/api/services/users/update-profile'
-export const PARENT_ENTITY_ROUTE = '/api/services/entity-owned/parent-entity';
-export const ENTITY_INVITATION_ROUTE = '/api/services/entity-owned/invitation';

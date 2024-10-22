@@ -1,11 +1,10 @@
 import SearchEntities from './components/SearchEntities'
-import Title from './components/Title'
 
 const Entities = () => {
   return (
     <div>
-      <Title />
-      <hr />
+      <h1>Entity-Owned</h1>
+      <p>Entity-Owned Verbige Lorem ipsus Lorem ipsus Lorem ipsusLorem ipsus</p>
       <SearchEntities />
     </div>
   )

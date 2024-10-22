@@ -1,91 +1,222 @@
 'use client'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ButtonGroup } from '@mui/material'
-import { Button, ModalRef } from '@trussworks/react-uswds'
-import { FormProvider, useForm } from 'react-hook-form'
-import { YesNo } from '../../application/components/control-and-operations/constants-types'
-import { defaultValues, entitySchema, NewControllingEntity, newControllingEntitySchema } from '../utils/schemas'
-import { Step } from '../utils/types'
-import ConnectionVerification from './ConnectionVerification'
-import ControllingEntityForm from './ControllingEntityForm'
-import ControllingEntitySearch from './ControllingEntitySearch'
-import ControllingEntityTypeSelection from './ControllingEntityTypeSelection'
-import EntityOwned from './EntityOwned'
-import NewControllingEntitySummary from './NewControllingEntitySummary'
-import { useRef } from 'react'
-import dynamic from 'next/dynamic'
-
-const DynamicAcknowledgementModal = dynamic(() => import('./AcknowledgementModal'))
+import React, { SyntheticEvent, useState } from 'react'
+import Select from 'react-select'
+import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url'
+import {
+  Radio,
+  Label,
+  Grid,
+  ButtonGroup,
+  Button,
+  Link,
+} from '@trussworks/react-uswds'
+import { Show } from '@/app/shared/components/Show'
+import {
+  controllingEntityTypeOptions,
+  controllingEntities,
+} from '../utils/helpers'
+import AcknowledgementModal from './AcknowledgementModal'
+import { useApplicationId } from '@/app/shared/hooks/useApplicationIdResult'
 
 const SearchEntities = () => {
-  const methods = useForm({
-    defaultValues: {
-      isEntityOwned: YesNo.No,
-      controllingEntityType: '',
-      entity: '',
-      isConnectionVerified: null,
-      step: Step.EntityOwned
-    },
-    resolver: zodResolver(entitySchema),
-  });
+  const { contributorId } = useApplicationId()
+  const steps = ['Is Entity Owned', 'Search Entity']
+  const [currentStep, setCurrentStep] = useState(0)
+  const [isEntityOwned, setIsEntityOwned] = useState(false)
+  const [selectedOption, setSelectedOption] = useState(null)
+  const [selectedEntityType, setSelectedEntityType] = useState(null)
+  const [showEntityFoundModal, setShowEntityFoundModal] = useState(false)
+  const [showEntitySubmissionModal, setShowEntitySubmissionModal] =
+    useState(false)
+  const [showNewEntityModal, setShowNewEntityModal] = useState(false)
+  const selectRef = React.useRef()
+  const entityFoundModalHeading = 'New Controlling Entity Submission Request'
+  const entitySubmissionModalHeading = 'Controlling Entity Submission Success'
+  const entityRegistrationModalHeading = 'Register New Controlling Entity'
 
-  const methodsNewEntity = useForm<NewControllingEntity>({
-    defaultValues,
-    resolver: zodResolver(newControllingEntitySchema)
-  });
-
-  const step = methods.watch('step');
-  const entity = methods.watch('entity');
-  const isConnectionVerified = methods.watch('isConnectionVerified');
-
-  const modalRef = useRef<ModalRef>(null);
-
-  function handlePrevious() {
-    switch(step) {
-      case Step.ControllingEntity:
-        methods.setValue('step', Step.EntityOwned);
-        methods.setValue('controllingEntityType', '');
-        break;
-      case Step.ConnectionVerified:
-        methods.setValue('step', Step.ControllingEntity);
-        methods.setValue('isConnectionVerified', null);
-        break;
+  let controllingEntityOptions = controllingEntities.map((entity: any) => {
+    return {
+      value: entity.id,
+      label: entity.legal_business_name,
+      type: entity.type,
     }
+  })
+
+  controllingEntityOptions = [
+    ...controllingEntityOptions,
+    {
+      value: 'Not Found',
+      label: 'Controlling Entity Not Found',
+      type: 'Not Found',
+    },
+  ]
+
+  const handleTypeChange = (e: any) => {
+    setSelectedEntityType(e.target.value)
   }
 
-  function handleNext() {
-    if (step === Step.ConnectionVerified) {
-      // make a call to backend to save the data - pending confirmed payload and method [mdev]
-      // upon success, show dialof
-      modalRef.current?.toggleModal();
-    } else {
-      methods.setValue('step', Step.ConnectionVerified)
+  const handleOwnedChange = (e: any) => {
+    e.target.value === 'Yes' && setIsEntityOwned(true)
+    e.target.value === 'No' && setIsEntityOwned(false)
+  }
+
+  const handleSelectChange = (selection: any) => {
+    setSelectedOption(selection)
+    if (selection.value === 'Not Found') {
+      setShowNewEntityModal(true)
+      return
     }
+    setShowEntityFoundModal(true)
+  }
+
+  const handleEntityFound = () => {
+    setShowEntityFoundModal(false)
+    setShowEntitySubmissionModal(true)
+  }
+
+  const handleEntitySubmit = () => {
+    setShowEntitySubmissionModal(false)
+    window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+      contributorId: contributorId,
+      stepLink: '/ownership',
+    })
+  }
+
+  const handlePrevious = () => {
+    setCurrentStep(currentStep - 1)
+  }
+
+  const handleNext = () => {
+    isEntityOwned && setCurrentStep(currentStep + 1)
+  }
+
+  async function handleNewEntityRegistration() {
+    setShowNewEntityModal(false)
+    window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+      contributorId: 1,
+      stepLink: '/entity-owned',
+    })
   }
 
   return (
     <>
-      <DynamicAcknowledgementModal controllingEntityName={entity} controllingEntityType={methods.getValues('controllingEntityType')} modalRef={modalRef} />
-      <FormProvider {...methodsNewEntity}>
-        {step === Step.NewEntityFormSummary && <NewControllingEntitySummary setStep={methods.setValue} />}
-        {step === Step.NewEntityForm && <ControllingEntityForm setStep={methods.setValue} />}
-      </FormProvider>
-      {step !== Step.NewEntityForm && step !== Step.NewEntityFormSummary &&<FormProvider {...methods}>
-        <EntityOwned />
-        <ControllingEntityTypeSelection />
-        <ControllingEntitySearch />
-        <ConnectionVerification />
-        {step !== Step.EntityOwned &&
-        <>
-          <hr />
-          <ButtonGroup style={{display: 'flex', justifyContent: 'space-between', marginTop: '3rem'}}>
-            <Button type='button' outline onClick={handlePrevious}>Previous</Button>
-            <Button type='button'
-              disabled={!entity || (step === Step.ConnectionVerified && (!isConnectionVerified || isConnectionVerified === YesNo.No))}
-              onClick={handleNext}>{step !==  Step.ConnectionVerified ? 'Next' : 'Submit'}</Button>
-          </ButtonGroup>
-        </>}
-      </FormProvider>}
+      <Show>
+        <Show.When isTrue={steps[currentStep] === 'Is Entity Owned'}>
+          <Label className="text-bold" htmlFor="input-radio-entity-owned">
+            Are you claiming to be Entity-Owned?
+          </Label>
+          <Radio
+            id="input-radio-entity-owned-yes"
+            name="input-radio-entity-type"
+            onChange={handleOwnedChange}
+            label="Yes"
+            value="Yes"
+          />
+          <Radio
+            id="input-radio-entity-owned-no"
+            name="input-radio-entity-type"
+            onChange={handleOwnedChange}
+            defaultChecked
+            label="No"
+            value="No"
+          />
+        </Show.When>
+      </Show>
+      <Show>
+        <Show.When isTrue={steps[currentStep] === 'Search Entity'}>
+          <h2>Find Controlling Entity</h2>
+          <p>
+            From the the list below please select the Controlling Entity Type,
+            followed by the Controlling Entity name.
+          </p>
+          <Label className="text-bold" htmlFor="input-radio-entity-type">
+            Controlling Entity Type Selection
+          </Label>
+          {controllingEntityTypeOptions.map((option: any, index: number) => {
+            return (
+              <Radio
+                key={index}
+                id={`input-radio-entity-type-${index}`}
+                name="input-radio-entity-type"
+                onChange={handleTypeChange}
+                label={option.label}
+                value={option.value}
+              />
+            )
+          })}
+
+          <Label
+            className="text-bold padding-bottom-1"
+            htmlFor="input-radio-question"
+          >
+            Controlling Entity Search
+          </Label>
+          <Grid col={6}>
+            <Select
+              id="ControllingEntitySearchSelect"
+              openMenuOnFocus={true}
+              value={selectedOption}
+              options={controllingEntityOptions.filter(
+                (option) =>
+                  !selectedEntityType ||
+                  selectedEntityType === option.type ||
+                  option.value === 'Not Found',
+              )}
+              onChange={handleSelectChange}
+            />
+          </Grid>
+
+          <AcknowledgementModal
+            open={showEntityFoundModal}
+            onClick={handleEntityFound}
+            heading={entityFoundModalHeading}
+          ></AcknowledgementModal>
+
+          <AcknowledgementModal
+            open={showNewEntityModal}
+            onClick={handleNewEntityRegistration}
+            heading={entityRegistrationModalHeading}
+          ></AcknowledgementModal>
+
+          <AcknowledgementModal
+            open={showEntitySubmissionModal}
+            onClick={handleEntitySubmit}
+            heading={entitySubmissionModalHeading}
+          ></AcknowledgementModal>
+        </Show.When>
+      </Show>
+      <br></br>
+      <br></br>
+      <ButtonGroup className="display-flex flex-justify border-top padding-y-2 margin-top-2 margin-right-2px">
+        <Button
+          type="button"
+          className="usa-button usa-button--outline"
+          aria-disabled={steps[currentStep] === 'Is Entity Owned'}
+          onClick={handlePrevious}
+        >
+          Previous
+        </Button>
+        {!isEntityOwned ? (
+          <Link
+            className="usa-button"
+            aria-disabled={!contributorId}
+            href={buildRoute(APPLICATION_STEP_ROUTE, {
+              contributorId: contributorId,
+              stepLink: '/ownership',
+            })}
+          >
+            Next
+          </Link>
+        ) : (
+          <Button
+            type="button"
+            disabled={steps[currentStep] === 'Search Entity'}
+            onClick={handleNext}
+          >
+            Next
+          </Button>
+        )}
+      </ButtonGroup>
     </>
   )
 }

@@ -75,6 +75,3 @@ export const LETTER_FOR_APPLICATION_ROUTE = API_ROUTE + '/letter-for-application
 export const REFRESH_ROUTE = API_ROUTE + '/refresh';
 export const CREATE_USER_TO_USER_MESSAGE_ROUTE = API_ROUTE + '/create-user-to-user-message';
 export const UPDATE_PROFILE_ROUTE = API_ROUTE + '/update-profile'
-export const PARENT_ENTITY_ROUTE = API_ROUTE + '/parent-entity';
-export const ENTITY_INVITATION_ROUTE = API_ROUTE + '/invitation';
-export const PRBAC_ROLES_ROUTE = API_ROUTE + '/prbac_roles';

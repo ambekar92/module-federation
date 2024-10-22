@@ -44,7 +44,18 @@ function SignPage() {
 
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
   const { data: invitationData } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
-  const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
+
+  const getUserRole = () => {
+    if (!applicationData || !userId) {return null;}
+    const currentUser = applicationData.application_contributor.find(
+      contributor => contributor.user.id === userId
+    );
+    return currentUser?.application_role.name;
+  };
+
+  const userRole = getUserRole();
+
+  const { data: ownerData } = useSWR<Question[]>((userRole === 'primary-qualifying-owner' && applicationData) ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
   const { totalOwnershipPercentage } = useCheckOwnersPercent(ownerData || []);
   const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
   useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
@@ -82,6 +93,7 @@ function SignPage() {
       setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
     }
   }, [totalOwnershipPercentage]);
+
   useEffect(() => {
     if (applicationData && applicationData.application_contributor) {
       const nonOwnerContributors = applicationData.application_contributor.filter(
@@ -207,16 +219,6 @@ function SignPage() {
     }
   };
 
-  const getUserRole = () => {
-    if (!applicationData || !userId) {return null;}
-    const currentUser = applicationData.application_contributor.find(
-      contributor => contributor.user.id === userId
-    );
-    return currentUser?.application_role.name;
-  };
-
-  const userRole = getUserRole();
-
   const testItems: AccordionItemProps[] = [
     {
       id: 'Review',
@@ -228,7 +230,7 @@ function SignPage() {
   ]
   const sidebarContent = <Accordion className='margin-top-2' items={testItems} multiselectable={true} />;
 
-  if (!applicationData || !userId || !userRole || !ownerData) {
+  if (!applicationData || !userId || !userRole || (userRole === 'primary-qualifying-owner' && !ownerData)) {
     return <Spinner />;
   }
   return (
@@ -311,8 +313,7 @@ function SignPage() {
           onClick={handleModalToggle}
           disabled={
             !isChecked || isCheckboxDisabled || error ||
-						!isHundredPercentOwners ||
-            (userRole === 'primary-qualifying-owner' && (!allContributorsSubmitted || !allInvitationsAccepted))
+            (userRole === 'primary-qualifying-owner' && (!allContributorsSubmitted || !allInvitationsAccepted || !isHundredPercentOwners))
           }
         >
           Submit

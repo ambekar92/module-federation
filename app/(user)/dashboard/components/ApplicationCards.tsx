@@ -33,7 +33,6 @@ function ApplicationCards({ data, actionButton, clickedId, applicationDeleteOrWi
         );
         const isOwner = application.application_contributor[0].user_id === session?.user_id
         const dateSubmitted = moment(application.submitted_at).format('MMMM D, YYYY');
-
         return (
           <>
             <p className="text-size-lg margin-y-0">

@@ -54,8 +54,8 @@ const ReadinessForm = () => {
                 <Show.When isTrue={isGeneratingRevenue === 'no'}>
                   <Alert headingLevel='h6' type='warning'>
                     <span>
-                      SBA requires two years of revenue to show that you are ready for the SBA Certification Program. However,
-                      SBA may waive this requirement if you can provide other evidence that your company is ready  for the program.
+                      SBA may require two years of revenue to show that you are ready for the SBA 8(a) Certification Program. However,
+                      SBA may waive this requirement if you can provide other evidence that your company is ready for the program.
                       Click <a href="https://www.ecfr.gov/current/title-13/chapter-I/part-124/subpart-A/subject-group-ECFR4ef1291a4a984ab/section-124.107" target='_blank' rel="noreferrer">here</a> to learn more
                     </span>
                   </Alert>

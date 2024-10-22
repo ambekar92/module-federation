@@ -3,7 +3,7 @@ import { Button } from '@trussworks/react-uswds';
 import Link from 'next/link';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import CheckboxInput from '../shared/form-builder/form-controls/Checkbox';
+import Checkbox from '../shared/form-builder/form-controls/Checkbox';
 
 const schema = z.object({
   agree: z.boolean().refine((val) => val === true, {message: 'You must agree to the terms and conditions'})
@@ -52,7 +52,7 @@ const SignupMenu = () => {
       </div>
       <FormProvider {...methods}>
         <div style={{display: 'flex', flexDirection: 'column', gap: '2rem'}}>
-          <CheckboxInput<SignupForm> name='agree' label='I have read and understand the disclosure above' />
+          <Checkbox<SignupForm> name='agree' label='I have read and understand the disclosure above' />
           <Button type='button' disabled={!methods.formState.isValid}>Sign Up</Button>
         </div>
       </FormProvider>

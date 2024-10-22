@@ -1,4 +1,5 @@
-import { Checkbox, ErrorMessage, FormGroup } from '@trussworks/react-uswds';
+import { Checkbox, ErrorMessage, FormGroup, Label, TextInput } from '@trussworks/react-uswds';
+import React from 'react';
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
 
 type InputProps<T extends FieldValues> = {
@@ -7,7 +8,7 @@ type InputProps<T extends FieldValues> = {
     hint?: string;
 } & Partial<Pick<HTMLInputElement, 'disabled'| 'required'>>
 
-const CheckboxInput = <T extends FieldValues>({name, label, hint, ...props}: InputProps<T>) => {
+const Input = <T extends FieldValues>({name, label, hint, ...props}: InputProps<T>) => {
   const {control} = useFormContext<T>();
   return (
     <Controller
@@ -17,19 +18,13 @@ const CheckboxInput = <T extends FieldValues>({name, label, hint, ...props}: Inp
         <FormGroup error={!!error}>
           <span className='text-base'>{hint}</span>
           <ErrorMessage>{error?.message}</ErrorMessage>
-          <Checkbox
+          <Checkbox label={label} style={{borderRadius: 0}}
             checked={field.value}
-            id={name}
-            label={label}
-            name={name}
-            disabled={props.disabled}
-            required={props.required}
-            onChange={field.onChange}
-          />
+            value={field.value} onChange={field.onChange} id={name} name={name} disabled={props.disabled}/>
         </FormGroup>
       )}
     />
   )
 }
 
-export default CheckboxInput
+export default Input

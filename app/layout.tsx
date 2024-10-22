@@ -53,6 +53,7 @@ export default function RootLayout({ children, session }: RootLayoutProps) {
         <SessionProvider session={session}>
           <SWRProvider>
             <div className={`${theme.palette.mode} layout`}>
+              {/* {isHomePage && <Alert type="info" heading="We are currently performing system maintenance. MySBA Certifications will be back up soon." headingLevel="h5" />} */}
               {isHomePage && showAlert && (
                 <Alert type="info" heading="Now Open for Applications." headingLevel="h5">
                   <span className='display-block margin-top-05'>We are now accepting applications for VetCert, HUBZone, Women-Owned and Economically-Disadvantaged Women-Owned, and 8(a) small business certifications.</span>
