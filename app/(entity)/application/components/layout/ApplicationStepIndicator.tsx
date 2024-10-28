@@ -15,7 +15,7 @@ function ApplicationStepIndicator({
   stepNumber = 0,
 }: ApplicationStepIndicatorProps) {
   const [isClient, setIsClient] = useState(false);
-  const { applicationData, userId  } = useApplicationContext()
+  const { contributorId, applicationData, userId  } = useApplicationContext()
   const params = useParams<{application_id: string}>();
 
   useEffect(() => {
@@ -78,14 +78,22 @@ function ApplicationStepIndicator({
       'Sign',
     ]
     stepLinks = [
-      buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: params.application_id }),
+      buildRoute(QUESTIONNAIRE_LIST_PAGE, {
+        applicationId: params.application_id
+      }, {
+        contributor: contributorId
+      }),
       buildRoute(APPLICATION_STEP_ROUTE, {
         applicationId: params.application_id,
         stepLink: applicationSteps.documentUpload.link
+      }, {
+        contributor: contributorId
       }),
       buildRoute(APPLICATION_STEP_ROUTE, {
         applicationId: params.application_id,
         stepLink: applicationSteps.sign.link
+      }, {
+        contributor: contributorId
       }),
     ]
   }

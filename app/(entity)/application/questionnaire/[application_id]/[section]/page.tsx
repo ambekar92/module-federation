@@ -162,8 +162,8 @@ const QuestionnairePage: React.FC = () => {
             {currentIndex === 0 ? (
               <Link
                 className="usa-button usa-button--outline"
-                href={buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId })}
-                onClick={() => handleNavigation(buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }))}
+                href={buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }, {contributor: contributorId})}
+                onClick={() => handleNavigation(buildRoute(QUESTIONNAIRE_LIST_PAGE, { applicationId: applicationId }, {contributor: contributorId}))}
               >
                 Previous
               </Link>
@@ -174,13 +174,13 @@ const QuestionnairePage: React.FC = () => {
                   buildRoute(QUESTIONNAIRE_PAGE, {
                     applicationId: applicationId,
                     section: allSections[currentIndex - 1]
-                  })
+                  }, {contributor: contributorId})
                 }
                 onClick={() => handleNavigation(
                   buildRoute(QUESTIONNAIRE_PAGE, {
                     applicationId: applicationId,
                     section: allSections[currentIndex - 1]
-                  })
+                  }, {contributor: contributorId})
                 )}
               >
                 Previous
@@ -194,12 +194,12 @@ const QuestionnairePage: React.FC = () => {
                 href={buildRoute(APPLICATION_STEP_ROUTE, {
                   applicationId: applicationId,
                   stepLink: applicationSteps.documentUpload.link
-                })}
+                }, {contributor: contributorId})}
                 onClick={() => handleNavigation(
                   buildRoute(APPLICATION_STEP_ROUTE, {
                     applicationId: applicationId,
                     stepLink: applicationSteps.documentUpload.link
-                  })
+                  }, {contributor: contributorId})
                 )}
               >
                 Next
@@ -210,12 +210,12 @@ const QuestionnairePage: React.FC = () => {
                 href={buildRoute(QUESTIONNAIRE_PAGE, {
                   applicationId: applicationId,
                   section: allSections[currentIndex + 1]
-                })}
+                }, {contributor: contributorId})}
                 onClick={() => handleNavigation(
                   buildRoute(QUESTIONNAIRE_PAGE, {
                     applicationId: applicationId,
                     section: allSections[currentIndex + 1]
-                  })
+                  }, {contributor: contributorId})
                 )}
               >
                 Next

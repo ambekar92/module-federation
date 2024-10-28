@@ -13,6 +13,7 @@ import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form';
     label?: string;
     hint?: string;
     options: any[];
+    defaultValue?: any;
   } & PropsWithChildren &
     Partial<Pick<HTMLSelectElement, 'required' | 'disabled' | 'multiple'>>;
 
@@ -48,6 +49,7 @@ const Combobox = <T extends FieldValues>({
               disabled={props.disabled}
               id={`${name}-combobox`}
               name={name}
+              defaultValue={props.defaultValue}
               onChange={field.onChange}
 
             />

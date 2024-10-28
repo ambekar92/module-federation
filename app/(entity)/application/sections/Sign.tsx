@@ -80,9 +80,10 @@ function SignPage() {
 
     const isValidWorkflowState = currentUserContributor && invalidWorkflowStates.includes(currentUserContributor.workflow_state);
 
-    if (isInvalidRole || isValidWorkflowState === false) {
-      window.location.href = `/application/view/${applicationId}`;
-    }
+    // Todo: need to allow multiple userRole for isInvaldRole check @notkijana
+    // if (isValidWorkflowState === false) {
+    //   window.location.href = `/application/view/${applicationId}`;
+    // }
   }, [applicationData, applicationId, session.data]);
 
   useEffect(() => {
@@ -90,7 +91,9 @@ function SignPage() {
       setIsHundredPercentOwners(true);
     } else {
       setIsHundredPercentOwners(false);
-      setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
+      if(userRole === 'primary-qualifying-owner') {
+        setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
+      }
     }
   }, [totalOwnershipPercentage]);
 
@@ -107,9 +110,12 @@ function SignPage() {
           (contributor) => contributor.workflow_state === 'submitted'
         );
         setAllContributorsSubmitted(allSubmitted);
+        const allCompleted = questionnairesData && questionnairesData.length > 0 && questionnairesData.every(
+          (questionnaire) => questionnaire.status === 'Completed'
+        );
 
-        if (!allSubmitted) {
-          setAlertMessages(prev => [...prev, 'Before this application can be signed, all contributors must accept their invitation and submit their application.']);
+        if (!allCompleted) {
+          setAlertMessages(prev => [...prev, 'All questionnaires must be completed before you can sign the application.']);
         }
       }
     }
@@ -137,11 +143,12 @@ function SignPage() {
         (questionnaire) => questionnaire.status === 'Completed'
       );
 
+      setAlertMessages([]);
+
       if (userRole === 'primary-qualifying-owner') {
-        const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted || !isHundredPercentOwners;
+        const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted; //todo hundredPrecent is not working. ucms-2930 || !isHundredPercentOwners;
         setIsCheckboxDisabled(isDisabled);
 
-        setAlertMessages([]);
         if (isDisabled) {
           if (!allCompleted) {
             setAlertMessages(prev => [...prev, 'All questionnaires must be completed before you can sign the application.']);
@@ -152,18 +159,18 @@ function SignPage() {
           if (!allInvitationsAccepted) {
             setAlertMessages(prev => [...prev, 'All contributor invitations must be accepted and their applications submitted prior to signing the application..']);
           }
+          if (isHundredPercentOwners) {
+            setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
+          }
         }
       } else {
         setIsCheckboxDisabled(!allCompleted);
         if (!allCompleted) {
           setAlertMessages(['You must complete all questionnaires before you can sign the application.']);
-        } else {
-          setAlertMessages([]);
         }
       }
     } else {
       setIsCheckboxDisabled(true);
-      // setAlertMessages(['Something went wrong. Please try refreshing the page.']);
     }
   }, [questionnairesData, allContributorsSubmitted, allInvitationsAccepted]);
 
@@ -240,7 +247,7 @@ function SignPage() {
         sidebar={sidebarContent}
         mainContent={
           <div>
-            {(alertMessages.length > 0 && userRole === 'primary-qualifying-owner') && (
+            {(alertMessages.length > 0) && (
               <div className="usa-alert usa-alert--warning" role="alert">
                 <div className="usa-alert__body">
                   <h3 className="usa-alert__heading">Incomplete Application</h3>

@@ -12,11 +12,24 @@ resource "aws_route53_record" "ipv4" {
     zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
   }
 }
-resource "aws_route53_record" "ipv4_www" {
-  # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
-  name            = terraform.workspace == "prod" ? "www.${local.env.domain_name}" : "www.ucp.${local.env.domain_name}"
+# resource "aws_route53_record" "ipv4_www" {
+#   # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
+#   name            = terraform.workspace == "prod" ? "www.${local.env.domain_name}" : "www.ucp.${local.env.domain_name}"
+#   type            = "A"
+#   zone_id         = data.aws_route53_zone.selected.id
+#   allow_overwrite = true
+
+#   alias {
+#     evaluate_target_health = false
+#     name                   = aws_cloudfront_distribution.distribution.domain_name
+#     zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+#   }
+# }
+resource "aws_route53_record" "ipv4_certifications" {
+  count           = terraform.workspace == "prod" ? 1 : 0 #Remove this for final prod deployment
+  name            = "certifications.sba.gov"
   type            = "A"
-  zone_id         = data.aws_route53_zone.selected.id
+  zone_id         = data.aws_route53_zone.selected-certifications.id
   allow_overwrite = true
 
   alias {
@@ -25,6 +38,19 @@ resource "aws_route53_record" "ipv4_www" {
     zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
   }
 }
+# resource "aws_route53_record" "ipv4_www_certifications" {
+#   count           = terraform.workspace == "prod" ? 1 : 0 #Remove this for final prod deployment
+#   name            = "www.certifications.sba.gov"
+#   type            = "A"
+#   zone_id         = data.aws_route53_zone.selected-certifications.id
+#   allow_overwrite = true
+
+#   alias {
+#     evaluate_target_health = false
+#     name                   = aws_cloudfront_distribution.distribution.domain_name
+#     zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+#   }
+# }
 resource "aws_route53_record" "ipv6" {
   # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
   name            = terraform.workspace == "prod" ? local.env.domain_name : "ucp.${local.env.domain_name}"
@@ -38,12 +64,11 @@ resource "aws_route53_record" "ipv6" {
     zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
   }
 }
-
-resource "aws_route53_record" "ipv6_www" {
-  # count           = terraform.workspace != "prod" ? 1 : 0 #Remove this for final prod deployment
-  name            = terraform.workspace == "prod" ? "www.${local.env.domain_name}" : "www.ucp.${local.env.domain_name}"
+resource "aws_route53_record" "ipv6_certifications" {
+  count           = terraform.workspace == "prod" ? 1 : 0 #Remove this for final prod deployment
+  name            = "certifications.sba.gov"
   type            = "AAAA"
-  zone_id         = data.aws_route53_zone.selected.id
+  zone_id         = data.aws_route53_zone.selected-certifications.id
   allow_overwrite = true
 
   alias {
@@ -53,9 +78,23 @@ resource "aws_route53_record" "ipv6_www" {
   }
 }
 
+# resource "aws_route53_record" "ipv6_www_certifications" {
+#   count           = terraform.workspace == "prod" ? 1 : 0 #Remove this for final prod deployment
+#   name            = "www.certifications.sba.gov"
+#   type            = "AAAA"
+#   zone_id         = data.aws_route53_zone.selected-certifications.id
+#   allow_overwrite = true
+
+#   alias {
+#     evaluate_target_health = false
+#     name                   = aws_cloudfront_distribution.distribution.domain_name
+#     zone_id                = aws_cloudfront_distribution.distribution.hosted_zone_id
+#   }
+# }
+
 # Distribution
 resource "aws_cloudfront_distribution" "distribution" {
-  aliases             = terraform.workspace == "prod" ? ["certification.sba.gov"] : ["ucp.${local.env.domain_name}"]
+  aliases             = terraform.workspace == "prod" ? ["certification.sba.gov", "certifications.sba.gov"] : ["ucp.${local.env.domain_name}"]
   comment             = "ucp-wfe-${terraform.workspace}"
   enabled             = true
   http_version        = "http2"

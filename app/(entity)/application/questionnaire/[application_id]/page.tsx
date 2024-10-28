@@ -73,6 +73,8 @@ const QuestionnaireListPage: React.FC = () => {
                     href={buildRoute(QUESTIONNAIRE_PAGE, {
                       applicationId: applicationId,
                       section: extractLastPart(questionnaire.url)
+                    },{
+                      contributor: contributorId
                     })}
                   >
                     {questionnaire.title}
@@ -91,6 +93,8 @@ const QuestionnaireListPage: React.FC = () => {
               buildRoute(APPLICATION_STEP_ROUTE, {
                 applicationId: applicationId,
                 stepLink: applicationSteps.eligiblePrograms.link
+              },{
+                contributor: contributorId
               })
             }>
           		Previous
@@ -100,6 +104,8 @@ const QuestionnaireListPage: React.FC = () => {
           buildRoute(QUESTIONNAIRE_PAGE, {
             applicationId: applicationId,
             section: extractLastPart(questionnairesData[0].url)
+          },{
+            contributor: contributorId
           })
         }>
           Next

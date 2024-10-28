@@ -20,6 +20,7 @@ import { GridRow } from '../qa-helpers/OwnershipQaGrid';
 import { setDisplayStepNavigation, setStep } from '../redux/applicationSlice';
 import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
+import { createOwnerObject } from '../utils/createOwnershipObject';
 
 function EligiblePrograms() {
   const [selectedPrograms, setSelectedPrograms] = useState<ProgramOption[]>([]);
@@ -72,11 +73,6 @@ function EligiblePrograms() {
     dispatch(setDisplayStepNavigation(false));
   }, [dispatch]);
 
-  const getFieldValue = (row: GridRow, fieldName: string): string | string[] => {
-    const fullFieldName = Object.keys(row).find(key => key.includes(fieldName));
-    return fullFieldName ? row[fullFieldName] : '';
-  };
-
   useEffect(() => {
     if (ownersData && !isLoadingOwnership) {
       const processAnswers = (answer: unknown): GridRow[] => {
@@ -108,32 +104,6 @@ function EligiblePrograms() {
       }
     }
   }, [ownersData, isLoadingOwnership, applicationData]);
-
-  const createOwnerObject = (row: GridRow): OwnerType | null => {
-    if (row.owner_type === 'Individual') {
-      return {
-        ownerType: 'Individual',
-        firstName: String(getFieldValue(row, 'first_name')),
-        lastName: String(getFieldValue(row, 'last_name')),
-        ownershipPercent: String(getFieldValue(row, 'ownership_percentage')),
-        emailAddress: String(getFieldValue(row, 'email')),
-        socialDisadvantages: Array.isArray(getFieldValue(row, 'individual_contributor_eight_a_social_disadvantage'))
-          ? getFieldValue(row, 'individual_contributor_eight_a_social_disadvantage') as string[]
-          : [],
-        citizenship: String(getFieldValue(row, 'citizenship')),
-        gender: String(getFieldValue(row, 'gender')),
-        veteranStatus: String(getFieldValue(row, 'veteran_status')),
-      };
-    } else if (row.owner_type === 'Organization') {
-      return {
-        ownerType: 'Organization',
-        organizationName: String(getFieldValue(row, 'organization_name')),
-        ownershipPercent: String(getFieldValue(row, 'organization_ownership_percentage')),
-        emailAddress: String(getFieldValue(row, 'organization_email')),
-      };
-    }
-    return null;
-  };
 
   const handleCheckboxChange = (program: ProgramOption) => {
     setSelectedPrograms(prev => {

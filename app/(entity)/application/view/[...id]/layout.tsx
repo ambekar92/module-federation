@@ -16,20 +16,32 @@ const QuestionsNav = ({ children }: PropsWithChildren) => {
   const session = useSessionUCMS();
   const queryParam = useSearchParams();
   const route = useRouter();
-
   const userRole = session.data?.permissions?.[session.data.permissions.length - 1]?.slug;
   const { data: applications, isLoading: isLoadingApplications } = useApplication(ApplicationFilterType.id, params.id?.[0]);
-  let applicationContributorId = applications?.[0]?.application_contributor.find(ac => ac.user_id === session?.data?.user_id)?.id;
-  if (applicationContributorId === undefined && userRole === 'delegate') {
-    // Need application to return delegate user_id
-    applicationContributorId = applications?.[0]?.application_contributor.find(ac => ac.application_role_id === 1)?.id;
+
+  const contributorParam = queryParam.get('contributor');
+  let applicationContributorId: number | undefined = undefined;
+
+  if (applications && applications[0]) {
+    if (contributorParam) {
+      const parsedContributorId = parseInt(contributorParam);
+      const matchingContributor = applications[0].application_contributor.find(ac => ac.id === parsedContributorId);
+      if (matchingContributor) {
+        applicationContributorId = parsedContributorId;
+      }
+    } else {
+      applicationContributorId = applications[0].application_contributor.find(ac => ac.user_id === session?.data?.user_id)?.id;
+    }
+
+    if (applicationContributorId === undefined && userRole === 'delegate') {
+      applicationContributorId = applications[0].application_contributor.find(ac => ac.application_role_id === 1)?.id;
+    }
   }
 
   const { data, isLoading } = useGetQuestionnaireList(applicationContributorId);
 
   const allQuestionnaires = useMemo(() => {
     if (!data) {return [];}
-
     let additionalQuestionnaires: { title: string; url: string }[] = [];
     if (userRole === 'primary_qualifying_owner' || userRole === 'delegate') {
       additionalQuestionnaires = [
@@ -37,14 +49,15 @@ const QuestionsNav = ({ children }: PropsWithChildren) => {
         { title: 'Control and Operation', url: `${applicationContributorId}/control-and-operation` }
       ]
     }
-
     return [...additionalQuestionnaires, ...data];
-  }, [data, applicationContributorId, userRole]);
+  }, [data, userRole]);
 
   useEffect(() => {
     if (!allQuestionnaires.length) {return;}
-    route.push(`?sectionUrl=${allQuestionnaires[0].url}`);
-  }, [allQuestionnaires, route]);
+    const firstQuestionnaireUrl = allQuestionnaires[0].url;
+    const redirectUrl = `?${contributorParam ? `contributor=${contributorParam}&` : ''}sectionUrl=${firstQuestionnaireUrl}`;
+    route.push(redirectUrl);
+  }, [allQuestionnaires, route, contributorParam, applicationContributorId]);
 
   if (!isLoading && !isLoadingApplications && (!applications || !applicationContributorId)) {
     return <Alert type="info" headingLevel={'h1'}>No application found</Alert>;
@@ -61,8 +74,8 @@ const QuestionsNav = ({ children }: PropsWithChildren) => {
           <SideNav items={allQuestionnaires.map(q => (
             <div key={q.url} className={listItemClasses}>
               <Link
-                className={queryParam.get('sectionUrl') === q.url ? 'usa-current' : ''}
-                href={`?sectionUrl=${q.url}`}
+                className={queryParam.get('sectionUrl') === `${q.url}` ? 'usa-current' : ''}
+                href={`?${contributorParam ? `contributor=${contributorParam}&` : ''}sectionUrl=${q.url}`}
               >
                 {q.title}
               </Link>

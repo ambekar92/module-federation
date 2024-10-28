@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 type Entity = {
   entity_id: number
   type: string
@@ -162,17 +163,33 @@ export type ApplicationEligibilityType = {
   program: number
 }
 
+export enum ApplicationRole {
+  PRIMARY_QUALIFYING_OWNER = 'primary-qualifying-owner',
+  QUALIFYING_OWNER = 'qualifying-owner',
+  NON_QUALIFYING_OWNER = 'non-qualifying-owner',
+  SPOUSE_OF_QUALIFYING_OWNER = 'spouse-of-qualifying-owner',
+  DELEGATE = 'delegate',
+  OTHER_INDIVIDUALS = 'other-individuals',
+  INTERNAL_USER = 'internal-user',
+  PROTEGE = 'protege',
+  MENTOR = 'mentor',
+  ANALYST = 'analyst',
+  SUPERVISOR = 'supervisor',
+  BUSINESS_OPPORTUNITY_ANALYST = 'business_opportunity_analyst',
+  DISTRICT_OFFICE_ANALYST = 'district-office-analyst'
+}
+
 export type InvitationType = {
-	id: number
+  id: number
   created_at: string
   first_name: string
   last_name: string
   email: string
-  invitation_status: null | null
+  invitation_status: null | string
   invitation_code: string
   user_id: null | number
   application_role: {
-    name: string
+    name: ApplicationRole
     description: null | string
     title: string
   }
@@ -183,6 +200,7 @@ export type InvitationType = {
     uei: string
   }
 }
+
 export type ApplicationAdminType = {
   entity_id: number
   expiration_date: string

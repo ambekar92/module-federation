@@ -32,7 +32,6 @@ const LeftPanelHeader: React.FC<LeftPanelHeaderProps> = React.memo(({ applicatio
     if (!applicationData) {return false;}
     const { process, workflow_state } = applicationData;
     // return true
-    console.log('********* ROLE', userRole)
     return (
       (userRole === 'analyst' && process?.data.step === 'analyst' && process.data?.review_start === true) ||
       (userRole === 'screener' && process?.data.step === 'screening' && workflow_state === 'under_review' && process.data?.review_start === true) ||

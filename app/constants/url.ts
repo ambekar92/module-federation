@@ -43,12 +43,19 @@ export const SBAONE_ATLASSIAN_SPACES_ROUTE = 'https://sbaone.atlassian.net/wiki/
 export const FEDERAL_CONTRACTING_ASSISTANCE_PROGRAMS_ROUTE = 'https://www.sba.gov/federal-contracting/contracting-assistance-programs';
 export const RESOURCES_GET_READY_ROUTE = '/resources/get-ready';
 export const RESOURCES_ROUTE = '/resources';
-export const CERTIFICATION_SBA_ROUTE = 'https://certification.sba.gov';
+export const CERTIFICATION_SBA_ROUTE = 'https://certifications.sba.gov';
+export const BUSINESS_SEARCH_PAGE = '/entity/search';
+export const ENTITY_PAGE = '/entity/:entityId';
 
-export const buildRoute = (template: any, params: any) => {
+export const buildRoute = (template: any, params: any, queryParams?: any) => {
   let route = template
   for (const [key, value] of Object.entries(params)) {
     route = route.replace(`:${key}`, value)
   }
-  return route
+  if (queryParams) {
+    const queryString = new URLSearchParams(queryParams).toString();
+    return `${route}?${queryString}`
+  } else {
+    return route
+  }
 }

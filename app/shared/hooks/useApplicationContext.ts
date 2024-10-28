@@ -1,10 +1,8 @@
 import useSWR from 'swr';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { GET_APPLICATIONS_ROUTE, GET_ENTITIES_ROUTE } from '@/app/constants/local-routes';
 import { ApplicationFilterType } from '@/app/services/queries/application-service/applicationFilters';
-import { encrypt } from '@/app/shared/utility/encryption';
-import Cookies from 'js-cookie';
 import { useMemo, useEffect, useState } from 'react';
 import { EntitiesType } from '../types/responses';
 import { Application } from '@/app/services/types/application-service/Application';
@@ -12,6 +10,8 @@ import { Application } from '@/app/services/types/application-service/Applicatio
 export function useApplicationContext() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const applicationContributorId = searchParams.get('contributor');
   const { data: session } = useSessionUCMS();
   const applicationId = parseInt(params.application_id as string, 10);
   const userId = session?.user_id;
@@ -53,7 +53,9 @@ export function useApplicationContext() {
         const id = applicationData[0].application_contributor.find(
           (contributor) => contributor.user_id === session.user_id
         )?.id;
-        if (id) {
+        if (applicationContributorId) {
+          setContributorId(parseInt(applicationContributorId));
+        } else if (id) {
           setContributorId(id);
         } else {
           router.push('/404');

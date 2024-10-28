@@ -36,7 +36,16 @@ data "aws_route53_zone" "selected" {
   name = "${local.env.domain_name}."
 }
 
+data "aws_route53_zone" "selected-certifications" {
+  name = "certifications.sba.gov."
+}
+
 ## acm
+# data "aws_acm_certificate" "selected" {
+#   domain      = "certification.sba.gov"
+#   statuses    = ["ISSUED"]
+#   most_recent = true
+# }
 data "aws_acm_certificate" "selected" {
   domain      = local.env.cert_domain
   statuses    = ["ISSUED"]

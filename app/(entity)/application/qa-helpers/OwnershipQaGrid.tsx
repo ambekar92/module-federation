@@ -1,5 +1,5 @@
+import { ANSWER_ROUTE } from '@/app/constants/local-routes';
 import { UCPTable } from '@/app/shared/components/table/UCPTable';
-import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import {
   BooleanInput,
   DateInput,
@@ -13,12 +13,11 @@ import {
 } from '@/app/shared/questionnaire/inputs/QaGridInputs';
 import { QaQuestionsType, Question } from '@/app/shared/types/questionnaireTypes';
 import { Button, ButtonGroup, Grid, Label, Select } from '@trussworks/react-uswds';
+import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { calculateEligibleSbaPrograms, OwnerType, useOwnerApplicationInfo } from '../hooks/useOwnershipApplicationInfo';
+import { calculateEligibleSbaPrograms, OwnerType } from '../hooks/useOwnershipApplicationInfo';
 import { setOwners } from '../redux/applicationSlice';
-import axios from 'axios';
-import { ANSWER_ROUTE } from '@/app/constants/local-routes';
 
 export type GridRow = {
   [key: string]: string | string[];
@@ -37,7 +36,6 @@ interface QaGridProps {
 }
 
 export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, contributorId, setTotalOwnershipPercentage, entityStructure }) => {
-  const { updateOwners } = useOwnerApplicationInfo();
   const dispatch = useDispatch();
   const [gridRows, setGridRows] = useState<GridRow[]>([]);
   const [currentRow, setCurrentRow] = useState<GridRow>({});
@@ -249,23 +247,24 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
     const organizationAnswers = organizationQuestion?.answer?.value?.answer as unknown as GridRow[] || [];
     const answers = [...individualAnswers, ...organizationAnswers];
 
-    setGridRows(answers);
-    const newOwners = answers
-      .map(createOwnerObject)
-      .filter((owner): owner is OwnerType => owner !== null);
-    dispatch(setOwners(newOwners));
-    updateOwners(newOwners);
+    if(answers.length > 0) {
+      setGridRows(answers);
+      const newOwners = answers
+        .map(createOwnerObject)
+        .filter((owner): owner is OwnerType => owner !== null);
+      dispatch(setOwners(newOwners));
 
-    // Calculate total ownership percentage
-    const totalPercentage = answers.reduce((sum, row) => {
-      const percentage = parseFloat(
-        row.owner_type === 'Individual'
-          ? getFieldValue(row, 'ownership_percentage') as string
-          : getFieldValue(row, 'organization_ownership_percentage') as string
-      ) || 0;
-      return sum + percentage;
-    }, 0);
-    setTotalOwnershipPercentage(totalPercentage);
+      // Calculate total ownership percentage
+      const totalPercentage = answers.reduce((sum, row) => {
+        const percentage = parseFloat(
+          row.owner_type === 'Individual'
+            ? getFieldValue(row, 'ownership_percentage') as string
+            : getFieldValue(row, 'organization_ownership_percentage') as string
+        ) || 0;
+        return sum + percentage;
+      }, 0);
+      setTotalOwnershipPercentage(totalPercentage);
+    }
   }, [individualQuestion, organizationQuestion, setTotalOwnershipPercentage]);
 
   const saveAnswer = (rows: GridRow[]) => {

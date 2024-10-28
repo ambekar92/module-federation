@@ -15,23 +15,23 @@ import { startCase } from 'lodash';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import { calculateEligibleSbaPrograms, useOwnerApplicationInfo } from '../../../hooks/useOwnershipApplicationInfo';
+import { calculateEligibleSbaPrograms, OwnerType } from '../../../hooks/useOwnershipApplicationInfo';
 import { useWorkflowRedirect } from '../../../hooks/useWorkflowRedirect';
-import { OwnershipQaGrid } from '../../../qa-helpers/OwnershipQaGrid';
+import { GridRow, OwnershipQaGrid } from '../../../qa-helpers/OwnershipQaGrid';
 import { selectApplication, setDisplayStepNavigation, setStep } from '../../../redux/applicationSlice';
 import { useApplicationDispatch, useApplicationSelector } from '../../../redux/hooks';
 import { applicationSteps } from '../../../utils/constants';
+import { createOwnerObject } from '../../../utils/createOwnershipObject';
 
 function OwnershipQuestions() {
   // Redux
   const dispatch = useApplicationDispatch();
-  const { ownerApplicationInfo } = useOwnerApplicationInfo();
   const { owners } = useApplicationSelector(selectApplication);
   useUpdateApplicationProgress('Ownership');
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : null;
 
-  const { data, error, isLoading } = useSWR<QaQuestionsType>(url);
+  const { data: ownersData, isLoading: isLoadingOwnership, error } = useSWR<QaQuestionsType>(url);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [totalOwnershipPercentage, setTotalOwnershipPercentage] = useState(0);
@@ -50,11 +50,29 @@ function OwnershipQuestions() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (ownerApplicationInfo.owners && ownerApplicationInfo.owners.length > 0) {
-      const programs = calculateEligibleSbaPrograms(ownerApplicationInfo.owners);
+    if (ownersData && ownersData.length > 0 && !isLoadingOwnership) {
+      const processAnswers = (answer: unknown): GridRow[] => {
+        if (Array.isArray(answer)) {
+          return answer;
+        } else if (typeof answer === 'object' && answer !== null) {
+          return [answer as GridRow];
+        }
+        return [];
+      };
+
+      const individualAnswers = processAnswers(ownersData.find(q => q.name.includes('personal_information_owner_and_management'))?.answer?.value?.answer);
+      const organizationAnswers = processAnswers(ownersData.find(q => q.name.includes('organization_information_owner_and_management'))?.answer?.value?.answer);
+
+      const answers = [...individualAnswers, ...organizationAnswers];
+
+      const newOwners = answers
+        .map(createOwnerObject)
+        .filter((owner): owner is OwnerType => owner !== null);
+
+      const programs = calculateEligibleSbaPrograms(newOwners);
       setEligiblePrograms(programs);
     }
-  }, [ownerApplicationInfo.owners]);
+  }, [ownersData, isLoadingOwnership, applicationData]);
 
   useEffect(() => {
     if (applicationRole && applicationRole.length > 0 && applicationRole[0].application_role.name !== 'primary-qualifying-owner') {
@@ -96,7 +114,7 @@ function OwnershipQuestions() {
   };
 
   if (error) {return <div>Error: {error.message}</div>;}
-  if (!data || isLoading) {return <Spinner center />;};
+  if (!ownersData || isLoadingOwnership) {return <Spinner center />;};
 
   if (isPrimaryQualifyingOwner) {
     return (
@@ -123,7 +141,7 @@ function OwnershipQuestions() {
                 <Grid col={12}>
                   { contributorId && (
                     <OwnershipQaGrid
-                      questions={data}
+                      questions={ownersData}
                       userId={userId}
                       contributorId={contributorId}
                       setTotalOwnershipPercentage={setTotalOwnershipPercentage}

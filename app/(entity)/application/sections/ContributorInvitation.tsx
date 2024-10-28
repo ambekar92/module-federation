@@ -1,71 +1,75 @@
-'use client'
 import { INVITATION_ROUTE, QUESTIONNAIRE_ROUTE } from '@/app/constants/local-routes';
 import { APPLICATION_STEP_ROUTE, buildRoute } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
-import { Permission } from '@/app/tarmac/types';
 import { InvitationType } from '@/app/services/types/application-service/Application';
 import { CustomTable } from '@/app/shared/components/CustomTable';
+import Spinner from '@/app/shared/components/spinner/Spinner';
 import TooltipIcon from '@/app/shared/components/tooltip/Tooltip';
 import { useApplicationContext } from '@/app/shared/hooks/useApplicationContext';
 import { useUpdateApplicationProgress } from '@/app/shared/hooks/useUpdateApplicationProgress';
 import { Question } from '@/app/shared/types/questionnaireTypes';
 import { Role } from '@/app/shared/types/role';
+import { Permission } from '@/app/tarmac/types';
 import { Button, ButtonGroup, Grid, GridContainer, Label, TextInput } from '@trussworks/react-uswds';
 import axios from 'axios';
+import { capitalize } from 'lodash';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useSWR, { mutate } from 'swr';
 import InviteContributorModal from '../components/contributor-invite/InviteContributorModal';
 import { Contributor } from '../components/contributor-invite/types';
-import { selectApplication, setContributors, setIsAddingContributor, setStep } from '../redux/applicationSlice';
-import { useApplicationDispatch, useApplicationSelector } from '../redux/hooks';
+import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
+import { setStep } from '../redux/applicationSlice';
+import { useApplicationDispatch } from '../redux/hooks';
 import { applicationSteps } from '../utils/constants';
 import { convertOperatorAnswerToContributors, convertOwnerAnswerToContributors } from '../utils/convertToContributor';
 import { useUserApplicationInfo } from '../utils/useUserApplicationInfo';
-import { useRedirectIfNoOwners } from '../hooks/useRedirectNoOwners';
-import Spinner from '@/app/shared/components/spinner/Spinner';
 
 function ContributorInvitation() {
   useUpdateApplicationProgress('Contributor Invitation');
   const { applicationId, contributorId, applicationData } = useApplicationContext();
-  const ownerEmail = applicationData?.application_contributor[0].user.email
-  const dispatch = useApplicationDispatch();
+  const ownerEmail = applicationData?.application_contributor[0].user.email;
   const { updateUserApplicationInfo } = useUserApplicationInfo();
-  const { isAddingContributor, contributors } = useApplicationSelector(selectApplication);
   const session = useSessionUCMS();
-  const hasPermission = (permissions: Permission[], targetPermission: string) => {
-    return permissions?.some(permission => permission.slug === targetPermission);
-  };
+  const dispatch = useApplicationDispatch();
 
-  const isQualifyingOwner = hasPermission(session.data?.permissions, Role.QUALIFYING_OWNER);
-  const isPrimaryQualifyingOwner = hasPermission(session.data?.permissions, Role.PRIMARY_QUALIFYING_OWNER) ||
-                                 hasPermission(session.data?.permissions, 'primary-qualifying-owner');
-  const isDelegate = hasPermission(session.data?.permissions, Role.DELEGATE);
-
+  const [isAddingContributor, setIsAddingContributor] = useState(false);
+  const [contributors, setContributors] = useState<Contributor[]>([]);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
   const initialContributorsRef = useRef<Contributor[]>([]);
 
-  const prevInvitationDataRef = useRef<InvitationType[] | null>(null);
+  const hasPermission = (permissions: Permission[], targetPermission: string) => {
+    return permissions?.some(permission => permission.slug === targetPermission);
+  };
+
+  const isQualifyingOwner = hasPermission(session.data?.permissions, Role.QUALIFYING_OWNER) || hasPermission(session.data?.permissions, 'qualifying-owner');
+  const isPrimaryQualifyingOwner = hasPermission(session.data?.permissions, Role.PRIMARY_QUALIFYING_OWNER) || hasPermission(session.data?.permissions, 'primary-qualifying-owner');
+  const isDelegate = hasPermission(session.data?.permissions, Role.DELEGATE);
 
   const { data: invitationData, error: invitationError } = useSWR<InvitationType[]>(contributorId ? `${INVITATION_ROUTE}/${contributorId}`: null);
   const { data: operatorData } = useSWR<Question[]>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/control-and-operation` : null);
   const { data: ownerData } = useSWR<Question[]>(applicationData ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
+  const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId);
   useRedirectIfNoOwners({ ownerData, applicationId , applicationRole});
 
-  const is8aOrEdwosb = applicationData?.program_application?.some(program =>
+  const is8aOrEdwosb = useMemo(() => applicationData?.program_application?.some(program =>
     program.id === 1 || program.id === 6
-  );
+  ), [applicationData]);
 
   useEffect(() => {
     if (contributors.length > 0 && initialContributorsRef.current.length === 0) {
       initialContributorsRef.current = JSON.parse(JSON.stringify(contributors));
     }
   }, [contributors]);
+
+  useEffect(() => {
+    dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
+  }, [dispatch]);
 
   useEffect(() => {
     if (applicationId && applicationData && session.data?.permissions) {
@@ -83,14 +87,12 @@ function ContributorInvitation() {
   useEffect(() => {
     if (ownerData && ownerData[0]?.answer && ownerData[0]?.answer.value.answer && Array.isArray(ownerData[0]?.answer.value.answer) && ownerData[0]?.answer.value.answer.length > 0) {
       const ownerContributors = convertOwnerAnswerToContributors(ownerData[0].answer);
-      dispatch((dispatch, getState) => {
-        const currentState = selectApplication(getState());
-        const updatedContributors = [...currentState.contributors];
-
+      setContributors(prevContributors => {
+        const updatedContributors = [...prevContributors];
         ownerContributors.forEach(newOwner => {
           const existingIndex = updatedContributors.findIndex(c =>
             c.emailAddress === newOwner.emailAddress &&
-						(c.contributorRole === 'role_owner' || c.contributorRole === 'role_owner_eligible')
+            (c.contributorRole === 'role_owner' || c.contributorRole === 'role_owner_eligible')
           );
           if (existingIndex === -1) {
             updatedContributors.push(newOwner);
@@ -98,19 +100,16 @@ function ContributorInvitation() {
             updatedContributors[existingIndex] = { ...updatedContributors[existingIndex], ...newOwner };
           }
         });
-
-        dispatch(setContributors(updatedContributors));
+        return updatedContributors;
       });
     }
-  }, [ownerData, dispatch]);
+  }, [ownerData]);
 
   useEffect(() => {
     if (operatorData && operatorData[0].answer && operatorData[0].answer.value?.answer && Array.isArray(operatorData[0].answer.value.answer) && operatorData[0].answer.value.answer.length > 0) {
       const operatorContributors = convertOperatorAnswerToContributors(operatorData[0].answer);
-      dispatch((dispatch, getState) => {
-        const currentState = selectApplication(getState());
-        const updatedContributors = [...currentState.contributors];
-
+      setContributors(prevContributors => {
+        const updatedContributors = [...prevContributors];
         operatorContributors.forEach(newOperator => {
           const existingIndex = updatedContributors.findIndex(c =>
             c.emailAddress === newOperator.emailAddress && c.contributorRole === 'role_other'
@@ -121,27 +120,20 @@ function ContributorInvitation() {
             updatedContributors[existingIndex] = { ...updatedContributors[existingIndex], ...newOperator };
           }
         });
-
-        dispatch(setContributors(updatedContributors));
+        return updatedContributors;
       });
     }
-  }, [operatorData, dispatch]);
+  }, [operatorData]);
 
   useEffect(() => {
-    dispatch(setStep(applicationSteps.contributorInvitation.stepIndex));
-    dispatch(setIsAddingContributor(false));
-  }, [dispatch]);
-
-  // Converts Invitation data users into contributors
-  useEffect(() => {
-    if (invitationData && invitationData !== prevInvitationDataRef.current && invitationData.length > 0) {
-      prevInvitationDataRef.current = invitationData;
+    if (invitationData && invitationData.length > 0) {
       const apiContributors: Contributor[] = invitationData
         .filter((item: InvitationType) =>
           item.invitation_status !== 'removed' &&
           item.application_role.name !== 'primary-qualifying-owner' &&
           item.application_role.name !== 'delegate' &&
           item.application_role.name !== 'qualifying-owner' &&
+          item.application_role.name !== 'non-qualifying-owner' &&
           (isQualifyingOwner ? item.application_role.name === 'spouse-of-qualifying-owner' : true)
         )
         .map((item: InvitationType) => ({
@@ -153,10 +145,8 @@ function ContributorInvitation() {
             : 'role_other'
         }));
 
-      dispatch((dispatch, getState) => {
-        const currentState = selectApplication(getState());
-        const currentContributors = currentState.contributors;
-        const mergedContributors = [...currentContributors];
+      setContributors(prevContributors => {
+        const mergedContributors = [...prevContributors];
         apiContributors.forEach(apiContributor => {
           const existingIndex = mergedContributors.findIndex(
             c => c.emailAddress === apiContributor.emailAddress && c.contributorRole === apiContributor.contributorRole
@@ -170,14 +160,13 @@ function ContributorInvitation() {
             };
           }
         });
-
-        dispatch(setContributors(mergedContributors));
+        return mergedContributors;
       });
     }
-  }, [dispatch, invitationData, isQualifyingOwner]);
+  }, [invitationData, isQualifyingOwner]);
 
   const handleAddNew = () => {
-    dispatch(setIsAddingContributor(true));
+    setIsAddingContributor(true);
     setFirstName('');
     setLastName('');
     setEmailAddress('');
@@ -198,10 +187,10 @@ function ContributorInvitation() {
         contributorRole: 'role_spouse',
       };
 
-      if (emailAddress.toLowerCase() === ownerEmail?.toLowerCase()) {
-        alert('You cannot add the owner as a contributor.');
-        return;
-      }
+      // if (emailAddress.toLowerCase() === ownerEmail?.toLowerCase()) {
+      //   alert('You cannot add the owner as a contributor.');
+      //   return;
+      // }
 
       let updatedContributors;
       if (editingIndex !== null) {
@@ -223,12 +212,12 @@ function ContributorInvitation() {
         updatedContributors = [...contributors, newContributor];
       }
 
-      dispatch(setContributors(updatedContributors));
+      setContributors(updatedContributors);
       updateUserApplicationInfo({ contributors: updatedContributors });
       setFirstName('');
       setLastName('');
       setEmailAddress('');
-      dispatch(setIsAddingContributor(false));
+      setIsAddingContributor(false);
     } else {
       alert('Please fill out all required fields.');
     }
@@ -277,7 +266,7 @@ function ContributorInvitation() {
       )
     );
 
-    dispatch(setContributors(updatedContributors));
+    setContributors(updatedContributors);
     updateUserApplicationInfo({ contributors: updatedContributors });
   };
 
@@ -290,7 +279,7 @@ function ContributorInvitation() {
     setLastName(owner.lastName || '');
     setEmailAddress(owner.emailAddress);
     setEditingIndex(contributors.indexOf(owner));
-    dispatch(setIsAddingContributor(true));
+    setIsAddingContributor(true);
   };
 
   const handleEditSpouse = (index: number) => {
@@ -300,7 +289,7 @@ function ContributorInvitation() {
     setLastName(spouse.lastName || '');
     setEmailAddress(spouse.emailAddress);
     setEditingIndex(contributors.indexOf(spouse));
-    dispatch(setIsAddingContributor(true));
+    setIsAddingContributor(true);
   };
 
   const handleEditOther = (index: number) => {
@@ -310,7 +299,7 @@ function ContributorInvitation() {
     setLastName(other.lastName || '');
     setEmailAddress(other.emailAddress);
     setEditingIndex(contributors.indexOf(other));
-    dispatch(setIsAddingContributor(true));
+    setIsAddingContributor(true);
   };
 
   const roleDisplayName = (role: string) => {
@@ -330,6 +319,7 @@ function ContributorInvitation() {
   const tableHeaders = [
     { id: 'Name', headerName: 'Legal Name' },
     { id: 'Email', headerName: 'Email' },
+    { id: 'Status', headerName: 'Invitation Status' },
   ];
 
   const spouseTableRows = contributors
@@ -339,6 +329,13 @@ function ContributorInvitation() {
       Name: `${contributor.firstName} ${contributor.lastName}`,
       Role: roleDisplayName(contributor.contributorRole),
       Email: contributor.emailAddress,
+      Status: (() => {
+        const status: string = invitationData?.find(
+          invitation => invitation.email.toLowerCase() === contributor.emailAddress.toLowerCase() &&
+												invitation.application_role.name === 'spouse-of-qualifying-owner'
+        )?.invitation_status || 'Unsent';
+        return status === 'send' ? 'Sent' : capitalize(status);
+      })()
     }));
 
   const ownerTableRows = contributors
@@ -351,6 +348,15 @@ function ContributorInvitation() {
       Name: `${contributor.firstName} ${contributor.lastName}`,
       Role: roleDisplayName(contributor.contributorRole),
       Email: contributor.emailAddress,
+      Status: (() => {
+        const status: string = invitationData?.find(
+          invitation => invitation.email.toLowerCase() === contributor.emailAddress.toLowerCase() &&
+												invitation.application_role.name !== 'other-individuals' &&
+												invitation.application_role.name !== 'spouse-of-qualifying-owner' &&
+												invitation.application_role.name !== 'delegate'
+        )?.invitation_status || 'Unsent';
+        return status === 'send' ? 'Sent' : capitalize(status);
+      })()
     }));
 
   const operatorTableRows = contributors
@@ -363,6 +369,13 @@ function ContributorInvitation() {
       Name: `${contributor.firstName} ${contributor.lastName}`,
       Role: roleDisplayName(contributor.contributorRole),
       Email: contributor.emailAddress,
+      Status: (() => {
+        const status: string = invitationData?.find(
+          invitation => invitation.email.toLowerCase() === contributor.emailAddress.toLowerCase() &&
+												invitation.application_role.name === 'other-individuals'
+        )?.invitation_status || 'Unsent';
+        return status === 'send' ? 'Sent' : capitalize(status);
+      })()
     }));
 
   const closeModal = () => {
@@ -371,17 +384,41 @@ function ContributorInvitation() {
   }
 
   const handleNextClick = () => {
-    const nonOwnerContributors = contributors.filter(
+    const allContributors = contributors.filter(
       contributor => contributor.emailAddress.toLowerCase() !== ownerEmail?.toLowerCase()
     );
 
-    if (nonOwnerContributors.length === 0) {
+    if (allContributors.length === 0) {
       window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
         applicationId: applicationId,
         stepLink: applicationSteps.sign.link
       });
     } else {
-      setShowModal(true);
+      const hasUnsentInvitations = allContributors.some(contributor => {
+        let invitation;
+        if (contributor.contributorRole === 'role_spouse') {
+          invitation = invitationData?.find(
+            inv =>
+              inv.first_name.toLowerCase() === contributor.firstName?.toLowerCase() &&
+							inv.last_name.toLowerCase() === contributor.lastName?.toLowerCase() &&
+							inv.application_role.name === 'spouse-of-qualifying-owner'
+          );
+        } else {
+          invitation = invitationData?.find(
+            inv => inv.email.toLowerCase() === contributor.emailAddress.toLowerCase()
+          );
+        }
+        return !invitation || invitation.invitation_status === 'unsent' || invitation.invitation_status === 'removed';
+      });
+
+      if (hasUnsentInvitations) {
+        setShowModal(true);
+      } else {
+        window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
+          applicationId: applicationId,
+          stepLink: applicationSteps.sign.link
+        });
+      }
     }
   }
 
@@ -460,7 +497,7 @@ function ContributorInvitation() {
                     setLastName('');
                     setEmailAddress('');
                     setEditingIndex(null);
-                    dispatch(setIsAddingContributor(false));
+                    setIsAddingContributor(false);
                   }}
                 >
 									Cancel
@@ -486,15 +523,6 @@ function ContributorInvitation() {
         </>
       ) : (
         <>
-          <InviteContributorModal
-            contributors={contributors}
-            open={showModal}
-            handleCancel={closeModal}
-            contributorId={contributorId}
-            applicationId={applicationId}
-            entityId={applicationData?.entity.entity_id}
-            invitationData={invitationData}
-          />
           <h3 className="margin-y-0">Each person you invite to contribute will receive an email with instructions for creating their profile and submitting their information.</h3>
           <hr className="margin-y-3 width-full border-base-lightest" />
 
@@ -557,7 +585,7 @@ function ContributorInvitation() {
                     setLastName('');
                     setEmailAddress('');
                     setEditingIndex(null);
-                    dispatch(setIsAddingContributor(false));
+                    setIsAddingContributor(false);
                   }}
                 >
 									Cancel
@@ -638,7 +666,15 @@ function ContributorInvitation() {
           )}
         </>
       )}
-
+      <InviteContributorModal
+        contributors={contributors}
+        open={showModal}
+        handleCancel={closeModal}
+        contributorId={contributorId}
+        applicationId={applicationId}
+        entityId={applicationData?.entity.entity_id}
+        invitationData={invitationData}
+      />
       <div className='flex-fill'></div>
 
       <ButtonGroup className='display-flex flex-justify border-top padding-y-2 margin-top-2 margin-right-2px'>

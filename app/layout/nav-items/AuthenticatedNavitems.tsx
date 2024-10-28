@@ -1,4 +1,4 @@
-import { buildRoute, DASHBOARD, DELEGATE_DASHBOARD_PAGE, DOCUMENT_PAGE, FIRM_EVALUATION_PAGE, MESSAGE_PAGE, REVIEWERS_DASHBOARD_PAGE } from '@/app/constants/url';
+import { buildRoute, DASHBOARD, DELEGATE_DASHBOARD_PAGE, DOCUMENT_PAGE, FIRM_EVALUATION_PAGE, MESSAGE_PAGE, REVIEWERS_DASHBOARD_PAGE, BUSINESS_SEARCH_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { checkUserPermissionSlug } from '@/app/shared/utility/getApplicationRole';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
@@ -72,7 +72,16 @@ const AuthenticatedNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileN
           <span>Team Tasks</span>
         </Link>
       </React.Fragment>
-    ] : [])
+    ] : []),
+    ...(userRole !== 'external' ? [
+      <React.Fragment key="auth_5">
+        <Link
+          className="usa-nav_link"
+          href={BUSINESS_SEARCH_PAGE}>
+          <span>Business Search</span>
+        </Link>
+      </React.Fragment>
+    ] : []),
   ];
 
   return (

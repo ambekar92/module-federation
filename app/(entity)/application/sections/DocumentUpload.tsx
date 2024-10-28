@@ -49,7 +49,7 @@ function DocumentUpload() {
           buildRoute(QUESTIONNAIRE_PAGE, {
             applicationId: applicationId,
             section: skipHubzoneSupValue ? '/individual-contributor-hubzone-business-relationships' : '/hubzone-calculator-supplemental'
-          })
+          }, {contributor: contributorId})
         );
       } else {
         // If there's no hubzone-calculator, set the previous link to the last questionnaire
@@ -58,7 +58,7 @@ function DocumentUpload() {
           buildRoute(QUESTIONNAIRE_PAGE, {
             applicationId: applicationId,
             section: `/${extractLastPart(lastQuestionnaire.url)}`
-          })
+          }, {contributor: contributorId})
         );
       }
     }
@@ -93,7 +93,7 @@ function DocumentUpload() {
             buildRoute(APPLICATION_STEP_ROUTE, {
               applicationId: applicationId,
               stepLink: applicationRole && applicationRole.length > 0 && (applicationRole[0].application_role.name === 'primary-qualifying-owner' || applicationRole[0].application_role.name === 'delegate') ? applicationSteps.contributorInvitation.link : applicationSteps.sign.link,
-            })
+            }, {contributor: contributorId})
           }
         >
           Next

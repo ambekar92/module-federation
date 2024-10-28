@@ -62,11 +62,14 @@ function InvitationCodeForm({ onEnterCodeCancel, cancelText = 'Back' }: invitati
         invitation_code: getValues('invitationCode'),
         user_id: session.data?.user?.id,
       });
-    if (response.status === 200 && response.data.detail !== 'No invitation record found.' && response.data.invitation_code !== 'This field may not be blank.') {
+
+    if (response.status === 200 && !response.data?.detail && response.data.detail !== 'No invitation record found.' && response.data.invitation_code !== 'This field may not be blank.') {
       reset({
         invitationCode: '',
       })
+      console.log('***********', response.data.application_role)
       if(response.data.application_role) {
+        const queryParams = new URLSearchParams({ param: Math.random().toString() }).toString();
         switch(response.data.application_role) {
           case 'delegate':
             router.push(DELEGATE_DASHBOARD_PAGE)
@@ -74,14 +77,26 @@ function InvitationCodeForm({ onEnterCodeCancel, cancelText = 'Back' }: invitati
           case 'spouse':
           case 'contributor':
           case 'qualifying-owner':
-            router.push(CONTRIBUTOR_DASHBOARD_PAGE)
+          case 'non-qualifying-owner':
+          case 'other-individuals':
+          case 'spouse-of-qualifying-owner': {
+            if (window.location.pathname === DASHBOARD) {
+              window.location.reload();
+            } else {
+              router.push(DASHBOARD)
+            }
             break;
+          }
           default:
-            router.push(DASHBOARD)
+            if (window.location.pathname === DASHBOARD) {
+              window.location.reload();
+            } else {
+              router.push(DASHBOARD)
+            }
             break;
         }
       }
-      if(response.data.detail && response.data.detail !== 'No invitation record found.' || response.data.detail !== 'invitation code already used.') {
+      if(response.data.detail && (response.data.detail !== 'No invitation record found.' || response.data.detail !== 'invitation code already used.')) {
         setShowAlert(true)
       }
     } else {

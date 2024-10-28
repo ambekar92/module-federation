@@ -1,0 +1,21 @@
+export type UserDemographicsType = {
+  id: string | number,
+  application_id: number,
+  user_id: number,
+  first_name: string | null,
+  middle_name: string | null,
+  last_name: string | null,
+  sex: string | null,
+  birth_date: string | null,
+  street_address: string | null,
+  city: string | null,
+  state: string | null,
+  zipcode: string | null,
+  country: string | null,
+  icn: string | null,
+  veteran_verification_status: string,
+  verification_status_reason: string,
+  veteran_confirmation_status: string | null,
+  disability_rating: string | null,
+  has_va_profile_military_person_data: string | null
+}

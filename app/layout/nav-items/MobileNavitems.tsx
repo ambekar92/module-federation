@@ -1,4 +1,4 @@
-import { buildRoute, DASHBOARD, DOCUMENT_PAGE, FIRM_EVALUATION_PAGE, GET_HELP_ROUTE, MESSAGE_PAGE, NOTIFICATIONS_PAGE, REVIEWERS_DASHBOARD_PAGE, TASKS_DASHBOARD_PAGE, USER_PROFILE_PAGE } from '@/app/constants/url';
+import { buildRoute, BUSINESS_SEARCH_PAGE, DASHBOARD, DOCUMENT_PAGE, FIRM_EVALUATION_PAGE, GET_HELP_ROUTE, MESSAGE_PAGE, NOTIFICATIONS_PAGE, REVIEWERS_DASHBOARD_PAGE, TASKS_DASHBOARD_PAGE, USER_PROFILE_PAGE } from '@/app/constants/url';
 import { useSessionUCMS } from '@/app/lib/auth';
 import { logout } from '@/app/lib/logout';
 import { getUserRole } from '@/app/shared/utility/getUserRole';
@@ -63,6 +63,15 @@ const MobileNavitems = ({toggleMobileNav, mobileExpanded}: {toggleMobileNav: any
           className="usa-nav_link"
           href={REVIEWERS_DASHBOARD_PAGE}>
           <span>Team Tasks</span>
+        </Link>
+      </React.Fragment>
+    ] : []),
+    ...(userRole !== 'external' ? [
+      <React.Fragment key="auth_5">
+        <Link
+          className="usa-nav_link"
+          href={BUSINESS_SEARCH_PAGE}>
+          <span>Business Search</span>
         </Link>
       </React.Fragment>
     ] : []),

@@ -1,28 +1,33 @@
-import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Button,
   Card,
   CardBody,
   CardFooter,
   CardHeader,
-  Tag
-} from '@trussworks/react-uswds';
-import moment from 'moment';
-import { JSXElementConstructor, ReactElement } from 'react';
+  Tag,
+} from '@trussworks/react-uswds'
+import moment from 'moment'
+import { JSXElementConstructor, ReactElement } from 'react'
 
 interface FirmApplicationCardProps {
-	title: string;
-  id: number;
-  status: 'In progress' | 'Submitted' | string;
-  percentComplete?: number;
-  programs?: string[];
-	updatedDate?: string;
-	createdDate?: string;
-  clickedId: number | null;
-  actionButton: ReactElement<any, string | JSXElementConstructor<any>> | undefined;
+  title: string
+  id: number
+  status: 'In progress' | 'Submitted' | string
+  percentComplete?: number
+  programs?: string[]
+  updatedDate?: string
+  createdDate?: string
+  clickedId: number | null
+  actionButton:
+    | ReactElement<any, string | JSXElementConstructor<any>>
+    | undefined
   // eslint-disable-next-line no-unused-vars
-  applicationDeleteOrWithdraw: (event: React.MouseEvent<SVGSVGElement, MouseEvent>, id: number) => Promise<void>;
+  applicationDeleteOrWithdraw: (
+    event: React.MouseEvent<SVGSVGElement, MouseEvent>,
+    id: number
+  ) => Promise<void>
 }
 const FirmApplicationCard: React.FC<FirmApplicationCardProps> = ({
   title,
@@ -44,6 +49,7 @@ const FirmApplicationCard: React.FC<FirmApplicationCardProps> = ({
           actionButton
         ) : (
           <FontAwesomeIcon
+            data-testid="ellipsis-icon-vertical"
             icon={faEllipsisVertical}
             data-status={status}
             className="cursor-pointer"
@@ -71,7 +77,9 @@ const FirmApplicationCard: React.FC<FirmApplicationCardProps> = ({
                 <strong>ID:</strong> {id}
               </div>
               <div>
-                <strong>{status === 'draft' ? 'Last Updated:' : 'Submitted:'}</strong>{' '}
+                <strong>
+                  {status === 'draft' ? 'Last Updated:' : 'Submitted:'}
+                </strong>{' '}
                 {moment(updatedDate).format('MM/DD/YYYY')}
               </div>
             </div>

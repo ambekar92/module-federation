@@ -14,15 +14,16 @@ import { Contributor } from './types'
 import { InvitationType } from '@/app/services/types/application-service/Application'
 import axios from 'axios'
 import { INVITATION_ROUTE, SEND_INVITATION_DELEGATE } from '@/app/constants/local-routes'
+import { findExistingInvitation } from '../../utils/findExistingInvitation'
 
 interface InviteContributorModalProps {
   open: boolean;
-	contributorId: number | undefined | null;
+  contributorId: number | undefined | null;
   handleCancel: () => void;
-	contributors: Contributor[];
-	entityId: number | undefined;
-	applicationId: number | null;
-	invitationData: InvitationType[] | undefined;
+  contributors: Contributor[];
+  entityId: number | undefined;
+  applicationId: number | null;
+  invitationData: InvitationType[] | undefined;
 }
 
 const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
@@ -37,6 +38,7 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
         return 6;
       case 'role_spouse':
         return 4;
+
       case 'role_owner':
         return 3;
       case 'role_owner_eligible':
@@ -45,18 +47,15 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
         return 6;
     }
   }
+
   const sendInvitations = async () => {
     try {
       if (entityId && applicationId) {
         for (let index = 0; index < contributors.length; index++) {
           const contributor = contributors[index];
+          const existingInvitation = findExistingInvitation(contributor, invitationData);
 
-          // checks if an invitation already exists
-          const existingInvitation = invitationData?.find(
-            invite => invite.email.toLowerCase() === contributor.emailAddress.toLowerCase()
-          );
-
-          if (!existingInvitation || existingInvitation.invitation_status === 'removed') {
+          if (!existingInvitation || existingInvitation.invitation_status === 'removed' || existingInvitation.invitation_status === 'unsent') {
             const postData = {
               application_id: applicationId,
               email: contributor.emailAddress,
@@ -65,23 +64,22 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
               first_name: contributor.firstName,
               last_name: contributor.lastName
             }
-
             const response = await axios.post(INVITATION_ROUTE, postData);
             if (response && response.data && response.data.id) {
               await axios.post(SEND_INVITATION_DELEGATE, {invitation_id: response.data.id});
             }
           }
         }
-
         window.location.href = buildRoute(APPLICATION_STEP_ROUTE, {
           applicationId: applicationId,
           stepLink: applicationSteps.sign.link
         })
       }
     } catch(error) {
-      // Handle error
+    // Handle error
     }
   }
+
   return (
     <>
       {open === true && (
@@ -97,9 +95,8 @@ const InviteContributorModal: React.FC<InviteContributorModalProps> = ({
               <h3>Invite Contributor(s)</h3>
             </Label>
           </ModalHeading>
-
           <div className="usa-prose">
-            By Clicking &quot;Send Invite&quot;, the contributor(s) will receive an invitation email at the provided e-mail addresses.
+						By Clicking &quot;Send Invite&quot;, the contributor(s) will receive an invitation email at the provided e-mail addresses.
           </div>
           <ModalFooter>
             <ButtonGroup className="float-right">

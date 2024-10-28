@@ -21,8 +21,8 @@ export function useSelectedNavItem() {
       case path === '/team':
         setSelectedNameId('Team')
         break
-      case path === '/team-tasks':
-        setSelectedNameId('Team Tasks')
+      case path === '/entity/search':
+        setSelectedNameId('Business Search')
         break
       case path === '/saved':
         setSelectedNameId('Saved')
@@ -54,7 +54,7 @@ export function useSelectedNavItem() {
       case path === '/calculator':
         setSelectedNameId('HUBZone Calculator')
         break
-      case path === 'https://certification.sba.gov':
+      case path === 'https://certifications.sba.gov':
         setSelectedNameId('Home')
         break
       default:

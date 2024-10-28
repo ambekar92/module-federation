@@ -22,7 +22,7 @@ export const useUpdateApplicationProgress = (progress: string) => {
   const memoizedProgress = useMemo(() => progress, [progress]);
 
   useEffect(() => {
-    console.log('applicationData', memoizedProgress, previousProgressRef.current);
+    // console.log('applicationData', memoizedProgress, previousProgressRef.current);
     if (applicationData) {
       const simpleApplicationData = {
         id: applicationData.id,

@@ -39,7 +39,7 @@ async function handleProtectedRoute(request: NextRequest) {
 
 const middlewares: { [key: string]: any } = {
   '/(.*)': [handleProtectedRoute],
-  '/user/dashboard/:path*': [async (request: NextRequest) => {
+  '/user/dashboard/(.*)': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
     const isInternalUser = isRole(permissions, Role.INTERNAL);
     if (isInternalUser) {
@@ -48,7 +48,7 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.redirect(`${request.nextUrl.origin}`);
     }
   }],
-  '/dashboard/:path*': [async (request: NextRequest) => {
+  '/dashboard/(.*)': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
     if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
       console.log('handleProtectedRoute', permissions);
@@ -69,7 +69,7 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.next();
     }
   }],
-  '/firm/:path*': [async (request: NextRequest) => {
+  '/firm/(.*)': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
     const isInternalUser = isRole(permissions, Role.INTERNAL);
     if (isInternalUser) {
@@ -78,10 +78,31 @@ const middlewares: { [key: string]: any } = {
       return NextResponse.redirect(`${request.nextUrl.origin}`);
     }
   }],
-  '/admin/:path*': [async (request: NextRequest) => {
+  '/admin/(.*)': [async (request: NextRequest) => {
     const {permissions} = await getData(request)
     const isAdminUser = isRole(permissions, Role.ADMIN);
     if (isAdminUser) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}`);
+
+    }
+  }],
+  '/entity/search': [async (request: NextRequest) => {
+    const {permissions} = await getData(request)
+    const isAdminUser = isRole(permissions, Role.ADMIN);
+    const isInternalUser = isRole(permissions, Role.INTERNAL);
+    if (isAdminUser || isInternalUser) {
+      return NextResponse.next();
+    } else {
+      return NextResponse.redirect(`${request.nextUrl.origin}`);
+
+    }
+  }],
+  '/entity/(.*)': [async (request: NextRequest) => {
+    const {permissions} = await getData(request)
+    const isInternalUser = isRole(permissions, Role.INTERNAL);
+    if (isInternalUser) {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(`${request.nextUrl.origin}`);
@@ -114,7 +135,7 @@ const middlewares: { [key: string]: any } = {
 export const config = {
   matcher: [
     '/home',
-    '/admin(.*)',
+    '/admin/(.*)',
     '/assign-a-delegate',
     '/entities',
     '/evaluation',
@@ -129,14 +150,15 @@ export const config = {
     '/messages',
     '/additional-information',
     '/application',
-    '/application(.*)', // all sub-routes
-    '/firm(.*)', // all sub-routes
+    '/application/(.*)', // all sub-routes
+    '/firm/(.*)', // all sub-routes
     '/dashboard/(.*)',
     '/user/dashboard/(.*)',
-    '/user/dashboard/:path*',
     '/login-tester',
     '/tester-login',
     '/entity-owned/(.*)',
+    '/entity/search',
+    '/entity/(.*)',
   ],
 }
 

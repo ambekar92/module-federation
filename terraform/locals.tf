@@ -80,13 +80,13 @@ locals {
     }
     prod = {
       domain_name               = "certification.sba.gov"
-      cert_domain               = "certification.sba.gov"
+      cert_domain               = "certifications.sba.gov"
       oai_id                    = "E1HEQ3JCZ916O8" # This is only needed if we use cloudfront
       certs_bucket              = "298969701643-us-east-1-prod-certifications"
       db_host                   = "ucp-db.certification.sba.gov" 
       distribution_url          = "https://dzjorhrnuv7ld.cloudfront.net"
       ucp_tracking_id           = "G-459N1YBHGW"
-      next_base_url             = "https://certification.sba.gov"
+      next_base_url             = "https://certifications.sba.gov"
       next_public_logout_url    = "https://login.sba.gov"
       okta_oauth2_issuer        = "https://login.sba.gov/oauth2/default"
       redis_host                = "prod-shared-services.2s2zep.ng.0001.use1.cache.amazonaws.com"

@@ -1,0 +1,44 @@
+@use 'colors' as *;
+
+.searchInput {
+    background-color: $gray-100;
+    border-radius: 3px;
+    padding: 1rem;
+    div:first-child {
+        width: 100%;
+    }
+    input {
+        border: none;
+    }
+}
+
+.hr {
+    border: none;            
+    height: 2px;             
+    background-color: $gray-300;
+    margin: 1rem 0;
+}
+
+.row {
+    cursor: pointer;
+    &:hover {
+        td {
+            background-color: $primary-blue-100;
+        }
+        
+    }
+}
+
+.selected {
+    border: $gray-200;
+    padding: .5rem 0;
+    display: grid;
+    grid-template-columns: 20fr 1fr;
+    gap: 2rem;
+}
+
+.selectedRow {
+    td {
+        background-color: $primary-blue-200;
+    }
+}

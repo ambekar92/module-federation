@@ -6,8 +6,7 @@ input.usa-input.icon {
 }
 
 .usa-input {
-  max-width: 641px;
-  width: 100%;
+  max-width: none !important;
 }
 
 input:not([disabled]):focus {
