@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 terraform {
-  required_version = "1.9.0"
+  required_version = "1.9.5"
   required_providers {
     aws = {
       version = "~> 5.0"
