@@ -85,8 +85,8 @@ function ContributorInvitation() {
   }, [applicationData, applicationId, isQualifyingOwner, isPrimaryQualifyingOwner, isDelegate, session.data?.permissions]);
 
   useEffect(() => {
-    if (ownerData && ownerData[0]?.answer && ownerData[0]?.answer.value.answer && Array.isArray(ownerData[0]?.answer.value.answer) && ownerData[0]?.answer.value.answer.length > 0) {
-      const ownerContributors = convertOwnerAnswerToContributors(ownerData[0].answer);
+    if (applicationData && ownerData && ownerData[0]?.answer && ownerData[0]?.answer.value.answer && Array.isArray(ownerData[0]?.answer.value.answer) && ownerData[0]?.answer.value.answer.length > 0) {
+      const ownerContributors = convertOwnerAnswerToContributors(ownerData[0].answer, applicationData);
       setContributors(prevContributors => {
         const updatedContributors = [...prevContributors];
         ownerContributors.forEach(newOwner => {

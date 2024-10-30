@@ -58,6 +58,27 @@ const SectionQuestions = () => {
     }
   }, [applicationData, userRole]);
 
+  const analystHubzoneContributor = useMemo(() => {
+    if (!applicationData?.application_contributor) {
+      return null;
+    }
+    const analystRoles: Role[] = [
+      Role.ANALYST,
+      Role.ANALYST_HIGH_TIER,
+      Role.ANALYST_LOW_TIER,
+      Role.ANALYST_HIGH,
+      Role.ANALYST_LOW,
+      Role.ANALYST_CONTRIBUTOR_OGC,
+      Role.ANALYST_CONTRIBUTOR_OSS,
+    ];
+    const analystContributor = applicationData.application_contributor.find(contributor =>
+      analystRoles.includes(contributor.application_role.name as Role) &&
+				contributor.application_version &&
+				contributor.application_version.id !== null
+    );
+    return analystContributor || null;
+  }, [applicationData, userRole]);
+
   const reviewerContributorId = useMemo(() => {
     if (!applicationData?.application_contributor || userRole !== 'reviewer') {
       return null;
@@ -246,13 +267,11 @@ const SectionQuestions = () => {
 
   // TODO Update url for hubzone redirect -KJ
   const handleHUBZoneCalculatorRedirect = () => {
-    const userRole = getUserRole(sessionData?.data?.permissions || []);
     const userId = sessionData?.data?.user_id;
     const applicationId = params.application_id;
-    const matchingContributor = userRole === 'reviewer' ? reviewerContributorId : analystContributorId;
-
+    const matchingContributor = analystHubzoneContributor ? analystHubzoneContributor : null;
     if (matchingContributor && userId && applicationId) {
-      const url = `/hubzone?application_contributor_id=${matchingContributor}&user_id=${userId}&application_id=${applicationId}&role=${userRole}`;
+      const url = `/hubzone?application_contributor_id=${matchingContributor.id}&user_id=${userId}&application_id=${applicationId}&application_version=${matchingContributor.application_version.name}&role=analyst`;
       window.open(url, '_blank'); // Makes sure it opens in a new tab
     } else {
       // error handling
@@ -261,6 +280,15 @@ const SectionQuestions = () => {
 
   const showHUBZoneCalculatorButton = params.section_questions === 'hubzone-calculator';
 
+  /*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Render questions for a given contributor.
+   * @param questions - The questions to render. If undefined, nothing is rendered.
+   * @param isAnalyst - Whether the questions are for an analyst or a contributor.
+   * @param contributorIndex - The index of the contributor in the list of contributors.
+   * @returns A React Fragment with the rendered questions.
+   */
+  /******  6f42430c-17ab-4826-8cac-112ae3e40f87  *******/
   const renderQuestions = (questions: Question[] | undefined, isAnalyst: boolean, contributorIndex: number) => {
     if (!questions) {return null;}
 
@@ -350,7 +378,7 @@ const SectionQuestions = () => {
       if (currentSection) {
         let newTitle = currentSection.title;
         if (newTitle.startsWith('Analyst Questionnaire')) {
-          newTitle = newTitle.replace('Analyst Questionnaire ', '');
+          newTitle = newTitle.replace('Analyst Questionnaire ', '').replace(/Hubzone/g, 'HUBZone');
         }
         setTitle(newTitle);
       }

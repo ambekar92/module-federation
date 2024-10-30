@@ -2,12 +2,13 @@ import { Answer } from '@/app/shared/types/questionnaireTypes';
 import { Contributor } from '../components/contributor-invite/types';
 import { calculateOwnerEligibility } from './calculateEligiblePrograms';
 import { getOwnershipPropertyValue } from './getOwnershipPropertyValue';
+import { Application } from '@/app/services/types/application-service/Application';
 
-export function convertOwnerAnswerToContributors(answer: Answer): Contributor[] {
+export function convertOwnerAnswerToContributors(answer: Answer, application: Application): Contributor[] {
   if (!answer.value.answer || !Array.isArray(answer.value.answer)) {
     return [];
   }
-
+  const applicationPrograms = application.program_application.map(program => program.id);
   return answer.value.answer.map((row: any): Contributor => {
     const firstName = getOwnershipPropertyValue(row, 'first_name_owner_and_management');
     const lastName = getOwnershipPropertyValue(row, 'last_name_owner_and_management');
@@ -22,7 +23,7 @@ export function convertOwnerAnswerToContributors(answer: Answer): Contributor[] 
       gender,
       veteranStatus,
       socialDisadvantages,
-    });
+    }, applicationPrograms);
 
     let contributorRole: Contributor['contributorRole'] = 'role_owner';
     if (isEligibleOwner && ownershipPercent >= 51) {

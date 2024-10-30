@@ -157,14 +157,14 @@ const Documents = () => {
     return (questions && questions.length > 0) ? questions.filter(q => q.hubzone_key) : [];
   };
 
-  if (isLoadingQuestions || isLoadingDocuments || !questions) {
+  if (isLoadingQuestions || isLoadingDocuments) {
     return <Spinner center />
   }
   if (questionsError || documentsError) {
     return <Alert headingLevel='h2' type='error'>Error occurred while loading documents. Please come back later.</Alert>
   }
-  if (questions && questions.length === 0) {
-    return <h2>No documents are required. Please click &quot;Next&quot; to continue.</h2>
+  if ((questions && questions.length === 0) || !questions) {
+    return <h2>No documents uploads are required. Please click &quot;Next&quot; to continue.</h2>
   }
 
   const hubzoneQuestions = groupQuestionsByHubzoneKey(questions);

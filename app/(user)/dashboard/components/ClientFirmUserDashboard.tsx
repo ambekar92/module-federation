@@ -35,7 +35,7 @@ export default function ClientFirmUserDashboard({internalUser = false}: Props) {
   const [enterInvitationCode, setEnterInvitationCode] = useState(false);
   const [userId, setUserId] = useState<number | null>(null)
   const url = userId ? `${GET_APPLICATIONS_ROUTE}?user_id=${userId}` : null
-  const { data, error, isLoading } = useSWR<Application[]>(url);
+  const { data, error, isLoading, mutate } = useSWR<Application[]>(url);
   const params = useParams()
   const {data: intrnlAppication} = useApplication(ApplicationFilterType.entity_id, params.id) ;
   const { data: entityData } = useSWR<EntitiesType[]>(
@@ -176,7 +176,7 @@ export default function ClientFirmUserDashboard({internalUser = false}: Props) {
       </Grid>
 
       <h2 className="text-size-2xl margin-y-0 border-bottom padding-y-2 border-base-lighter">Applications</h2>
-      {!internalUser && data && data.length > 0 && (
+      {!internalUser && data && data.length >0 && (
         <div>
           <Collection>
             <ApplicationCards
@@ -189,6 +189,7 @@ export default function ClientFirmUserDashboard({internalUser = false}: Props) {
           </Collection>
         </div>
       )}
+      {(!internalUser && (!data || data.length === 0)) || (internalUser && !intrnlAppication) || (!data || (Array.isArray(data) && data.length === 0)) && <div>No applications found.</div>}
       {internalUser && intrnlAppication && intrnlAppication.length > 0 && (
         <div>
           <Collection>
@@ -202,7 +203,7 @@ export default function ClientFirmUserDashboard({internalUser = false}: Props) {
           </Collection>
         </div>
       )}
-      {((!internalUser && (!data || data.length === 0)) || (internalUser && !intrnlAppication)) && <div>No applications found.</div>}
+      {/* {((!internalUser && (!data || data.length === 0)) || (internalUser && !intrnlAppication)) && <div>No applications found.</div>} */}
       {openConfirmationModal && (
         <DeleteWithdrawConfirmationModal
           openConfirmationModal={openConfirmationModal}
@@ -210,6 +211,7 @@ export default function ClientFirmUserDashboard({internalUser = false}: Props) {
           clickedId={clickedId}
           resetClickedId={resetClickedId}
           applicationData={Array.isArray(data) ? data : null}
+          mutate={mutate}
         />
       )}
     </>

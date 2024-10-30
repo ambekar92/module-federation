@@ -42,7 +42,7 @@ export default async function Login({searchParams}: {searchParams: {next: string
             case Role.REVIEWER_LOW_TIER:
             case Role.REVIEWER_HIGH:
             case Role.REVIEWER_LOW:
-              redirect(REVIEWERS_DASHBOARD_PAGE);
+              redirect(TASKS_DASHBOARD_PAGE);
               break;
             default:
               redirect(TASKS_DASHBOARD_PAGE);

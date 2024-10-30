@@ -18,7 +18,7 @@ const Productivity = () => {
 
   return (
     <div>
-      <h3>{isReviewersDashboard ? 'Team Productivity' : 'Productivity'}</h3>
+      <h3>{!isReviewersDashboard ? 'Team Productivity' : 'Productivity'}</h3>
       {isLoading && <Spinner center />}
       {!isLoading && <>
         <Show>
@@ -73,7 +73,7 @@ const Productivity = () => {
               <Card >
                 <div className={styles.card}>
                   <span className={styles.count}>0 </span>
-                  <strong className={styles.cardText}>Tasks completed this quater</strong>
+                  <strong className={styles.cardText}>Tasks completed this quarter</strong>
                 </div>
               </Card>
               <Card >

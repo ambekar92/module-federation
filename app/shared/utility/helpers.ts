@@ -76,7 +76,7 @@ export function handleInternalRoles(lastPermissionSlug: Role): string {
     case Role.REVIEWER_LOW_TIER:
     case Role.REVIEWER_HIGH:
     case Role.REVIEWER_LOW:
-      return REVIEWERS_DASHBOARD_PAGE;
+      return TASKS_DASHBOARD_PAGE;
     default:
       return TASKS_DASHBOARD_PAGE;
   }

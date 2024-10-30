@@ -18,6 +18,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { calculateEligibleSbaPrograms, OwnerType } from '../hooks/useOwnershipApplicationInfo';
 import { setOwners } from '../redux/applicationSlice';
+import { mutate } from 'swr';
 
 export type GridRow = {
   [key: string]: string | string[];
@@ -33,9 +34,10 @@ interface QaGridProps {
   contributorId: number | null;
 	setTotalOwnershipPercentage: React.Dispatch<React.SetStateAction<number>>;
 	entityStructure: string | undefined;
+	mutateOwners: () => Promise<void | QaQuestionsType | undefined>;
 }
 
-export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, contributorId, setTotalOwnershipPercentage, entityStructure }) => {
+export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, contributorId, setTotalOwnershipPercentage, entityStructure, mutateOwners }) => {
   const dispatch = useDispatch();
   const [gridRows, setGridRows] = useState<GridRow[]>([]);
   const [currentRow, setCurrentRow] = useState<GridRow>({});
@@ -267,8 +269,10 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
     }
   }, [individualQuestion, organizationQuestion, setTotalOwnershipPercentage]);
 
-  const saveAnswer = (rows: GridRow[]) => {
-    if (userId && contributorId) {
+  const saveAnswer = async (rows: GridRow[]) => {
+    if (!userId || !contributorId) {return;}
+
+    try {
       const individualAnswers = rows
         .filter(row => row.owner_type === 'Individual')
         .map(row => ({
@@ -283,6 +287,8 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
           id: row.id
         }));
 
+      const promises: Promise<any>[] = [];
+
       if (individualQuestion) {
         const individualAnswer = {
           profile_answer_flag: individualQuestion.profile_answer_flag,
@@ -292,9 +298,7 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
           answer_by: userId,
           reminder_flag: false,
         };
-        axios.post(ANSWER_ROUTE, [individualAnswer]).catch((error) => {
-          console.error('Error saving individual answer:', error);
-        });
+        promises.push(axios.post(ANSWER_ROUTE, [individualAnswer]));
       }
 
       if (organizationQuestion) {
@@ -306,10 +310,17 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
           answer_by: userId,
           reminder_flag: false,
         };
-        axios.post(ANSWER_ROUTE, [organizationAnswer]).catch((error) => {
-          console.error('Error saving organization answer:', error);
-        });
+        promises.push(axios.post(ANSWER_ROUTE, [organizationAnswer]));
       }
+
+      await Promise.all(promises);
+      await mutateOwners();
+
+    } catch (error) {
+      if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error saving answers:', error);
+      }
+      throw error;
     }
   };
 
@@ -342,44 +353,49 @@ export const OwnershipQaGrid: React.FC<QaGridProps> = ({ questions, userId, cont
     updateTotalPercentage();
   }, [gridRows, updateTotalPercentage]);
 
-  const handleAddOrUpdateRow = () => {
-    if (ownerType === '-Select-') {
-      setErrors({ owner_type: 'Please select an owner type' });
-      return;
-    }
-    if (validateAllFields()) {
-      const generateId = (row: GridRow) => {
-        let _id = `owner_${row.owner_type === 'Individual'
-          ? `${String(getFieldValue(row, 'first_name'))}_${String(getFieldValue(row, 'last_name'))}`
-          : String(getFieldValue(row, 'organization_name'))}_${Date.now()}`;
-        _id = _id.toLowerCase();
-        return _id;
-      };
-
-      let newRows;
-      if (editingRowIndex !== null) {
-        newRows = gridRows.map((row, index) =>
-          index === editingRowIndex
-            ? { ...row, ...currentRow, owner_type: ownerType, id: generateId({ ...row, ...currentRow, owner_type: ownerType }) }
-            : row
-        );
-      } else {
-        const newRow = { ...currentRow, owner_type: ownerType, id: generateId({ ...currentRow, owner_type: ownerType }) };
-        newRows = [...gridRows, newRow];
+  const handleAddOrUpdateRow = async () => {
+    try{
+      if (ownerType === '-Select-') {
+        setErrors({ owner_type: 'Please select an owner type' });
+        return;
       }
-      setGridRows(newRows);
-      setCurrentRow({});
-      setErrors({});
-      setEditingRowIndex(null);
-      setOwnerType('-Select-');
-      saveAnswer(newRows);
+      if (validateAllFields()) {
+        const generateId = (row: GridRow) => {
+          let _id = `owner_${row.owner_type === 'Individual'
+            ? `${String(getFieldValue(row, 'first_name'))}_${String(getFieldValue(row, 'last_name'))}`
+            : String(getFieldValue(row, 'organization_name'))}_${Date.now()}`;
+          _id = _id.toLowerCase();
+          return _id;
+        };
 
-      // Update owners in Redux store
-      const newOwners = newRows
-        .map(createOwnerObject)
-        .filter((owner): owner is OwnerType => owner !== null);
-      dispatch(setOwners(newOwners));
-      updateTotalPercentage();
+        let newRows;
+        if (editingRowIndex !== null) {
+          newRows = gridRows.map((row, index) =>
+            index === editingRowIndex
+              ? { ...row, ...currentRow, owner_type: ownerType, id: generateId({ ...row, ...currentRow, owner_type: ownerType }) }
+              : row
+          );
+        } else {
+          const newRow = { ...currentRow, owner_type: ownerType, id: generateId({ ...currentRow, owner_type: ownerType }) };
+          newRows = [...gridRows, newRow];
+        }
+        setGridRows(newRows);
+        setCurrentRow({});
+        setErrors({});
+        setEditingRowIndex(null);
+        setOwnerType('-Select-');
+        await saveAnswer(newRows);
+
+        const newOwners = newRows
+          .map(createOwnerObject)
+          .filter((owner): owner is OwnerType => owner !== null);
+        dispatch(setOwners(newOwners));
+        updateTotalPercentage();
+      }
+    } catch (error) {
+      if (process.env.NEXT_PUBLIC_DEBUG_MODE) {
+        console.error('Error in handleAddOrUpdateRow:', error);
+      }
     }
   };
 

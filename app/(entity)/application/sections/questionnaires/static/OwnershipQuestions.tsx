@@ -31,7 +31,7 @@ function OwnershipQuestions() {
   const { applicationId, userId, contributorId, applicationData } = useApplicationContext();
   const url = contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}/owner-and-management` : null;
 
-  const { data: ownersData, isLoading: isLoadingOwnership, error } = useSWR<QaQuestionsType>(url);
+  const { data: ownersData, isLoading: isLoadingOwnership, error, mutate: mutateOwners } = useSWR<QaQuestionsType>(url);
   const [eligiblePrograms, setEligiblePrograms] = useState<ProgramOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [totalOwnershipPercentage, setTotalOwnershipPercentage] = useState(0);
@@ -146,6 +146,7 @@ function OwnershipQuestions() {
                       contributorId={contributorId}
                       setTotalOwnershipPercentage={setTotalOwnershipPercentage}
                       entityStructure={startCase(entity_structure)}
+                      mutateOwners={mutateOwners}
                     />
                   )}
                 </Grid>

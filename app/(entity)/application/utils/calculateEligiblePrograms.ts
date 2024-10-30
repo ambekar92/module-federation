@@ -4,8 +4,12 @@ export function calculateOwnerEligibility(owner: {
   gender: string;
   veteranStatus: string;
   socialDisadvantages: string[];
-}): boolean {
+}, applicationPrograms: number[]): boolean {
   const disadvantages = [...owner.socialDisadvantages];
+
+  if(disadvantages.includes('Not Claiming Social Disadvantage') && applicationPrograms.length === 1 && applicationPrograms[0] === 1) {
+    return false;
+  }
 
   if (owner.gender === 'F' && !disadvantages.includes('female')) {
     disadvantages.push('female');
@@ -33,7 +37,15 @@ export function calculateOwnerEligibility(owner: {
     }
   });
 
-  return sbaProgramOptions.some(program =>
+  if(applicationPrograms.length === 0) {
+    return false;
+  }
+
+  // if(applicationPrograms.includes(2)) {
+  //   return true;
+  // }
+
+  return sbaProgramOptions.filter(program => applicationPrograms.includes(program.id)).some(program =>
     program.disadvantages.some(disadvantage => mappedDisadvantages.includes(disadvantage))
   );
 }

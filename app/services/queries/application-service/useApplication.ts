@@ -5,7 +5,7 @@ import { ApplicationFilterType } from './applicationFilters';
 
 export function useApplication(filterType: ApplicationFilterType, filterValue: any) {
   const q = filterValue ? `?${filterType}=${filterValue}` : '';
-  return useSWR<Application[]>(`${GET_APPLICATIONS_ROUTE}${q}`, {
+  return useSWR<Application[]>(q ? `${GET_APPLICATIONS_ROUTE}${q}` : null, {
     dedupingInterval: 60000,
     errorRetryInterval: 30000,
     focusThrottleInterval: 60000,

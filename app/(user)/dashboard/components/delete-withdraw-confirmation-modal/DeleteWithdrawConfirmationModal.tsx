@@ -18,6 +18,7 @@ interface ModalProps {
   clickedId?: number | null,
   applicationData?: Application[] | null,
   resetClickedId?: () => void,
+	mutate: () => Promise<any>
 }
 
 const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
@@ -25,7 +26,8 @@ const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
   openConfirmationModal,
   applicationData,
   clickedId,
-  resetClickedId
+  resetClickedId,
+  mutate
 }) => {
   const [openModal, setOpenModal] = useState<boolean>(openConfirmationModal !== undefined ? true : false)
   const [currentApplication, setCurrentApplication] = useState<Application | null>(null)
@@ -49,9 +51,14 @@ const DeleteWithdrawConfirmationModal: React.FC<ModalProps> = ({
         state_action: confirmationType
       };
 
-    	await axios.put(`${UPDATE_APPLICATION_STATE_ROUTE}`, putData);
-      resetClickedId && resetClickedId()
-      setOpenModal(false)
+      const response = await axios.put(`${UPDATE_APPLICATION_STATE_ROUTE}`, putData);
+      if (response.status === 200) {
+        resetClickedId && resetClickedId()
+        setOpenModal(false)
+        await mutate()
+      } else {
+        alert('There was an error processing your request.');
+      }
     } catch (error: any) {
       if(process.env.NEXT_PUBLIC_DEBUG_MODE) {
         console.log(error)

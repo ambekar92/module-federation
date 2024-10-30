@@ -18,10 +18,11 @@ import { DashboardSearchParams, IColumn, PAGE_SIZE, supervisorColumns, userColum
 import styles from '../WorkloadDashboard.module.scss';
 import FirmInfoCell from './FirmInfoCell';
 import { useSessionUCMS } from '@/app/lib/auth';
+import { filterExternalAndInternalRoles } from '@/app/shared/utility/filterExternalAndInternalRoles';
 
 interface TableContentProps {
   searchParams: DashboardSearchParams;
-  onReassign: (applicationId: number) => void;
+  onReassign: (applicationId: number, currentUserId: string | number | null, userRole: string | null) => void;
 }
 
 const TableContent: React.FC<TableContentProps> = ({  searchParams, onReassign }) => {
@@ -101,8 +102,17 @@ const TableContent: React.FC<TableContentProps> = ({  searchParams, onReassign }
                     <>
                       <td style={{backgroundColor: 'white', color: '#3d4551',}}>{fullName(task.assigned_to)}</td>
                       <td style={{backgroundColor: 'white', color: '#3d4551',}}>
-                        <Button type='button' onClick={() => onReassign(task.application_id)}>
-                          Re-Assign
+                        <Button
+                          type='button'
+                          onClick={() => onReassign(
+                            task.application_id,
+                            task.assigned_to?.id || null,
+                            (task.assigned_to.prbac_role && filterExternalAndInternalRoles(
+                              task.assigned_to.prbac_role.map(role => role.slug)
+                            )[0] || [])
+                          )}
+                        >
+  												Re-Assign
                         </Button>
                       </td>
                     </>

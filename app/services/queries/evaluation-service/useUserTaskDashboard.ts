@@ -23,7 +23,7 @@ export function useUserTaskDashboard() {
 
 export function useSelectedUserTaskDashboard(userId: number | null) {
 
-  const { data, error } = useSWR<UserTaskDashboard[]>(
+  const { data, error, mutate } = useSWR<UserTaskDashboard[]>(
     userId ? `${USER_DASHBOARD_TASKS_ROUTE}/${userId}`
       : null,
     { revalidateOnMount: true }
@@ -34,12 +34,13 @@ export function useSelectedUserTaskDashboard(userId: number | null) {
     error,
     isLoading: !error && !data,
     isAuthenticated: status === 'authenticated',
+    mutate
   };
 }
 
 export function useDefaultUserTaskDashboard(role: string | null) {
 
-  const { data, error } = useSWR<UserTaskDashboard[]>(
+  const { data, error, mutate } = useSWR<UserTaskDashboard[]>(
     role ? `${USER_TASKS_ROUTE}?role_slug=${role}`
       : null,
     { revalidateOnMount: true }
@@ -50,5 +51,6 @@ export function useDefaultUserTaskDashboard(role: string | null) {
     error,
     isLoading: !error && !data,
     isAuthenticated: status === 'authenticated',
+    mutate
   };
 }

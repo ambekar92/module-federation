@@ -103,7 +103,15 @@ export type Application = {
       first_name: string,
       last_name: string
     },
-    application_id: number
+    application_id: number,
+		application_version: {
+			id: 1,
+			name: string,
+			title: string,
+			description: string,
+			start_date: string,
+			end_date: null | string
+		}
   }>
   deleted_at: string | null
   created_at: string

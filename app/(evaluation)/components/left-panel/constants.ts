@@ -1,12 +1,18 @@
 import { NavItem } from '../../types/types';
 export const getAnalystQuestionnaires = (programApplications: any[]) => {
-  const baseQuestionnaires = [
+  let baseQuestionnaires = [
     '/analyst-questionnaire-ownership',
     '/analyst-questionnaire-control',
     '/analyst-questionnaire-additional-questions',
   ];
 
-  const programSpecificQuestionnaires = [];
+  if (programApplications.length === 1 && programApplications[0].id === 2) {
+    baseQuestionnaires = baseQuestionnaires.filter(
+      q => q !== '/analyst-questionnaire-control'
+    );
+  }
+
+  const programSpecificQuestionnaires: string[] = [];
 
   const hasProgram = (programName: string) =>
     programApplications.some(app => app.programs.name === programName);

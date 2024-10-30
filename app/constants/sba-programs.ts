@@ -24,8 +24,9 @@ export const sbaProgramOptions: ProgramOption[] = [
     disadvantages: [
       'long_term_isolated_residence', 'unmarried-not-veteran', 'gender', 'woman', 'female',
       'ethnic_origin', 'asian_pacific_american', 'native_american', 'hispanic_american',
-  		'black_american', 'minority', 'race', 'disabledVeteran', 'veteran',
+  		'black_american', 'minority', 'race', 'disabledVeteran', 'veteran', 'identifiable disability', 'identifiable_disability',
       'Race', 'Native American', 'Hispanic American', 'Black American', 'Asian Pacific American',
+      'Identifiable Disibility', 'identifiable disibility', 'identifiable_disibility',
       'Long term residence in an environment isolated from mainstream of American society.', 'Other',
       'Religion', 'Ethnic Origin', 'Identifiable Disability', 'Gender', 'Sexual Orientation'
     ],

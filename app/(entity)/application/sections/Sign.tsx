@@ -39,7 +39,7 @@ function SignPage() {
   const [isChecked, setIsChecked] = useState(false);
   const [allContributorsSubmitted, setAllContributorsSubmitted] = useState(false);
   const [allInvitationsAccepted, setAllInvitationsAccepted] = useState(false);
-  const [isHundredPercentOwners, setIsHundredPercentOwners] = useState(false);
+  // const [isHundredPercentOwners, setIsHundredPercentOwners] = useState(false);
   const [alertMessages, setAlertMessages] = useState<string[]>([]);
 
   const { data: questionnairesData, error } = useSWR<QuestionnaireListType>(contributorId ? `${QUESTIONNAIRE_ROUTE}/${contributorId}` : null);
@@ -56,7 +56,7 @@ function SignPage() {
   const userRole = getUserRole();
 
   const { data: ownerData } = useSWR<Question[]>((userRole === 'primary-qualifying-owner' && applicationData) ? `${QUESTIONNAIRE_ROUTE}/${applicationData?.application_contributor[0].id}/owner-and-management` : null);
-  const { totalOwnershipPercentage } = useCheckOwnersPercent(ownerData || []);
+  // const { totalOwnershipPercentage } = useCheckOwnersPercent(ownerData || []);
   const applicationRole = applicationData?.application_contributor.filter(contributor => contributor.id === contributorId)
   useRedirectIfNoOwners({ ownerData, applicationId, applicationRole });
   useEffect(() => {
@@ -67,35 +67,52 @@ function SignPage() {
   useEffect(() => {
     {/* todo: return_to_firm is a temp fix until BE fix it */}
     const invalidWorkflowStates = ['draft', 'returned_to_firm', 'return_to_firm'];
-    const invalidRoles = [
-      Role.DELEGATE,
-    ];
+    // const invalidRoles = [Role.DELEGATE];
 
-    const userRole = session.data?.permissions[session.data.permissions.length - 1].slug;
-    const isInvalidRole = userRole && invalidRoles.includes(userRole);
+    // Get all user roles instead of just the last one
+    const userRoles = session.data?.permissions.map(permission => permission.slug);
 
-    const currentUserContributor = applicationData?.application_contributor.find(
+    // Get all contributors for the current user
+    const currentUserContributors = applicationData?.application_contributor.filter(
       contributor => contributor.user_id === session.data?.user.id
     );
 
-    const isValidWorkflowState = currentUserContributor && invalidWorkflowStates.includes(currentUserContributor.workflow_state);
+    if (!userRoles || !currentUserContributors?.length) {return;}
 
-    // Todo: need to allow multiple userRole for isInvaldRole check @notkijana
-    // if (isValidWorkflowState === false) {
-    //   window.location.href = `/application/view/${applicationId}`;
-    // }
+    // const hasInvalidRole = userRoles.some(role => invalidRoles.includes(role));
+
+    // Check if all contributor workflow states are invalid
+//     const allWorkflowStatesInvalid = currentUserContributors.every(contributor =>
+//       invalidWorkflowStates.includes(contributor.workflow_state)
+//     );
+
+//     // Redirects if all workflow states are invalid
+//     if (!allWorkflowStatesInvalid) {
+//       window.location.href = `/application/view/${applicationId}`;
+//     }
+//   }, [applicationData, applicationId, session.data]);
+
+    // Check if all contributor workflow states are invalid
+    const allWorkflowStatesInvalid = currentUserContributors.every(contributor =>
+      invalidWorkflowStates.includes(contributor.workflow_state)
+    );
+
+    // Redirects if all workflow states are invalid
+    if (!allWorkflowStatesInvalid) {
+      window.location.href = `/application/view/${applicationId}`;
+    }
   }, [applicationData, applicationId, session.data]);
 
-  useEffect(() => {
-    if(totalOwnershipPercentage >= 99 && totalOwnershipPercentage <= 100) {
-      setIsHundredPercentOwners(true);
-    } else {
-      setIsHundredPercentOwners(false);
-      if(userRole === 'primary-qualifying-owner') {
-        setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
-      }
-    }
-  }, [totalOwnershipPercentage]);
+  // useEffect(() => {
+  //   if(totalOwnershipPercentage >= 99 && totalOwnershipPercentage <= 100) {
+  //     setIsHundredPercentOwners(true);
+  //   } else {
+  //     setIsHundredPercentOwners(false);
+  //     if(userRole === 'primary-qualifying-owner') {
+  //       setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
+  //     }
+  //   }
+  // }, [totalOwnershipPercentage]);
 
   useEffect(() => {
     if (applicationData && applicationData.application_contributor) {
@@ -146,7 +163,9 @@ function SignPage() {
       setAlertMessages([]);
 
       if (userRole === 'primary-qualifying-owner') {
-        const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted; //todo hundredPrecent is not working. ucms-2930 || !isHundredPercentOwners;
+        // const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted || !isHundredPercentOwners;
+        const isDisabled = !allCompleted || !allContributorsSubmitted || !allInvitationsAccepted;
+
         setIsCheckboxDisabled(isDisabled);
 
         if (isDisabled) {
@@ -159,9 +178,9 @@ function SignPage() {
           if (!allInvitationsAccepted) {
             setAlertMessages(prev => [...prev, 'All contributor invitations must be accepted and their applications submitted prior to signing the application..']);
           }
-          if (isHundredPercentOwners) {
-            setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
-          }
+          // if (!isHundredPercentOwners) {
+          //   setAlertMessages(prev => [...prev, 'Total ownership must be 100%. Current total: ' + totalOwnershipPercentage.toFixed(2) + '%']);
+          // }
         }
       } else {
         setIsCheckboxDisabled(!allCompleted);
@@ -320,7 +339,8 @@ function SignPage() {
           onClick={handleModalToggle}
           disabled={
             !isChecked || isCheckboxDisabled || error ||
-            (userRole === 'primary-qualifying-owner' && (!allContributorsSubmitted || !allInvitationsAccepted || !isHundredPercentOwners))
+            // (userRole === 'primary-qualifying-owner' && (!allContributorsSubmitted || !allInvitationsAccepted || !isHundredPercentOwners))
+						(userRole === 'primary-qualifying-owner' && (!allContributorsSubmitted || !allInvitationsAccepted))
           }
         >
           Submit

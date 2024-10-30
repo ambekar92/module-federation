@@ -94,6 +94,13 @@ export interface IProductivity {
     average_processing_time_seconds: number,
 }
 
-export type DashboardSearchParams =  { sortColumn: keyof UserTaskDashboard, sortOrder: 'asc' | 'desc', page: string, application_id?: string }
+export type DashboardSearchParams =  {
+	sortColumn: keyof UserTaskDashboard,
+	sortOrder: 'asc' | 'desc',
+	page: string,
+	application_id?: string,
+	current_user_id?: string;
+	user_role?: string;
+}
 
 export const PAGE_SIZE = 20;

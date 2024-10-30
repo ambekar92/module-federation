@@ -43,7 +43,7 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
   };
 
   const { data, isLoading, mutate } = useSWR<User[]>(
-    `${USER_ROUTE}?role_slug=${userRolesOptionsMap(reassignType, currentUser)}`,
+    `${USER_ROUTE}?role_slug=${currentUser.data.permissions.filter(permission => permission.slug !== 'internal_user')[0].slug}`,
     null,
     { revalidateOnMount: false }
   );
@@ -64,7 +64,7 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
 
   useEffect(() => {
     if (isLoading || !data) {return;}
-    const opts= Array.isArray(data) && data.map(user => ({value: user.id, label: `${user.first_name} ${user.last_name}`})) as unknown as ComboBoxOption[];
+    const opts= Array.isArray(data) && data.filter(user => user.id !== currentUser.data.user_id).map(user => ({value: user.id, label: `${user.first_name} ${user.last_name}`})) as unknown as ComboBoxOption[];
     if (opts) {setUserOptions(opts);}
   }, [data]);
 
@@ -150,6 +150,7 @@ const ReassignUserModal = ({modalRef, reassignType, applicationId, handleAction}
         <form>
           <h1>Reassign Application</h1>
           {userOptions && <Combobox<ReassignUserType> name='user' required={true} label='Select User' options={userOptions}/>}
+          {userOptions && <div className='margin-top-2'></div>}
           <RichText<ReassignUserType> name='comments' label='Provide more information' required={true} itemId={Math.random()} />
           {error && <div className="usa-alert usa-alert--error" role="alert">
             <div className="usa-alert__body">
